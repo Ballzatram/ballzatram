@@ -1,67 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parcel | Ballzatram</title>
-    <style>
-      body {
-        min-height: 100vh;
-        margin: 0;
-        display: grid;
-        place-items: center;
-        background: linear-gradient(#5db5ff, #2e86d1);
-        font-family: "Trebuchet MS", system-ui, sans-serif;
-        color: #3b1603;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parcel | Ballzatram</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <div class="parcel-sky">
+    <header class="parcel-header">
+      <a class="home-link" href="../../index.html">← Back to Ballzatram</a>
+      <span class="tool-badge">Parcel // AI Land Desk</span>
+    </header>
 
-      .card {
-        width: min(680px, 90vw);
-        padding: 2rem;
-        border: 4px solid #743310;
-        border-radius: 28px;
-        background: #ffecc6;
-        box-shadow: 10px 12px 0 rgba(59, 22, 3, 0.8);
-      }
+    <main class="parcel-shell">
+      <section class="assistant-card">
+        <p class="eyebrow">★ Hyper Intelligence Intake ★</p>
+        <h1>Parcel</h1>
+        <p class="subtitle">Tell me your investment thesis. I’ll shape the shortlist.</p>
 
-      h1 {
-        margin: 0;
-        font-family: Impact, system-ui, sans-serif;
-        font-size: clamp(3rem, 10vw, 6rem);
-        color: #ffe1a0;
-        text-shadow: -3px -2px 0 #743310, 3px 4px 0 #3b1603;
-      }
+        <form id="query-form" class="query-grid">
+          <label>What do you want to develop?
+            <select id="goal">
+              <option value="polo">Polo / Equestrian Club</option>
+              <option value="estate">Equestrian Estate</option>
+              <option value="landbank">Land Bank / Long-Term Hold</option>
+            </select>
+          </label>
 
-      p {
-        font-weight: 900;
-        line-height: 1.45;
-      }
+          <label>Minimum acres
+            <input id="min-acres" type="number" value="40" min="0" />
+          </label>
 
-      a {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.75rem 1rem;
-        border: 3px solid #3b1603;
-        border-radius: 999px;
-        color: #ffecc6;
-        background: #743310;
-        font-weight: 900;
-        text-decoration: none;
-        text-transform: uppercase;
-        box-shadow: 4px 5px 0 #3b1603;
-      }
-    </style>
-  </head>
+          <label>Maximum price per acre (USD)
+            <input id="max-ppa" type="number" value="35000" min="0" />
+          </label>
 
-  <body>
-    <main class="card">
-      <h1>Parcel</h1>
-      <p>
-        Land intelligence for discovering, scoring, and shortlisting property
-        investment opportunities.
-      </p>
-      <p>Status: engine room under construction.</p>
-      <a href="../../index.html">← Back to Ballzatram</a>
+          <label>Zoning preference
+            <select id="zoning">
+              <option value="any">Any / Unknown</option>
+              <option value="ag">Agricultural / Rural</option>
+              <option value="res">Residential Estate</option>
+              <option value="mixed">Mixed / Flexible</option>
+            </select>
+          </label>
+
+          <label>Max drive minutes to Charlotte
+            <input id="max-drive" type="number" value="60" min="0" />
+          </label>
+
+          <label>How many results?
+            <input id="max-results" type="number" value="20" min="1" max="100" />
+          </label>
+
+          <button type="submit" class="primary-btn">Run Intelligence Query</button>
+        </form>
+      </section>
+
+      <section class="results-card">
+        <div class="panel-head">
+          <h2>Custom Dashboard</h2>
+          <p id="summary">Awaiting query...</p>
+        </div>
+
+        <div class="metrics" id="metrics"></div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th><th>Location</th><th>Acres</th><th>Price</th><th>Price/Acre</th><th>Score</th><th>Map</th>
+              </tr>
+            </thead>
+            <tbody id="results-body"></tbody>
+          </table>
+        </div>
+      </section>
     </main>
-  </body>
+  </div>
+  <script src="./script.js"></script>
+</body>
 </html>
