@@ -1,32 +1,100 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ballzatram</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <div class="sky" id="sky">
-      <!-- Countdown banner -->
-      <div class="countdown-wrapper">
-        <div class="countdown-badge">
-          <span class="countdown-label">NEXT DROP IN</span>
-          <span id="countdown-timer" class="countdown-time">00:00:00</span>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ballzatram</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="sky" id="sky">
+    <header class="site-header">
+      <a class="brand-logo" href="./index.html" aria-label="Ballzatram home">
+        <img src="assets/title.png" alt="Ballzatram" />
+      </a>
+
+      <nav class="nav-panel" aria-label="Main navigation">
+        <a href="#tools">Tools</a>
+        <span></span>
+        <a href="#games">Games</a>
+        <span></span>
+        <a href="#projects">Projects</a>
+      </nav>
+    </header>
+
+    <main class="hero-shell">
+      <section class="hero-copy">
+        <p class="eyebrow">★ Personal hangar of useful oddities ★</p>
+
+        <h1>
+          Tools, games,<br />
+          and <em>strange</em><br />
+          little machines.
+        </h1>
+
+        <div class="headline-rule"></div>
+
+        <p class="hero-text">
+          Ballzatram is a launchpad for experiments — part workshop, part arcade,
+          part dusty rocket garage.
+        </p>
+
+        <div class="hero-actions">
+          <a class="primary-button" href="#tools">🚀 View Tools</a>
+          <a class="secondary-button" href="#projects">🔧 Open Hangar</a>
         </div>
-      </div>
+      </section>
 
-      <!-- Ballzatram floating in the sky -->
       <div class="ballzatram">
-        <img
-          src="ballzatram.png"
-          alt="Ballzatram floating in the sky, playing guitar"
-        />
+        <img src="assets/ballzatram.png" alt="Ballzatram rocketeer flying with guitar" />
       </div>
+    </main>
 
-      <!-- Clouds are created dynamically by script.js -->
-    </div>
+    <section class="dock" aria-label="Ballzatram sections">
+      <article class="dock-card featured" id="tools">
+        <div class="card-icon">🚀</div>
+        <div>
+          <span class="card-kicker">Tool 001</span>
+          <h2>Parcel</h2>
+          <p>
+            A land intelligence engine for discovering and ranking property
+            investment opportunities.
+          </p>
+          <a href="tools/parcel/index.html">Launch Parcel →</a>
+        </div>
+      </article>
 
-    <script src="script.js"></script>
-  </body>
+      <article class="dock-card" id="games">
+        <div class="card-icon blue">🎮</div>
+        <div>
+          <span class="card-kicker">Games</span>
+          <h2>Arcade Bay</h2>
+          <p>Small games, weird prototypes, and playable experiments.</p>
+          <a href="#games">Coming Soon</a>
+        </div>
+      </article>
+
+      <article class="dock-card" id="projects">
+        <div class="card-icon">⚙</div>
+        <div>
+          <span class="card-kicker">Projects</span>
+          <h2>Workshop</h2>
+          <p>Build logs, public experiments, dashboards, and unfinished machines.</p>
+          <a href="#projects">Coming Soon</a>
+        </div>
+      </article>
+    </section>
+
+    <footer class="site-footer">
+      <span>★</span>
+      <p>Built in the hangar. Fueled by curiosity. Launched for everyone.</p>
+      <span>★</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
 </html>
