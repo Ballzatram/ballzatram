@@ -37,7 +37,9 @@ body {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  padding: clamp(0.7rem, 1.5vw, 1.2rem) clamp(1rem, 3vw, 2.4rem);
+  width: min(100%, 1500px);
+  margin: 0 auto;
+  padding: clamp(0.55rem, 1.1vw, 0.9rem) clamp(1rem, 2.6vw, 2.2rem);
 }
 
 .brand-logo {
@@ -96,18 +98,20 @@ body {
   position: relative;
   z-index: 20;
   display: grid;
-  grid-template-columns: minmax(460px, 1.2fr) minmax(320px, 0.8fr);
-  gap: clamp(1.2rem, 3vw, 3.2rem);
-  align-items: center;
-  min-height: calc(100svh - 260px);
-  padding: 0 clamp(1rem, 3vw, 2.6rem) clamp(0.8rem, 2vw, 1.35rem);
+  grid-template-columns: minmax(700px, 1.95fr) minmax(260px, 0.62fr);
+  gap: clamp(0.55rem, 1.3vw, 1.2rem);
+  align-items: start;
+  width: min(100%, 1500px);
+  min-height: calc(100svh - 170px);
+  margin: 0 auto;
+  padding: clamp(0.1rem, 0.35vw, 0.35rem) clamp(1rem, 2.6vw, 2.2rem) clamp(0.65rem, 1.2vw, 1rem);
 }
 
 .hero-copy {
   position: relative;
   z-index: 30;
-  width: min(100%, 850px);
-  min-height: clamp(430px, 58vh, 650px);
+  width: min(100%, 1080px);
+  min-height: clamp(440px, 60vh, 620px);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -219,8 +223,9 @@ body {
 .ballzatram {
   position: relative;
   z-index: 25;
-  justify-self: end;
-  width: min(36vw, 590px);
+  justify-self: center;
+  margin-top: clamp(0.5rem, 2.2vw, 2rem);
+  width: min(27vw, 430px);
   animation: ballzatram-float 6s ease-in-out infinite;
 }
 
@@ -252,6 +257,8 @@ body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: clamp(0.8rem, 1.5vw, 1.25rem);
+  width: min(100%, 1500px);
+  margin: 0 auto;
   padding: 0 clamp(1rem, 3vw, 2.6rem) 1.25rem;
 }
 
@@ -348,6 +355,8 @@ body {
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
+  width: min(100%, 1500px);
+  margin: 0 auto;
 }
 
 .site-footer p {
@@ -410,6 +419,7 @@ body {
   .hero-shell {
     grid-template-columns: 1fr;
     min-height: auto;
+    width: 100%;
     padding: 0 1rem 1.25rem;
   }
 
