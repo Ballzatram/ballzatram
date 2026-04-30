@@ -74,7 +74,7 @@ def main() -> None:
         df["price_per_acre"] = derived
 
     location_minutes_col = None
-    for candidate in ["drive_minutes", "minutes_to_charlotte", "distance_minutes"]:
+    for candidate in ["drive_minutes", "estimated_drive_minutes", "distance_minutes"]:
         if candidate in df.columns:
             location_minutes_col = candidate
             break
