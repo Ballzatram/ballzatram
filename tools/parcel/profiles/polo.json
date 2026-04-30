@@ -1,0 +1,14 @@
+{
+  "name": "Polo / Equestrian Club",
+  "strategy": "polo_equestrian",
+  "min_acres": 20,
+  "ideal_min_acres": 40,
+  "max_drive_minutes": 60,
+  "preferred_drive_minutes": 45,
+  "weights": {
+    "acreage": 0.3,
+    "price": 0.25,
+    "location": 0.3,
+    "manual": 0.15
+  }
+}
