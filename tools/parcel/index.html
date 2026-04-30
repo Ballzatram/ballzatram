@@ -1,83 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Parcel | Ballzatram</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
+
 <body>
   <div class="parcel-sky">
     <header class="parcel-header">
       <a class="home-link" href="../../index.html">← Back to Ballzatram</a>
-      <span class="tool-badge">Parcel // AI Land Desk</span>
+      <span class="tool-badge">Tool 001 • Parcel</span>
     </header>
 
     <main class="parcel-shell">
-      <section class="assistant-card">
-        <p class="eyebrow">★ Hyper Intelligence Intake ★</p>
+      <section class="hero-card">
+        <p class="eyebrow">★ Ballzatram Land Desk ★</p>
         <h1>Parcel</h1>
-        <p class="subtitle">Tell me your investment thesis. I’ll shape the shortlist.</p>
+        <p class="subtitle">Land intelligence for investment discovery</p>
+        <p class="description">
+          Profile-driven discovery for land opportunities. Start with the polo profile
+          near Charlotte, NC, then expand to other investor strategies.
+        </p>
 
-        <form id="query-form" class="query-grid">
-          <label>What do you want to develop?
-            <select id="goal">
-              <option value="polo">Polo / Equestrian Club</option>
-              <option value="estate">Equestrian Estate</option>
-              <option value="landbank">Land Bank / Long-Term Hold</option>
-            </select>
-          </label>
-
-          <label>Minimum acres
-            <input id="min-acres" type="number" value="40" min="0" />
-          </label>
-
-          <label>Maximum price per acre (USD)
-            <input id="max-ppa" type="number" value="35000" min="0" />
-          </label>
-
-          <label>Zoning preference
-            <select id="zoning">
-              <option value="any">Any / Unknown</option>
-              <option value="ag">Agricultural / Rural</option>
-              <option value="res">Residential Estate</option>
-              <option value="mixed">Mixed / Flexible</option>
-            </select>
-          </label>
-
-          <label>Max drive minutes to Charlotte
-            <input id="max-drive" type="number" value="60" min="0" />
-          </label>
-
-          <label>How many results?
-            <input id="max-results" type="number" value="20" min="1" max="100" />
-          </label>
-
-          <button type="submit" class="primary-btn">Run Intelligence Query</button>
-        </form>
+        <div class="profile-row">
+          <label for="profile-select">Active profile</label>
+          <select id="profile-select" disabled>
+            <option>Polo / Equestrian Club (placeholder)</option>
+          </select>
+        </div>
       </section>
 
-      <section class="results-card">
+      <section class="shortlist-panel" aria-live="polite">
         <div class="panel-head">
-          <h2>Custom Dashboard</h2>
-          <p id="summary">Awaiting query...</p>
+          <h2>Shortlist</h2>
+          <p id="summary-text">Loading shortlist data...</p>
         </div>
 
-        <div class="metrics" id="metrics"></div>
+        <div id="empty-state" class="empty-state" hidden>
+          <h3>Engine room under construction</h3>
+          <p>
+            The shortlist output has not been generated yet. Run the Parcel pipeline
+            to create <code>output/shortlist_polo.json</code>.
+          </p>
+        </div>
 
-        <div class="table-wrap">
+        <div class="table-wrap" id="table-wrap" hidden>
           <table>
             <thead>
               <tr>
-                <th>Property</th><th>Location</th><th>Acres</th><th>Price</th><th>Price/Acre</th><th>Score</th><th>Map</th>
+                <th>Property</th>
+                <th>Location</th>
+                <th>Acres</th>
+                <th>Price</th>
+                <th>Price/Acre</th>
+                <th>Score</th>
+                <th>Notes</th>
               </tr>
             </thead>
-            <tbody id="results-body"></tbody>
+            <tbody id="shortlist-body"></tbody>
           </table>
         </div>
       </section>
     </main>
   </div>
+
   <script src="./script.js"></script>
 </body>
+
 </html>
