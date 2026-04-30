@@ -1,67 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parcel | Ballzatram</title>
-    <style>
-      body {
-        min-height: 100vh;
-        margin: 0;
-        display: grid;
-        place-items: center;
-        background: linear-gradient(#5db5ff, #2e86d1);
-        font-family: "Trebuchet MS", system-ui, sans-serif;
-        color: #3b1603;
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parcel Intelligence</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <main class="app">
+    <header class="topbar"><div><p class="kicker">Parcel Intelligence</p><h1>Acquisition Command</h1></div><a href="../../index.html" class="back-link">Back</a></header>
 
-      .card {
-        width: min(680px, 90vw);
-        padding: 2rem;
-        border: 4px solid #743310;
-        border-radius: 28px;
-        background: #ffecc6;
-        box-shadow: 10px 12px 0 rgba(59, 22, 3, 0.8);
-      }
+    <section class="stage stage-active" id="stage-chat">
+      <h2>AI Intake Chat</h2>
+      <div id="chat-log" class="chat-log"></div>
+      <form id="chat-form" class="chat-input-row">
+        <input id="chat-input" placeholder="Type your answer..." autocomplete="off" />
+        <button class="cta" type="submit">Send</button>
+      </form>
+      <p class="hint">Prompt flow: development goal → min acres → max budget → zoning → max drive minutes.</p>
+    </section>
 
-      h1 {
-        margin: 0;
-        font-family: Impact, system-ui, sans-serif;
-        font-size: clamp(3rem, 10vw, 6rem);
-        color: #ffe1a0;
-        text-shadow: -3px -2px 0 #743310, 3px 4px 0 #3b1603;
-      }
+    <section class="stage" id="stage-processing"><div class="spinner"></div><h2>Compiling Data Intelligence</h2><p id="processing-text">Initializing research workflow...</p></section>
 
-      p {
-        font-weight: 900;
-        line-height: 1.45;
-      }
-
-      a {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.75rem 1rem;
-        border: 3px solid #3b1603;
-        border-radius: 999px;
-        color: #ffecc6;
-        background: #743310;
-        font-weight: 900;
-        text-decoration: none;
-        text-transform: uppercase;
-        box-shadow: 4px 5px 0 #3b1603;
-      }
-    </style>
-  </head>
-
-  <body>
-    <main class="card">
-      <h1>Parcel</h1>
-      <p>
-        Land intelligence for discovering, scoring, and shortlisting property
-        investment opportunities.
-      </p>
-      <p>Status: engine room under construction.</p>
-      <a href="../../index.html">← Back to Ballzatram</a>
-    </main>
-  </body>
+    <section class="stage" id="stage-dashboard">
+      <div class="dash-head"><h2>Investor Dashboard</h2><p id="summary"></p></div>
+      <div class="metrics" id="metrics"></div>
+      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Location</th><th>Acres</th><th>Price</th><th>Price/Acre</th><th>Score</th><th>Map</th></tr></thead><tbody id="results"></tbody></table></div>
+    </section>
+  </main>
+  <script src="./script.js"></script>
+</body>
 </html>
