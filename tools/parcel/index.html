@@ -8,24 +8,27 @@
 </head>
 <body>
   <main class="app">
-    <header class="topbar"><div><p class="kicker">Parcel Intelligence</p><h1>Acquisition Command</h1></div><a href="../../index.html" class="back-link">Back</a></header>
+    <header class="topbar"><div><p class="kicker">Parcel Intelligence</p><h1>Web Listing Discovery</h1></div><a href="../../index.html" class="back-link">Back</a></header>
 
-    <section class="stage stage-active" id="stage-chat">
-      <h2>AI Intake Chat</h2>
-      <div id="chat-log" class="chat-log"></div>
-      <form id="chat-form" class="chat-input-row">
-        <input id="chat-input" placeholder="Type your answer..." autocomplete="off" />
-        <button class="cta" type="submit">Send</button>
+    <section class="stage stage-active" id="stage-search">
+      <h2>Search Parameters</h2>
+      <form id="search-form" class="search-grid">
+        <label>City<input id="city" placeholder="e.g. Rock Hill" /></label>
+        <label>State<select id="state"><option value="">Any</option><option>NC</option><option>SC</option><option>GA</option><option>FL</option><option>TN</option><option>VA</option></select></label>
+        <label>County<input id="county" placeholder="Optional" /></label>
+        <label>Min Acres<input id="min-acres" type="number" value="20" min="0" /></label>
+        <label>Max Price (USD)<input id="max-price" type="number" value="5000000" min="0" /></label>
+        <label>Listing Type<select id="goal"><option value="equestrian">Equestrian / Polo</option><option value="farm">Farm / Ranch</option><option value="land investment">Land Investment</option></select></label>
+        <label>Sources<select id="source"><option value="all">All</option><option value="landsearch">LandSearch</option><option value="land">Land.com</option><option value="loopnet">LoopNet</option></select></label>
+        <button class="cta" type="submit">Search Web Listings</button>
       </form>
-      <p class="hint">Prompt flow: development goal → min acres → max budget → zoning → max drive minutes.</p>
     </section>
 
-    <section class="stage" id="stage-processing"><div class="spinner"></div><h2>Compiling Data Intelligence</h2><p id="processing-text">Initializing research workflow...</p></section>
+    <section class="stage" id="stage-processing"><div class="spinner"></div><h2>Searching the web</h2><p id="processing-text">Building query...</p></section>
 
-    <section class="stage" id="stage-dashboard">
-      <div class="dash-head"><h2>Investor Dashboard</h2><p id="summary"></p></div>
-      <div class="metrics" id="metrics"></div>
-      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Location</th><th>Acres</th><th>Price</th><th>Price/Acre</th><th>Score</th><th>Map</th></tr></thead><tbody id="results"></tbody></table></div>
+    <section class="stage" id="stage-results">
+      <div class="dash-head"><h2>Discovered Listings</h2><p id="summary"></p></div>
+      <div class="table-wrap"><table><thead><tr><th>Title</th><th>Domain</th><th>Link</th></tr></thead><tbody id="results"></tbody></table></div>
     </section>
   </main>
   <script src="./script.js"></script>

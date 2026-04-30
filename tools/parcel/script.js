@@ -1,23 +1,49 @@
-const stages={chat:document.getElementById('stage-chat'),processing:document.getElementById('stage-processing'),dashboard:document.getElementById('stage-dashboard')};
-const logEl=document.getElementById('chat-log');const form=document.getElementById('chat-form');const input=document.getElementById('chat-input');
-const processingText=document.getElementById('processing-text');const summary=document.getElementById('summary');const metrics=document.getElementById('metrics');const results=document.getElementById('results');
-const wait=(ms)=>new Promise(r=>setTimeout(r,ms));const pick=(r,ks)=>ks.map(k=>r[k]).find(v=>v!==undefined&&v!=='')??'';const n=v=>{const x=Number(String(v).replace(/[^0-9.-]/g,''));return Number.isFinite(x)?x:NaN};const usd=v=>Number.isFinite(v)?v.toLocaleString(undefined,{style:'currency',currency:'USD',maximumFractionDigits:0}):'—';
-const activate=(name)=>{Object.values(stages).forEach(s=>s.classList.remove('stage-active'));stages[name].classList.add('stage-active')};
-const questions=[
- {key:'goal',q:'What kind of project are you looking to develop?'},
- {key:'area',q:'Which geographic area should I focus on? (city, county, state, or region)'},
- {key:'minAcres',q:'What is the minimum parcel size you want in acres?'},
- {key:'maxPrice',q:'What total budget ceiling should I respect (USD)?'},
- {key:'zoning',q:'Do you prefer agricultural, residential, or any zoning?'},
- {key:'maxDrive',q:'What is the maximum drive time from your anchor city (minutes)?'}
-];
-const answers={};let step=0;
-function bubble(text,type='bot'){const d=document.createElement('div');d.className=`bubble ${type}`;d.textContent=text;logEl.appendChild(d);logEl.scrollTop=logEl.scrollHeight;}
-function askNext(){if(step<questions.length){bubble(questions[step].q,'bot');}else{runIntelligence();}}
-function parseCSV(text){const lines=text.trim().split(/\r?\n/).filter(Boolean);if(!lines.length) return [];const sep=lines[0].split('\t').length>lines[0].split(',').length?'\t':',';const headers=lines[0].split(sep).map(h=>h.trim());return lines.slice(1).map(line=>{const cols=line.split(sep);const row={};headers.forEach((h,i)=>row[h]=(cols[i]??'').trim());return row;});}
-function model(r){return {name:pick(r,['Property Name','Address / Property']),city:pick(r,['City']),state:pick(r,['State']),county:pick(r,['County']),acres:n(pick(r,['Acres'])),price:n(pick(r,['List Price'])),ppa:n(pick(r,['Price / Acre','Price Per Acre'])),drive:n(pick(r,['Estimated Drive Minutes','Est. Drive Min to Charlotte','Drive Time From Charlotte'])),score:n(pick(r,['Weighted Polo Score'])),notes:`${pick(r,['Listing Notes','Investor Notes','Polo / Investor Notes'])} ${pick(r,['Status'])}`.toLowerCase(),map:pick(r,['Map URL'])};}
-function rank(m,q){let s=Number.isFinite(m.score)?m.score:55;if(Number.isFinite(m.acres)&&m.acres<q.minAcres)s-=18;if(Number.isFinite(m.price)&&m.price>q.maxPrice)s-=14;if(Number.isFinite(m.drive)&&m.drive>q.maxDrive)s-=12;if(q.zoning==='ag'&&!/(ag|farm|pasture|timber|rural)/.test(m.notes))s-=8;if(q.zoning==='res'&&!/(residential|estate|home)/.test(m.notes))s-=8;return Math.max(0,Math.min(100,s));}
-function render(rows){results.innerHTML='';rows.forEach(m=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${m.name||'Untitled'}</td><td>${m.city||''} ${m.state||''}</td><td>${Number.isFinite(m.acres)?m.acres.toFixed(1):'—'}</td><td>${usd(m.price)}</td><td>${usd(m.ppa)}</td><td>${m.custom.toFixed(1)}</td><td>${m.map?`<a href="${m.map}" target="_blank" rel="noreferrer">Map</a>`:'—'}</td>`;results.appendChild(tr)});const avg=rows.length?rows.reduce((a,b)=>a+b.custom,0)/rows.length:0;metrics.innerHTML=`<div class="metric"><span>Matches</span><b>${rows.length}</b></div><div class="metric"><span>Avg Score</span><b>${avg.toFixed(1)}</b></div><div class="metric"><span>Top Score</span><b>${rows[0]?.custom?.toFixed(1)??'—'}</b></div><div class="metric"><span>Mode</span><b>Chat Intake</b></div>`;}
-async function runIntelligence(){activate('processing');processingText.textContent='Interpreting your investment goals...';await wait(450);processingText.textContent='Searching and compiling candidate data...';await wait(650);const text=await fetch('./data/properties.csv',{cache:'no-store'}).then(r=>r.text()).catch(()=> '');const q={area:String(answers.area||'').toLowerCase(),minAcres:Number(answers.minAcres)||0,maxPrice:Number(answers.maxPrice)||Number.MAX_SAFE_INTEGER,maxDrive:Number(answers.maxDrive)||Number.MAX_SAFE_INTEGER,zoning:String(answers.zoning||'any').toLowerCase()};const rows=parseCSV(text).map(model).filter(m=>{if(!q.area) return true;const blob=`${m.city} ${m.county} ${m.state} ${m.name}`.toLowerCase();return blob.includes(q.area);}).map(m=>({...m,custom:rank(m,q)})).filter(m=>(Number.isFinite(m.acres)?m.acres>=q.minAcres:true)&&(Number.isFinite(m.price)?m.price<=q.maxPrice:true)&&(Number.isFinite(m.drive)?m.drive<=q.maxDrive:true)).sort((a,b)=>b.custom-a.custom).slice(0,30);summary.textContent=rows.length?`${rows.length} opportunities matched your chat prompts.`:'No matches found from repo CSV. Add data to tools/parcel/data/properties.csv or run web discovery pipeline.';render(rows);activate('dashboard');}
-form.addEventListener('submit',(e)=>{e.preventDefault();const v=input.value.trim();if(!v) return;bubble(v,'user');answers[questions[step].key]=v;input.value='';step+=1;askNext();});
-bubble('Hi — I am Parcel AI. I will ask a few prompts, then build your dashboard.','bot');askNext();
+const stages={search:document.getElementById('stage-search'),processing:document.getElementById('stage-processing'),results:document.getElementById('stage-results')};
+const form=document.getElementById('search-form');const processingText=document.getElementById('processing-text');const summary=document.getElementById('summary');const resultsEl=document.getElementById('results');
+const wait=(ms)=>new Promise(r=>setTimeout(r,ms));
+const activate=(k)=>{Object.values(stages).forEach(s=>s.classList.remove('stage-active'));stages[k].classList.add('stage-active')};
+
+function queryFromForm(){
+  const city=document.getElementById('city').value.trim();
+  const state=document.getElementById('state').value.trim();
+  const county=document.getElementById('county').value.trim();
+  const minAcres=document.getElementById('min-acres').value.trim();
+  const maxPrice=document.getElementById('max-price').value.trim();
+  const goal=document.getElementById('goal').value.trim();
+  const source=document.getElementById('source').value.trim();
+  const geo=[city,county,state].filter(Boolean).join(' ');
+  const sourceClause=source==='all'?'site:landsearch.com OR site:land.com OR site:loopnet.com':`site:${source}.com`;
+  return `land for sale ${geo} ${goal} ${minAcres} acres max ${maxPrice} ${sourceClause}`.trim();
+}
+
+function parseJinaSearch(text){
+  const lines=text.split('\n').filter(Boolean);
+  const out=[];
+  for(const ln of lines){
+    const m=ln.match(/\[(.*?)\]\((https?:\/\/[^)]+)\)/);
+    if(!m) continue;
+    const title=m[1].trim(); const url=m[2].trim();
+    if(/landsearch|land\.com|loopnet/i.test(url)){
+      out.push({title,url,domain:(new URL(url)).hostname.replace('www.','')});
+    }
+  }
+  return out;
+}
+
+function render(rows){
+  resultsEl.innerHTML='';
+  rows.forEach(r=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${r.title}</td><td>${r.domain}</td><td><a href="${r.url}" target="_blank" rel="noreferrer">Open Listing</a></td>`;resultsEl.appendChild(tr);});
+}
+
+form.addEventListener('submit',async(e)=>{
+  e.preventDefault();
+  activate('processing');
+  const q=queryFromForm();
+  processingText.textContent='Searching provider indexes...'; await wait(400);
+  const proxyUrl=`https://r.jina.ai/http://duckduckgo.com/html/?q=${encodeURIComponent(q)}`;
+  let rows=[];
+  try{const txt=await fetch(proxyUrl,{cache:'no-store'}).then(r=>r.text()); rows=parseJinaSearch(txt);}catch(err){rows=[];}
+  summary.textContent=rows.length?`Found ${rows.length} web listings for query: ${q}`:'No listings found from web search. Try broader geography or fewer constraints.';
+  render(rows);
+  activate('results');
+});
