@@ -8,29 +8,16 @@
 </head>
 <body>
   <main class="app">
-    <header class="topbar">
-      <div><p class="kicker">Parcel Intelligence</p><h1>Acquisition Command</h1></div>
-      <a href="../../index.html" class="back-link">Back</a>
-    </header>
+    <header class="topbar"><div><p class="kicker">Parcel Intelligence</p><h1>Acquisition Command</h1></div><a href="../../index.html" class="back-link">Back</a></header>
 
-    <section class="stage stage-active" id="stage-intake">
-      <h2>Investment Intake</h2>
-      <p>Configure your search and run instantly. If repo CSV is empty, paste your dataset below.</p>
-      <form id="intake-form" class="grid">
-        <label>Development objective<select id="goal"><option>Polo / Equestrian Club</option><option>Equestrian Estate</option><option>Land Bank</option></select></label>
-        <label>Target geography<input id="geo" value="Charlotte, NC radius" /></label>
-        <label>Minimum acres<input id="min-acres" type="number" value="40" /></label>
-        <label>Max budget (USD)<input id="max-price" type="number" value="6000000" /></label>
-        <label>Zoning preference<select id="zoning"><option value="any">Any</option><option value="ag">Agricultural / Rural</option><option value="res">Residential</option></select></label>
-        <label>Max drive minutes to Charlotte<input id="max-drive" type="number" value="60" /></label>
-        <button type="submit" class="cta">Run Intelligence</button>
+    <section class="stage stage-active" id="stage-chat">
+      <h2>AI Intake Chat</h2>
+      <div id="chat-log" class="chat-log"></div>
+      <form id="chat-form" class="chat-input-row">
+        <input id="chat-input" placeholder="Type your answer..." autocomplete="off" />
+        <button class="cta" type="submit">Send</button>
       </form>
-      <details class="data-tools">
-        <summary>Data source tools</summary>
-        <p id="data-status">Checking source data...</p>
-        <textarea id="data-paste" rows="8" placeholder="Paste CSV/TSV data here (with headers), then click Save."></textarea>
-        <div class="tool-row"><button id="save-data" type="button" class="secondary">Save Pasted Data</button><button id="clear-data" type="button" class="secondary">Clear Local Data</button></div>
-      </details>
+      <p class="hint">Prompt flow: development goal → min acres → max budget → zoning → max drive minutes.</p>
     </section>
 
     <section class="stage" id="stage-processing"><div class="spinner"></div><h2>Compiling Data Intelligence</h2><p id="processing-text">Initializing research workflow...</p></section>
