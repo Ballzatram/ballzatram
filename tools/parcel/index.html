@@ -1,67 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parcel | Ballzatram</title>
-    <style>
-      body {
-        min-height: 100vh;
-        margin: 0;
-        display: grid;
-        place-items: center;
-        background: linear-gradient(#5db5ff, #2e86d1);
-        font-family: "Trebuchet MS", system-ui, sans-serif;
-        color: #3b1603;
-      }
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Parcel Intelligence</title><link rel="stylesheet" href="./style.css" /></head>
+<body>
+<main class="app">
+  <header class="topbar"><div><p class="kicker">Parcel Intelligence</p><h1>Find me great land deals</h1><p class="sub">Tell Parcel what you want, then review curated listings.</p></div><a href="../../index.html" class="back-link">Back</a></header>
 
-      .card {
-        width: min(680px, 90vw);
-        padding: 2rem;
-        border: 4px solid #743310;
-        border-radius: 28px;
-        background: #ffecc6;
-        box-shadow: 10px 12px 0 rgba(59, 22, 3, 0.8);
-      }
+  <section class="stage stage-active" id="stage-intake">
+    <h2>Step 1: Your search brief</h2>
+    <form id="search-form" class="search-grid">
+      <label>Where should I search?
+        <input id="location" placeholder="City, county, state, or region" required />
+      </label>
+      <label>What are you trying to build?
+        <select id="goal"><option>Equestrian / Polo</option><option>Farm / Ranch</option><option>Land Investment</option><option>Mixed-Use Development</option></select>
+      </label>
+      <label>Minimum acres<input id="min-acres" type="number" value="20" min="0" /></label>
+      <label>Maximum budget (USD)<input id="max-price" type="number" value="5000000" min="0" /></label>
+      <label>Preferred listing source
+        <select id="source"><option value="all">Any trusted source</option><option value="landsearch">LandSearch</option><option value="land">Land.com</option><option value="loopnet">LoopNet</option></select>
+      </label>
+      <button class="cta" type="submit">Run search</button>
+    </form>
+  </section>
 
-      h1 {
-        margin: 0;
-        font-family: Impact, system-ui, sans-serif;
-        font-size: clamp(3rem, 10vw, 6rem);
-        color: #ffe1a0;
-        text-shadow: -3px -2px 0 #743310, 3px 4px 0 #3b1603;
-      }
+  <section class="stage" id="stage-processing"><div class="spinner"></div><h2>Step 2: Searching the web</h2><p id="processing-text">Building your query...</p></section>
 
-      p {
-        font-weight: 900;
-        line-height: 1.45;
-      }
-
-      a {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.75rem 1rem;
-        border: 3px solid #3b1603;
-        border-radius: 999px;
-        color: #ffecc6;
-        background: #743310;
-        font-weight: 900;
-        text-decoration: none;
-        text-transform: uppercase;
-        box-shadow: 4px 5px 0 #3b1603;
-      }
-    </style>
-  </head>
-
-  <body>
-    <main class="card">
-      <h1>Parcel</h1>
-      <p>
-        Land intelligence for discovering, scoring, and shortlisting property
-        investment opportunities.
-      </p>
-      <p>Status: engine room under construction.</p>
-      <a href="../../index.html">← Back to Ballzatram</a>
-    </main>
-  </body>
-</html>
+  <section class="stage" id="stage-results">
+    <div class="dash-head"><h2>Step 3: Review listings</h2><p id="summary"></p></div>
+    <div class="table-wrap"><table><thead><tr><th>Property</th><th>Source</th><th>Why it matched</th><th>Link</th></tr></thead><tbody id="results"></tbody></table></div>
+  </section>
+</main>
+<script src="./script.js"></script>
+</body></html>
