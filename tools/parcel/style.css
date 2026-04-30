@@ -10,3 +10,9 @@ h2{margin:.1rem 0 .45rem;font-size:1.3rem}.stage p{margin:.1rem 0 .8rem;color:va
 .table-wrap{overflow:auto;max-height:62vh}table{width:100%;border-collapse:collapse}th,td{padding:.52rem;border-bottom:1px solid #23304e;text-align:left;font-size:.86rem}th{font-size:.75rem;color:#b7c3dd;text-transform:uppercase;letter-spacing:.08em}
 a{color:#91c2ff}
 @media(max-width:860px){.grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}}
+.data-tools{margin-top:.8rem;border:1px solid var(--line);border-radius:12px;padding:.6rem;background:#0d1527}
+.data-tools summary{cursor:pointer;font-weight:700}
+#data-status{margin:.45rem 0;color:var(--muted)}
+#data-paste{width:100%;background:#091022;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:.6rem}
+.tool-row{display:flex;gap:.45rem;margin-top:.45rem;flex-wrap:wrap}
+.secondary{border:1px solid var(--line);background:#14203a;color:var(--text);border-radius:9px;padding:.42rem .7rem;cursor:pointer}
