@@ -1,88 +1,70 @@
-const stages = {
-  intake: document.getElementById("stage-intake"),
-  processing: document.getElementById("stage-processing"),
-  dashboard: document.getElementById("stage-dashboard"),
-};
+const OUTPUT_PATH = "./output/shortlist_polo.json";
 
-const form = document.getElementById("intake-form");
-const processingText = document.getElementById("processing-text");
-const summary = document.getElementById("summary");
-const metrics = document.getElementById("metrics");
-const results = document.getElementById("results");
+const shortlistBody = document.getElementById("shortlist-body");
+const emptyState = document.getElementById("empty-state");
+const tableWrap = document.getElementById("table-wrap");
+const summaryText = document.getElementById("summary-text");
 
-const wait = (ms) => new Promise((r) => setTimeout(r, ms));
-const pick = (r, keys) => keys.map((k) => r[k]).find((v) => v !== undefined && v !== "") ?? "";
-const n = (v) => { const x = Number(String(v).replace(/[^0-9.-]/g, "")); return Number.isFinite(x) ? x : NaN; };
-const usd = (v) => Number.isFinite(v) ? v.toLocaleString(undefined,{style:"currency",currency:"USD",maximumFractionDigits:0}) : "—";
-
-function activate(name){ Object.values(stages).forEach((s)=>s.classList.remove("stage-active")); stages[name].classList.add("stage-active"); }
-
-function parseCSV(text) {
-  const lines = text.trim().split(/\r?\n/).filter(Boolean);
-  if (!lines.length) return [];
-  const headers = lines[0].split("\t").length > lines[0].split(",").length ? lines[0].split("\t") : lines[0].split(",");
-  return lines.slice(1).map((line) => {
-    const cols = line.split("\t").length === headers.length ? line.split("\t") : line.split(",");
-    const row = {}; headers.forEach((h,i)=>row[h.trim()] = (cols[i] ?? "").trim()); return row;
-  });
+function fmtNumber(value, digits = 2) {
+  const num = Number(value);
+  if (Number.isNaN(num)) return "—";
+  return num.toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
-function model(row){
-  return {
-    name: pick(row,["Property Name","Address / Property"]),
-    city: pick(row,["City"]), state: pick(row,["State"]),
-    acres: n(pick(row,["Acres"])),
-    price: n(pick(row,["List Price"])),
-    ppa: n(pick(row,["Price / Acre","Price Per Acre"])),
-    drive: n(pick(row,["Est. Drive Min to Charlotte","Drive Time From Charlotte"])),
-    score: n(pick(row,["Weighted Polo Score"])),
-    notes: `${pick(row,["Listing Notes","Investor Notes","Polo / Investor Notes"])} ${pick(row,["Status"])}`.toLowerCase(),
-    map: pick(row,["Map URL"]),
-  };
+function fmtCurrency(value) {
+  const num = Number(value);
+  if (Number.isNaN(num)) return "—";
+  return num.toLocaleString(undefined, { style: "currency", currency: "USD", maximumFractionDigits: 0 });
 }
 
-function rank(m, q){
-  let s = Number.isFinite(m.score) ? m.score : 55;
-  if (Number.isFinite(m.acres) && m.acres < q.minAcres) s -= 18;
-  if (Number.isFinite(m.price) && m.price > q.maxPrice) s -= 14;
-  if (Number.isFinite(m.drive) && m.drive > q.maxDrive) s -= 12;
-  if (q.zoning === "ag" && !/(ag|farm|pasture|timber|rural)/.test(m.notes)) s -= 8;
-  if (q.zoning === "res" && !/(residential|estate|home)/.test(m.notes)) s -= 8;
-  return Math.max(0, Math.min(100, s));
+function renderEmpty(message) {
+  emptyState.hidden = false;
+  tableWrap.hidden = true;
+  summaryText.textContent = message;
 }
 
-function render(rows){
-  results.innerHTML = "";
-  rows.forEach((m)=>{
+function renderRows(rows) {
+  shortlistBody.innerHTML = "";
+
+  rows.forEach((row) => {
     const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${m.name||"Untitled"}</td><td>${m.city||""} ${m.state||""}</td><td>${Number.isFinite(m.acres)?m.acres.toFixed(1):"—"}</td><td>${usd(m.price)}</td><td>${usd(m.ppa)}</td><td>${m.custom.toFixed(1)}</td><td>${m.map?`<a href="${m.map}" target="_blank" rel="noreferrer">Map</a>`:"—"}</td>`;
-    results.appendChild(tr);
+    tr.innerHTML = `
+      <td>${row.title || row.name || "Untitled"}</td>
+      <td>${row.location || row.city || "Unknown"}</td>
+      <td>${fmtNumber(row.acres)}</td>
+      <td>${fmtCurrency(row.price)}</td>
+      <td>${fmtCurrency(row.price_per_acre)}</td>
+      <td>${fmtNumber(row.score_total, 1)}</td>
+      <td>${row.notes || row.investor_notes || "—"}</td>
+    `;
+    shortlistBody.appendChild(tr);
   });
-  const avg = rows.length ? rows.reduce((a,b)=>a+b.custom,0)/rows.length : 0;
-  metrics.innerHTML = `<div class="metric"><span>Matches</span><b>${rows.length}</b></div><div class="metric"><span>Avg Score</span><b>${avg.toFixed(1)}</b></div><div class="metric"><span>Top Score</span><b>${rows[0]?.custom?.toFixed(1) ?? "—"}</b></div><div class="metric"><span>Mode</span><b>AI Intake</b></div>`;
+
+  emptyState.hidden = true;
+  tableWrap.hidden = false;
+  summaryText.textContent = `${rows.length} property${rows.length === 1 ? "" : "ies"} shortlisted.`;
 }
 
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  activate("processing");
-  processingText.textContent = "Parsing investor intent..."; await wait(700);
-  processingText.textContent = "Compiling local intelligence dataset (CSV source of truth)..."; await wait(900);
-  processingText.textContent = "Ranking properties and building dashboard..."; await wait(900);
+async function initParcel() {
+  try {
+    const response = await fetch(OUTPUT_PATH, { cache: "no-store" });
+    if (!response.ok) {
+      renderEmpty("Shortlist not generated yet.");
+      return;
+    }
 
-  const q = {
-    minAcres: Number(document.getElementById("min-acres").value) || 0,
-    maxPrice: Number(document.getElementById("max-price").value) || Number.MAX_SAFE_INTEGER,
-    maxDrive: Number(document.getElementById("max-drive").value) || Number.MAX_SAFE_INTEGER,
-    zoning: document.getElementById("zoning").value,
-  };
+    const payload = await response.json();
+    const rows = Array.isArray(payload) ? payload : payload?.shortlist;
 
-  const text = await fetch("./data/properties.csv", { cache: "no-store" }).then((r) => r.text()).catch(() => "");
-  const rows = parseCSV(text).map(model).map((m)=>({ ...m, custom: rank(m,q) }))
-    .filter((m)=>(Number.isFinite(m.acres)?m.acres>=q.minAcres:true) && (Number.isFinite(m.price)?m.price<=q.maxPrice:true) && (Number.isFinite(m.drive)?m.drive<=q.maxDrive:true))
-    .sort((a,b)=>b.custom-a.custom)
-    .slice(0,30);
+    if (!Array.isArray(rows) || rows.length === 0) {
+      renderEmpty("No shortlisted properties yet.");
+      return;
+    }
 
-  summary.textContent = rows.length ? `${rows.length} opportunities matched your intake parameters.` : "No matches found. Relax one or more constraints.";
-  render(rows);
-  activate("dashboard");
-});
+    renderRows(rows);
+  } catch (error) {
+    renderEmpty("Engine room under construction. Run the pipeline to generate shortlist data.");
+  }
+}
+
+initParcel();
