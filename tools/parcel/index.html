@@ -1,67 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Parcel | Ballzatram</title>
-    <style>
-      body {
-        min-height: 100vh;
-        margin: 0;
-        display: grid;
-        place-items: center;
-        background: linear-gradient(#5db5ff, #2e86d1);
-        font-family: "Trebuchet MS", system-ui, sans-serif;
-        color: #3b1603;
-      }
 
-      .card {
-        width: min(680px, 90vw);
-        padding: 2rem;
-        border: 4px solid #743310;
-        border-radius: 28px;
-        background: #ffecc6;
-        box-shadow: 10px 12px 0 rgba(59, 22, 3, 0.8);
-      }
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Parcel | Ballzatram</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
 
-      h1 {
-        margin: 0;
-        font-family: Impact, system-ui, sans-serif;
-        font-size: clamp(3rem, 10vw, 6rem);
-        color: #ffe1a0;
-        text-shadow: -3px -2px 0 #743310, 3px 4px 0 #3b1603;
-      }
+<body>
+  <div class="parcel-sky">
+    <header class="parcel-header">
+      <a class="home-link" href="../../index.html">← Back to Ballzatram</a>
+      <span class="tool-badge">Tool 001 • Parcel</span>
+    </header>
 
-      p {
-        font-weight: 900;
-        line-height: 1.45;
-      }
+    <main class="parcel-shell">
+      <section class="hero-card">
+        <p class="eyebrow">★ Ballzatram Land Desk ★</p>
+        <h1>Parcel</h1>
+        <p class="subtitle">Land intelligence for investment discovery</p>
+        <p class="description">
+          Profile-driven discovery for land opportunities. Start with the polo profile
+          near Charlotte, NC, then expand to other investor strategies.
+        </p>
 
-      a {
-        display: inline-block;
-        margin-top: 1rem;
-        padding: 0.75rem 1rem;
-        border: 3px solid #3b1603;
-        border-radius: 999px;
-        color: #ffecc6;
-        background: #743310;
-        font-weight: 900;
-        text-decoration: none;
-        text-transform: uppercase;
-        box-shadow: 4px 5px 0 #3b1603;
-      }
-    </style>
-  </head>
+        <div class="profile-row">
+          <label for="profile-select">Active profile</label>
+          <select id="profile-select" disabled>
+            <option>Polo / Equestrian Club (placeholder)</option>
+          </select>
+        </div>
+      </section>
 
-  <body>
-    <main class="card">
-      <h1>Parcel</h1>
-      <p>
-        Land intelligence for discovering, scoring, and shortlisting property
-        investment opportunities.
-      </p>
-      <p>Status: engine room under construction.</p>
-      <a href="../../index.html">← Back to Ballzatram</a>
+      <section class="shortlist-panel" aria-live="polite">
+        <div class="panel-head">
+          <h2>Shortlist</h2>
+          <p id="summary-text">Loading shortlist data...</p>
+        </div>
+
+        <div id="empty-state" class="empty-state" hidden>
+          <h3>Engine room under construction</h3>
+          <p>
+            The shortlist output has not been generated yet. Run the Parcel pipeline
+            to create <code>output/shortlist_polo.json</code>.
+          </p>
+        </div>
+
+        <div class="table-wrap" id="table-wrap" hidden>
+          <table>
+            <thead>
+              <tr>
+                <th>Property</th>
+                <th>Location</th>
+                <th>Acres</th>
+                <th>Price</th>
+                <th>Price/Acre</th>
+                <th>Score</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody id="shortlist-body"></tbody>
+          </table>
+        </div>
+      </section>
     </main>
-  </body>
+  </div>
+
+  <script src="./script.js"></script>
+</body>
+
 </html>
