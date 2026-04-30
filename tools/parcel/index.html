@@ -1,73 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parcel | Ballzatram</title>
+  <title>Parcel Intelligence</title>
   <link rel="stylesheet" href="./style.css" />
 </head>
-
 <body>
-  <div class="parcel-sky">
-    <header class="parcel-header">
-      <a class="home-link" href="../../index.html">← Back to Ballzatram</a>
-      <span class="tool-badge">Tool 001 • Parcel</span>
+  <main class="app">
+    <header class="topbar">
+      <div>
+        <p class="kicker">Parcel Intelligence</p>
+        <h1>Acquisition Command</h1>
+      </div>
+      <a href="../../index.html" class="back-link">Back</a>
     </header>
 
-    <main class="parcel-shell">
-      <section class="hero-card">
-        <p class="eyebrow">★ Ballzatram Land Desk ★</p>
-        <h1>Parcel</h1>
-        <p class="subtitle">Land intelligence for investment discovery</p>
-        <p class="description">
-          Profile-driven discovery for land opportunities. Start with the polo profile
-          near Charlotte, NC, then expand to other investor strategies.
-        </p>
+    <section class="stage stage-active" id="stage-intake">
+      <h2>Investment Intake</h2>
+      <p>Answer a few prompts to generate your custom acquisition dashboard.</p>
+      <p><strong>No waiting required:</strong> results can run instantly from current dataset, then you can refine.</p>
+      <form id="intake-form" class="grid">
+        <label>Development objective
+          <select id="goal"><option>Polo / Equestrian Club</option><option>Equestrian Estate</option><option>Land Bank</option></select>
+        </label>
+        <label>Target geography
+          <input id="geo" value="Charlotte, NC radius" />
+        </label>
+        <label>Minimum acres
+          <input id="min-acres" type="number" value="40" />
+        </label>
+        <label>Max budget (USD)
+          <input id="max-price" type="number" value="6000000" />
+        </label>
+        <label>Zoning preference
+          <select id="zoning"><option value="any">Any</option><option value="ag">Agricultural / Rural</option><option value="res">Residential</option></select>
+        </label>
+        <label>Max drive minutes to Charlotte
+          <input id="max-drive" type="number" value="60" />
+        </label>
+        <button type="submit" class="cta">Run Intelligence</button>
+      </form>
+    </section>
 
-        <div class="profile-row">
-          <label for="profile-select">Active profile</label>
-          <select id="profile-select" disabled>
-            <option>Polo / Equestrian Club (placeholder)</option>
-          </select>
-        </div>
-      </section>
+    <section class="stage" id="stage-processing">
+      <div class="spinner"></div>
+      <h2>Compiling Data Intelligence</h2>
+      <p id="processing-text">Initializing research workflow...</p>
+    </section>
 
-      <section class="shortlist-panel" aria-live="polite">
-        <div class="panel-head">
-          <h2>Shortlist</h2>
-          <p id="summary-text">Loading shortlist data...</p>
-        </div>
-
-        <div id="empty-state" class="empty-state" hidden>
-          <h3>Engine room under construction</h3>
-          <p>
-            The shortlist output has not been generated yet. Run the Parcel pipeline
-            to create <code>output/shortlist_polo.json</code>.
-          </p>
-        </div>
-
-        <div class="table-wrap" id="table-wrap" hidden>
-          <table>
-            <thead>
-              <tr>
-                <th>Property</th>
-                <th>Location</th>
-                <th>Acres</th>
-                <th>Price</th>
-                <th>Price/Acre</th>
-                <th>Score</th>
-                <th>Notes</th>
-              </tr>
-            </thead>
-            <tbody id="shortlist-body"></tbody>
-          </table>
-        </div>
-      </section>
-    </main>
-  </div>
-
+    <section class="stage" id="stage-dashboard">
+      <div class="dash-head">
+        <h2>Investor Dashboard</h2>
+        <p id="summary"></p>
+      </div>
+      <div class="metrics" id="metrics"></div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Property</th><th>Location</th><th>Acres</th><th>Price</th><th>Price/Acre</th><th>Score</th><th>Map</th></tr></thead>
+          <tbody id="results"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
   <script src="./script.js"></script>
 </body>
-
 </html>
