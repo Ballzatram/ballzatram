@@ -98,8 +98,13 @@
     (function () {
       const link = document.querySelector('a[data-local-dashboard]');
       if (!link) return;
-      const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-      if (!isLocal) {
+
+      const isLoopbackHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      const isFileProtocol = window.location.protocol === 'file:';
+
+      // Keep localhost URL for local development (including opening index.html directly)
+      // and only swap to relative path in deployed environments.
+      if (!isLoopbackHost && !isFileProtocol) {
         link.setAttribute('href', link.getAttribute('data-local-dashboard'));
       }
     })();
