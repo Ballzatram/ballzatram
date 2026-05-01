@@ -1,0 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root { color-scheme: dark; }
+body { @apply bg-board text-chalk font-chalk; }
+.card { @apply rounded-xl border border-white/10 bg-white/5 p-4 shadow-lg; }
