@@ -1,48 +1,20 @@
 # MacroBoard
 
-MacroBoard is an investor-grade macroeconomic and equity analysis platform with a modern chalkboard-style UI and a modular analytics backend.
+Investor-grade macro + stock analysis foundation with FastAPI backend and Next.js frontend.
 
-## Stack
-- Frontend: Next.js 14 + TypeScript + Tailwind
-- Backend: FastAPI + pandas/numpy/scikit-learn/statsmodels
-- Storage: SQLite prototype (schema-ready for Postgres migration)
+## Architecture (text diagram)
+- `backend/app/data`: ingestion adapters, normalization, validation, caching
+- `backend/app/analytics`: deterministic model runners (OLS, rolling, regularized, event study, stress, importance, regimes)
+- `backend/app/services`: workflow orchestration + reporting
+- `backend/app/api`: HTTP route handlers
+- `frontend/src/app`: product workflows (Dashboard, Stock Analysis, Portfolio Analysis, Scenario Lab, Event Study, Model Comparison, Model Classroom, Reports)
+- `frontend/src/components`: reusable KPI/model assumption/chart UI
 
-## Repository Structure
-- `frontend/` Next.js product UI and investor workflows.
-- `backend/` FastAPI analytics engine and API endpoints.
-- `demo_data/` sample data files for onboarding/demo.
-
-## Implemented Workflows
-- Single stock/ETF analysis vs selected macro variables.
-- Portfolio scenario stress testing.
-- Event study endpoint around macro releases.
-- Model comparison endpoint (OLS/Ridge/ElasticNet/RF/PCA summary).
-- Report generation endpoint (Markdown).
-- UI pages for Dashboard, Stock, Portfolio, Scenario, Event Study, Model Compare, Model Classroom, Reports.
-
-## Data Layer Design
-- Public-source adapters planned for FRED, BLS, BEA, Treasury, SEC, World Bank.
-- Caching + validation + normalization pipeline pattern implemented in backend service layer.
-- CSV upload support is architecture-ready via API layer and persisted user datasets folder (to extend).
-
-## API Keys and Data Sources
-Public/no key (typical):
-- FRED (some usage may still require registration key depending endpoint/policy)
-- BLS public datasets (bulk files)
-- BEA public datasets (key generally required for API)
-- Treasury yield data (public)
-- SEC EDGAR (public, rate-limited)
-- World Bank indicators (public)
-
-Likely key required:
-- Premium market data APIs (Polygon, Alpha Vantage premium tiers, etc.)
-
-## Run Locally
+## Setup
 ### Backend
 ```bash
 cd backend
-python -m venv .venv
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8000
 ```
@@ -51,21 +23,25 @@ uvicorn app.main:app --reload --port 8000
 ```bash
 cd frontend
 npm install
-npm run dev
+NEXT_PUBLIC_API_BASE=http://localhost:8000/api npm run dev
 ```
 
-Open `http://localhost:3000`.
+## Env vars
+- `NEXT_PUBLIC_API_BASE` (frontend backend URL)
+- Future connectors (FRED/BLS) should add `FRED_API_KEY`, `BLS_API_KEY`.
+
+## Data sources
+- Demo public dataset: `demo_data/macro_timeseries.csv`
+- Custom upload endpoint: `/api/data/upload-csv`
+- Planned key-required: FRED/BLS adapters.
 
 ## Testing
 ```bash
-cd backend
-pytest
+cd backend && PYTHONPATH=. pytest -q
+cd frontend && npm run lint
 ```
 
-## Productionization Roadmap (next steps)
-1. Add SQLAlchemy models + Alembic migrations (SQLite -> Postgres).
-2. Add background jobs (Celery/Redis or APScheduler) for refresh cadence.
-3. Add auth (NextAuth/Auth.js + backend token verification).
-4. Expand statistical modules (VAR/SARIMAX/DID/rolling windows with robust inference).
-5. Add PDF export service and shareable signed report links.
-6. Add full observability (OpenTelemetry + structured logging + alerting).
+## Roadmap
+1. Add real FRED/BLS/Yahoo connectors with retry, backoff, freshness monitoring.
+2. Add out-of-sample validation, walk-forward backtests, and model governance metadata.
+3. Add auth, saved workspaces, report export pipeline, and observability.
