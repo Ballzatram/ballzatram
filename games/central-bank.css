@@ -1,0 +1,56 @@
+:root {
+  --bg: #07060f;
+  --panel: #131226;
+  --card: #1c1a36;
+  --ink: #f7f4ff;
+  --accent: #78f9ff;
+  --hot: #ff6cb6;
+  --warn: #ffc14a;
+  --good: #63ff96;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: "Trebuchet MS", system-ui, sans-serif;
+  color: var(--ink);
+  background: radial-gradient(circle at 10% 10%, #2f1e5b, var(--bg) 55%);
+}
+.cb-shell { max-width: 1150px; margin: 0 auto; padding: 1rem; }
+.cb-header { display:flex; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.cb-brand, .cb-nav a { color: var(--accent); text-decoration:none; font-weight:700; }
+.cb-nav { display:flex; gap:1rem; }
+.hero h1 { font-size: clamp(2rem, 6vw, 4.5rem); margin: .3rem 0; color: var(--hot); }
+.kicker { letter-spacing: .1em; text-transform: uppercase; color: var(--warn); }
+.panel { background: linear-gradient(180deg, #1f1b3f, #121125); border: 3px solid #4f45a2; border-radius: 20px; padding: 1rem; box-shadow: 0 10px 40px rgba(0,0,0,.35); }
+.hidden { display:none; }
+.difficulty-grid, .button-row, .action-row { display:flex; gap:.6rem; flex-wrap:wrap; }
+.chunky, .difficulty-btn {
+  border: 2px solid #fff;
+  color: var(--ink);
+  background: #3a3472;
+  border-radius: 12px;
+  padding: .6rem .9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+.chunky.primary { background: linear-gradient(90deg, #24dfff, #4f9bff); color: #091125; }
+.active { outline: 3px solid var(--good); }
+.top-row { display:flex; justify-content:space-between; gap:.8rem; align-items:flex-start; flex-wrap:wrap; }
+.dashboard {
+  margin: 1rem 0;
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+  gap:.7rem;
+}
+.metric { background: var(--card); border: 2px solid #3e3984; border-radius: 14px; padding: .75rem; }
+.metric p { margin:.2rem 0; }
+.bar { height: 10px; border-radius: 999px; background: #0e0d19; overflow:hidden; }
+.fill { height: 100%; background: linear-gradient(90deg, #71f7ff, #ff7dc0); }
+.control-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap:.7rem; }
+.control-card { background: var(--card); border: 2px solid #3e3984; border-radius: 14px; padding:.75rem; }
+.event-log { max-height: 220px; overflow:auto; padding-left: 1rem; }
+.narrator { margin-top:1rem; border: 2px dashed #ff9ed1; border-radius: 12px; padding: .7rem; background: #251741; }
+@media (max-width: 640px){
+  .cb-shell { padding: .7rem; }
+  .chunky, .difficulty-btn { flex: 1 1 120px; }
+}
