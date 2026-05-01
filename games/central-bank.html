@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central Banker | Ballzatram Arcade</title>
+  <link rel="stylesheet" href="central-bank.css" />
+</head>
+
+<body>
+  <div class="cb-shell">
+    <header class="cb-header">
+      <a href="../index.html" class="cb-brand">← Back to Ballzatram</a>
+      <nav class="cb-nav" aria-label="Game navigation">
+        <a href="../index.html#games">Arcade Bay</a>
+        <a href="../index.html#tools">Tools</a>
+        <a href="../index.html#projects">Projects</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero">
+        <p class="kicker">Policy Simulator // 20 Quarters</p>
+        <h1>Central Banker</h1>
+        <p class="hero-copy">You are the chairperson of the Goblin Reserve. Keep inflation near target, jobs steady, and the financial system alive while chaos tries to break your economy.</p>
+      </section>
+
+      <section id="setupPanel" class="panel setup-panel">
+        <h2>Select Difficulty</h2>
+        <div class="difficulty-grid" role="radiogroup" aria-label="Difficulty">
+          <button class="difficulty-btn active" data-difficulty="easy">Easy</button>
+          <button class="difficulty-btn" data-difficulty="normal">Normal</button>
+          <button class="difficulty-btn" data-difficulty="hard">Hard</button>
+        </div>
+        <p id="difficultyDetails" class="difficulty-details"></p>
+        <button id="startGame" class="chunky primary">Start Quarter 1</button>
+      </section>
+
+      <section id="gamePanel" class="panel hidden">
+        <div class="top-row">
+          <div>
+            <h2>Macro Dashboard</h2>
+            <p id="quarterLabel">Quarter 1 of 20</p>
+          </div>
+          <div class="score-box">
+            <p>Best score: <span id="bestScore">0</span></p>
+            <p>Current score: <span id="currentScore">0</span></p>
+          </div>
+        </div>
+
+        <div id="dashboard" class="dashboard"></div>
+
+        <div class="control-grid">
+          <article class="control-card">
+            <h3>Interest Rate (%)</h3>
+            <input id="rateControl" type="range" min="0" max="12" step="0.25" />
+            <p><span id="rateValue">0.00</span>%</p>
+          </article>
+
+          <article class="control-card">
+            <h3>Quantitative Easing</h3>
+            <button id="qeToggle" class="chunky">QE: Off</button>
+          </article>
+
+          <article class="control-card">
+            <h3>Reserve Requirements</h3>
+            <div class="button-row">
+              <button id="reserveLoosen" class="chunky">Loosen</button>
+              <button id="reserveNeutral" class="chunky active">Neutral</button>
+              <button id="reserveTighten" class="chunky">Tighten</button>
+            </div>
+          </article>
+
+          <article class="control-card">
+            <h3>Public Speech Tone</h3>
+            <div class="button-row">
+              <button id="speechHawkish" class="chunky">Hawkish</button>
+              <button id="speechNeutral" class="chunky active">Neutral</button>
+              <button id="speechDovish" class="chunky">Dovish</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="action-row">
+          <button id="advanceQuarter" class="chunky primary">Advance One Quarter ▶</button>
+          <button id="restartGame" class="chunky">Restart</button>
+        </div>
+
+        <article class="narrator">
+          <h3>Professor Goblin says:</h3>
+          <p id="teachingNote"></p>
+        </article>
+
+        <article>
+          <h3>Quarterly Event Log</h3>
+          <ul id="eventLog" class="event-log"></ul>
+        </article>
+      </section>
+    </main>
+  </div>
+  <script src="central-bank.js"></script>
+</body>
+
+</html>
