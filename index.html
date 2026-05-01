@@ -82,7 +82,7 @@
           <span class="card-kicker">Projects</span>
           <h2>MacroBoard</h2>
           <p>Investor-grade macro + stock analysis dashboard with workflow tools.</p>
-          <a href="http://localhost:3000/dashboard" data-local-dashboard="/dashboard">Open MacroBoard →</a>
+          <a href="/dashboard" data-local-dashboard="http://localhost:3000/dashboard">Open MacroBoard →</a>
         </div>
       </article>
     </section>
@@ -103,8 +103,8 @@
       const isFileProtocol = window.location.protocol === 'file:';
 
       // Keep localhost URL for local development (including opening index.html directly)
-      // and only swap to relative path in deployed environments.
-      if (!isLoopbackHost && !isFileProtocol) {
+      // and only swap to localhost URL for local development environments.
+      if (isLoopbackHost || isFileProtocol) {
         link.setAttribute('href', link.getAttribute('data-local-dashboard'));
       }
     })();
