@@ -82,7 +82,7 @@
           <span class="card-kicker">Projects</span>
           <h2>MacroBoard</h2>
           <p>Investor-grade macro + stock analysis dashboard with workflow tools.</p>
-          <a href="/dashboard">Open MacroBoard →</a>
+          <a href="http://localhost:3000/dashboard" data-local-dashboard="/dashboard">Open MacroBoard →</a>
         </div>
       </article>
     </section>
@@ -93,6 +93,17 @@
       <span>★</span>
     </footer>
   </div>
+
+  <script>
+    (function () {
+      const link = document.querySelector('a[data-local-dashboard]');
+      if (!link) return;
+      const isLocal = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+      if (!isLocal) {
+        link.setAttribute('href', link.getAttribute('data-local-dashboard'));
+      }
+    })();
+  </script>
 
   <script src="script.js"></script>
 </body>
