@@ -1,13 +1,14 @@
 # MacroBoard
 
-Investor-grade macro + stock analysis foundation with FastAPI backend and Next.js frontend.
+Investor-grade macro + stock analysis foundation with a FastAPI backend, Next.js frontend, and a static homepage-launched MacroBoard tool.
 
 ## Architecture (text diagram)
 - `backend/app/data`: ingestion adapters, normalization, validation, caching
 - `backend/app/analytics`: deterministic model runners (OLS, rolling, regularized, event study, stress, importance, regimes)
 - `backend/app/services`: workflow orchestration + reporting
 - `backend/app/api`: HTTP route handlers
-- `frontend/src/app`: product workflows (Dashboard, Stock Analysis, Portfolio Analysis, Scenario Lab, Event Study, Model Comparison, Model Classroom, Reports)
+- `frontend/src/app`: Next.js product workflows for local/backend-backed development
+- `tools/macroboard`: static MacroBoard entry point linked from the Ballzatram homepage
 - `frontend/src/components`: reusable KPI/model assumption/chart UI
 
 ## Setup

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MacroBoard | Ballzatram</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="MacroBoard workflow navigation">
+      <a class="home-link" href="../../index.html">← Ballzatram</a>
+      <div class="brand-block">
+        <span class="eyebrow">Tool 002</span>
+        <h1>MacroBoard</h1>
+        <p>Macro + market workflow cockpit for quick investor analysis.</p>
+      </div>
+      <nav class="workflow-nav" id="workflow-nav"></nav>
+    </aside>
+
+    <main class="workspace">
+      <section class="hero-card">
+        <div>
+          <span class="eyebrow">Live static workspace</span>
+          <h2 id="workflow-title">Dashboard</h2>
+          <p id="workflow-description"></p>
+        </div>
+        <div class="status-pill" id="data-status">Loading demo macro data…</div>
+      </section>
+
+      <section class="metric-grid" id="metric-grid" aria-label="Key metrics"></section>
+
+      <section class="content-grid">
+        <article class="panel panel-large">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Macro pulse</span>
+              <h3 id="chart-title">Asset return vs macro signal</h3>
+            </div>
+            <span id="date-range" class="muted"></span>
+          </div>
+          <canvas id="macro-chart" width="900" height="420" aria-label="MacroBoard line chart"></canvas>
+        </article>
+
+        <article class="panel">
+          <span class="eyebrow">Model notes</span>
+          <h3>Assumptions & flags</h3>
+          <ul class="insight-list" id="insight-list"></ul>
+        </article>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Recent observations</span>
+            <h3>Demo macro dataset</h3>
+          </div>
+          <a href="../../demo_data/macro_timeseries.csv">Download CSV</a>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr id="table-head"></tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

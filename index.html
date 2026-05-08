@@ -82,7 +82,7 @@
           <span class="card-kicker">Projects</span>
           <h2>MacroBoard</h2>
           <p>Investor-grade macro + stock analysis dashboard with workflow tools.</p>
-          <a href="/dashboard" data-local-dashboard="http://localhost:3000/dashboard">Open MacroBoard →</a>
+          <a href="tools/macroboard/index.html">Open MacroBoard →</a>
         </div>
       </article>
     </section>
@@ -94,21 +94,6 @@
     </footer>
   </div>
 
-  <script>
-    (function () {
-      const link = document.querySelector('a[data-local-dashboard]');
-      if (!link) return;
-
-      const isLoopbackHost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
-      const isFileProtocol = window.location.protocol === 'file:';
-
-      // Keep localhost URL for local development (including opening index.html directly)
-      // and only swap to localhost URL for local development environments.
-      if (isLoopbackHost || isFileProtocol) {
-        link.setAttribute('href', link.getAttribute('data-local-dashboard'));
-      }
-    })();
-  </script>
 
   <script src="script.js"></script>
 </body>
