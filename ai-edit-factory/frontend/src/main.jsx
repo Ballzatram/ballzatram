@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-const API = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API = import.meta.env.VITE_API_URL || window.location.origin;
 const templates = ['all', 'fast_cut', 'high_motion', 'slow_mo', 'lyric_caption', 'random_montage', 'retro_tv_filter'];
 
 function App() {
@@ -92,7 +92,7 @@ function App() {
     try {
       const job = await api(`/api/projects/${project.id}/generate`, { method: 'POST' });
       setProject((current) => ({ ...current, job }));
-      setMessage('Generation queued. The worker renders videos outside the web server.');
+      setMessage('Generation queued on the site. The backend worker is rendering your edits now.');
     } catch (error) {
       setMessage(error.message);
     } finally {

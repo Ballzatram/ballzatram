@@ -51,6 +51,24 @@ body {
   box-shadow: 0 5px 0 #4b1d06;
 }
 
+
+.cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.cta.secondary {
+  color: #1f0d03;
+  background: linear-gradient(#fff7dc, #ffc96a);
+}
+
+.note a {
+  color: #7a310c;
+  font-weight: 1000;
+}
+
 .kicker,
 .step {
   display: block;

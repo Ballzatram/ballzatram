@@ -7,6 +7,7 @@ BASE_DIR = Path(os.getenv("AIEF_BASE_DIR", Path(__file__).resolve().parents[2]))
 DATA_DIR = Path(os.getenv("AIEF_DATA_DIR", BASE_DIR / "data"))
 INPUTS_DIR = Path(os.getenv("AIEF_INPUTS_DIR", BASE_DIR / "inputs"))
 OUTPUTS_DIR = Path(os.getenv("AIEF_OUTPUTS_DIR", BASE_DIR / "outputs"))
+FRONTEND_DIST_DIR = Path(os.getenv("AIEF_FRONTEND_DIST_DIR", BASE_DIR / "frontend_dist"))
 DB_PATH = Path(os.getenv("AIEF_DB_PATH", DATA_DIR / "ai_edit_factory.sqlite3"))
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis:6379/0")
 ALLOW_YOUTUBE_DOWNLOADS = os.getenv("ALLOW_YOUTUBE_DOWNLOADS", "false").lower() == "true"

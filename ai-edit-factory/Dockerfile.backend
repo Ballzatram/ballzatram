@@ -1,3 +1,12 @@
+FROM node:20-slim AS frontend-build
+WORKDIR /frontend
+COPY frontend/package.json frontend/package-lock.json* ./
+RUN npm install
+COPY frontend ./
+ARG VITE_API_URL=
+ENV VITE_API_URL=$VITE_API_URL
+RUN npm run build
+
 FROM python:3.11-slim
 
 RUN apt-get update \
@@ -10,6 +19,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY backend ./backend
 COPY worker ./worker
 COPY app.py ./app.py
-ENV PYTHONPATH=/app/backend AIEF_BASE_DIR=/app
+COPY --from=frontend-build /frontend/dist ./frontend_dist
+ENV PYTHONPATH=/app/backend AIEF_BASE_DIR=/app AIEF_FRONTEND_DIST_DIR=/app/frontend_dist
 EXPOSE 8000
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
