@@ -3,5 +3,17 @@
 @tailwind utilities;
 
 :root { color-scheme: dark; }
+html { -webkit-text-size-adjust: 100%; }
 body { @apply bg-board text-chalk font-chalk; }
 .card { @apply rounded-xl border border-white/10 bg-white/5 p-4 shadow-lg; }
+* { min-width: 0; }
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
