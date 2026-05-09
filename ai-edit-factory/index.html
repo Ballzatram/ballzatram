@@ -12,40 +12,43 @@
   <main class="factory-shell">
     <header class="hero-card">
       <a class="back-link" href="../index.html">← Ballzatram</a>
-      <p class="kicker">Tool 002 · Local Video Automation</p>
+      <p class="kicker">Tool 002 · Site-hosted Video Automation</p>
       <h1>AI Edit Factory</h1>
       <p class="lede">
-        Drop in a song and source clips, then generate beat-synced 9:16 MP4 edits with a local
-        ffmpeg-powered pipeline.
+        Run AI edits from the web app: create a project, upload rights-approved songs and clips,
+        click generate, then preview and download beat-synced vertical MP4s in the browser.
       </p>
-      <a class="cta" href="README.md">Read the full setup guide →</a>
+      <div class="cta-row">
+        <a class="cta" href="http://localhost:8000">Launch the site app →</a>
+        <a class="cta secondary" href="README.md">Deployment guide →</a>
+      </div>
     </header>
 
     <section class="panel-grid" aria-label="AI Edit Factory workflow">
       <article class="panel">
         <span class="step">01</span>
-        <h2>Add inputs</h2>
-        <p>Place your track at <code>inputs/song.mp3</code> and source videos in <code>inputs/clips/</code>.</p>
+        <h2>Create online</h2>
+        <p>Open the site app and make a project from the browser—no manual file placement required.</p>
       </article>
 
       <article class="panel">
         <span class="step">02</span>
-        <h2>Run locally</h2>
-        <p>Activate your Python environment, install requirements, and run the app from this folder.</p>
+        <h2>Upload media</h2>
+        <p>Use the upload form for songs and source videos you own, licensed, or have permission to process.</p>
       </article>
 
       <article class="panel">
         <span class="step">03</span>
-        <h2>Export edits</h2>
-        <p>Generated vertical videos are written to <code>outputs/</code> as reusable MP4 files.</p>
+        <h2>Render on site</h2>
+        <p>The API queues a backend worker job so ffmpeg renders MP4 edits on the site server, not on your laptop.</p>
       </article>
     </section>
 
-    <section class="command-card" aria-label="Run command">
-      <p class="kicker">Runnable command</p>
+    <section class="command-card" aria-label="Site command">
+      <p class="kicker">Runnable site command</p>
       <pre><code>cd ai-edit-factory
-python app.py --song inputs/song.mp3 --clips inputs/clips --num-edits 20</code></pre>
-      <p class="note">Expected output: beat detection, scene discovery, clip scoring, and rendered edit files in <code>outputs/</code>.</p>
+docker compose up --build</code></pre>
+      <p class="note">Open <a href="http://localhost:8000">http://localhost:8000</a> for the full browser workflow. Generated files are still persisted under <code>outputs/</code> for deployment storage.</p>
     </section>
   </main>
 </body>

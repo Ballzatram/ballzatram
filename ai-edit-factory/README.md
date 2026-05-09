@@ -1,6 +1,6 @@
 # ai-edit-factory
 
-Production-ready MVP for Ballzatram that generates 10-30 vertical TikTok-style music edits from rights-approved local media. It includes a FastAPI backend, RQ/Redis worker, SQLite persistence, Vite React frontend, Docker Compose, and an independent CLI.
+Production-ready MVP for Ballzatram that generates 10-30 vertical TikTok-style music edits from rights-approved uploaded or local media. It includes a FastAPI backend, RQ/Redis worker, SQLite persistence, a site-hosted Vite React frontend, Docker Compose, and an independent CLI.
 
 ## Legal and compliance guardrails
 
@@ -19,7 +19,7 @@ YouTube support is metadata-first. Media downloading is disabled by default. A Y
 - Local-file media pipeline: librosa beat detection, PySceneDetect/fixed-window scene detection, OpenCV clip scoring, ffmpeg rendering.
 - Templates: `fast_cut`, `high_motion`, `slow_mo`, `lyric_caption`, `random_montage`, and `retro_tv_filter`.
 - Ranked outputs based on clip quality, variety, and template spread.
-- Mobile-first React UI for uploads, style selection, progress polling, previews, and downloads.
+- Mobile-first React UI served by the API container for uploads, style selection, progress polling, previews, and downloads.
 - CLI for local batch generation.
 
 ## Repo layout
@@ -50,18 +50,18 @@ cd ai-edit-factory
 docker compose up --build
 ```
 
-Open the frontend at <http://localhost:5173>. The API health check is <http://localhost:8000/api/health>.
+Open the site app at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`.
 
 Day-1 flow:
 
-1. Create a project.
+1. Open <http://localhost:8000> and create a project.
 2. Upload a song file (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`).
 3. Upload one or more video clips (`mp4`, `mov`, `m4v`, `avi`, `mkv`, or `webm`).
 4. Choose 1-30 outputs and a style template.
 5. Click **Generate edits**.
 6. Wait for the worker to finish, preview ranked outputs, then download MP4 files.
 
-Generated files are saved under `outputs/project_<id>/`.
+Generated files are rendered by the backend worker and saved under `outputs/project_<id>/`.
 
 ## Local CLI setup
 
@@ -126,8 +126,8 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 
 ## Manual QA checklist
 
-- [ ] `docker compose up --build` starts Redis, API, worker, and frontend.
-- [ ] Frontend opens on a phone-sized viewport without horizontal scrolling.
+- [ ] `docker compose up --build` starts Redis, the API-hosted site, and the worker.
+- [ ] The site app opens at `http://localhost:8000` on a phone-sized viewport without horizontal scrolling.
 - [ ] Compliance copy is visible before upload/generation.
 - [ ] Creating a project succeeds.
 - [ ] Invalid upload types are rejected.
@@ -144,6 +144,6 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 - Keep `ALLOW_YOUTUBE_DOWNLOADS=false` unless your production policy explicitly allows rights-gated downloads.
 - Put `inputs/`, `outputs/`, and `data/` on persistent storage.
 - Use a reverse proxy with HTTPS and larger body-size limits matching `MAX_UPLOAD_MB`.
-- Run at least one API container and one worker container; scale workers for render throughput.
+- Run at least one API container and one worker container; scale workers for render throughput. The API image includes the built frontend, so a production deployment can expose the API container as the site.
 - SQLite is acceptable for MVP/single-node use. For Postgres, replace the small functions in `backend/app/db.py` with an equivalent connection layer while preserving table semantics.
 - Add scheduled cleanup for stale uploaded inputs and old outputs based on your retention policy.

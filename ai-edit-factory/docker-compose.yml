@@ -41,6 +41,7 @@ services:
       - redis
 
   frontend:
+    profiles: ["dev"]
     build: ./frontend
     environment:
       VITE_API_URL: http://localhost:8000
