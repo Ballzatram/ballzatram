@@ -1,0 +1,50 @@
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      AIEF_BASE_DIR: /app
+      AIEF_DB_PATH: /app/data/ai_edit_factory.sqlite3
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      ALLOW_YOUTUBE_DOWNLOADS: "false"
+    volumes:
+      - ./inputs:/app/inputs
+      - ./outputs:/app/outputs
+      - ./data:/app/data
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    command: python worker/worker.py
+    environment:
+      REDIS_URL: redis://redis:6379/0
+      AIEF_BASE_DIR: /app
+      AIEF_DB_PATH: /app/data/ai_edit_factory.sqlite3
+      ALLOW_YOUTUBE_DOWNLOADS: "false"
+    volumes:
+      - ./inputs:/app/inputs
+      - ./outputs:/app/outputs
+      - ./data:/app/data
+    depends_on:
+      - redis
+
+  frontend:
+    build: ./frontend
+    environment:
+      VITE_API_URL: http://localhost:8000
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
