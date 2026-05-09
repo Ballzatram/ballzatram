@@ -18,12 +18,22 @@ function App() {
   const [busy, setBusy] = useState(false);
 
   const outputs = useMemo(() => project?.outputs || [], [project]);
+  const assets = project?.assets || [];
+  const songCount = assets.filter((asset) => asset.kind === 'song' && asset.source_type === 'upload').length;
+  const videoCount = assets.filter((asset) => asset.kind === 'video' && asset.source_type === 'upload').length;
   const job = project?.job;
+  const activeJob = job && !['finished', 'failed'].includes(job.status);
+  const canGenerate = Boolean(project && songCount > 0 && videoCount > 0 && !busy && !activeJob);
 
   async function api(path, options = {}) {
-    const response = await fetch(`${API}${path}`, options);
+    let response;
+    try {
+      response = await fetch(`${API}${path}`, options);
+    } catch (error) {
+      throw new Error(`Cannot reach the AI edit API at ${API}. Make sure the backend is running.`);
+    }
     const data = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(data.detail || 'Request failed');
+    if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
     return data;
   }
 
@@ -59,6 +69,8 @@ function App() {
         await api(`/api/projects/${project.id}/videos`, { method: 'POST', body: form });
       }
       await refresh(project.id);
+      setSong(null);
+      setVideos([]);
       setMessage('Uploads saved. Start generation when ready.');
     } catch (error) {
       setMessage(error.message);
@@ -90,9 +102,11 @@ function App() {
     if (!project) return setMessage('Create a project first.');
     setBusy(true);
     try {
-      const job = await api(`/api/projects/${project.id}/generate`, { method: 'POST' });
-      setProject((current) => ({ ...current, job }));
-      setMessage('Generation queued on the site. The backend worker is rendering your edits now.');
+      const nextJob = await api(`/api/projects/${project.id}/generate`, { method: 'POST' });
+      setProject((current) => ({ ...current, job: nextJob }));
+      setMessage(nextJob.rq_job_id?.startsWith('local-bg-')
+        ? 'Generation queued locally. Keep this page/server running while your edits render.'
+        : 'Generation queued on the site. The backend worker is rendering your edits now.');
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -138,7 +152,8 @@ function App() {
           <h2>Uploads</h2>
           <label>Song file<input type="file" accept="audio/*" onChange={(event) => setSong(event.target.files?.[0] || null)} /></label>
           <label>Video clips<input type="file" accept="video/*" multiple onChange={(event) => setVideos([...event.target.files])} /></label>
-          <button disabled={busy || !project} onClick={uploadFiles}>Upload files</button>
+          <p className="small">Saved uploads: {songCount} song · {videoCount} video{videoCount === 1 ? '' : 's'}</p>
+          <button disabled={busy || !project || (!song && videos.length === 0)} onClick={uploadFiles}>Upload files</button>
         </div>
 
         <div className="card">
@@ -152,8 +167,8 @@ function App() {
       </section>
 
       <section className="card action">
-        <div><p className="kicker">Status</p><h2>{job ? `${job.status} · ${job.progress}%` : 'Ready'}</h2><p>{job?.message || message}</p>{job?.error && <p className="error">{job.error}</p>}</div>
-        <button disabled={busy || !project} onClick={generate}>Generate edits</button>
+        <div><p className="kicker">Status</p><h2>{job ? `${job.status} · ${job.progress}%` : 'Ready'}</h2><p>{job?.message || message}</p>{!canGenerate && project && <p className="small">Generate unlocks after one uploaded song and one uploaded video are saved, and no render is currently running.</p>}{job?.error && <p className="error">{job.error}</p>}</div>
+        <button disabled={!canGenerate} onClick={generate}>Generate edits</button>
         <button disabled={!project} onClick={() => refresh()}>Refresh</button>
       </section>
 

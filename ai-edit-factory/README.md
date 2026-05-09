@@ -14,7 +14,7 @@ YouTube support is metadata-first. Media downloading is disabled by default. A Y
 ## What ships in this MVP
 
 - FastAPI project API for project creation, uploads, YouTube metadata import, generation jobs, and output downloads.
-- RQ worker backed by Redis so rendering never blocks the web server.
+- RQ worker backed by Redis so rendering never blocks the web server, with an in-process FastAPI background fallback when Redis is unavailable during local/manual runs.
 - SQLite job/project/output tables with a small DB layer that can be swapped for Postgres later.
 - Local-file media pipeline: librosa beat detection, PySceneDetect/fixed-window scene detection, OpenCV clip scoring, ffmpeg rendering.
 - Templates: `fast_cut`, `high_motion`, `slow_mo`, `lyric_caption`, `random_montage`, and `retro_tv_filter`.
@@ -58,10 +58,10 @@ Day-1 flow:
 2. Upload a song file (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`).
 3. Upload one or more video clips (`mp4`, `mov`, `m4v`, `avi`, `mkv`, or `webm`).
 4. Choose 1-30 outputs and a style template.
-5. Click **Generate edits**.
+5. Click **Generate edits**. The button unlocks only after the uploaded song and at least one uploaded video are saved.
 6. Wait for the worker to finish, preview ranked outputs, then download MP4 files.
 
-Generated files are rendered by the backend worker and saved under `outputs/project_<id>/`.
+Generated files are rendered by the backend worker and saved under `outputs/project_<id>/`. If Redis is unavailable in a non-Docker local run, the API queues a local background render instead and shows that status in the UI.
 
 ## Local CLI setup
 
@@ -133,7 +133,7 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 - [ ] Invalid upload types are rejected.
 - [ ] Uploading one rights-approved song and one rights-approved clip succeeds.
 - [ ] YouTube URL import shows metadata and does not download media by default.
-- [ ] Clicking generate changes job status from queued/running to finished.
+- [ ] Clicking generate stays disabled until required uploads exist, then changes job status from queued/running to finished.
 - [ ] At least 5 vertical 1080x1920 MP4 outputs are created for suitable input media.
 - [ ] Outputs appear best-first in the UI, preview inline, and download.
 - [ ] Failed jobs show a useful error instead of spinning forever.
