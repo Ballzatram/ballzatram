@@ -1,15 +1,15 @@
 from pathlib import Path
 
-from scripts.detect_beats import beat_intervals
-from scripts.generate_edits import build_edit_plan, normalize_num_edits, select_clips, vertical_crop_filter
-from scripts.models import CandidateClip
+from app.media.audio import beat_intervals
+from app.media.rendering import build_edit_plan, normalize_num_edits, select_clips, vertical_crop_filter
+from app.models import CandidateClip
 
 
 def _candidates() -> list[CandidateClip]:
     return [
-        CandidateClip(Path("a.mp4"), 0.0, 2.0, 0.1),
-        CandidateClip(Path("b.mp4"), 1.0, 4.0, 0.9),
-        CandidateClip(Path("c.mp4"), 0.0, 1.0, 0.4),
+        CandidateClip(Path("a.mp4"), 0.0, 2.0, 0.1, 0.3, 0.2),
+        CandidateClip(Path("b.mp4"), 1.0, 4.0, 0.9, 0.6, 0.8),
+        CandidateClip(Path("c.mp4"), 0.0, 1.0, 0.4, 0.9, 0.5),
     ]
 
 
@@ -18,10 +18,11 @@ def test_beat_intervals_skips_tiny_intervals() -> None:
 
 
 def test_vertical_crop_filter_contains_9x16_crop() -> None:
-    ffmpeg_filter = vertical_crop_filter(speed=1.25)
+    ffmpeg_filter = vertical_crop_filter(speed=1.25, template="retro_tv_filter", zoom=True)
     assert "scale=1080:1920" in ffmpeg_filter
     assert "crop=1080:1920" in ffmpeg_filter
     assert "setpts=1.250000*PTS" in ffmpeg_filter
+    assert "noise=" in ffmpeg_filter
 
 
 def test_high_motion_selects_highest_scores_first() -> None:
@@ -35,6 +36,6 @@ def test_build_edit_plan_uses_beat_durations() -> None:
     assert [item.duration for item in plan] == [0.5, 0.5]
 
 
-def test_normalize_num_edits_caps_at_twenty() -> None:
-    assert normalize_num_edits(25) == 20
+def test_normalize_num_edits_caps_at_thirty() -> None:
+    assert normalize_num_edits(35) == 30
     assert normalize_num_edits(0) == 1

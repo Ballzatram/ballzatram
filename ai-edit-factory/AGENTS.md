@@ -1,14 +1,17 @@
-You are building an MVP video-editing automation tool.
+You are building ai-edit-factory.
 
-Priorities:
-1. Make the pipeline run end-to-end.
-2. Use local files only.
-3. Use ffmpeg for reliable rendering.
-4. Keep functions small and easy to debug.
-5. Avoid overengineering.
-6. Every task should end with a runnable command and expected output.
+Priority:
+Make the app generate real vertical mp4 edits end-to-end.
+
+Rules:
+- Local files first.
+- YouTube media download disabled by default.
+- Never bypass access controls or DRM.
+- Use ffmpeg for rendering reliability.
+- Keep modules small and testable.
+- Prefer simple working code over clever abstractions.
+- Every major change should include a runnable command.
+- Update README whenever setup or usage changes.
 
 Definition of done:
-- User can place a song in inputs/song.mp3
-- User can place video clips in inputs/clips/
-- Running python app.py generates multiple vertical mp4 edits in outputs/
+A user can run docker compose up, upload a song and video clips, click generate, and download generated TikTok-style edits.
