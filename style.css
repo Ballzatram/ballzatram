@@ -255,7 +255,7 @@ body {
   position: relative;
   z-index: 35;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: clamp(0.8rem, 1.5vw, 1.25rem);
   width: min(100%, 1500px);
   margin: 0 auto;
@@ -300,6 +300,10 @@ body {
 
 .card-icon.blue {
   background: linear-gradient(#0d6e9e, #095277);
+}
+
+.card-icon.purple {
+  background: linear-gradient(#7d45d9, #4c248f);
 }
 
 .card-kicker {
