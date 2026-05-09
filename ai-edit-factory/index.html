@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Edit Factory | Ballzatram</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="factory-shell">
+    <header class="hero-card">
+      <a class="back-link" href="../index.html">← Ballzatram</a>
+      <p class="kicker">Tool 002 · Local Video Automation</p>
+      <h1>AI Edit Factory</h1>
+      <p class="lede">
+        Drop in a song and source clips, then generate beat-synced 9:16 MP4 edits with a local
+        ffmpeg-powered pipeline.
+      </p>
+      <a class="cta" href="README.md">Read the full setup guide →</a>
+    </header>
+
+    <section class="panel-grid" aria-label="AI Edit Factory workflow">
+      <article class="panel">
+        <span class="step">01</span>
+        <h2>Add inputs</h2>
+        <p>Place your track at <code>inputs/song.mp3</code> and source videos in <code>inputs/clips/</code>.</p>
+      </article>
+
+      <article class="panel">
+        <span class="step">02</span>
+        <h2>Run locally</h2>
+        <p>Activate your Python environment, install requirements, and run the app from this folder.</p>
+      </article>
+
+      <article class="panel">
+        <span class="step">03</span>
+        <h2>Export edits</h2>
+        <p>Generated vertical videos are written to <code>outputs/</code> as reusable MP4 files.</p>
+      </article>
+    </section>
+
+    <section class="command-card" aria-label="Run command">
+      <p class="kicker">Runnable command</p>
+      <pre><code>cd ai-edit-factory
+python app.py --song inputs/song.mp3 --clips inputs/clips --num-edits 20</code></pre>
+      <p class="note">Expected output: beat detection, scene discovery, clip scoring, and rendered edit files in <code>outputs/</code>.</p>
+    </section>
+  </main>
+</body>
+
+</html>
