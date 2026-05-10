@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AgentWidget } from "@/components/AgentWidget";
 
 const nav = [
   ["Dashboard", "/dashboard"],
@@ -35,7 +36,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 lg:px-8">{children}</main>
+      <main className="mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 lg:px-8">{children}</main>
+      <AgentWidget />
     </div>
   );
 }
