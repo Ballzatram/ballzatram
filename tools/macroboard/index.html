@@ -13,21 +13,79 @@
     <aside class="sidebar" aria-label="MacroBoard workflow navigation">
       <a class="home-link" href="../../index.html">← Ballzatram</a>
       <div class="brand-block">
-        <span class="eyebrow">Tool 002</span>
+        <span class="eyebrow">Tool 003 · portfolio manager assistant</span>
         <h1>MacroBoard</h1>
-        <p>Macro + market workflow cockpit for quick investor analysis.</p>
+        <p>Upload a portfolio, pull market prices, connect to FRED, and walk through a quant-style decision process.</p>
       </div>
       <nav class="workflow-nav" id="workflow-nav"></nav>
+      <div class="sidebar-card">
+        <span class="eyebrow">Data rails</span>
+        <p>CSV upload works offline. Yahoo-style chart pulls and FRED macro calls run from the browser when network/CORS allows.</p>
+      </div>
     </aside>
 
     <main class="workspace">
       <section class="hero-card">
         <div>
-          <span class="eyebrow">Live static workspace</span>
-          <h2 id="workflow-title">Dashboard</h2>
+          <span class="eyebrow">AI process flow</span>
+          <h2 id="workflow-title">Portfolio cockpit</h2>
           <p id="workflow-description"></p>
         </div>
-        <div class="status-pill" id="data-status">Loading demo macro data…</div>
+        <div class="status-stack" aria-live="polite">
+          <div class="status-pill" id="data-status">Loading demo macro data…</div>
+          <div class="status-pill secondary" id="portfolio-status">Demo portfolio ready</div>
+        </div>
+      </section>
+
+      <section class="process-strip" aria-label="MacroBoard AI process flow">
+        <article>
+          <span>01</span>
+          <strong>Ingest</strong>
+          <p>Upload holdings CSV or use demo weights.</p>
+        </article>
+        <article>
+          <span>02</span>
+          <strong>Price</strong>
+          <p>Fetch latest public quote history.</p>
+        </article>
+        <article>
+          <span>03</span>
+          <strong>Macro</strong>
+          <p>Refresh FRED inflation, rates, labor, credit.</p>
+        </article>
+        <article>
+          <span>04</span>
+          <strong>Decide</strong>
+          <p>Read risks, scenarios, and learning prompts.</p>
+        </article>
+      </section>
+
+      <section class="control-grid" aria-label="Portfolio and macro controls">
+        <article class="panel upload-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Portfolio input</span>
+              <h3>Upload holdings CSV</h3>
+            </div>
+            <a href="../../demo_data/demo_portfolio.csv">Sample CSV</a>
+          </div>
+          <p class="muted">Accepted columns: <code>ticker</code> plus <code>weight</code>, or <code>shares</code> with optional <code>price</code>/<code>cost_basis</code>.</p>
+          <label class="file-drop" for="portfolio-upload">
+            <input id="portfolio-upload" type="file" accept=".csv,text/csv" />
+            <span>Drop in your portfolio CSV or tap to browse</span>
+          </label>
+          <div class="button-row">
+            <button type="button" id="load-demo">Load demo portfolio</button>
+            <button type="button" id="refresh-market">Pull market prices</button>
+            <button type="button" id="refresh-fred">Refresh FRED macro</button>
+          </div>
+        </article>
+
+        <article class="panel assistant-panel">
+          <span class="eyebrow">Personal PM assistant</span>
+          <h3>Decision brief</h3>
+          <ol id="decision-brief" class="brief-list"></ol>
+        </article>
       </section>
 
       <section class="metric-grid" id="metric-grid" aria-label="Key metrics"></section>
@@ -36,12 +94,12 @@
         <article class="panel panel-large">
           <div class="panel-heading">
             <div>
-              <span class="eyebrow">Macro pulse</span>
-              <h3 id="chart-title">Asset return vs macro signal</h3>
+              <span class="eyebrow">Quant lens</span>
+              <h3 id="chart-title">Portfolio return vs macro signal</h3>
             </div>
             <span id="date-range" class="muted"></span>
           </div>
-          <canvas id="macro-chart" width="900" height="420" aria-label="MacroBoard line chart"></canvas>
+          <canvas id="macro-chart" width="1000" height="460" aria-label="MacroBoard line chart"></canvas>
         </article>
 
         <article class="panel">
@@ -51,11 +109,37 @@
         </article>
       </section>
 
+      <section class="content-grid portfolio-grid">
+        <article class="panel">
+          <div class="panel-heading">
+            <div>
+              <span class="eyebrow">Holdings diagnostics</span>
+              <h3>Portfolio exposure map</h3>
+            </div>
+            <span id="portfolio-updated" class="muted"></span>
+          </div>
+          <div class="table-wrap compact-table">
+            <table>
+              <thead>
+                <tr id="portfolio-head"></tr>
+              </thead>
+              <tbody id="portfolio-body"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel education-panel">
+          <span class="eyebrow">Learn while exploring</span>
+          <h3>Educational database</h3>
+          <div class="lesson-list" id="lesson-list"></div>
+        </article>
+      </section>
+
       <section class="panel">
         <div class="panel-heading">
           <div>
             <span class="eyebrow">Recent observations</span>
-            <h3>Demo macro dataset</h3>
+            <h3>Macro dataset</h3>
           </div>
           <a href="../../demo_data/macro_timeseries.csv">Download CSV</a>
         </div>
