@@ -1,0 +1,184 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String             @id @default(cuid())
+  email         String             @unique
+  displayName   String?
+  role          UserRole           @default(LEARNER)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+  progression   Progression[]
+  participants  MatchParticipant[]
+  notes         StrategyNote[]
+  analytics     AnalyticsEvent[]
+}
+
+model World {
+  id          String   @id
+  title       String
+  description String
+  order       Int
+  labs        Lab[]
+  skillNodes  SkillNode[]
+}
+
+model Lab {
+  id          String       @id
+  worldId     String
+  slug        String       @unique
+  title       String
+  summary     String
+  difficulty  Int
+  conceptTags String[]
+  engineKey   String
+  config      Json
+  world       World        @relation(fields: [worldId], references: [id])
+  scenarios   Scenario[]
+  progression Progression[]
+}
+
+model Scenario {
+  id          String   @id @default(cuid())
+  labId       String
+  title       String
+  version     Int      @default(1)
+  status      ScenarioStatus @default(DRAFT)
+  definition  Json
+  createdById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  lab         Lab      @relation(fields: [labId], references: [id])
+  matches     Match[]
+}
+
+model AIAgent {
+  id          String   @id
+  name        String
+  archetype   AgentArchetype
+  policy      Json
+  tutorPrompt String?
+  matches     MatchParticipant[]
+}
+
+model Match {
+  id          String             @id @default(cuid())
+  scenarioId  String
+  mode        MatchMode
+  status      MatchStatus        @default(QUEUED)
+  seed        String
+  publicState Json
+  replay      Json
+  debrief     Json?
+  createdAt   DateTime           @default(now())
+  endedAt     DateTime?
+  scenario    Scenario           @relation(fields: [scenarioId], references: [id])
+  players     MatchParticipant[]
+  analytics   AnalyticsEvent[]
+}
+
+model MatchParticipant {
+  id        String  @id @default(cuid())
+  matchId   String
+  userId    String?
+  agentId   String?
+  role      String
+  payoff    Float   @default(0)
+  privateState Json?
+  match     Match   @relation(fields: [matchId], references: [id])
+  user      User?   @relation(fields: [userId], references: [id])
+  agent     AIAgent? @relation(fields: [agentId], references: [id])
+}
+
+model Progression {
+  id             String   @id @default(cuid())
+  userId         String
+  labId          String
+  mastery        Float    @default(0)
+  attempts       Int      @default(0)
+  bestScore      Float?
+  unlocked       Boolean  @default(false)
+  lastPlayedAt   DateTime?
+  reflectionDue  DateTime?
+  user           User     @relation(fields: [userId], references: [id])
+  lab            Lab      @relation(fields: [labId], references: [id])
+
+  @@unique([userId, labId])
+}
+
+model SkillNode {
+  id          String @id
+  worldId     String
+  title       String
+  conceptTag  String
+  prerequisites String[]
+  unlocks     String[]
+  assessment  Json
+  world       World @relation(fields: [worldId], references: [id])
+}
+
+model AnalyticsEvent {
+  id        String   @id @default(cuid())
+  userId    String?
+  matchId   String?
+  eventType String
+  payload   Json
+  createdAt DateTime @default(now())
+  user      User?    @relation(fields: [userId], references: [id])
+  match     Match?   @relation(fields: [matchId], references: [id])
+}
+
+model StrategyNote {
+  id        String   @id @default(cuid())
+  userId    String
+  labId     String
+  matchId   String?
+  body      String
+  tags      String[]
+  createdAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+enum UserRole {
+  LEARNER
+  INSTRUCTOR
+  ADMIN
+}
+
+enum ScenarioStatus {
+  DRAFT
+  VALIDATING
+  PUBLISHED
+  ARCHIVED
+}
+
+enum MatchMode {
+  SINGLE_PLAYER
+  MULTIPLAYER_LIVE
+  MULTIPLAYER_ASYNC
+  SANDBOX
+  CLASSROOM
+}
+
+enum MatchStatus {
+  QUEUED
+  ACTIVE
+  COMPLETE
+  ABANDONED
+}
+
+enum AgentArchetype {
+  GREEDY_OPTIMIZER
+  RISK_AVERSE_STRATEGIST
+  COOPERATIVE_LONG_TERM
+  AGGRESSIVE_COMPETITOR
+  MIXED_STRATEGY
+  REPUTATION_MANIPULATOR
+  BLUFF_HEAVY
+}
