@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Game Theory Strategy Studio | Econ Arcade</title>
+  <link rel="stylesheet" href="platform.css" />
+</head>
+
+<body>
+  <div class="studio-shell">
+    <header class="studio-header">
+      <a href="index.html" class="back-link">← Econ Arcade</a>
+      <nav aria-label="Studio navigation">
+        <a href="#worlds">Worlds</a>
+        <a href="#simulation">Simulation</a>
+        <a href="#architecture">Architecture</a>
+        <a href="../docs/game-theory-platform.md">Blueprint</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="studio-hero" aria-labelledby="studioTitle">
+        <p class="kicker">Production-grade game theory learning platform scaffold</p>
+        <h1 id="studioTitle">Strategy Studio</h1>
+        <p>
+          A curriculum-wide interactive scaffold for learning rational choice, static games, dynamic
+          games, incomplete information, signaling, auctions, and mechanism design through simulation,
+          strategic experimentation, visualization, and debriefs.
+        </p>
+        <div class="hero-metrics" aria-label="Platform coverage metrics">
+          <div><strong id="worldCount">5</strong><span>Worlds</span></div>
+          <div><strong id="moduleCount">30+</strong><span>Modules</span></div>
+          <div><strong>7</strong><span>Playable engines</span></div>
+          <div><strong>∞</strong><span>Counterfactuals</span></div>
+        </div>
+      </section>
+
+      <section id="worlds" class="worlds-panel" aria-labelledby="worldsTitle">
+        <div class="section-heading">
+          <p class="kicker">Campaign map</p>
+          <h2 id="worldsTitle">Worlds, labs, and simulations</h2>
+          <p>Select a world to inspect the full curriculum coverage and launch a simulation-backed lab.</p>
+        </div>
+        <div id="worldTabs" class="world-tabs" role="tablist" aria-label="Game theory worlds"></div>
+        <div class="world-detail">
+          <div>
+            <p id="worldKicker" class="kicker">World</p>
+            <h3 id="worldTitle"></h3>
+            <p id="worldDescription"></p>
+            <div id="worldTags" class="tag-row"></div>
+          </div>
+          <div id="moduleGrid" class="module-grid"></div>
+        </div>
+      </section>
+
+      <section id="simulation" class="simulation-shell" aria-labelledby="simulationTitle">
+        <div class="section-heading">
+          <p class="kicker">Strategic lab bench</p>
+          <h2 id="simulationTitle">Run a playable concept engine</h2>
+          <p>
+            These are intentionally modular: each lab has an action space, agent model, transition
+            logic, visualization payload, and educational debrief that can later move behind an
+            authoritative multiplayer service.
+          </p>
+        </div>
+
+        <div class="sim-layout">
+          <aside class="sim-selector" aria-label="Simulation engines">
+            <button class="sim-choice active" data-engine="utility" type="button">
+              <span>World 1</span><strong>Utility Explorer</strong>
+            </button>
+            <button class="sim-choice" data-engine="lottery" type="button">
+              <span>World 1</span><strong>Risk & Lottery Engine</strong>
+            </button>
+            <button class="sim-choice" data-engine="cournot" type="button">
+              <span>World 2</span><strong>Cournot Market</strong>
+            </button>
+            <button class="sim-choice" data-engine="auction" type="button">
+              <span>World 4</span><strong>Auction Simulator</strong>
+            </button>
+            <button class="sim-choice" data-engine="signaling" type="button">
+              <span>World 5</span><strong>Signaling Game</strong>
+            </button>
+            <button class="sim-choice" data-engine="bargaining" type="button">
+              <span>World 3</span><strong>Bargaining Table</strong>
+            </button>
+            <button class="sim-choice" data-engine="mechanism" type="button">
+              <span>World 6</span><strong>Mechanism Sandbox</strong>
+            </button>
+          </aside>
+
+          <article class="sim-workbench">
+            <div class="sim-topline">
+              <div>
+                <p id="engineKicker" class="kicker">Engine</p>
+                <h3 id="engineTitle"></h3>
+              </div>
+              <button id="runSimulation" type="button">Run counterfactual ↻</button>
+            </div>
+            <p id="engineBrief" class="engine-brief"></p>
+            <div id="controls" class="control-grid"></div>
+            <div class="visual-grid">
+              <div class="visual-card primary">
+                <h4 id="visualTitle">Visualization</h4>
+                <div id="visualization" class="visualization"></div>
+              </div>
+              <div class="visual-card">
+                <h4>Decision analysis</h4>
+                <div id="metrics" class="metrics-stack"></div>
+              </div>
+            </div>
+            <div class="debrief-grid">
+              <section>
+                <h4>Strategic debrief</h4>
+                <p id="debriefText"></p>
+              </section>
+              <section>
+                <h4>Formal concept unlocked</h4>
+                <p id="formalText"></p>
+              </section>
+              <section>
+                <h4>Replay prompt</h4>
+                <p id="replayText"></p>
+              </section>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="architecture" class="architecture-panel" aria-labelledby="architectureTitle">
+        <div class="section-heading">
+          <p class="kicker">Technical execution map</p>
+          <h2 id="architectureTitle">From static scaffold to production platform</h2>
+        </div>
+        <div class="architecture-grid">
+          <article>
+            <h3>Frontend</h3>
+            <p>Next.js + TypeScript lab routes, Tailwind design tokens, Framer Motion visual transitions, simulation reducers, replay timelines, and scenario creator UI.</p>
+          </article>
+          <article>
+            <h3>Realtime backend</h3>
+            <p>Node match gateway, WebSocket rooms, Redis pub/sub, command validation, commit-reveal for simultaneous moves, replay persistence, and Prisma/PostgreSQL metadata.</p>
+          </article>
+          <article>
+            <h3>Simulation services</h3>
+            <p>Shared TypeScript contracts with Python microservices for Monte Carlo auctions, market games, Bayesian updating, and research-grade mechanism testing.</p>
+          </article>
+          <article>
+            <h3>AI learning layer</h3>
+            <p>Agent personalities, adaptive difficulty, tutor prompts constrained by structured traces, scenario generation pipelines, counterfactual summaries, and mastery recommendations.</p>
+          </article>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="platform.js"></script>
+</body>
+
+</html>
