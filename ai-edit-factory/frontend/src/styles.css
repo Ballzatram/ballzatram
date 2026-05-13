@@ -93,3 +93,7 @@ h3 { margin: 0 0 .75rem; font-size: 1.35rem; }
   padding: 0.55rem 0.8rem;
   font-size: 0.85rem;
 }
+
+.progressStrip small { color: var(--muted); font-weight: 800; }
+.phoneFrame { position: relative; }
+.previewBadge { position: absolute; top: .75rem; left: 50%; transform: translateX(-50%); z-index: 1; border: 1px solid rgba(66,245,158,.46); border-radius: 999px; padding: .35rem .7rem; color: #dfffea; background: rgba(2,6,23,.82); font-size: .72rem; font-weight: 950; text-transform: uppercase; letter-spacing: .05em; }

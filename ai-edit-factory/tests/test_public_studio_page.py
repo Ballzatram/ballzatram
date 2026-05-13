@@ -4,15 +4,16 @@ from pathlib import Path
 PUBLIC_STUDIO = Path(__file__).resolve().parents[1] / "index.html"
 
 
-def test_public_studio_has_browser_draft_fallback() -> None:
+def test_public_studio_has_backend_offline_preview_mode() -> None:
     html = PUBLIC_STUDIO.read_text()
 
     assert "function createLocalProject" in html
-    assert "Browser draft mode is active" in html
+    assert "Backend offline: preview mode only" in html
     assert "if (!state.apiOnline)" in html
     assert "addLocalVideos" in html
     assert "buildLocalPlan" in html
-    assert "preview-only" in html
+    assert "Download source preview" not in html
+    assert "platform: 'browser-preview'" not in html
 
 
 def test_public_studio_preserves_api_base_when_health_candidates_fail() -> None:

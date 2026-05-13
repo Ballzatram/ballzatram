@@ -101,6 +101,8 @@ function App() {
   const [musicStart, setMusicStart] = useState('');
   const [prompt, setPrompt] = useState(defaultPrompt);
   const [message, setMessage] = useState('Create a project, add media you have permission to use, choose a style, then generate and render from this page.');
+  const [backendOnline, setBackendOnline] = useState(false);
+  const [diagnostics, setDiagnostics] = useState(null);
   const [busy, setBusy] = useState(false);
 
   const assets = project?.assets || [];
@@ -117,7 +119,11 @@ function App() {
   const canUploadVideos = Boolean(project && videos.length && rightsConfirmed && !busy);
   const canUploadMusic = Boolean(project && music && rightsConfirmed && !busy);
   const canPlan = Boolean(project && selectedSource && prompt.trim().length >= 3 && !busy);
-  const canRender = Boolean(project && editPlan && !busy && !['running', 'pending'].includes(renderJob?.status));
+  const canRender = Boolean(backendOnline && project && editPlan && !busy && !['running', 'pending'].includes(renderJob?.status));
+
+  useEffect(() => {
+    checkDiagnostics();
+  }, []);
 
   useEffect(() => {
     if (!selectedVideoId && sourceVideos.length) setSelectedVideoId(sourceVideos.at(-1).id);
@@ -139,6 +145,20 @@ function App() {
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
     return data;
+  }
+
+  async function checkDiagnostics() {
+    try {
+      const data = await api('/api/diagnostics');
+      setDiagnostics(data);
+      setBackendOnline(Boolean(data.api_ok));
+      console.info('AI Edit Factory diagnostics', data);
+    } catch (error) {
+      setBackendOnline(false);
+      setDiagnostics(null);
+      console.warn('AI Edit Factory backend offline; preview mode only', error);
+      setMessage('Backend offline: preview mode only. Render MP4 and real export downloads require FastAPI, Redis/worker, ffmpeg, and persistent storage.');
+    }
   }
 
   async function refresh(id = project?.id) {
@@ -374,11 +394,11 @@ function App() {
         </article>
       </section>
 
-      <section className="progressStrip"><span style={{ width: `${uploadProgress}%` }} /><strong>{busy ? 'Working…' : message}</strong></section>
+      <section className="progressStrip"><span style={{ width: `${uploadProgress}%` }} /><strong>{busy ? 'Working…' : message}</strong>{diagnostics && <small>Diagnostics: ffmpeg={diagnostics.ffmpeg_available ? 'yes' : 'no'} · ffprobe={diagnostics.ffprobe_available ? 'yes' : 'no'} · redis={diagnostics.redis_available ? 'yes' : 'no'} · mode={diagnostics.app_mode}</small>}</section>
 
       <section className="workbench">
         <div className="phoneFrame">
-          {selectedSource?.preview_url ? <video controls playsInline src={`${API}${selectedSource.preview_url}`} /> : <div className="phoneEmpty">Select or upload a source video</div>}
+          {selectedSource?.preview_url ? <><div className="previewBadge">{backendOnline ? 'Backend uploaded source preview' : 'Browser source preview'}</div><video controls playsInline src={`${API}${selectedSource.preview_url}`} /></> : <div className="phoneEmpty">Select or upload a source video</div>}
         </div>
         <article className="card recipeCard">
           <span className="step">04</span>

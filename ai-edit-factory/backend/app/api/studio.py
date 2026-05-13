@@ -233,6 +233,15 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
         elif payload.music_start_seconds is not None:
             plan["music_start_seconds"] = round(float(payload.music_start_seconds), 2)
         plan["music_asset_id"] = selected_music["id"] if selected_music else None
+        plan["music_settings"] = {
+            "music_asset_id": selected_music["id"] if selected_music else None,
+            "source_start_s": round(float(plan.get("music_start_seconds") or 0.0), 3),
+            "source_end_s": None,
+            "volume": 0.85,
+            "fade_in_s": 0.15,
+            "fade_out_s": 0.25,
+            "duck_original_audio": True,
+        }
         row = db.create_edit_plan(video_project_id, asset["id"], creative_prompt, plan)
         db.update_video_project(video_project_id, status="plan_ready", creative_prompt=creative_prompt)
         return _decode_plan(row)
@@ -436,10 +445,14 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks, 
             raise ValueError("Upload a rights-confirmed source video before rendering.")
         music_assets = db.list_video_project_assets(video_project_id, "music_audio")
         music_asset = None
-        if plan_json.get("features", {}).get("music") and plan_json.get("music_asset_id"):
-            music_asset = next((item for item in music_assets if item["id"] == plan_json.get("music_asset_id")), None)
-        elif plan_json.get("features", {}).get("music") and music_assets:
+        requested_music_id = (plan_json.get("music_settings") or {}).get("music_asset_id") or plan_json.get("music_asset_id")
+        wants_music = plan_json.get("features", {}).get("music", bool(requested_music_id or music_assets))
+        if wants_music and requested_music_id:
+            music_asset = next((item for item in music_assets if item["id"] == requested_music_id), None)
+        elif wants_music and music_assets:
             music_asset = music_assets[-1]
+            plan_json["music_asset_id"] = music_asset["id"]
+            plan_json.setdefault("music_settings", {})["music_asset_id"] = music_asset["id"]
         platform = plan_json.get("platform", "tiktok")
         output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"{_slug(project.get('name') or 'ai-edit')}_plan_{plan['id']}_{platform}.mp4"
         video_label = "videos" if len(source_assets) > 1 else "video"
