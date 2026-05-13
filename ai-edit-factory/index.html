@@ -4,53 +4,538 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AI Edit Factory | Ballzatram</title>
+  <title>AI Edit Factory Studio | Ballzatram</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <main class="factory-shell">
-    <header class="hero-card">
-      <a class="back-link" href="../index.html">← Ballzatram</a>
-      <p class="kicker">Tool 002 · Site-hosted Video Automation</p>
-      <h1>AI Edit Factory</h1>
-      <p class="lede">
-        Run AI edits from the web app: create a project, upload rights-approved songs and clips,
-        click generate, then preview and download beat-synced vertical MP4s in the browser.
-      </p>
-      <div class="cta-row">
-        <a class="cta" href="#run-locally">Run the site app →</a>
-        <a class="cta secondary" href="README.md">Deployment guide →</a>
+  <main class="studio-shell">
+    <header class="topbar" aria-label="Studio navigation">
+      <a class="brand" href="../index.html" aria-label="Back to Ballzatram">
+        <span class="brand-mark">B</span>
+        <span>Ballzatram</span>
+      </a>
+      <div class="api-control">
+        <span id="apiStatus" class="api-status is-checking">Checking API</span>
+        <button id="apiSettingsButton" class="ghost-button" type="button">API settings</button>
       </div>
     </header>
 
-    <section class="panel-grid" aria-label="AI Edit Factory workflow">
-      <article class="panel">
-        <span class="step">01</span>
-        <h2>Create online</h2>
-        <p>Open the site app and make a project from the browser—no manual file placement required.</p>
-      </article>
-
-      <article class="panel">
-        <span class="step">02</span>
-        <h2>Upload media</h2>
-        <p>Use the upload form for songs and source videos you own, licensed, or have permission to process.</p>
-      </article>
-
-      <article class="panel">
-        <span class="step">03</span>
-        <h2>Render on site</h2>
-        <p>The API queues a backend worker job so ffmpeg renders MP4 edits on the site server, not on your laptop.</p>
-      </article>
+    <section class="hero-studio" aria-labelledby="pageTitle">
+      <div class="hero-copy">
+        <p class="eyebrow">Site-hosted AI video production</p>
+        <h1 id="pageTitle">Make the edit here.</h1>
+        <p class="hero-lede">
+          Create a project, upload rights-approved clips and audio, generate a short-form edit recipe,
+          render a vertical MP4, then preview and download the export without leaving the site.
+        </p>
+        <div class="hero-actions">
+          <a class="primary-link" href="#factoryWorkspace">Start the web workflow</a>
+          <a class="secondary-link" href="README.md">Read deployment notes</a>
+        </div>
+      </div>
+      <aside class="render-card" aria-label="Render capability summary">
+        <div class="pulse-dot" aria-hidden="true"></div>
+        <p>Backend render path</p>
+        <strong>Upload → Recipe → ffmpeg MP4</strong>
+        <span>Uses the same production API endpoints as the Docker-hosted app.</span>
+      </aside>
     </section>
 
-    <section class="command-card" id="run-locally" aria-label="Site command">
-      <p class="kicker">Runnable site command</p>
-      <pre><code>cd ai-edit-factory
-docker compose up --build</code></pre>
-      <p class="note">After the container starts, open <code>http://localhost:8000</code> for the full browser workflow. Generated files are still persisted under <code>outputs/</code> for deployment storage.</p>
+    <section id="apiSettingsPanel" class="settings-panel" hidden>
+      <div>
+        <h2>API connection</h2>
+        <p>
+          Leave this as this site’s origin when the backend serves the page. For split deployments,
+          paste the API origin only, for example <code>https://api.example.com</code>.
+        </p>
+      </div>
+      <label>
+        API origin
+        <input id="apiBaseInput" type="url" inputmode="url" autocomplete="url" />
+      </label>
+      <div class="settings-actions">
+        <button id="saveApiBase" type="button">Save API origin</button>
+        <button id="resetApiBase" class="subtle-button" type="button">Use this site</button>
+      </div>
+    </section>
+
+    <section id="factoryWorkspace" class="workspace" aria-label="AI Edit Factory web app">
+      <aside class="rail" aria-label="Workflow status">
+        <div class="rail-step is-active" data-step="project"><span>1</span><strong>Project</strong><small>Name and rights gate</small></div>
+        <div class="rail-step" data-step="upload"><span>2</span><strong>Uploads</strong><small>Source clips and music</small></div>
+        <div class="rail-step" data-step="recipe"><span>3</span><strong>Recipe</strong><small>Creative direction</small></div>
+        <div class="rail-step" data-step="render"><span>4</span><strong>Render</strong><small>Preview and download</small></div>
+      </aside>
+
+      <div class="studio-panels">
+        <section class="panel project-panel" aria-labelledby="projectTitle">
+          <div class="panel-heading">
+            <p class="eyebrow">Step 1</p>
+            <h2 id="projectTitle">Open a factory project</h2>
+          </div>
+          <label>
+            Project name
+            <input id="projectName" type="text" value="Creator clip factory" maxlength="80" />
+          </label>
+          <label class="rights-check">
+            <input id="rightsConfirmed" type="checkbox" />
+            <span>I confirm every uploaded file is owned, licensed, or permitted for processing.</span>
+          </label>
+          <button id="createProject" type="button">Create project on site</button>
+          <p id="projectMeta" class="muted">No active project yet.</p>
+        </section>
+
+        <section class="panel upload-panel" aria-labelledby="uploadTitle">
+          <div class="panel-heading">
+            <p class="eyebrow">Step 2</p>
+            <h2 id="uploadTitle">Upload source media</h2>
+          </div>
+          <div class="upload-grid">
+            <div class="upload-box">
+              <label>
+                Source videos
+                <input id="videoFiles" type="file" multiple accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" />
+              </label>
+              <button id="uploadVideos" type="button" disabled>Add videos</button>
+              <p id="videoSelection" class="muted">MP4, MOV, or WebM up to 750 MB each.</p>
+            </div>
+            <div class="upload-box">
+              <label>
+                Music bed
+                <input id="musicFile" type="file" accept=".mp3,.wav,.m4a,.aac,.flac,.ogg,audio/*" />
+              </label>
+              <button id="uploadMusic" type="button" disabled>Add music</button>
+              <p id="musicSelection" class="muted">Optional rights-approved audio.</p>
+            </div>
+          </div>
+          <div class="progress-meter" aria-label="Upload progress"><span id="progressBar"></span></div>
+          <div id="assetShelf" class="asset-shelf" aria-live="polite"></div>
+        </section>
+
+        <section class="panel recipe-panel" aria-labelledby="recipeTitle">
+          <div class="panel-heading">
+            <p class="eyebrow">Step 3</p>
+            <h2 id="recipeTitle">Generate an edit recipe</h2>
+          </div>
+          <div class="recipe-grid">
+            <label>
+              Clip type
+              <select id="clipType">
+                <option value="funny">Funny</option>
+                <option value="emotional">Emotional</option>
+                <option value="hype">Hype</option>
+                <option value="dramatic">Dramatic</option>
+                <option value="clean">Clean</option>
+                <option value="storytime">Storytime</option>
+              </select>
+            </label>
+            <div class="toggle-row" role="group" aria-label="Recipe options">
+              <label><input id="addMusic" type="checkbox" checked /> Music</label>
+              <label><input id="addCaptions" type="checkbox" checked /> Captions</label>
+              <label><input id="addHashtags" type="checkbox" checked /> Hashtags</label>
+            </div>
+          </div>
+          <label>
+            Creative direction
+            <textarea id="prompt" rows="5">Find the strongest hook, cut the boring parts, keep it vertical, and make the ending replayable.</textarea>
+          </label>
+          <button id="generateRecipe" type="button" disabled>Generate recipe</button>
+        </section>
+
+        <section class="panel render-panel" aria-labelledby="renderTitle">
+          <div class="panel-heading">
+            <p class="eyebrow">Step 4</p>
+            <h2 id="renderTitle">Render and download</h2>
+          </div>
+          <div class="render-layout">
+            <div class="phone-preview" id="previewFrame">Upload a source video to preview it here.</div>
+            <div class="render-summary">
+              <div id="statusMessage" class="status-message">Ready. Create a project to begin.</div>
+              <button id="refreshProject" class="subtle-button" type="button" disabled>Refresh project</button>
+              <button id="renderVideo" type="button" disabled>Render vertical MP4</button>
+            </div>
+          </div>
+          <div id="recipeOutput" class="recipe-output"></div>
+          <div id="exportsOutput" class="exports-output"></div>
+        </section>
+      </div>
     </section>
   </main>
+
+  <script>
+    const state = {
+      apiBase: localStorage.getItem('aiefApiBase') || window.location.origin,
+      project: null,
+      selectedVideoId: null,
+      busy: false,
+      pollTimer: null,
+    };
+
+    const allowedVideoTypes = ['mp4', 'mov', 'webm'];
+    const allowedAudioTypes = ['mp3', 'wav', 'm4a', 'aac', 'flac', 'ogg'];
+    const maxUploadMb = 750;
+    const $ = (id) => document.getElementById(id);
+
+    function prettyBytes(bytes) {
+      return `${((bytes || 0) / (1024 * 1024)).toFixed(1)} MB`;
+    }
+
+    function extension(file) {
+      return (file?.name.split('.').pop() || '').toLowerCase();
+    }
+
+    function setBusy(isBusy) {
+      state.busy = isBusy;
+      document.body.classList.toggle('is-busy', isBusy);
+      updateControls();
+    }
+
+    function setStatus(message, type = 'info') {
+      $('statusMessage').textContent = message;
+      $('statusMessage').dataset.type = type;
+    }
+
+    function setApiStatus(message, statusClass) {
+      const node = $('apiStatus');
+      node.textContent = message;
+      node.className = `api-status ${statusClass}`;
+    }
+
+    function apiUrl(path) {
+      return `${state.apiBase.replace(/\/$/, '')}${path}`;
+    }
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+      }[character]));
+    }
+
+    async function api(path, options = {}) {
+      const response = await fetch(apiUrl(path), options);
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
+      return data;
+    }
+
+    function validateFile(file, allowed, label) {
+      if (!file) return `Choose a ${label} file first.`;
+      if (!allowed.includes(extension(file))) return `Use a supported ${label} file: ${allowed.join(', ')}.`;
+      if (file.size > maxUploadMb * 1024 * 1024) return `${file.name} is over the ${maxUploadMb} MB upload limit.`;
+      return '';
+    }
+
+    function sourceVideos() {
+      return (state.project?.assets || []).filter((asset) => asset.kind === 'source_video');
+    }
+
+    function musicAssets() {
+      return (state.project?.assets || []).filter((asset) => asset.kind === 'music_audio');
+    }
+
+    function selectedSource() {
+      const videos = sourceVideos();
+      return videos.find((asset) => asset.id === state.selectedVideoId) || videos.at(-1) || null;
+    }
+
+    function markStep(step) {
+      document.querySelectorAll('.rail-step').forEach((node) => node.classList.toggle('is-active', node.dataset.step === step));
+    }
+
+    function updateControls() {
+      const hasProject = Boolean(state.project?.id);
+      const rights = $('rightsConfirmed').checked;
+      const videoFiles = Array.from($('videoFiles').files || []);
+      const musicFile = $('musicFile').files?.[0];
+      const hasRecipe = Boolean(state.project?.edit_plan?.plan);
+      const activeRender = ['pending', 'running'].includes(state.project?.render_job?.status);
+
+      $('uploadVideos').disabled = state.busy || !hasProject || !rights || videoFiles.length === 0;
+      $('uploadMusic').disabled = state.busy || !hasProject || !rights || !musicFile;
+      $('generateRecipe').disabled = state.busy || !hasProject || !selectedSource() || $('prompt').value.trim().length < 3;
+      $('renderVideo').disabled = state.busy || !hasProject || !hasRecipe || activeRender;
+      $('refreshProject').disabled = state.busy || !hasProject;
+      $('createProject').disabled = state.busy;
+    }
+
+    function renderAssets() {
+      const shelf = $('assetShelf');
+      const videos = sourceVideos();
+      const music = musicAssets().at(-1);
+      if (!videos.length && !music) {
+        shelf.innerHTML = '<p class="empty">No uploaded assets yet. Create a project, confirm rights, then upload media.</p>';
+        return;
+      }
+      const videoHtml = videos.map((asset) => `
+        <button class="asset-tile ${selectedSource()?.id === asset.id ? 'is-selected' : ''}" type="button" data-asset-id="${asset.id}">
+          <strong>${escapeHtml(asset.original_filename || 'Uploaded source')}</strong>
+          <span>${Number(asset.duration || 0).toFixed(1)}s · ${asset.width || '?'}×${asset.height || '?'} · ${escapeHtml(asset.file_type)}</span>
+        </button>`).join('');
+      const musicHtml = music ? `<div class="music-pill"><strong>Music:</strong> ${escapeHtml(music.original_filename)} · ${Number(music.duration || 0).toFixed(1)}s</div>` : '';
+      shelf.innerHTML = `${videoHtml}${musicHtml}`;
+      shelf.querySelectorAll('[data-asset-id]').forEach((button) => {
+        button.addEventListener('click', () => {
+          state.selectedVideoId = Number(button.dataset.assetId);
+          renderProject();
+        });
+      });
+    }
+
+    function renderPreview() {
+      const source = selectedSource();
+      const frame = $('previewFrame');
+      if (!source?.preview_url) {
+        frame.innerHTML = 'Upload a source video to preview it here.';
+        frame.classList.remove('has-video');
+        return;
+      }
+      frame.classList.add('has-video');
+      frame.innerHTML = `<video controls playsinline src="${apiUrl(source.preview_url)}"></video>`;
+    }
+
+    function renderRecipe() {
+      const plan = state.project?.edit_plan?.plan;
+      if (!plan) {
+        $('recipeOutput').innerHTML = '';
+        return;
+      }
+      const cuts = (plan.segments || []).map((segment) => `<li>${segment.source_start}s–${segment.source_end}s · ${escapeHtml(segment.reason)}</li>`).join('');
+      const captions = (plan.text_overlays || []).map((overlay) => `<li>${overlay.time}s · ${escapeHtml(overlay.text)}</li>`).join('');
+      $('recipeOutput').innerHTML = `
+        <article class="recipe-card">
+          <h3>Recipe ready</h3>
+          <div class="metric-row"><span>${escapeHtml(plan.clip_type || plan.mood)}</span><span>${escapeHtml(plan.platform)}</span><span>${plan.duration_seconds}s</span><span>${escapeHtml(plan.aspect_ratio)}</span></div>
+          <h4>Cuts</h4><ol>${cuts}</ol>
+          ${captions ? `<h4>Captions</h4><ol>${captions}</ol>` : ''}
+          <details><summary>View JSON recipe</summary><pre>${escapeHtml(JSON.stringify(plan, null, 2))}</pre></details>
+        </article>`;
+    }
+
+    function renderExports() {
+      const exports = state.project?.exports || [];
+      if (!exports.length) {
+        $('exportsOutput').innerHTML = '';
+        return;
+      }
+      $('exportsOutput').innerHTML = `<h3>Exports</h3><div class="export-grid">${exports.map((item) => `
+        <article class="export-card">
+          <strong>${escapeHtml(item.platform)}</strong>
+          <span>${escapeHtml(item.status)}</span>
+          ${item.download_url ? `<video controls playsinline src="${apiUrl(item.download_url)}"></video><a href="${apiUrl(item.download_url)}" download>Download MP4</a>` : `<span>${escapeHtml(item.path || 'Render path pending')}</span>`}
+        </article>`).join('')}</div>`;
+    }
+
+    function renderProject() {
+      const project = state.project;
+      $('projectMeta').textContent = project ? `Project #${project.id} · ${project.status}` : 'No active project yet.';
+      $('createProject').textContent = project ? `Project #${project.id} open` : 'Create project on site';
+      const job = project?.render_job;
+      if (job) setStatus(`${job.status} · ${job.progress}% · ${job.message || 'Render job updated.'}`, job.status === 'failed' ? 'error' : 'info');
+      renderAssets();
+      renderPreview();
+      renderRecipe();
+      renderExports();
+      if (project?.exports?.length) markStep('render');
+      else if (project?.edit_plan?.plan) markStep('render');
+      else if (sourceVideos().length) markStep('recipe');
+      else if (project) markStep('upload');
+      else markStep('project');
+      updateControls();
+    }
+
+    async function checkHealth() {
+      $('apiBaseInput').value = state.apiBase;
+      setApiStatus('Checking API', 'is-checking');
+      try {
+        await api('/api/health');
+        setApiStatus('API online', 'is-online');
+      } catch (error) {
+        setApiStatus('API not connected', 'is-offline');
+        setStatus(`The page loaded, but the render API is not reachable at ${state.apiBase}. Open API settings if this site uses a separate backend.`, 'warning');
+      }
+    }
+
+    async function createProject() {
+      setBusy(true);
+      try {
+        state.project = await api('/api/studio/projects', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: $('projectName').value.trim() || 'Creator clip factory' }),
+        });
+        setStatus('Project created. Confirm rights, then upload source media.', 'success');
+        renderProject();
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function uploadFile(path, file, progressStart, progressEnd) {
+      return new Promise((resolve, reject) => {
+        const form = new FormData();
+        form.append('rights_confirmed', 'true');
+        form.append('file', file);
+        const request = new XMLHttpRequest();
+        request.open('POST', apiUrl(path));
+        request.upload.onprogress = (event) => {
+          if (event.lengthComputable) {
+            const percent = event.loaded / event.total;
+            $('progressBar').style.width = `${Math.round(progressStart + ((progressEnd - progressStart) * percent))}%`;
+          }
+        };
+        request.onload = () => {
+          let data = {};
+          try {
+            data = JSON.parse(request.responseText || '{}');
+          } catch (error) {
+            data = {};
+          }
+          if (request.status >= 200 && request.status < 300) resolve(data);
+          else reject(new Error(data.detail || `Upload failed with status ${request.status}`));
+        };
+        request.onerror = () => reject(new Error('Upload failed. Check the API connection and deployment upload limits.'));
+        request.send(form);
+      });
+    }
+
+    async function refreshProject() {
+      if (!state.project?.id) return;
+      state.project = await api(`/api/studio/projects/${state.project.id}`);
+      renderProject();
+    }
+
+    async function uploadVideos() {
+      const files = Array.from($('videoFiles').files || []);
+      const invalid = files.map((file) => validateFile(file, allowedVideoTypes, 'video')).find(Boolean);
+      if (invalid) return setStatus(invalid, 'error');
+      setBusy(true);
+      $('progressBar').style.width = '0%';
+      try {
+        for (const [index, file] of files.entries()) {
+          await uploadFile(`/api/studio/projects/${state.project.id}/video`, file, (index / files.length) * 100, ((index + 1) / files.length) * 100);
+        }
+        await refreshProject();
+        $('videoFiles').value = '';
+        $('videoSelection').textContent = 'Video uploaded. Select it from the shelf below.';
+        setStatus('Source shelf updated. Generate a recipe when ready.', 'success');
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function uploadMusic() {
+      const file = $('musicFile').files?.[0];
+      const invalid = validateFile(file, allowedAudioTypes, 'music');
+      if (invalid) return setStatus(invalid, 'error');
+      setBusy(true);
+      $('progressBar').style.width = '0%';
+      try {
+        await uploadFile(`/api/studio/projects/${state.project.id}/music`, file, 0, 100);
+        await refreshProject();
+        $('musicFile').value = '';
+        $('musicSelection').textContent = 'Music uploaded and ready for recipes.';
+        setStatus('Music bed saved.', 'success');
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    async function generateRecipe() {
+      setBusy(true);
+      try {
+        await api(`/api/studio/projects/${state.project.id}/edit-plans`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: $('prompt').value,
+            media_asset_id: selectedSource()?.id,
+            clip_type: $('clipType').value,
+            add_music: $('addMusic').checked,
+            add_captions: $('addCaptions').checked,
+            add_hashtags: $('addHashtags').checked,
+          }),
+        });
+        await refreshProject();
+        setStatus('Recipe generated. Review it, then render the MP4.', 'success');
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    function startPolling() {
+      window.clearInterval(state.pollTimer);
+      state.pollTimer = window.setInterval(async () => {
+        if (!state.project?.id) return;
+        await refreshProject();
+        const status = state.project?.render_job?.status;
+        if (!['pending', 'running'].includes(status)) window.clearInterval(state.pollTimer);
+      }, 2500);
+    }
+
+    async function renderVideo() {
+      setBusy(true);
+      try {
+        const result = await api(`/api/studio/projects/${state.project.id}/render`, { method: 'POST' });
+        setStatus(result.message || 'Render queued.', 'success');
+        await refreshProject();
+        startPolling();
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
+    $('apiSettingsButton').addEventListener('click', () => { $('apiSettingsPanel').hidden = !$('apiSettingsPanel').hidden; });
+    $('saveApiBase').addEventListener('click', () => {
+      state.apiBase = $('apiBaseInput').value.trim().replace(/\/$/, '') || window.location.origin;
+      localStorage.setItem('aiefApiBase', state.apiBase);
+      checkHealth();
+    });
+    $('resetApiBase').addEventListener('click', () => {
+      state.apiBase = window.location.origin;
+      localStorage.removeItem('aiefApiBase');
+      checkHealth();
+    });
+    $('createProject').addEventListener('click', createProject);
+    $('uploadVideos').addEventListener('click', uploadVideos);
+    $('uploadMusic').addEventListener('click', uploadMusic);
+    $('generateRecipe').addEventListener('click', generateRecipe);
+    $('renderVideo').addEventListener('click', renderVideo);
+    $('refreshProject').addEventListener('click', async () => {
+      setBusy(true);
+      try { await refreshProject(); setStatus('Project refreshed.', 'success'); }
+      catch (error) { setStatus(error.message, 'error'); }
+      finally { setBusy(false); }
+    });
+    $('videoFiles').addEventListener('change', () => {
+      const files = Array.from($('videoFiles').files || []);
+      $('videoSelection').textContent = files.length ? files.map((file) => `${file.name} (${prettyBytes(file.size)})`).join(', ') : 'MP4, MOV, or WebM up to 750 MB each.';
+      updateControls();
+    });
+    $('musicFile').addEventListener('change', () => {
+      const file = $('musicFile').files?.[0];
+      $('musicSelection').textContent = file ? `${file.name} (${prettyBytes(file.size)})` : 'Optional rights-approved audio.';
+      updateControls();
+    });
+    ['rightsConfirmed', 'prompt', 'clipType', 'addMusic', 'addCaptions', 'addHashtags'].forEach((id) => $(id).addEventListener('input', updateControls));
+
+    renderProject();
+    checkHealth();
+  </script>
 </body>
 
 </html>

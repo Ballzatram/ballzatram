@@ -21,6 +21,7 @@ YouTube support is metadata-first. Media downloading is disabled by default. A Y
 - Templates: `fast_cut`, `high_motion`, `slow_mo`, `lyric_caption`, `random_montage`, and `retro_tv_filter`.
 - Ranked outputs based on clip quality, variety, and template spread.
 - Mobile-first React UI served by the API container for one-stop source uploads, source shelf selection, music/caption/hashtag toggles, progress polling, previews, and downloads.
+- Public `ai-edit-factory/index.html` web studio with the same project/upload/recipe/render workflow for site deployments; it defaults to same-origin `/api` and includes API-origin settings for split frontend/backend deployments.
 - CLI for local batch generation.
 
 ## Repo layout
@@ -51,11 +52,11 @@ cd ai-edit-factory
 docker compose up --build
 ```
 
-Open the site app at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`.
+Open the site app at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin.
 
 AI edit factory flow (site-native):
 
-1. Open <http://localhost:8000> and open a clip factory project.
+1. Open <http://localhost:8000> (or the deployed `ai-edit-factory/index.html` page with its API origin connected) and open a clip factory project.
 2. Confirm that every uploaded video or audio file is owned, licensed, or otherwise permitted for editing.
 3. Upload one or more source videos (`mp4`, `mov`, or `webm`). The app shows upload progress, stores each upload on a source shelf, saves duration/dimensions/file type/preview path when `ffprobe` is available, and lets the user choose which source drives the next recipe.
 4. Optionally upload a rights-cleared music bed (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`). If **Add music** is enabled, the renderer uses that upload as the export audio bed; otherwise it preserves source audio where available.
