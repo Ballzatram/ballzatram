@@ -282,3 +282,73 @@ input[type="range"] { accent-color: var(--cyan); }
   .decision-buttons, .payoff-matrix { grid-template-columns: 1fr; }
   .payoff-matrix > div:first-child { display: none; }
 }
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+@media (max-width: 760px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .lab-shell {
+    width: min(100% - 18px, 1220px);
+    padding: calc(10px + env(safe-area-inset-top)) 0 44px;
+  }
+
+  .control-strip {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    box-shadow: 0 18px 36px rgba(0, 0, 0, .28);
+  }
+
+  .lab-grid > article,
+  .control-strip,
+  .intro-panel {
+    border-radius: 22px;
+    padding: 18px;
+  }
+
+  .stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .history-chart {
+    overflow-x: auto;
+    align-items: stretch;
+    height: 132px;
+  }
+
+  .history-bar {
+    flex: 0 0 18px;
+  }
+}
+
+@media (max-width: 460px) {
+  .intro-panel h1 {
+    font-size: clamp(2.9rem, 17vw, 4.4rem);
+  }
+
+  .decision-buttons button,
+  #resetButton {
+    width: 100%;
+  }
+
+  .payoff-matrix {
+    gap: 6px;
+  }
+
+  .axis,
+  .payoff-cell {
+    min-height: 58px;
+    padding: 10px;
+    font-size: .95rem;
+  }
+
+  .payoff-cell {
+    font-size: 1.2rem;
+  }
+}

@@ -1,69 +1,101 @@
 const worlds = [
   {
     id: "rational-choice",
-    title: "World 1 — Rational Choice",
-    description: "Build intuition for preferences, utility, risk, lotteries, expected utility, paradoxes, discounting, backward induction, and value of information before formal notation arrives.",
+    title: "World 1 — Rational Choice Dojo",
+    description: "Start with preferences before conflict. Learners build utility maps, price risk, test paradoxes, and learn why information has option value.",
     tags: ["preferences", "utility", "risk", "time", "information"],
+    visual: "🍊📈",
+    capstone: "Design a personalized decision rule for a risky scholarship, a sure job, and a costly signal.",
     modules: [
-      ["Utility Explorer", "Choose bundles under constraints and watch inferred utility curves update."],
-      ["Risk Engine", "Price lotteries, compare expected value and expected utility, and reveal risk aversion."],
-      ["St. Petersburg Lab", "Stress-test expected value reasoning with heavy-tailed payouts."],
-      ["Time Preference Lab", "Tune patience, commitment devices, and backward-induction choices."],
-      ["Value of Information", "Buy or skip noisy signals before committing to decisions."],
+      { title: "Utility Cartographer", copy: "Sketch indifference curves by dragging bundles through a neon budget canyon.", phase: "Core lab", engine: "utility", glyph: "⛰️" },
+      { title: "Risk & Lottery Engine", copy: "Compare expected value with expected utility while the same gamble mutates across risk types.", phase: "Playable", engine: "lottery", glyph: "🎲" },
+      { title: "St. Petersburg Vault", copy: "Open impossible jackpots, then watch risk aversion and wealth effects tame infinity.", phase: "Challenge", engine: "lottery", glyph: "💎" },
+      { title: "Patience Reactor", copy: "Tune discount factors, commitment devices, and temptation costs across time.", phase: "Scenario", engine: "utility", glyph: "⏳" },
+      { title: "Signal or Skip?", copy: "Buy noisy clues before choosing; learn when information is worth more than certainty.", phase: "Boss puzzle", engine: "signaling", glyph: "📡" },
     ],
   },
   {
     id: "strategic-conflict",
-    title: "World 2 — Strategic Conflict",
-    description: "Study complete-information static games through payoff matrices, dominance, rationalizability, Nash equilibrium, mixed strategies, market competition, and voting environments.",
+    title: "World 2 — Strategic Conflict Arena",
+    description: "Complete-information games become playable: dominance, best responses, rationalizability, Nash equilibrium, mixed strategies, and market competition.",
     tags: ["normal form", "dominance", "Nash", "mixed strategies", "markets"],
+    visual: "⚔️▦",
+    capstone: "Beat an opponent that learns your mixed strategy leaks across five simultaneous games.",
     modules: [
-      ["Prisoner’s Dilemma Arena", "Play repeated cooperation and punishment against human or AI strategies."],
-      ["Cournot Market Simulator", "Set quantities, observe price clearing, and learn best responses."],
-      ["RPS Exploitability", "Randomize to make opponents indifferent and audit your predictability."],
-      ["Dominance Eliminator", "Remove dominated strategies and visualize rationalizable sets."],
-      ["Political Voting Simulator", "Experiment with strategic voting, agenda control, and coalition incentives."],
+      { title: "Prisoner’s Dilemma Arena", copy: "Play repeated cooperation and punishment against memory-driven AI strategies.", phase: "Playable", href: "prisoners-dilemma.html", glyph: "🤝" },
+      { title: "Cournot Duopoly Foundry", copy: "Set quantities, watch price clear, and trace best-response curves under rivalry.", phase: "Playable", engine: "cournot", glyph: "🏭" },
+      { title: "Mixed Strategy Nightclub", copy: "Randomize until opponents are indifferent, then audit how exploitable your rhythm is.", phase: "Skill drill", engine: "cournot", glyph: "🌀" },
+      { title: "Dominance Crusher", copy: "Eliminate bad strategies and reveal rationalizable survivors like a tactical scan.", phase: "Proof tool", engine: "mechanism", glyph: "🧹" },
+      { title: "Coalition Parliament", copy: "Build agendas, pivot voters, and expose how voting rules distort sincere preferences.", phase: "Scenario", engine: "mechanism", glyph: "🏛️" },
     ],
   },
   {
     id: "dynamic-strategy",
-    title: "World 3 — Dynamic Strategy",
-    description: "Move from simultaneous choices to game trees, sequential rationality, repeated games, bargaining, reputation, subgame perfection, and tacit collusion.",
+    title: "World 3 — Dynamic Strategy Time Machine",
+    description: "Sequential play adds commitment, credibility, threats, reputation, repeated-game discipline, bargaining, and subgame perfection.",
     tags: ["game trees", "subgame perfection", "reputation", "bargaining", "collusion"],
+    visual: "🌳⏱️",
+    capstone: "Escape a reputation maze where every promise today changes the continuation payoff tomorrow.",
     modules: [
-      ["Game Tree Console", "Traverse extensive-form games and solve by backward induction."],
-      ["Sequential Bargaining", "Make alternating offers under deadlines and outside options."],
-      ["Reputation Systems", "Build, exploit, lose, and repair credibility over repeated interactions."],
-      ["Deterrence Games", "Test threats, credibility, and costly commitments."],
-      ["Tacit Collusion Lab", "Observe when repeated market games sustain cooperation without explicit communication."],
+      { title: "Backward-Induction Treehouse", copy: "Solve game trees from the future backward, then see why early moves change.", phase: "Core lab", engine: "bargaining", glyph: "🌳" },
+      { title: "Bargaining Table", copy: "Make alternating offers under deadlines, patience gaps, and outside options.", phase: "Playable", engine: "bargaining", glyph: "🪑" },
+      { title: "Reputation Forge", copy: "Build, spend, and repair credibility in repeated trust and entry-deterrence games.", phase: "Campaign", engine: "cournot", glyph: "🛡️" },
+      { title: "Threat Credibility Simulator", copy: "Separate empty threats from costly commitments with a live game-tree audit.", phase: "Proof tool", engine: "bargaining", glyph: "⚡" },
+      { title: "Tacit Collusion Weather Map", copy: "Watch price wars ignite when patience, detection, and market shocks shift.", phase: "Boss puzzle", engine: "cournot", glyph: "🌩️" },
     ],
   },
   {
-    id: "information-warfare",
-    title: "World 4 — Information Warfare",
-    description: "Introduce types, beliefs, posterior updates, auctions, winner’s curse, adverse selection, screening, and Bayesian games through hidden-information play.",
+    id: "bayesian-information",
+    title: "World 4 — Bayesian Information Heist",
+    description: "Hidden types change everything: priors, posteriors, Bayesian Nash equilibrium, adverse selection, screening, auctions, and winner’s curse defense.",
     tags: ["Bayesian games", "auctions", "adverse selection", "winner’s curse", "beliefs"],
+    visual: "🕵️🔮",
+    capstone: "Run a black-box auction desk that must infer quality, shade bids, and survive common-value traps.",
     modules: [
-      ["Auction Simulator", "Bid in first-price, second-price, English, Dutch, and common-value auctions."],
-      ["Adverse Selection Market", "Trade lemons and high-quality goods under asymmetric information."],
-      ["Bayesian Belief Lab", "Update priors into posteriors after noisy signals."],
-      ["Winner’s Curse Drill", "Compete under common values and learn bid shading from painful wins."],
-      ["Screening Mechanisms", "Design menus that separate hidden types."],
+      { title: "Auction Simulator", copy: "Bid in first-price, second-price, English, Dutch, and common-value auctions.", phase: "Playable", engine: "auction", glyph: "🔨" },
+      { title: "Lemons Market Noir", copy: "Trade in a market where quality hides in shadows and bad goods chase out good.", phase: "Scenario", engine: "mechanism", glyph: "🍋" },
+      { title: "Bayesian Belief Lab", copy: "Update priors into posteriors after noisy signals and inspect belief drift.", phase: "Core lab", engine: "signaling", glyph: "🧠" },
+      { title: "Winner’s Curse Drill", copy: "Learn bid shading by winning auctions that should terrify you.", phase: "Challenge", engine: "auction", glyph: "🏴‍☠️" },
+      { title: "Screening Menu Kitchen", copy: "Design contracts that make hidden types sort themselves voluntarily.", phase: "Boss puzzle", engine: "mechanism", glyph: "🍱" },
     ],
   },
   {
-    id: "signals-mechanisms",
-    title: "World 5 — Signaling & Mechanism Design",
-    description: "Design, test, and break rules. Learn sequential equilibrium, signaling, education signals, cheap talk, VCG mechanisms, incentive compatibility, and market design.",
-    tags: ["signaling", "cheap talk", "VCG", "incentive compatibility", "mechanism design"],
+    id: "signals-communication",
+    title: "World 5 — Signals & Strategic Communication",
+    description: "Messages become moves. Explore costly signaling, cheap talk, pooling and separating equilibria, persuasion, and sequential equilibrium intuition.",
+    tags: ["signaling", "cheap talk", "education", "sequential equilibrium", "persuasion"],
+    visual: "📣🎭",
+    capstone: "Create a signal so expensive that only high types dare send it, then break your own equilibrium.",
     modules: [
-      ["Education Signaling", "Choose costly credentials and watch employers update beliefs."],
-      ["Cheap Talk Channel", "Send non-binding messages when preferences are aligned or opposed."],
-      ["Build Your Own Auction", "Edit rules and test agent bidding incentives."],
-      ["VCG Mechanism Lab", "Allocate goods and compute externality payments."],
-      ["Market Mechanism Arena", "Compete to maximize welfare subject to strategic misreporting."],
+      { title: "Education Signaling Runway", copy: "Choose costly credentials and watch employers update beliefs in real time.", phase: "Playable", engine: "signaling", glyph: "🎓" },
+      { title: "Cheap Talk Radio", copy: "Send non-binding messages when incentives align, partly align, or violently diverge.", phase: "Scenario", engine: "signaling", glyph: "📻" },
+      { title: "Pooling vs Separating Theater", copy: "Stage type performances and identify which equilibria can survive beliefs.", phase: "Proof tool", engine: "signaling", glyph: "🎭" },
+      { title: "Bayesian Persuasion Lens", copy: "Split information into signals and see how belief design changes actions.", phase: "Advanced", engine: "signaling", glyph: "🔍" },
     ],
   },
+  {
+    id: "mechanism-design",
+    title: "World 6 — Mechanism Design Workshop",
+    description: "Stop playing the game and design the rules: incentive compatibility, revelation principle, VCG, matching, public goods, and market design stress tests.",
+    tags: ["VCG", "incentive compatibility", "revelation", "matching", "market design"],
+    visual: "🛠️🏙️",
+    capstone: "Build a miniature city allocation mechanism that balances truthfulness, welfare, budget pressure, and fairness.",
+    modules: [
+      { title: "Incentive Compatibility Sandbox", copy: "Tune transfers and allocation weights until truthful reporting beats manipulation.", phase: "Playable", engine: "mechanism", glyph: "🧪" },
+      { title: "VCG Transit Lab", copy: "Allocate scarce routes and compute externality payments nobody can game profitably.", phase: "Core lab", engine: "mechanism", glyph: "🚇" },
+      { title: "Matching Market Arcade", copy: "Match students, hospitals, teams, and resources under stability constraints.", phase: "Scenario", engine: "mechanism", glyph: "🧩" },
+      { title: "Public Goods Reactor", copy: "Fund shared projects while free riders, pivotal taxes, and fairness constraints collide.", phase: "Boss puzzle", engine: "mechanism", glyph: "⚛️" },
+    ],
+  },
+];
+
+const curriculum = [
+  ["01", "Preferences → Payoffs", "Turn messy choices into utilities, constraints, and payoff tables."],
+  ["02", "Best responses → Nash", "Learn dominance, rationalizability, and equilibrium as mutual best response geometry."],
+  ["03", "Time → Credibility", "Add game trees, threats, promises, reputations, and repeated-game discipline."],
+  ["04", "Beliefs → Bayesian play", "Model hidden types, update beliefs, and survive adverse selection or auctions."],
+  ["05", "Messages → Signals", "Separate meaningful signals from cheap talk and design belief-shifting communication."],
+  ["06", "Rules → Mechanisms", "Engineer games where strategic agents still reveal truth or create welfare."],
 ];
 
 const engines = {
@@ -252,6 +284,7 @@ const $ = (id) => document.getElementById(id);
 function init() {
   $("worldCount").textContent = worlds.length;
   $("moduleCount").textContent = `${worlds.reduce((sum, world) => sum + world.modules.length, 0)}+`;
+  renderCurriculum();
   renderWorldTabs();
   renderWorld();
   setupSimChoices();
@@ -282,28 +315,48 @@ function renderWorld() {
   $("worldTitle").textContent = world.title;
   $("worldDescription").textContent = world.description;
   $("worldTags").innerHTML = world.tags.map((tag) => `<span>${tag}</span>`).join("");
-  $("moduleGrid").innerHTML = world.modules.map(([title, copy]) => `
+  $("moduleGrid").innerHTML = world.modules.map((module) => `
     <article class="module-card">
-      <h4>${title}</h4>
-      <p>${copy}</p>
-      <button type="button" data-module-title="${title}">Map to lab</button>
+      <div class="module-badge"><span>${module.glyph}</span><strong>${module.phase}</strong></div>
+      <h4>${module.title}</h4>
+      <p>${module.copy}</p>
+      <button type="button" data-module-title="${module.title}">${module.href ? "Launch lab" : "Map to lab"}</button>
     </article>
   `).join("");
+  $("worldDetailArt").textContent = world.visual;
+  $("worldCapstone").textContent = world.capstone;
   document.querySelectorAll("[data-module-title]").forEach((button) => {
     button.addEventListener("click", () => mapModuleToEngine(button.dataset.moduleTitle));
   });
 }
 
+function renderCurriculum() {
+  const track = $("curriculumTrack");
+  if (!track) return;
+  track.innerHTML = curriculum.map(([number, title, copy]) => `
+    <article class="curriculum-card">
+      <span>${number}</span>
+      <h3>${title}</h3>
+      <p>${copy}</p>
+    </article>
+  `).join("");
+}
+
 function mapModuleToEngine(title) {
+  const selected = worlds.flatMap((world) => world.modules).find((module) => module.title === title);
+  if (selected && selected.href) {
+    window.location.href = selected.href;
+    return;
+  }
   const lower = title.toLowerCase();
-  const engine = lower.includes("utility") ? "utility"
+  const engine = selected?.engine || (lower.includes("utility") ? "utility"
     : lower.includes("risk") || lower.includes("lottery") || lower.includes("petersburg") ? "lottery"
     : lower.includes("cournot") || lower.includes("collusion") ? "cournot"
     : lower.includes("auction") || lower.includes("winner") ? "auction"
     : lower.includes("signal") || lower.includes("cheap talk") ? "signaling"
     : lower.includes("bargain") ? "bargaining"
-    : lower.includes("mechanism") || lower.includes("vcg") || lower.includes("screen") ? "mechanism"
-    : "utility";
+    : lower.includes("mechanism") || lower.includes("vcg") || lower.includes("screen") || lower.includes("matching") || lower.includes("goods") ? "mechanism"
+    : "utility");
   state.engine = engine;
   syncChoiceButtons();
   renderEngine();
