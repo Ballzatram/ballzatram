@@ -333,24 +333,13 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
             if fade_out > 0:
                 total_duration = max(0.1, timeline)
                 audio_filters.append(f"afade=t=out:st={max(0.0, total_duration - fade_out):.3f}:d={fade_out:.3f}")
-            if preserve_segment_audio:
-                filter_complex = f"[0:a]{','.join(audio_filters)}[music];[1:a]volume=0.22[orig];[orig][music]amix=inputs=2:duration=shortest:normalize=0[aout]"
-                _run([
-                    "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                    *music_input, "-i", str(stitched_path),
-                    "-filter_complex", filter_complex,
-                    "-map", "1:v:0", "-map", "[aout]",
-                    "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
-                    "-shortest", "-movflags", "+faststart", str(output_path),
-                ])
-            else:
-                _run([
-                    "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                    *music_input, "-i", str(stitched_path),
-                    "-map", "1:v:0", "-map", "0:a:0", "-af", ",".join(audio_filters),
-                    "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
-                    "-shortest", "-movflags", "+faststart", str(output_path),
-                ])
+            _run([
+                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                *music_input, "-i", str(stitched_path),
+                "-map", "1:v:0", "-map", "0:a:0", "-af", ",".join(audio_filters),
+                "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
+                "-shortest", "-movflags", "+faststart", str(output_path),
+            ])
         elif mute_segment_audio:
             stitched_path = temp_dir / "stitched_video.mp4"
             _run([

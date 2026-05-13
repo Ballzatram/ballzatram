@@ -316,7 +316,6 @@ def generate_versions(video_project_id: int, payload: VersionsCreate) -> dict:
             plan = _base_plan_for_version(payload.prompt, metadata, profile, selected_music.get("duration") if selected_music else None, trend, style, index + 1)
             plan["platform"] = payload.target_platform
             plan["target_platform"] = payload.target_platform
-            plan["features"] = {"music": bool(selected_music), "captions": True, "hashtags": True}
             plan["music_asset_id"] = selected_music["id"] if selected_music else None
             plan["music_settings"]["music_asset_id"] = selected_music["id"] if selected_music else None
             plan["trend_signal"] = trend

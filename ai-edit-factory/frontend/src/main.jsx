@@ -340,7 +340,6 @@ function App() {
   }
 
   async function createRenderJob(editPlanId = project?.edit_plan?.id) {
-    if (!backendOnline) return setMessage('Backend offline: preview mode only. Render MP4 is disabled until the API is connected.');
     if (!project) return setMessage('Create a project first.');
     setBusy(true);
     try {
@@ -361,7 +360,7 @@ function App() {
         <p className="kicker">AI edit factory · native web workflow</p>
         <h1>Upload. Plan. Render clips.</h1>
         <p className="lede">A self-contained short-form workspace: upload permitted clips/music, let the built-in editor choose cuts, captions, hashtags, and render a downloadable MP4 without asking creators to connect an external editing API.</p>
-        <div className="heroStats"><StatusPill>{backendOnline ? 'Connected to backend' : 'Backend offline: preview mode only'}</StatusPill><StatusPill>Music start control</StatusPill><StatusPill>Feedback loop</StatusPill></div>
+        <div className="heroStats"><StatusPill>Built-in AI heuristics</StatusPill><StatusPill>Music start control</StatusPill><StatusPill>Feedback loop</StatusPill></div>
       </section>
 
       <section className="factoryBoard">

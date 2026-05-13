@@ -266,17 +266,3 @@ The app does not scrape TikTok or any social platform. `trend_signals` is seeded
 - `freshness_score`
 
 The React **Insights** section displays these rows, and the `/api/studio/projects/{id}/versions` planner can use them as optional context when generating deterministic edit-plan variants.
-
-## Production deployment note: preview-only static hosting vs real rendering
-
-Static frontend-only hosting can only provide browser source previews. It cannot upload media into the MVP persistence layer, cannot run ffmpeg, cannot enqueue worker jobs, cannot mix uploaded music, and must not present a browser object URL as a rendered export.
-
-Real MP4 rendering requires the full stack:
-
-- FastAPI API reachable by the browser (`/api/health` and `/api/diagnostics` should return successfully)
-- Redis plus the RQ worker for queued render jobs, or the documented local FastAPI background fallback
-- ffmpeg and ffprobe installed in the backend/worker runtime
-- writable persistent `inputs/`, `outputs/`, and `data/`/SQLite storage
-- frontend served by the backend container or configured with the correct API base URL
-
-For `ballzatram.com`, either serve the built frontend from the FastAPI backend container or configure the hosted frontend API origin to the deployed backend. If the UI says **Backend offline: preview mode only**, uploads are local browser selections, **Render MP4** is disabled, and no download should be treated as a real export. Use `GET /api/diagnostics` to verify `ffmpeg_available`, `ffprobe_available`, Redis/queue availability, writable paths, detected frontend dist, and `app_mode` before testing production renders.
