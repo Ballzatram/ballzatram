@@ -185,3 +185,97 @@ button { font: inherit; }
 @media (prefers-reduced-motion: reduce) {
   *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
 }
+
+.curriculum-brief {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: .75rem;
+}
+
+.curriculum-brief article,
+.notebook dl > div,
+.ending-debrief {
+  border: 2px solid rgba(120, 249, 255, .25);
+  border-radius: 16px;
+  background: rgba(120, 249, 255, .07);
+}
+
+.curriculum-brief article {
+  padding: .85rem;
+}
+
+.curriculum-brief span {
+  display: inline-flex;
+  margin-bottom: .55rem;
+  border-radius: 999px;
+  padding: .25rem .48rem;
+  background: rgba(255, 193, 74, .14);
+  color: var(--warn);
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.curriculum-brief h3 {
+  margin: 0 0 .35rem;
+  color: var(--accent);
+}
+
+.curriculum-brief p {
+  margin: 0;
+  color: #ded8ff;
+  line-height: 1.42;
+}
+
+.notebook dl {
+  display: grid;
+  gap: .55rem;
+  margin: 0;
+}
+
+.notebook dl > div {
+  padding: .68rem;
+}
+
+.notebook dt {
+  margin-bottom: .22rem;
+  color: var(--warn);
+  font-size: .72rem;
+  font-weight: 950;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.notebook dd {
+  margin: 0;
+  color: #f5f1ff;
+  line-height: 1.4;
+}
+
+.ending-debrief {
+  margin-top: 1rem;
+  padding: .85rem;
+}
+
+.ending-debrief h3 {
+  margin: 0 0 .45rem;
+  color: var(--accent);
+}
+
+.ending-debrief ul {
+  margin: 0;
+  padding-left: 1.15rem;
+}
+
+.ending-debrief li {
+  margin: .4rem 0;
+  color: #efeaff;
+  line-height: 1.42;
+}
+
+@media (max-width: 760px){
+  .curriculum-brief {
+    grid-template-columns: 1fr;
+  }
+}

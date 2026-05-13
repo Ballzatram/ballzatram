@@ -4,16 +4,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Play Ballzatram's Econ Arcade: a polished curriculum of economics games, game theory labs, and macro policy simulations." />
+  <meta name="theme-color" content="#10081f" />
   <title>Econ Arcade | Ballzatram</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
+  <a class="skip-link" href="#featured">Skip to games</a>
   <div class="arcade-shell">
     <header class="arcade-header">
       <a class="back-link" href="../index.html">← Ballzatram Home</a>
       <nav aria-label="Econ Arcade navigation">
         <a href="#featured">Featured</a>
+        <a href="#learning-path">Learning Path</a>
         <a href="#roadmap">Curriculum</a>
         <a href="platform.html">Strategy Studio</a>
         <a href="../docs/game-theory-platform.md">Blueprint</a>
@@ -26,12 +30,48 @@
         <p class="kicker">Strategy laboratory · simulations · macro games</p>
         <h1 id="arcadeTitle">Econ Arcade</h1>
         <p>
-          A polished launch bay for Ballzatram's economics games, macro dashboards, and game theory
-          simulations. Play through incentives first, then inspect the mathematics that made them bite.
+          A polished learning arcade for economics: every game starts with a playable challenge,
+          exposes the model underneath, and ends with a debrief that turns intuition into durable concepts.
         </p>
         <div class="hero-actions">
           <a class="primary-action" href="prisoners-dilemma.html">Play Prisoner’s Dilemma Lab</a>
+          <a class="secondary-action" href="../games/central-bank.html">Run Central Banker</a>
           <a class="secondary-action" href="platform.html">Open Strategy Studio</a>
+        </div>
+        <div class="hero-proof" aria-label="Econ Arcade learning promises">
+          <span><strong>Play</strong> first</span>
+          <span><strong>Learn</strong> the model</span>
+          <span><strong>Debrief</strong> tradeoffs</span>
+          <span><strong>Retry</strong> better</span>
+        </div>
+      </section>
+
+      <section id="learning-path" class="learning-contract" aria-labelledby="learningPathTitle">
+        <div>
+          <p class="kicker">Designed for fun and transfer</p>
+          <h2 id="learningPathTitle">A clear curriculum, not a pile of mini-games</h2>
+          <p>
+            Econ Arcade uses a repeatable teaching loop: make a choice under pressure, show the
+            hidden incentives, visualize the consequence, then name the economics concept while the
+            moment is still memorable.
+          </p>
+        </div>
+        <div class="contract-grid">
+          <article>
+            <span>01</span>
+            <h3>Objective</h3>
+            <p>Each module states what you should understand before the timer or simulation starts.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Experiment</h3>
+            <p>Games reward counterfactual play: switch strategies, change parameters, and compare outcomes.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Debrief</h3>
+            <p>Plain-language summaries connect the score to vocabulary, equations, and real-world intuition.</p>
+          </article>
         </div>
       </section>
 
@@ -51,6 +91,7 @@
             <li>Seven playable concept engines</li>
             <li>Architecture and AI learning layer plan</li>
           </ul>
+          <div class="card-meta"><span>Learn: full game theory spine</span><span>Mode: sandbox</span></div>
           <a href="platform.html">Open studio →</a>
         </article>
 
@@ -69,10 +110,11 @@
             <li>Live payoff matrix and cooperation trace</li>
             <li>Equilibrium-centered debriefs</li>
           </ul>
+          <div class="card-meta"><span>Learn: Nash pressure</span><span>Time: 5–8 min</span></div>
           <a href="prisoners-dilemma.html">Enter the lab →</a>
         </article>
 
-        <article class="menu-card">
+        <article class="menu-card macro-card">
           <div class="card-topline">
             <span>Macro Policy</span>
             <strong>Playable now</strong>
@@ -82,6 +124,12 @@
             Run a fictional central bank for ten quarters. Balance inflation, unemployment,
             credibility, market panic, and growth under noisy policy lags.
           </p>
+          <ul>
+            <li>Explicit monetary-policy learning objectives</li>
+            <li>Scenario-based advisor modes for class or solo play</li>
+            <li>Policy notebook with final concept debrief</li>
+          </ul>
+          <div class="card-meta"><span>Learn: policy tradeoffs</span><span>Time: 7–10 min</span></div>
           <a href="../games/central-bank.html">Play Central Banker →</a>
         </article>
 
@@ -95,6 +143,12 @@
             Analyze portfolios, macro time series, stress scenarios, reports, and stock workflows in
             a quant-style dashboard that complements the game simulations.
           </p>
+          <ul>
+            <li>Portfolio and macro workflow companion</li>
+            <li>CSV-friendly analysis path</li>
+            <li>Model governance reminders</li>
+          </ul>
+          <div class="card-meta"><span>Learn: applied macro data</span><span>Mode: dashboard</span></div>
           <a href="../tools/macroboard/index.html">Open MacroBoard →</a>
         </article>
       </section>
@@ -103,7 +157,7 @@
         <p class="kicker">Game theory campaign</p>
         <h2 id="roadmapTitle">Six-world curriculum with playable foundations</h2>
         <p>
-          The Strategy Studio now moves like a campaign: each world has a visual identity, a capstone,
+          The Strategy Studio moves like a campaign: each world has a visual identity, a capstone,
           and labs that map directly into playable engines or the Prisoner’s Dilemma experience.
         </p>
         <div class="roadmap-grid">

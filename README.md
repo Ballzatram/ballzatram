@@ -15,6 +15,8 @@ A May 2026 pass tightened the public Ballzatram surface and MacroBoard app so th
 
 ## Econ Arcade
 
+The May 2026 production polish pass added stronger public-site metadata, skip-link accessibility, a homepage mission panel, and an Econ Arcade learning contract that makes the curriculum explicit before users launch a game. Central Banker now includes setup learning objectives, an in-game policy notebook, and end-of-term concept debriefs so the macro game teaches inflation targeting, policy lags, financial stability, expectations, and central-bank credibility while preserving the playful Goblin Reserve loop.
+
 The static homepage now links to `econ-arcade/index.html`, a dedicated strategy-learning menu for economics games and macro tools. `econ-arcade/platform.html` now provides the curriculum-wide Strategy Studio covering rational choice, static games, dynamic games, incomplete information, auctions, signaling, bargaining, and mechanism design with multiple playable concept engines. The first full standalone game theory module is `econ-arcade/prisoners-dilemma.html`, which implements a repeated Prisoner’s Dilemma lab with AI opponent archetypes, a live payoff matrix, a cooperation trace, and educational debriefs. Dependency-free Node API foundations for Prisoner’s Dilemma and the broader scenario catalog live in `econ-arcade/backend/`. The product/architecture blueprint lives in `docs/game-theory-platform.md`, Prisma schema in `prisma/schema.prisma`, and shared simulation contracts in `packages/sim-core/src/types.ts`.
 
 ## Architecture (text diagram)

@@ -121,6 +121,55 @@ const scenarios = [
   }
 ];
 
+
+const scenarioCoaches = {
+  "Soup-Price Jump Scare": {
+    objective: "Separate a noisy price shock from a persistent inflation problem.",
+    watch: "Inflation, confidence, and whether growth weakens after tightening.",
+    success: "Cool demand gradually if inflation persists; avoid a giant move before lagged effects arrive."
+  },
+  "Regional Bank With Too Many Basements": {
+    objective: "Stop a liquidity panic before it becomes a solvency and confidence crisis.",
+    watch: "Bank stability below 50, volatility spikes, and confidence losses.",
+    success: "Use liquidity tools when the banking channel is the dominant risk; explain moral hazard in the debrief."
+  },
+  "Meme-Stock Volcano": {
+    objective: "Distinguish market volatility from broad macro weakness.",
+    watch: "Volatility, confidence, and whether GDP and unemployment are still near healthy ranges.",
+    success: "Stabilize expectations before using blunt rate or QE tools."
+  },
+  "Wage Spiral Karaoke Night": {
+    objective: "Understand how expectations can turn wage and price increases into a loop.",
+    watch: "Inflation above target with unemployment still low and political pressure rising.",
+    success: "Lean against overheating while tracking the unemployment tradeoff."
+  },
+  "Productivity Fairy With a Spreadsheet Wand": {
+    objective: "Recognize a positive supply shock that improves growth without extra inflation.",
+    watch: "GDP growth, unemployment, inflation, and whether policy oversteers a healthy economy.",
+    success: "Protect the soft landing; holding can be an active policy choice."
+  },
+  "Parliament Demands Free Money Friday": {
+    objective: "Protect central bank credibility under political pressure.",
+    watch: "Political pressure, inflation expectations, and confidence after non-economic demands.",
+    success: "Do not cut rates just to satisfy politics if inflation credibility is at risk."
+  },
+  "Credit Crunch Fog Machine": {
+    objective: "See how bank lending conditions can transmit into jobs and output.",
+    watch: "GDP growth, unemployment, bank stability, and confidence after credit tightens.",
+    success: "Target the credit channel while avoiding unnecessary inflation fuel."
+  },
+  "Energy Goblin Embargo": {
+    objective: "Reason through stagflation when inflation rises and growth slows together.",
+    watch: "Inflation and unemployment moving in the wrong direction at the same time.",
+    success: "Anchor expectations and avoid pretending there is a painless single-button fix."
+  },
+  "Soft-Landing Parade Permit": {
+    objective: "Preserve balance once inflation, jobs, and stability are close to target.",
+    watch: "Whether aggressive moves create volatility after conditions improve.",
+    success: "Use patience and small interventions; do not manufacture a recession after winning."
+  }
+};
+
 const actions = [
   {
     id: "raise",
@@ -259,6 +308,29 @@ function healthClass() {
   return "stable";
 }
 
+
+function renderPolicyNotebook(lastAction) {
+  const scenario = scenarios[state.scenarioIndex];
+  const coach = scenarioCoaches[scenario.title];
+  el("lessonObjective").textContent = coach.objective;
+  el("watchSignal").textContent = coach.watch;
+  el("successRule").textContent = lastAction
+    ? `${lastAction.name}: ${lastAction.explanation}`
+    : coach.success;
+}
+
+function buildEndingConcepts(ending) {
+  const m = state.metrics;
+  const concepts = [];
+  concepts.push(`Inflation targeting: ended at ${m.inflation.toFixed(1)}% versus a 2.0% target, showing how credibility depends on repeated choices.`);
+  concepts.push(`Dual-mandate tradeoff: unemployment finished at ${m.unemployment.toFixed(1)}% while GDP growth finished at ${m.gdpGrowth.toFixed(1)}%, so the score reflects both prices and jobs.`);
+  if (m.bankStability < 45 || ending.title.includes("Banking")) concepts.push("Financial stability: weak banks can turn normal policy into crisis management because credit transmission breaks.");
+  if (m.volatility > 58) concepts.push("Expectations channel: high market volatility shows why guidance and credibility can matter before fundamentals fully move.");
+  if (m.politicalPressure > 65 || ending.title.includes("Political")) concepts.push("Central bank independence: political pressure can narrow the feasible policy set even when the macro dashboard looks manageable.");
+  if (ending.title === "Soft Landing") concepts.push("Soft landing: balanced outcomes require patience, targeted tools, and respect for monetary-policy lags.");
+  return concepts.slice(0, 5);
+}
+
 function renderDashboard() {
   const dashboard = el("dashboard");
   dashboard.innerHTML = "";
@@ -284,6 +356,7 @@ function renderScenario() {
   el("briefingTitle").textContent = scenario.title;
   el("scenarioText").textContent = scenario.situation;
   el("advisorText").textContent = scenario.advisor[state.mode];
+  renderPolicyNotebook();
 }
 
 function renderActions() {
@@ -376,6 +449,7 @@ function takeAction(action) {
   renderLog();
   el("decisionExplanation").textContent = `${action.explanation} Key terms: ${action.terms}.`;
   el("termsText").textContent = `This quarter highlighted: ${action.terms}.`;
+  renderPolicyNotebook(action);
 
   renderDashboard();
   updateEconomyView(headline);
@@ -445,6 +519,13 @@ function endGame(ending) {
   el("endingTitle").textContent = ending.title;
   el("endingText").textContent = ending.text;
   el("endingScore").textContent = `Final score: ${finalScore}. Final dashboard: inflation ${state.metrics.inflation.toFixed(1)}%, unemployment ${state.metrics.unemployment.toFixed(1)}%, GDP growth ${state.metrics.gdpGrowth.toFixed(1)}%.`;
+  const conceptList = el("endingConcepts");
+  conceptList.innerHTML = "";
+  buildEndingConcepts(ending).forEach((concept) => {
+    const item = document.createElement("li");
+    item.textContent = concept;
+    conceptList.appendChild(item);
+  });
   el("endingModal").classList.remove("hidden");
 }
 
