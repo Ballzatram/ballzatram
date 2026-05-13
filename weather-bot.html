@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Prop Bot | Ballzatram</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="sky weather-bot-sky" id="sky">
+    <header class="site-header">
+      <a class="brand-logo" href="./index.html" aria-label="Ballzatram home">
+        <img src="assets/title.png" alt="Ballzatram" />
+      </a>
+
+      <nav class="nav-panel" aria-label="Main navigation">
+        <a href="index.html#tools">Tools</a>
+        <span></span>
+        <a href="weather-bot.html">Weather Bot</a>
+        <span></span>
+        <a href="index.html#projects">Projects</a>
+      </nav>
+    </header>
+
+    <main class="weather-page-shell">
+      <section class="weather-hero terminal-card">
+        <div class="weather-hero-copy">
+          <p class="eyebrow">☁ Polymarket weather desk // local runner concept ☁</p>
+          <h1>Weather Prop Bot</h1>
+          <p class="weather-subtitle">
+            A Polymarket-first scanner for weather props, settlement timing, and real-time edge detection.
+          </p>
+          <p class="research-disclaimer">
+            Research / paper-trading tool only. Not financial advice. Live trading requires local credentials and user-controlled execution.
+          </p>
+        </div>
+        <div class="weather-console" aria-label="Weather bot status console">
+          <div class="console-row"><span>EXCHANGE</span><strong>POLYMARKET</strong></div>
+          <div class="console-row"><span>WEATHER</span><strong>WETHR.NET API V2</strong></div>
+          <div class="console-row"><span>RUNNER</span><strong>LOCAL ONLY</strong></div>
+          <div class="console-row warning"><span>LIVE TRADING</span><strong>DISABLED</strong></div>
+        </div>
+      </section>
+
+      <section class="warning-strip" aria-label="Safety warnings">
+        <p>⚠ This tool does not guarantee profit.</p>
+        <p>⚠ Weather market settlements can depend on exact source/station/rules.</p>
+        <p>⚠ Live trading should remain opt-in and locally executed.</p>
+        <p>⚠ Do not store private keys in the browser or commit them to git.</p>
+      </section>
+
+      <section class="dashboard-grid" aria-label="Weather bot dashboard mock configuration">
+        <article class="dashboard-card config-card">
+          <span class="card-kicker">Config bay</span>
+          <h2>Market Scanner Setup</h2>
+          <div class="config-list">
+            <label>
+              <span>Exchange</span>
+              <select disabled>
+                <option selected>Polymarket</option>
+              </select>
+            </label>
+            <label>
+              <span>Weather data source</span>
+              <select disabled>
+                <option selected>Wethr.net API v2</option>
+                <option>NWS api.weather.gov</option>
+                <option>NOAA</option>
+                <option>WeatherAPI.com</option>
+              </select>
+            </label>
+            <label>
+              <span>API key status</span>
+              <input type="text" value="Placeholder only — not stored" disabled />
+            </label>
+            <label>
+              <span>Mode</span>
+              <input type="text" value="Paper trading / Live trading disabled" disabled />
+            </label>
+          </div>
+        </article>
+
+        <article class="dashboard-card risk-card">
+          <span class="card-kicker">Risk rails</span>
+          <h2>Limits</h2>
+          <div class="metric-stack">
+            <div><span>Bankroll limit</span><strong>$500 paper</strong></div>
+            <div><span>Max position size</span><strong>2.5%</strong></div>
+            <div><span>Min edge threshold</span><strong>6.0 pts</strong></div>
+            <div><span>Settlement window</span><strong>Evaluate within 90 minutes</strong></div>
+          </div>
+        </article>
+
+        <article class="dashboard-card markets-card">
+          <span class="card-kicker">Target markets</span>
+          <h2>Weather Props</h2>
+          <div class="chip-cloud" aria-label="Target market categories">
+            <span>Temperature</span>
+            <span>Rainfall</span>
+            <span>Snow</span>
+            <span>Storm / Tornado</span>
+            <span>Other weather markets</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Strategy overview</span>
+          <h2>Bot Flow</h2>
+          <ol class="flow-list">
+            <li>Scan Polymarket weather markets and watch order-book movement.</li>
+            <li>Parse market rules, eligible stations, and settlement criteria.</li>
+            <li>Pull latest Wethr.net observations/model data from the v2 API placeholder endpoint.</li>
+            <li>Cross-check with fallback sources such as NWS, NOAA, WeatherAPI.com, and other real-time providers.</li>
+            <li>Estimate fair YES/NO probability with explicit uncertainty bands.</li>
+            <li>Compare fair probability against available order-book prices.</li>
+            <li>Paper-trade or alert when the configured edge threshold is exceeded.</li>
+            <li>Log snapshots, decisions, and outcomes for backtesting.</li>
+          </ol>
+        </article>
+
+        <article class="terminal-card architecture-card">
+          <span class="card-kicker">Architecture</span>
+          <h2>Local-first pipeline</h2>
+          <div class="pipeline" aria-label="Weather bot architecture flow">
+            <span>Polymarket Market Data</span>
+            <span>Contract Parser</span>
+            <span>Weather Resolver</span>
+            <span>Probability Engine</span>
+            <span>Risk Manager</span>
+            <span>Paper Trader / Local Runner</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="runner-backtest-grid">
+        <article class="terminal-card runner-card">
+          <span class="card-kicker">Local runner</span>
+          <h2>Credentials stay on your machine</h2>
+          <p>
+            The Ballzatram web UI is intended for configuration and monitoring. Real Polymarket trading credentials should be loaded only by a local runner process on the user’s computer, not stored by the website.
+          </p>
+          <button class="disabled-button" type="button" disabled>Local Runner Coming Soon</button>
+          <div class="code-panel" aria-label="Local runner placeholder instructions">
+            <code># UI text only — placeholder setup</code>
+            <code>touch .env.local</code>
+            <code>POLYMARKET_PRIVATE_KEY=</code>
+            <code>WETHR_API_KEY=</code>
+            <code>npm run local-weather-bot</code>
+          </div>
+        </article>
+
+        <article class="terminal-card backtest-card">
+          <span class="card-kicker">Backtesting first</span>
+          <h2>Prove the log before the trade</h2>
+          <p>
+            Version one should collect market snapshots, weather observations, model predictions, and final settlement results before enabling any real order placement. That dataset can power strategy review, calibration, and paper-trading reports.
+          </p>
+          <ul class="backtest-list">
+            <li>Snapshot bid/ask prices and liquidity.</li>
+            <li>Store observation timestamps and station/source IDs.</li>
+            <li>Compare prediction confidence to final settlement.</li>
+            <li>Keep every live-trading control disabled until a local runner is configured.</li>
+          </ul>
+        </article>
+      </section>
+
+      <!--
+        Future local-runner module placeholders only; no real order placement here:
+        - polymarketClient: public market data now, authenticated CLOB trading later in the local runner.
+        - wethrClient: Wethr.net API v2 base URL placeholder: https://wethr.net/api/v2/.
+        - contractParser: extract weather station/source and settlement-rule constraints.
+        - probabilityEngine: estimate fair YES/NO probability with uncertainty.
+        - riskManager: enforce bankroll, max position size, settlement windows, and edge thresholds.
+        - paperTrader: simulate alerts/fills without custodying user credentials.
+        - backtester: reconcile market snapshots, weather observations, predictions, and settlements.
+      -->
+    </main>
+
+    <footer class="site-footer">
+      <span>★</span>
+      <p>Built in the hangar. Fueled by curiosity. Launched for everyone.</p>
+      <span>★</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
