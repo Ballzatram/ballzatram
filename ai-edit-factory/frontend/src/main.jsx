@@ -98,6 +98,7 @@ function App() {
   const [addMusic, setAddMusic] = useState(true);
   const [addCaptions, setAddCaptions] = useState(true);
   const [addHashtags, setAddHashtags] = useState(true);
+  const [musicStart, setMusicStart] = useState('');
   const [prompt, setPrompt] = useState(defaultPrompt);
   const [message, setMessage] = useState('Create a project, add media you have permission to use, choose a style, then generate and render from this page.');
   const [busy, setBusy] = useState(false);
@@ -244,10 +245,34 @@ function App() {
           add_music: addMusic,
           add_captions: addCaptions,
           add_hashtags: addHashtags,
+          music_start_seconds: addMusic && musicStart !== '' ? Number(musicStart) : null,
         }),
       });
       await refresh(project.id);
-      setMessage('Edit plan ready. Review the cuts, captions, hashtags, and render settings before export.');
+      setMessage('AI edit plan ready. Review cuts, captions, hashtags, and music start before rendering. No external editing API is required.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function sendFeedback(rating, exportId = null) {
+    if (!project?.id) return;
+    setBusy(true);
+    try {
+      const data = await api(`/api/studio/projects/${project.id}/feedback`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          edit_plan_id: project.edit_plan?.id,
+          export_id: exportId,
+          rating,
+          signal: rating >= 4 ? 'liked_export' : 'needs_improvement',
+        }),
+      });
+      await refresh(project.id);
+      setMessage(`Feedback saved. Learning samples: ${data.learning_profile.sample_size}. Future plans will adapt pacing and caption density.`);
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -275,8 +300,8 @@ function App() {
         <a href="/" className="back">← Ballzatram</a>
         <p className="kicker">AI edit factory · native web workflow</p>
         <h1>Upload. Plan. Render clips.</h1>
-        <p className="lede">A short-form workspace for permitted uploads, simple creative choices, music, captions, hashtags, render status, previews, and MP4 downloads.</p>
-        <div className="heroStats"><StatusPill>Vertical MP4 exports</StatusPill><StatusPill>Music bed support</StatusPill><StatusPill>Captions + hashtags</StatusPill></div>
+        <p className="lede">A self-contained short-form workspace: upload permitted clips/music, let the built-in editor choose cuts, captions, hashtags, and render a downloadable MP4 without asking creators to connect an external editing API.</p>
+        <div className="heroStats"><StatusPill>Built-in AI heuristics</StatusPill><StatusPill>Music start control</StatusPill><StatusPill>Trainable feedback</StatusPill></div>
       </section>
 
       <section className="factoryBoard">
@@ -306,7 +331,7 @@ function App() {
           <label>Music upload<input type="file" accept=".mp3,.wav,.m4a,.aac,.flac,.ogg,audio/*" onChange={(event) => setMusic(event.target.files?.[0] || null)} /></label>
           {music && <p className="small">Selected: {music.name} · {prettyBytes(music.size)}</p>}
           <button disabled={!canUploadMusic} onClick={uploadMusic}>Add music bed</button>
-          {selectedMusic ? <p className="small">Saved: {selectedMusic.original_filename} · {Number(selectedMusic.duration || 0).toFixed(1)}s · {selectedMusic.file_type}</p> : <p className="emptyState">No music bed uploaded yet.</p>}
+          {selectedMusic ? <><p className="small">Saved: {selectedMusic.original_filename} · {Number(selectedMusic.duration || 0).toFixed(1)}s · {selectedMusic.file_type}</p><label>Song start second<input type="number" min="0" max={Math.max(0, Math.floor(selectedMusic.duration || 0))} step="0.1" value={musicStart} onChange={(event) => setMusicStart(event.target.value)} placeholder="Auto" /></label><p className="small">Leave blank for the editor's suggested hook/drop, or enter the exact second to use before rendering.</p></> : <p className="emptyState">No music bed uploaded yet.</p>}
         </article>
       </section>
 
@@ -348,8 +373,9 @@ function App() {
             <h3>Cuts</h3>
             <ol>{editPlan.segments.map((segment, index) => <li key={`${segment.source_start}-${index}`}>{segment.source_filename ? `${segment.source_filename} · ` : ''}{segment.source_start}s–{segment.source_end}s · {segment.reason}</li>)}</ol>
             {editPlan.text_overlays.length > 0 && <><h3>Captions</h3><ol>{editPlan.text_overlays.map((overlay, index) => <li key={`${overlay.time}-${index}`}>{overlay.time}s · “{overlay.text}” · {overlay.style}</li>)}</ol></>}
-            <p><strong>Music:</strong> {editPlan.music_asset_id ? `Uploaded bed #${editPlan.music_asset_id}` : editPlan.music_vibe}</p>
+            <p><strong>Music:</strong> {editPlan.music_asset_id ? `Uploaded bed #${editPlan.music_asset_id} starting at ${editPlan.music_start_seconds || 0}s` : editPlan.music_vibe}</p>
             <p><strong>Export notes:</strong> {editPlan.export_notes}</p>
+            <p className="small">Learning: {editPlan.learning_profile?.sample_size || 0} feedback sample(s). {editPlan.trend_context}</p>
             <button disabled={!canRender} onClick={createRenderJob}>Render downloadable MP4</button>
           </article>
           <article className="card">
@@ -375,6 +401,7 @@ function App() {
               <span>{item.status}</span>
               {item.download_url ? <video controls playsInline src={`${API}${item.download_url}`} /> : <span>{item.path || 'Render path pending'}</span>}
               {item.download_url && <a href={`${API}${item.download_url}`} download>Download MP4</a>}
+              {item.download_url && <div className="feedbackRow"><button type="button" disabled={busy} onClick={() => sendFeedback(5, item.id)}>Works</button><button type="button" disabled={busy} onClick={() => sendFeedback(2, item.id)}>Needs tighter cuts</button></div>}
             </article>
           ))}</div>
         </section>

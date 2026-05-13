@@ -170,3 +170,53 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 - Run at least one API container and one worker container; scale workers for render throughput. The API image includes the built frontend, so a production deployment can expose the API container as the site.
 - SQLite is acceptable for MVP/single-node use. For Postgres, replace the small functions in `backend/app/db.py` with an equivalent connection layer while preserving table semantics.
 - Add scheduled cleanup for stale uploaded inputs and old outputs based on your retention policy.
+
+## Built-in editor, music selection, and learning loop
+
+The studio no longer depends on a creator-supplied editing API key or third-party editing service. The browser talks to the FastAPI backend, and the backend produces the edit through local, deterministic AI-style heuristics plus ffmpeg:
+
+- `generate_edit_plan(...)` chooses platform, duration, pacing, source segments, text overlays, caption packages, hashtags, music guidance, and a suggested `music_start_seconds` from the uploaded media metadata and prompt.
+- The React studio exposes a **Song start second** control after music upload so a user can choose which hook/drop of the song is used before generating and rendering the MP4.
+- Rendered files now include a slug of the project name in `outputs/studio_project_<id>/<project-name>_plan_<plan-id>_<platform>.mp4`, so exports are recognizable instead of only numeric/opaque names.
+- Every export can receive quick feedback through **Works** / **Needs tighter cuts**. Feedback is stored in SQLite and returned as `learning_profile`; future edit plans for that project adjust pacing and caption density based on the profile.
+- TikTok/trend relevance must be fed through permissioned or official sources. This repo intentionally does not scrape TikTok or bypass platform controls. For a production trend system, import approved trend signals into the database, then expose them to `generate_edit_plan(...)` the same way first-party feedback is exposed today.
+
+New studio feedback endpoint:
+
+```http
+POST /api/studio/projects/{id}/feedback
+```
+
+Body:
+
+```json
+{
+  "edit_plan_id": 1,
+  "export_id": 1,
+  "rating": 5,
+  "signal": "liked_export",
+  "notes": "Optional operator note"
+}
+```
+
+## What you need to do to make the prototype functional end-to-end
+
+1. Install Docker Desktop / Docker Engine.
+2. From this directory, run `docker compose up --build`.
+3. Open `http://localhost:8000`.
+4. Create a named project; the generated MP4 filename will include a slug of that name.
+5. Check the rights confirmation box.
+6. Upload one or more short source videos (`mp4`, `mov`, or `webm`). For fastest iteration, start with clips under 60 seconds.
+7. Optional: upload a rights-cleared song (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`) and set **Song start second** to the part of the song you want under the edit.
+8. Choose a clip type, keep music/captions/hashtags enabled or disable what you do not want, then click **Generate edit plan**.
+9. Review cuts, captions, hashtags, and the suggested music start.
+10. Click **Render downloadable MP4** and wait for the status to reach `finished`.
+11. Preview and download the MP4 in the **Exports** section.
+12. Click **Works** or **Needs tighter cuts** on the export so the local learning profile can tune future plans for that project.
+
+Operational requirements:
+
+- Keep `inputs/`, `outputs/`, and `data/` writable and persistent if you want projects and exports to survive container restarts.
+- Install/ship ffmpeg in any non-Docker environment; the provided backend Dockerfile already includes it.
+- Do not use copyrighted media unless you own it, licensed it, or have explicit permission to process it.
+- Do not connect scraping tools to TikTok. Use official/permissioned trend data feeds or manually curated trend signals.

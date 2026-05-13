@@ -17,7 +17,7 @@
       </a>
       <div class="api-control">
         <span id="apiStatus" class="api-status is-checking">Checking API</span>
-        <button id="apiSettingsButton" class="ghost-button" type="button">API settings</button>
+        <button id="apiSettingsButton" class="ghost-button" type="button">Backend settings</button>
       </div>
     </header>
 
@@ -44,7 +44,7 @@
 
     <section id="apiSettingsPanel" class="settings-panel" hidden>
       <div>
-        <h2>API connection</h2>
+        <h2>Render backend</h2>
         <p>
           Leave this as this site’s origin when the backend serves the page. For split deployments,
           paste the API origin only, for example <code>https://api.example.com</code>.
@@ -260,7 +260,7 @@
       try {
         response = await fetch(apiUrl(path), options);
       } catch (error) {
-        throw new Error(`Cannot reach the render API at ${state.apiBase}. If you are testing on your phone, open the site from the machine running Docker or set API settings to that machine's http://<local-ip>:8000 address.`);
+        throw new Error(`Cannot reach the render API at ${state.apiBase}. If you are testing on your phone, open the site from the machine running Docker or set Backend settings to that machine's http://<local-ip>:8000 address.`);
       }
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
@@ -404,7 +404,7 @@
           state.apiOnline = true;
           if (!state.project || !String(state.project.id).startsWith('project_')) state.localMode = false;
           setApiStatus('API online', 'is-online');
-          const onlineMessage = state.localMode ? 'API connected. Click the project button again to create a persisted server project when ready.' : 'API connected. You can create a project.';
+          const onlineMessage = state.localMode ? 'Backend connected. Click the project button again to create a persisted server project when ready.' : 'Backend connected. You can create a project.';
           setProjectFeedback(onlineMessage, 'success');
           setStatus(onlineMessage, 'success');
           if (candidate !== window.location.origin) localStorage.setItem('aiefApiBase', candidate);
@@ -418,7 +418,7 @@
       $('apiBaseInput').value = originalApiBase;
       state.apiOnline = false;
       setApiStatus('Browser mode', 'is-offline');
-      const message = 'The hosted page cannot reach the render API, so project setup and uploads will run in browser draft mode. Connect API settings to a FastAPI backend for server uploads, edit-plan persistence, and real MP4 rendering.';
+      const message = 'The hosted page cannot reach the render backend, so project setup and uploads will run in browser draft mode. Use Backend settings with a FastAPI backend for server uploads, edit-plan persistence, and real MP4 rendering.';
       setProjectFeedback(message, 'warning');
       setStatus(message, 'warning');
       updateControls();
@@ -445,7 +445,7 @@
       setBusy(true);
       try {
         if (!state.apiOnline) {
-          createLocalProject('API not connected');
+          createLocalProject('backend not running');
           return;
         }
         state.project = await api('/api/studio/projects', {
@@ -533,7 +533,7 @@
       state.project.status = 'media_uploaded';
       $('musicFile').value = '';
       $('musicSelection').textContent = 'Music added to this browser draft.';
-      setStatus('Music added locally. Connect the API for server-side rendering with this music bed.', 'success');
+      setStatus('Music added locally. Run the backend for server-side rendering with this music bed.', 'success');
       renderProject();
     }
 
@@ -560,7 +560,7 @@
           if (request.status >= 200 && request.status < 300) resolve(data);
           else reject(new Error(data.detail || `Upload failed with status ${request.status}`));
         };
-        request.onerror = () => reject(new Error('Upload failed. Check the API connection and deployment upload limits.'));
+        request.onerror = () => reject(new Error('Upload failed. Check the Render backend and deployment upload limits.'));
         request.send(form);
       });
     }
@@ -657,7 +657,7 @@
         segments: segments.length ? segments : [{ source_asset_id: source?.id, source_start: 0, source_end: 6, reason: 'local preview segment' }],
         text_overlays: $('addCaptions').checked ? [{ time: 0, text: 'Hook starts here' }, { time: Math.max(1, Math.round(targetDuration / 2)), text: 'Keep watching' }] : [],
         hashtags: $('addHashtags').checked ? ['#shorts', '#edit', `#${$('clipType').value}`] : [],
-        export_note: 'Browser draft plans are previews. Connect the FastAPI backend to render a real vertical MP4.',
+        export_note: 'Browser draft plans are previews. Use the FastAPI backend to render a real vertical MP4.',
       };
     }
 
@@ -709,7 +709,7 @@
         if (state.localMode) {
           const source = selectedSource();
           if (!source?.preview_url) throw new Error('Add a source video before preparing a preview download.');
-          state.project.render_job = { status: 'preview-only', progress: 100, message: 'Browser draft prepared. Connect the API for ffmpeg MP4 rendering.' };
+          state.project.render_job = { status: 'preview-only', progress: 100, message: 'Browser draft prepared. Run the backend for ffmpeg MP4 rendering.' };
           state.project.exports = [{
             id: nextLocalId('export'),
             platform: 'browser-preview',
