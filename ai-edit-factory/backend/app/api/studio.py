@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
@@ -28,6 +29,15 @@ class EditPlanCreate(BaseModel):
     add_music: bool = True
     add_captions: bool = True
     add_hashtags: bool = True
+    music_start_seconds: float | None = Field(default=None, ge=0, le=7200)
+
+
+class EditFeedbackCreate(BaseModel):
+    edit_plan_id: int | None = None
+    export_id: int | None = None
+    rating: int = Field(ge=1, le=5)
+    signal: str = Field(default="manual", max_length=40)
+    notes: str = Field(default="", max_length=500)
 
 
 def _decode_plan(row: dict | None) -> dict | None:
@@ -45,6 +55,7 @@ def _payload(video_project_id: int) -> dict:
         "edit_plan": _decode_plan(db.latest_edit_plan(video_project_id)),
         "render_job": db.latest_render_job(video_project_id),
         "exports": db.list_exports(video_project_id),
+        "learning_profile": db.edit_learning_profile(video_project_id),
         "limits": {
             "max_upload_mb": MAX_UPLOAD_MB,
             "allowed_video_types": sorted(ext.lstrip(".") for ext in STUDIO_ALLOWED_VIDEO_EXTENSIONS),
@@ -161,7 +172,9 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
             f"Add hashtags: {'yes' if payload.add_hashtags else 'no'}. "
             f"Direction: {payload.prompt}"
         )
-        plan = generate_edit_plan(creative_prompt, metadata)
+        music_assets = db.list_video_project_assets(video_project_id, "music_audio")
+        selected_music = music_assets[-1] if payload.add_music and music_assets else None
+        plan = generate_edit_plan(creative_prompt, metadata, db.edit_learning_profile(video_project_id), selected_music.get("duration") if selected_music else None)
         plan["clip_type"] = payload.clip_type
         plan["features"] = {
             "music": payload.add_music,
@@ -177,8 +190,10 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
                 package["hashtags"] = []
         if not payload.add_music:
             plan["music_vibe"] = "music disabled; preserve source audio for one source, or use silent AAC for multi-source splices"
-        music_assets = db.list_video_project_assets(video_project_id, "music_audio")
-        plan["music_asset_id"] = music_assets[-1]["id"] if payload.add_music and music_assets else None
+            plan["music_start_seconds"] = 0.0
+        elif payload.music_start_seconds is not None:
+            plan["music_start_seconds"] = round(float(payload.music_start_seconds), 2)
+        plan["music_asset_id"] = selected_music["id"] if selected_music else None
         row = db.create_edit_plan(video_project_id, asset["id"], creative_prompt, plan)
         db.update_video_project(video_project_id, status="plan_ready", creative_prompt=creative_prompt)
         return _decode_plan(row)
@@ -228,6 +243,11 @@ def _annotate_splice_segments(plan: dict, source_assets: list[dict]) -> None:
     plan["source_asset_ids"] = [asset["id"] for asset in source_assets]
     plan["source_asset_count"] = len(source_assets)
 
+
+def _slug(value: str) -> str:
+    slug = re.sub(r"[^a-zA-Z0-9]+", "-", value.lower()).strip("-")
+    return slug[:48] or "ai-edit"
+
 def _output_download_url(path: Path) -> str:
     return f"/media/outputs/{path.relative_to(OUTPUTS_DIR).as_posix()}"
 
@@ -269,7 +289,7 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) 
         elif plan_json.get("features", {}).get("music") and music_assets:
             music_asset = music_assets[-1]
         platform = plan_json.get("platform", "tiktok")
-        output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"edit_plan_{plan['id']}_{platform}.mp4"
+        output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"{_slug(project.get('name') or 'ai-edit')}_plan_{plan['id']}_{platform}.mp4"
         video_label = "videos" if len(source_assets) > 1 else "video"
         message = "Render queued. The site will export a real vertical MP4 by splicing your uploaded %s%s." % (video_label, " and music" if music_asset else "")
         job = db.create_render_job(video_project_id, plan["id"], message, str(output_path), render_interface="ffmpeg")
@@ -285,5 +305,15 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) 
         db.update_video_project(video_project_id, status="render_queued")
         background_tasks.add_task(_run_studio_render, video_project_id, job["id"], export["id"], asset, plan_json, output_path, music_asset, source_assets)
         return {**job, "export": export, "project_status": project.get("status")}
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.post("/projects/{video_project_id}/feedback")
+def create_feedback(video_project_id: int, payload: EditFeedbackCreate) -> dict:
+    try:
+        db.get_video_project(video_project_id)
+        feedback = db.create_edit_feedback(video_project_id, payload.edit_plan_id, payload.export_id, payload.rating, payload.signal, payload.notes)
+        return {"feedback": feedback, "learning_profile": db.edit_learning_profile(video_project_id)}
     except (KeyError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

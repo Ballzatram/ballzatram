@@ -61,10 +61,10 @@ def infer_mood(prompt: str) -> str:
     return " ".join(dict.fromkeys(moods)) or "high-retention punchy"
 
 
-def _segments(duration: int, source_duration: float | None, mood: str) -> list[dict[str, Any]]:
+def _segments(duration: int, source_duration: float | None, mood: str, pacing: str = "balanced") -> list[dict[str, Any]]:
     source = max(float(source_duration or duration), float(duration))
-    segment_count = 5 if "chaotic" in mood or duration >= 20 else 4
-    slice_len = max(2.0, duration / segment_count)
+    segment_count = 6 if pacing == "faster" else (5 if "chaotic" in mood or duration >= 20 else 4)
+    slice_len = max(1.4 if pacing == "faster" else 2.0, duration / segment_count)
     usable_window = max(slice_len + 0.5, source - slice_len)
     starts = [min(usable_window, round((index * usable_window) / max(1, segment_count), 1)) for index in range(segment_count)]
     reasons = [
@@ -84,7 +84,7 @@ def _segments(duration: int, source_duration: float | None, mood: str) -> list[d
     ]
 
 
-def _overlays(mood: str, duration: int, prompt: str) -> list[dict[str, Any]]:
+def _overlays(mood: str, duration: int, prompt: str, density: str = "standard") -> list[dict[str, Any]]:
     hook = "wait for it..."
     if "chaotic" in mood and "funny" in mood:
         hook = "bro thought he had it"
@@ -92,11 +92,14 @@ def _overlays(mood: str, duration: int, prompt: str) -> list[dict[str, Any]]:
         hook = "this escalated fast"
     elif "hype" in mood:
         hook = "the moment everything changed"
-    return [
+    overlays = [
         {"time": 0.3, "text": hook, "style": "bold_center"},
         {"time": max(2.2, round(duration * 0.28, 1)), "text": "no way this worked", "style": "punchline_pop"},
         {"time": max(4.0, round(duration * 0.72, 1)), "text": "watch the ending", "style": "bottom_sticker"},
     ]
+    if density == "high":
+        overlays.insert(2, {"time": max(3.2, round(duration * 0.48, 1)), "text": "the setup matters", "style": "bottom_sticker"})
+    return overlays
 
 
 def _music_vibe(mood: str) -> str:
@@ -139,7 +142,7 @@ def _caption_packages(mood: str, platform: str, prompt: str) -> dict[str, dict[s
     return packages
 
 
-def generate_edit_plan(prompt: str, metadata: VideoMetadata) -> dict[str, Any]:
+def generate_edit_plan(prompt: str, metadata: VideoMetadata, learning_profile: dict[str, Any] | None = None, music_duration: float | None = None) -> dict[str, Any]:
     clean_prompt = (prompt or "").strip()
     if len(clean_prompt) < 3:
         clean_prompt = "Make this a punchy 20-second short-form clip with a clear hook and captions."
@@ -147,17 +150,27 @@ def generate_edit_plan(prompt: str, metadata: VideoMetadata) -> dict[str, Any]:
     duration = infer_duration(clean_prompt, metadata.duration)
     mood = infer_mood(clean_prompt)
     aspect_ratio = "9:16" if platform != "x" else "4:5"
+    profile = learning_profile or {}
+    pacing = str(profile.get("recommended_pacing") or "balanced")
+    caption_density = str(profile.get("caption_density") or "standard")
+    music_start = 0.0
+    if music_duration and music_duration > duration:
+        music_start = round(max(0.0, (music_duration - duration) * 0.33), 1)
     plan = {
         "platform": platform,
         "duration_seconds": duration,
         "aspect_ratio": aspect_ratio,
         "mood": mood,
-        "segments": _segments(duration, metadata.duration, mood),
-        "text_overlays": _overlays(mood, duration, clean_prompt),
+        "segments": _segments(duration, metadata.duration, mood, pacing),
+        "text_overlays": _overlays(mood, duration, clean_prompt, caption_density),
         "caption_style": "large punchy subtitles with emphasized keywords and safe margins",
         "music_vibe": _music_vibe(mood),
+        "music_start_seconds": music_start,
+        "music_edit_note": "The renderer starts the uploaded song at this second; adjust it before rendering to choose the best hook/drop.",
         "export_notes": "fast cuts, crop for vertical short-form, keep faces/action centered, add beat hits on overlay changes",
         "caption_packages": _caption_packages(mood, platform, clean_prompt),
+        "learning_profile": profile or {"sample_size": 0, "recommended_pacing": "balanced", "caption_density": "standard"},
+        "trend_context": "Uses rights-safe short-form heuristics and first-party feedback only; TikTok trend data should be imported through official/permissioned sources, not scraping.",
         "system_instruction": SYSTEM_INSTRUCTION,
     }
     # Validate JSON-serializable output early.

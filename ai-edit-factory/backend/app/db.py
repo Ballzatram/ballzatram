@@ -125,6 +125,19 @@ CREATE TABLE IF NOT EXISTS exports (
   FOREIGN KEY(render_job_id) REFERENCES render_jobs(id) ON DELETE SET NULL,
   FOREIGN KEY(edit_plan_id) REFERENCES edit_plans(id) ON DELETE SET NULL
 );
+CREATE TABLE IF NOT EXISTS edit_feedback (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  video_project_id INTEGER NOT NULL,
+  edit_plan_id INTEGER,
+  export_id INTEGER,
+  rating INTEGER NOT NULL CHECK(rating BETWEEN 1 AND 5),
+  signal TEXT NOT NULL DEFAULT 'manual',
+  notes TEXT NOT NULL DEFAULT '',
+  created_at TEXT NOT NULL,
+  FOREIGN KEY(video_project_id) REFERENCES video_projects(id) ON DELETE CASCADE,
+  FOREIGN KEY(edit_plan_id) REFERENCES edit_plans(id) ON DELETE SET NULL,
+  FOREIGN KEY(export_id) REFERENCES exports(id) ON DELETE SET NULL
+);
 """
 
 
@@ -389,6 +402,36 @@ def list_exports(video_project_id: int) -> list[dict]:
     with connect() as conn:
         return conn.execute("SELECT * FROM exports WHERE video_project_id=? ORDER BY id DESC", (video_project_id,)).fetchall()
 
+
+
+def create_edit_feedback(video_project_id: int, edit_plan_id: int | None, export_id: int | None, rating: int, signal: str = "manual", notes: str = "") -> dict:
+    if rating < 1 or rating > 5:
+        raise ValueError("Feedback rating must be between 1 and 5.")
+    ts = now_iso()
+    with connect() as conn:
+        cur = conn.execute(
+            "INSERT INTO edit_feedback (video_project_id, edit_plan_id, export_id, rating, signal, notes, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (video_project_id, edit_plan_id, export_id, rating, signal[:40], notes[:500], ts),
+        )
+        return conn.execute("SELECT * FROM edit_feedback WHERE id=?", (cur.lastrowid,)).fetchone()
+
+
+def edit_learning_profile(video_project_id: int | None = None) -> dict:
+    where = "WHERE video_project_id=?" if video_project_id else ""
+    params = (video_project_id,) if video_project_id else ()
+    with connect() as conn:
+        rows = conn.execute(f"SELECT rating, signal FROM edit_feedback {where} ORDER BY id DESC LIMIT 200", params).fetchall()
+    if not rows:
+        return {"sample_size": 0, "average_rating": None, "recommended_pacing": "balanced", "caption_density": "standard"}
+    average = sum(row["rating"] for row in rows) / len(rows)
+    low = sum(1 for row in rows if row["rating"] <= 2)
+    high = sum(1 for row in rows if row["rating"] >= 4)
+    return {
+        "sample_size": len(rows),
+        "average_rating": round(average, 2),
+        "recommended_pacing": "faster" if low >= high and len(rows) >= 3 else "balanced",
+        "caption_density": "high" if high > low else "standard",
+    }
 
 def update_render_job(render_job_id: int, status: str, progress: int, message: str = "", error: str | None = None, output_path: str | None = None) -> None:
     with connect() as conn:

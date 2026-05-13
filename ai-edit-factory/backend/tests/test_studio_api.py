@@ -152,3 +152,33 @@ def test_studio_project_plan_and_real_render(tmp_path: Path) -> None:
     assert refreshed["exports"][0]["status"] == "ready"
     assert refreshed["exports"][0]["download_url"].startswith("/media/outputs/")
     assert Path(refreshed["exports"][0]["path"]).exists()
+
+def test_ai_edit_plan_uses_learning_profile_and_music_start() -> None:
+    plan = generate_edit_plan(
+        "Make this a 10 second TikTok clip with captions.",
+        VideoMetadata(duration=30.0, width=1080, height=1920, file_type="mp4"),
+        {"sample_size": 4, "recommended_pacing": "faster", "caption_density": "high"},
+        music_duration=60.0,
+    )
+
+    assert plan["learning_profile"]["recommended_pacing"] == "faster"
+    assert len(plan["segments"]) == 6
+    assert len(plan["text_overlays"]) == 4
+    assert plan["music_start_seconds"] > 0
+    assert "official/permissioned" in plan["trend_context"]
+
+
+def test_studio_feedback_updates_learning_profile() -> None:
+    client = studio_client()
+    project = client.post("/api/studio/projects", json={"name": "Feedback trainer"}).json()
+
+    for rating in (2, 2, 1):
+        response = client.post(
+            f"/api/studio/projects/{project['id']}/feedback",
+            json={"rating": rating, "signal": "manual"},
+        )
+        assert response.status_code == 200
+
+    refreshed = client.get(f"/api/studio/projects/{project['id']}").json()
+    assert refreshed["learning_profile"]["sample_size"] == 3
+    assert refreshed["learning_profile"]["recommended_pacing"] == "faster"

@@ -291,9 +291,14 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
                 "-f", "concat", "-safe", "0", "-i", str(concat_file),
                 "-c", "copy", "-movflags", "+faststart", str(stitched_path),
             ])
+            music_start = max(0.0, float(plan.get("music_start_seconds") or 0.0))
+            music_input = ["-stream_loop", "-1"]
+            if music_start > 0:
+                music_input.extend(["-ss", f"{music_start:.3f}"])
+            music_input.extend(["-i", str(music)])
             _run([
                 "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                "-stream_loop", "-1", "-i", str(music), "-i", str(stitched_path),
+                *music_input, "-i", str(stitched_path),
                 "-map", "1:v:0", "-map", "0:a:0",
                 "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
                 "-shortest", "-movflags", "+faststart", str(output_path),
