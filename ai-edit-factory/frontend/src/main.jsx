@@ -83,6 +83,7 @@ function App() {
   const [addCaptions, setAddCaptions] = useState(true);
   const [addHashtags, setAddHashtags] = useState(true);
   const [prompt, setPrompt] = useState(defaultPrompt);
+  const [aiDuration, setAiDuration] = useState(18);
   const [message, setMessage] = useState('Create a project, upload rights-cleared media, choose a clip style, then generate and render from this page.');
   const [busy, setBusy] = useState(false);
 
@@ -99,6 +100,7 @@ function App() {
   const canUploadMusic = Boolean(project && music && rightsConfirmed && !busy);
   const canPlan = Boolean(project && selectedSource && prompt.trim().length >= 3 && !busy);
   const canRender = Boolean(project && editPlan && !busy && !['running', 'pending'].includes(renderJob?.status));
+  const canGenerateAiVideo = Boolean(project && prompt.trim().length >= 3 && !busy && !renderActive);
 
   useEffect(() => {
     if (!selectedVideoId && sourceVideos.length) setSelectedVideoId(sourceVideos.at(-1).id);
@@ -239,6 +241,32 @@ function App() {
     }
   }
 
+
+  async function generateAiVideo() {
+    if (!project) return setMessage('Create a project first.');
+    setBusy(true);
+    try {
+      const data = await api(`/api/studio/projects/${project.id}/generate-video`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt,
+          clip_type: clipType.toLowerCase(),
+          duration_seconds: Number(aiDuration),
+          add_music: addMusic,
+          add_captions: addCaptions,
+          add_hashtags: addHashtags,
+        }),
+      });
+      await refresh(project.id);
+      setMessage(data.message || 'AI prompt video queued.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function createRenderJob() {
     if (!project) return setMessage('Create a project first.');
     setBusy(true);
@@ -312,7 +340,12 @@ function App() {
             <label className="check"><input type="checkbox" checked={addHashtags} onChange={(event) => setAddHashtags(event.target.checked)} /> Generate #s</label>
           </div>
           <label>Direction<textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows="6" placeholder={defaultPrompt} /></label>
-          <button disabled={!canPlan} onClick={generatePlan}>Generate AI edit recipe</button>
+          <label>AI video length<input type="number" min="6" max="60" value={aiDuration} onChange={(event) => setAiDuration(event.target.value)} /></label>
+          <div className="actionStack">
+            <button disabled={!canPlan} onClick={generatePlan}>Generate AI edit recipe from uploaded video</button>
+            <button disabled={!canGenerateAiVideo} onClick={generateAiVideo}>Generate AI video from prompt</button>
+          </div>
+          <p className="small">Use prompt generation when you want a new AI motion-graphic MP4 without uploaded source footage. Upload music first if you want a custom audio bed.</p>
         </article>
       </section>
 

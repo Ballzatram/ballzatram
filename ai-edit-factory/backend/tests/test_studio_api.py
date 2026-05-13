@@ -116,3 +116,42 @@ def test_studio_project_plan_and_real_render(tmp_path: Path) -> None:
     assert refreshed["exports"][0]["status"] == "ready"
     assert refreshed["exports"][0]["download_url"].startswith("/media/outputs/")
     assert Path(refreshed["exports"][0]["path"]).exists()
+
+
+def test_studio_prompt_video_generation_without_source_upload(monkeypatch: pytest.MonkeyPatch) -> None:
+    pytest.importorskip("fastapi")
+    from app.api import studio
+
+    def fake_render_prompt_video(plan: dict, output_path: str | Path, music_path: str | Path | None = None) -> Path:
+        path = Path(output_path)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"fake mp4 bytes")
+        return path
+
+    monkeypatch.setattr(studio, "render_prompt_video", fake_render_prompt_video)
+    client = studio_client()
+    project = client.post("/api/studio/projects", json={"name": "Prompt video"}).json()
+
+    response = client.post(
+        f"/api/studio/projects/{project['id']}/generate-video",
+        json={
+            "prompt": "Create a neon launch teaser for a creator tool with bold captions.",
+            "clip_type": "hype",
+            "duration_seconds": 6,
+            "add_music": False,
+            "add_captions": True,
+            "add_hashtags": True,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["render_interface"] == "ffmpeg_prompt_video"
+    assert body["edit_plan"]["plan"]["generation_mode"] == "prompt_video"
+    assert body["edit_plan"]["plan"]["source"] == "ai_generated_motion_graphics"
+
+    refreshed = client.get(f"/api/studio/projects/{project['id']}").json()
+    assert refreshed["render_job"]["status"] == "finished"
+    assert refreshed["exports"][0]["status"] == "ready"
+    assert refreshed["exports"][0]["download_url"].startswith("/media/outputs/")
+    assert Path(refreshed["exports"][0]["path"]).exists()

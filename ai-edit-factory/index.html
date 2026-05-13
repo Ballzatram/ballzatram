@@ -140,7 +140,15 @@
             Creative direction
             <textarea id="prompt" rows="5">Find the strongest hook, cut the boring parts, keep it vertical, and make the ending replayable.</textarea>
           </label>
-          <button id="generateRecipe" type="button" disabled>Generate recipe</button>
+          <label>
+            AI video length
+            <input id="aiDuration" type="number" min="6" max="60" value="18" />
+          </label>
+          <div class="generation-actions">
+            <button id="generateRecipe" type="button" disabled>Generate recipe from upload</button>
+            <button id="generateAiVideo" type="button" disabled>Generate AI video from prompt</button>
+          </div>
+          <p class="muted">No source clip yet? Prompt generation creates a real vertical motion-graphic MP4 and can mix your uploaded music bed.</p>
         </section>
 
         <section class="panel render-panel" aria-labelledby="renderTitle">
@@ -254,10 +262,12 @@
       const musicFile = $('musicFile').files?.[0];
       const hasRecipe = Boolean(state.project?.edit_plan?.plan);
       const activeRender = ['pending', 'running'].includes(state.project?.render_job?.status);
+      const hasPrompt = $('prompt').value.trim().length >= 3;
 
       $('uploadVideos').disabled = state.busy || !hasProject || !rights || videoFiles.length === 0;
       $('uploadMusic').disabled = state.busy || !hasProject || !rights || !musicFile;
-      $('generateRecipe').disabled = state.busy || !hasProject || !selectedSource() || $('prompt').value.trim().length < 3;
+      $('generateRecipe').disabled = state.busy || !hasProject || !selectedSource() || !hasPrompt;
+      $('generateAiVideo').disabled = state.busy || !hasProject || !hasPrompt || activeRender;
       $('renderVideo').disabled = state.busy || !hasProject || !hasRecipe || activeRender;
       $('refreshProject').disabled = state.busy || !hasProject;
       $('createProject').disabled = state.busy;
@@ -475,6 +485,32 @@
       }
     }
 
+
+    async function generateAiVideo() {
+      setBusy(true);
+      try {
+        const result = await api(`/api/studio/projects/${state.project.id}/generate-video`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            prompt: $('prompt').value,
+            clip_type: $('clipType').value,
+            duration_seconds: Number($('aiDuration').value || 18),
+            add_music: $('addMusic').checked,
+            add_captions: $('addCaptions').checked,
+            add_hashtags: $('addHashtags').checked,
+          }),
+        });
+        setStatus(result.message || 'AI prompt video queued.', 'success');
+        await refreshProject();
+        startPolling();
+      } catch (error) {
+        setStatus(error.message, 'error');
+      } finally {
+        setBusy(false);
+      }
+    }
+
     function startPolling() {
       window.clearInterval(state.pollTimer);
       state.pollTimer = window.setInterval(async () => {
@@ -514,6 +550,7 @@
     $('uploadVideos').addEventListener('click', uploadVideos);
     $('uploadMusic').addEventListener('click', uploadMusic);
     $('generateRecipe').addEventListener('click', generateRecipe);
+    $('generateAiVideo').addEventListener('click', generateAiVideo);
     $('renderVideo').addEventListener('click', renderVideo);
     $('refreshProject').addEventListener('click', async () => {
       setBusy(true);
@@ -531,7 +568,7 @@
       $('musicSelection').textContent = file ? `${file.name} (${prettyBytes(file.size)})` : 'Optional rights-approved audio.';
       updateControls();
     });
-    ['rightsConfirmed', 'prompt', 'clipType', 'addMusic', 'addCaptions', 'addHashtags'].forEach((id) => $(id).addEventListener('input', updateControls));
+    ['rightsConfirmed', 'prompt', 'clipType', 'aiDuration', 'addMusic', 'addCaptions', 'addHashtags'].forEach((id) => $(id).addEventListener('input', updateControls));
 
     renderProject();
     checkHealth();

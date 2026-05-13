@@ -11,7 +11,7 @@ from app.ai_editor import VideoMetadata, generate_edit_plan
 from app.api.uploads import save_upload
 from app.config import INPUTS_DIR, MAX_UPLOAD_MB, OUTPUTS_DIR
 from app.media.audio import ALLOWED_AUDIO_EXTENSIONS, probe_audio_metadata
-from app.media.rendering import render_studio_edit
+from app.media.rendering import render_prompt_video, render_studio_edit
 from app.media.video import STUDIO_ALLOWED_VIDEO_EXTENSIONS, probe_video_metadata
 
 router = APIRouter(prefix="/api/studio", tags=["ai clip studio"])
@@ -25,6 +25,15 @@ class EditPlanCreate(BaseModel):
     prompt: str = Field(min_length=3, max_length=1200)
     media_asset_id: int | None = None
     clip_type: str = Field(default="funny", max_length=80)
+    add_music: bool = True
+    add_captions: bool = True
+    add_hashtags: bool = True
+
+
+class PromptVideoCreate(BaseModel):
+    prompt: str = Field(min_length=3, max_length=1200)
+    clip_type: str = Field(default="hype", max_length=80)
+    duration_seconds: int = Field(default=18, ge=6, le=60)
     add_music: bool = True
     add_captions: bool = True
     add_hashtags: bool = True
@@ -183,6 +192,67 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+
+def _latest_music_asset(video_project_id: int) -> dict | None:
+    music_assets = db.list_video_project_assets(video_project_id, "music_audio")
+    return music_assets[-1] if music_assets else None
+
+
+def _prepare_prompt_video_plan(payload: PromptVideoCreate, music_asset: dict | None) -> dict:
+    creative_prompt = (
+        f"Type of clips: {payload.clip_type}. "
+        f"Generate an original AI motion-graphic short from this prompt. "
+        f"Make it {payload.duration_seconds} seconds. "
+        f"Add music: {'yes' if payload.add_music else 'no'}. "
+        f"Add captions: {'yes' if payload.add_captions else 'no'}. "
+        f"Add hashtags: {'yes' if payload.add_hashtags else 'no'}. "
+        f"Direction: {payload.prompt}"
+    )
+    plan = generate_edit_plan(creative_prompt, VideoMetadata(duration=float(payload.duration_seconds), file_type="ai-generated"))
+    plan["duration_seconds"] = payload.duration_seconds
+    plan["clip_type"] = payload.clip_type
+    plan["prompt"] = creative_prompt
+    plan["visual_prompt"] = payload.prompt
+    plan["generation_mode"] = "prompt_video"
+    plan["source"] = "ai_generated_motion_graphics"
+    plan["features"] = {
+        "music": payload.add_music,
+        "captions": payload.add_captions,
+        "hashtags": payload.add_hashtags,
+    }
+    plan["music_asset_id"] = music_asset["id"] if payload.add_music and music_asset else None
+    plan["export_notes"] = (
+        "AI prompt video mode: create a vertical motion-graphic MP4 from the written direction, "
+        "burn captions when enabled, and mix the uploaded rights-cleared music bed when present."
+    )
+    if not payload.add_captions:
+        plan["text_overlays"] = []
+        plan["caption_style"] = "captions disabled by the user"
+    if not payload.add_hashtags:
+        for package in plan.get("caption_packages", {}).values():
+            package["hashtags"] = []
+    if payload.add_music and not music_asset:
+        plan["music_vibe"] = "no music bed uploaded; export uses silent AAC audio unless you upload rights-cleared music first"
+    if not payload.add_music:
+        plan["music_vibe"] = "music disabled; export uses silent AAC audio"
+    return plan
+
+
+def _run_prompt_video_render(video_project_id: int, job_id: int, export_id: int, plan: dict, output_path: Path, music_asset: dict | None = None) -> None:
+    try:
+        db.update_render_job(job_id, "running", 10, "Generating AI prompt video with ffmpeg")
+        db.update_video_project(video_project_id, status="rendering")
+        music_path = music_asset.get("path") if music_asset else None
+        render_prompt_video(plan, output_path, music_path=music_path)
+        download_url = _output_download_url(output_path)
+        db.update_render_job(job_id, "finished", 100, "AI prompt video complete", output_path=str(output_path))
+        db.update_export(export_id, "ready", str(output_path), download_url)
+        db.update_video_project(video_project_id, status="finished")
+    except Exception as exc:  # noqa: BLE001 - persist clear render errors for UI.
+        db.update_render_job(job_id, "failed", 100, "AI prompt video failed", str(exc), output_path=str(output_path))
+        db.update_export(export_id, "failed", str(output_path), None)
+        db.update_video_project(video_project_id, status="failed")
+
 def _output_download_url(path: Path) -> str:
     return f"/media/outputs/{path.relative_to(OUTPUTS_DIR).as_posix()}"
 
@@ -202,6 +272,33 @@ def _run_studio_render(video_project_id: int, job_id: int, export_id: int, asset
         db.update_export(export_id, "failed", str(output_path), None)
         db.update_video_project(video_project_id, status="failed")
 
+
+
+@router.post("/projects/{video_project_id}/generate-video")
+def generate_prompt_video(video_project_id: int, payload: PromptVideoCreate, background_tasks: BackgroundTasks) -> dict:
+    try:
+        project = db.get_video_project(video_project_id)
+        music_asset = _latest_music_asset(video_project_id) if payload.add_music else None
+        plan = _prepare_prompt_video_plan(payload, music_asset)
+        row = db.create_edit_plan(video_project_id, None, plan["prompt"], plan)
+        platform = plan.get("platform", "tiktok")
+        output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"ai_prompt_video_{row['id']}_{platform}.mp4"
+        message = "AI prompt video queued. The site will generate a real vertical MP4%s." % (" with your uploaded music" if music_asset else "")
+        job = db.create_render_job(video_project_id, row["id"], message, str(output_path), render_interface="ffmpeg_prompt_video")
+        export = db.create_export(
+            video_project_id,
+            job["id"],
+            row["id"],
+            platform,
+            "rendering",
+            str(output_path),
+            None,
+        )
+        db.update_video_project(video_project_id, status="render_queued", creative_prompt=plan["prompt"])
+        background_tasks.add_task(_run_prompt_video_render, video_project_id, job["id"], export["id"], plan, output_path, music_asset)
+        return {**job, "export": export, "edit_plan": _decode_plan(row), "project_status": project.get("status")}
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 @router.post("/projects/{video_project_id}/render")
 def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) -> dict:

@@ -63,6 +63,7 @@ AI edit factory flow (site-native):
 5. Choose the type of clips to make, such as funny, emotional, hype, dramatic, clean, or storytime. Toggle music, burned-in captions, and hashtag generation, then add creative direction.
 6. Click **Generate AI edit recipe** to review JSON segments, overlays, caption style, music handling, export notes, and platform packages for TikTok, Instagram Reels, YouTube Shorts, and X.
 7. Click **Render downloadable MP4**. The backend runs ffmpeg against the selected uploaded source video, crops/exports a vertical short-form MP4, optionally burns captions and swaps in the uploaded music bed, updates render status automatically, and exposes an inline preview plus a download link when the export is ready.
+8. If you do not have source footage yet, use **Generate AI video from prompt**. This creates a real vertical MP4 from the AI edit plan as local motion-graphic scenes, burns enabled captions, and mixes the latest uploaded rights-cleared music bed when **Add music** is enabled. No external AI video API key is required for this local prompt-video mode.
 
 Legacy beat-edit flow (API-compatible):
 
@@ -134,7 +135,8 @@ AI edit factory endpoints:
 - `POST /api/studio/projects/{id}/video` uploads one rights-confirmed `mp4`, `mov`, or `webm` source video. The frontend can call this repeatedly for multi-video source shelves.
 - `POST /api/studio/projects/{id}/music` uploads one rights-confirmed `mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg` music bed.
 - `POST /api/studio/projects/{id}/edit-plans` creates a structured short-form edit recipe from clip type, creative prompt, selected source, and music/caption/hashtag toggles.
-- `POST /api/studio/projects/{id}/render` creates a real ffmpeg render job and export record.
+- `POST /api/studio/projects/{id}/render` creates a real ffmpeg render job and export record from an uploaded source video.
+- `POST /api/studio/projects/{id}/generate-video` creates an AI-planned prompt video without requiring source footage. Body fields: `prompt`, `clip_type`, `duration_seconds` (6-60), `add_music`, `add_captions`, and `add_hashtags`. The renderer outputs a real MP4 using ffmpeg motion graphics and optional uploaded music.
 
 ## Testing
 
@@ -151,13 +153,13 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 - [ ] The site app opens at `http://localhost:8000` on a phone-sized viewport without horizontal scrolling.
 - [ ] Compliance copy is visible before upload/generation.
 - [ ] The AI edit factory requires the rights-confirmation checkbox before source video or music upload.
-- [ ] Upload progress, source shelf selection, playable source preview, optional music bed metadata, recipe JSON, platform captions/hashtags, and render/export state appear in the factory flow.
+- [ ] Upload progress, source shelf selection, playable source preview, optional music bed metadata, prompt-video generation controls, recipe JSON, platform captions/hashtags, and render/export state appear in the factory flow.
 - [ ] Creating a project succeeds.
 - [ ] Invalid upload types are rejected.
 - [ ] Uploading one rights-approved song and one rights-approved clip succeeds.
 - [ ] YouTube URL import shows metadata and does not download media by default.
-- [ ] Clicking generate stays disabled until required uploads exist, then changes job status from queued/running to finished.
-- [ ] At least 5 vertical 1080x1920 MP4 outputs are created for suitable input media.
+- [ ] Clicking source-based generate stays disabled until required uploads exist, and prompt-video generation works after project creation with a valid prompt. Both flows change job status from queued/running to finished.
+- [ ] At least 5 vertical 1080x1920 MP4 outputs are created for suitable legacy input media, and at least one prompt-video MP4 can be generated from the studio flow without source footage.
 - [ ] Outputs appear best-first in the UI, preview inline, and download.
 - [ ] Failed jobs show a useful error instead of spinning forever.
 - [ ] `python app.py --song inputs/song.mp3 --clips inputs/clips --num-edits 20` works independently of the web app.
