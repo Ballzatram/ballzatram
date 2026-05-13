@@ -103,7 +103,7 @@ CREATE TABLE IF NOT EXISTS render_jobs (
   status TEXT NOT NULL DEFAULT 'pending',
   progress INTEGER NOT NULL DEFAULT 0,
   message TEXT NOT NULL DEFAULT '',
-  render_interface TEXT NOT NULL DEFAULT 'stub',
+  render_interface TEXT NOT NULL DEFAULT 'ffmpeg',
   output_path TEXT,
   error TEXT,
   created_at TEXT NOT NULL,
@@ -358,14 +358,14 @@ def latest_edit_plan(video_project_id: int) -> dict | None:
         return conn.execute("SELECT * FROM edit_plans WHERE video_project_id=? ORDER BY id DESC LIMIT 1", (video_project_id,)).fetchone()
 
 
-def create_render_job(video_project_id: int, edit_plan_id: int | None, message: str, output_path: str | None = None) -> dict:
+def create_render_job(video_project_id: int, edit_plan_id: int | None, message: str, output_path: str | None = None, render_interface: str = 'ffmpeg') -> dict:
     ts = now_iso()
     with connect() as conn:
         cur = conn.execute(
             """INSERT INTO render_jobs
             (video_project_id, edit_plan_id, status, progress, message, render_interface, output_path, created_at, updated_at)
-            VALUES (?, ?, 'pending', 0, ?, 'stub', ?, ?, ?)""",
-            (video_project_id, edit_plan_id, message, output_path, ts, ts),
+            VALUES (?, ?, 'pending', 0, ?, ?, ?, ?, ?)""",
+            (video_project_id, edit_plan_id, message, render_interface, output_path, ts, ts),
         )
         return conn.execute("SELECT * FROM render_jobs WHERE id=?", (cur.lastrowid,)).fetchone()
 
@@ -388,3 +388,21 @@ def create_export(video_project_id: int, render_job_id: int | None, edit_plan_id
 def list_exports(video_project_id: int) -> list[dict]:
     with connect() as conn:
         return conn.execute("SELECT * FROM exports WHERE video_project_id=? ORDER BY id DESC", (video_project_id,)).fetchall()
+
+
+def update_render_job(render_job_id: int, status: str, progress: int, message: str = "", error: str | None = None, output_path: str | None = None) -> None:
+    with connect() as conn:
+        existing = conn.execute("SELECT output_path FROM render_jobs WHERE id=?", (render_job_id,)).fetchone()
+        next_output_path = output_path if output_path is not None else (existing or {}).get("output_path")
+        conn.execute(
+            "UPDATE render_jobs SET status=?, progress=?, message=?, error=?, output_path=?, updated_at=? WHERE id=?",
+            (status, max(0, min(100, progress)), message, error, next_output_path, now_iso(), render_job_id),
+        )
+
+
+def update_export(export_id: int, status: str, path: str | None = None, download_url: str | None = None) -> None:
+    with connect() as conn:
+        conn.execute(
+            "UPDATE exports SET status=?, path=?, download_url=? WHERE id=?",
+            (status, path, download_url, export_id),
+        )

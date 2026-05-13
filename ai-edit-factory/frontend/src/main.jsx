@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
@@ -52,7 +52,14 @@ function App() {
   const exports = project?.exports || [];
   const canUpload = Boolean(project && video && rightsConfirmed && !busy);
   const canPlan = Boolean(project && sourceVideo && prompt.trim().length >= 3 && !busy);
-  const canRender = Boolean(project && editPlan && !busy);
+  const canRender = Boolean(project && editPlan && !busy && !['running', 'pending'].includes(renderJob?.status));
+  const renderActive = ['pending', 'running'].includes(renderJob?.status) || ['rendering', 'render_queued'].includes(project?.status);
+
+  useEffect(() => {
+    if (!project?.id || !renderActive) return undefined;
+    const timer = window.setInterval(() => refresh(project.id), 2500);
+    return () => window.clearInterval(timer);
+  }, [project?.id, renderActive]);
 
   async function api(path, options = {}) {
     let response;
@@ -228,7 +235,7 @@ function App() {
             <p><strong>Caption style:</strong> {editPlan.caption_style}</p>
             <p><strong>Music vibe:</strong> {editPlan.music_vibe}</p>
             <p><strong>Export notes:</strong> {editPlan.export_notes}</p>
-            <button disabled={!canRender} onClick={createRenderJob}>Create render/export job</button>
+            <button disabled={!canRender} onClick={createRenderJob}>Render MP4 export</button>
           </article>
           <article className="card">
             <h2>Structured JSON</h2>
@@ -247,7 +254,14 @@ function App() {
       {exports.length > 0 && (
         <section className="outputs">
           <h2>Exports</h2>
-          <div className="outputGrid">{exports.map((item) => <article className="output" key={item.id}><strong>{item.platform}</strong><span>{item.status}</span><span>{item.path || 'Render path pending'}</span></article>)}</div>
+          <div className="outputGrid">{exports.map((item) => (
+            <article className="output" key={item.id}>
+              <strong>{item.platform}</strong>
+              <span>{item.status}</span>
+              {item.download_url ? <video controls playsInline src={`${API}${item.download_url}`} /> : <span>{item.path || 'Render path pending'}</span>}
+              {item.download_url && <a href={`${API}${item.download_url}`} download>Download MP4</a>}
+            </article>
+          ))}</div>
         </section>
       )}
     </main>
