@@ -14,6 +14,8 @@ PRAGMA journal_mode=WAL;
 CREATE TABLE IF NOT EXISTS projects (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  target_platform TEXT NOT NULL DEFAULT 'tiktok',
   status TEXT NOT NULL DEFAULT 'created',
   style_template TEXT NOT NULL DEFAULT 'fast_cut',
   num_outputs INTEGER NOT NULL DEFAULT 10,
@@ -24,6 +26,7 @@ CREATE TABLE IF NOT EXISTS media_assets (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   project_id INTEGER NOT NULL,
   kind TEXT NOT NULL,
+  asset_type TEXT NOT NULL DEFAULT '',
   source_type TEXT NOT NULL,
   path TEXT,
   url TEXT,
@@ -31,8 +34,12 @@ CREATE TABLE IF NOT EXISTS media_assets (
   channel TEXT,
   duration REAL,
   thumbnail TEXT,
+  thumbnail_path TEXT,
   width INTEGER,
   height INTEGER,
+  fps REAL,
+  has_audio INTEGER NOT NULL DEFAULT 0,
+  analysis_json TEXT NOT NULL DEFAULT '{}',
   file_type TEXT,
   bytes INTEGER,
   original_filename TEXT,
@@ -138,6 +145,35 @@ CREATE TABLE IF NOT EXISTS edit_feedback (
   FOREIGN KEY(edit_plan_id) REFERENCES edit_plans(id) ON DELETE SET NULL,
   FOREIGN KEY(export_id) REFERENCES exports(id) ON DELETE SET NULL
 );
+CREATE TABLE IF NOT EXISTS trend_signals (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  format_name TEXT NOT NULL UNIQUE,
+  hook_style TEXT NOT NULL,
+  pacing_style TEXT NOT NULL,
+  caption_style TEXT NOT NULL,
+  music_guidance TEXT NOT NULL,
+  hashtags TEXT NOT NULL DEFAULT '[]',
+  category TEXT NOT NULL DEFAULT 'general',
+  region TEXT NOT NULL DEFAULT 'US',
+  freshness_score REAL NOT NULL DEFAULT 0.5,
+  created_at TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS feedback_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  project_id INTEGER NOT NULL,
+  video_project_id INTEGER,
+  edit_plan_id INTEGER,
+  export_id INTEGER,
+  event_type TEXT NOT NULL,
+  rating INTEGER CHECK(rating BETWEEN 1 AND 5),
+  notes TEXT NOT NULL DEFAULT '',
+  metadata_json TEXT NOT NULL DEFAULT '{}',
+  created_at TEXT NOT NULL,
+  FOREIGN KEY(project_id) REFERENCES projects(id) ON DELETE CASCADE,
+  FOREIGN KEY(video_project_id) REFERENCES video_projects(id) ON DELETE CASCADE,
+  FOREIGN KEY(edit_plan_id) REFERENCES edit_plans(id) ON DELETE SET NULL,
+  FOREIGN KEY(export_id) REFERENCES exports(id) ON DELETE SET NULL
+);
 """
 
 
@@ -172,22 +208,38 @@ def init_db() -> None:
     with connect() as conn:
         conn.executescript(SCHEMA)
         for column, definition in {
+            "description": "TEXT NOT NULL DEFAULT ''",
+            "target_platform": "TEXT NOT NULL DEFAULT 'tiktok'",
+        }.items():
+            _ensure_column(conn, "projects", column, definition)
+        for column, definition in {
+            "asset_type": "TEXT NOT NULL DEFAULT ''",
+            "thumbnail_path": "TEXT",
             "width": "INTEGER",
             "height": "INTEGER",
+            "fps": "REAL",
+            "has_audio": "INTEGER NOT NULL DEFAULT 0",
+            "analysis_json": "TEXT NOT NULL DEFAULT '{}'",
             "file_type": "TEXT",
             "bytes": "INTEGER",
             "original_filename": "TEXT",
             "preview_url": "TEXT",
         }.items():
             _ensure_column(conn, "media_assets", column, definition)
+        for column, definition in {
+            "event_type": "TEXT NOT NULL DEFAULT 'other'",
+            "metadata_json": "TEXT NOT NULL DEFAULT '{}'",
+        }.items():
+            _ensure_column(conn, "edit_feedback", column, definition)
+        seed_trend_signals(conn)
 
 
-def create_project(name: str, style_template: str, num_outputs: int) -> dict:
+def create_project(name: str, style_template: str, num_outputs: int, description: str = "", target_platform: str = "tiktok") -> dict:
     ts = now_iso()
     with connect() as conn:
         cur = conn.execute(
-            "INSERT INTO projects (name, style_template, num_outputs, created_at, updated_at) VALUES (?, ?, ?, ?, ?)",
-            (name, style_template, num_outputs, ts, ts),
+            "INSERT INTO projects (name, description, target_platform, style_template, num_outputs, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+            (name, description, target_platform, style_template, num_outputs, ts, ts),
         )
         return get_project(cur.lastrowid, conn)
 
@@ -222,11 +274,12 @@ def add_asset(project_id: int, kind: str, source_type: str, **fields: object) ->
     with connect() as conn:
         cur = conn.execute(
             """INSERT INTO media_assets
-            (project_id, kind, source_type, path, url, title, channel, duration, thumbnail, width, height, file_type, bytes, original_filename, preview_url, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (project_id, kind, asset_type, source_type, path, url, title, channel, duration, thumbnail, thumbnail_path, width, height, fps, has_audio, analysis_json, file_type, bytes, original_filename, preview_url, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
             (
                 project_id,
                 kind,
+                str(fields.get("asset_type") or kind),
                 source_type,
                 fields.get("path"),
                 fields.get("url"),
@@ -234,8 +287,12 @@ def add_asset(project_id: int, kind: str, source_type: str, **fields: object) ->
                 fields.get("channel"),
                 fields.get("duration"),
                 fields.get("thumbnail"),
+                fields.get("thumbnail_path") or fields.get("thumbnail"),
                 fields.get("width"),
                 fields.get("height"),
+                fields.get("fps"),
+                1 if fields.get("has_audio") else 0,
+                json.dumps(fields.get("analysis_json") or {}),
                 fields.get("file_type"),
                 fields.get("bytes"),
                 fields.get("original_filename"),
@@ -432,6 +489,74 @@ def edit_learning_profile(video_project_id: int | None = None) -> dict:
         "recommended_pacing": "faster" if low >= high and len(rows) >= 3 else "balanced",
         "caption_density": "high" if high > low else "standard",
     }
+
+
+def list_edit_plans(video_project_id: int) -> list[dict]:
+    with connect() as conn:
+        return conn.execute("SELECT * FROM edit_plans WHERE video_project_id=? ORDER BY id DESC", (video_project_id,)).fetchall()
+
+
+def get_edit_plan(edit_plan_id: int) -> dict:
+    with connect() as conn:
+        row = conn.execute("SELECT * FROM edit_plans WHERE id=?", (edit_plan_id,)).fetchone()
+        if row is None:
+            raise KeyError(f"Edit plan not found: {edit_plan_id}")
+        return row
+
+
+def update_edit_plan(edit_plan_id: int, plan: dict) -> dict:
+    with connect() as conn:
+        conn.execute("UPDATE edit_plans SET plan_json=? WHERE id=?", (json.dumps(plan), edit_plan_id))
+        return conn.execute("SELECT * FROM edit_plans WHERE id=?", (edit_plan_id,)).fetchone()
+
+
+def seed_trend_signals(conn: sqlite3.Connection) -> None:
+    ts = now_iso()
+    rows = [
+        ("Fast montage", "open on motion or transformation", "0.6-1.2s cuts with early pattern breaks", "big hook, sparse punch captions", "start near a beat/drop; keep volume under captions", ["#fyp", "#edit", "#beforeafter"], "general", "US", 0.86),
+        ("Hook buildup reveal", "promise payoff in first second", "slower setup then quick reveal cuts", "question hook + reveal label", "use risers or a recognizable chorus section", ["#waitforit", "#reveal", "#storytime"], "story", "US", 0.82),
+        ("Beat-sync cuts", "visual hit on first beat", "cut exactly on beat grid", "minimal captions; let rhythm lead", "choose a high-energy section and duck source audio", ["#beatsync", "#transition", "#viral"], "music", "US", 0.78),
+    ]
+    for row in rows:
+        conn.execute(
+            """INSERT OR IGNORE INTO trend_signals
+            (format_name, hook_style, pacing_style, caption_style, music_guidance, hashtags, category, region, freshness_score, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (*row[:5], json.dumps(row[5]), *row[6:], ts),
+        )
+
+
+def list_trend_signals() -> list[dict]:
+    with connect() as conn:
+        rows = conn.execute("SELECT * FROM trend_signals ORDER BY freshness_score DESC, format_name").fetchall()
+    for row in rows:
+        try:
+            row["hashtags"] = json.loads(row.get("hashtags") or "[]")
+        except json.JSONDecodeError:
+            row["hashtags"] = []
+    return rows
+
+
+def create_feedback_event(video_project_id: int, edit_plan_id: int | None, export_id: int | None, event_type: str, rating: int | None, notes: str = "", metadata: dict | None = None) -> dict:
+    video_project = get_video_project(video_project_id)
+    if rating is not None and (rating < 1 or rating > 5):
+        raise ValueError("Feedback rating must be between 1 and 5.")
+    allowed = {"works", "needs_tighter_cuts", "wrong_music_section", "bad_captions", "bad_crop", "other"}
+    if event_type not in allowed:
+        raise ValueError(f"Unsupported feedback event_type. Allowed: {', '.join(sorted(allowed))}")
+    ts = now_iso()
+    with connect() as conn:
+        cur = conn.execute(
+            """INSERT INTO feedback_events
+            (project_id, video_project_id, edit_plan_id, export_id, event_type, rating, notes, metadata_json, created_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (video_project["project_id"], video_project_id, edit_plan_id, export_id, event_type, rating, notes[:500], json.dumps(metadata or {}), ts),
+        )
+        conn.execute(
+            "INSERT INTO edit_feedback (video_project_id, edit_plan_id, export_id, rating, signal, notes, event_type, metadata_json, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            (video_project_id, edit_plan_id, export_id, rating or (5 if event_type == "works" else 2), event_type[:40], notes[:500], event_type, json.dumps(metadata or {}), ts),
+        )
+        return conn.execute("SELECT * FROM feedback_events WHERE id=?", (cur.lastrowid,)).fetchone()
 
 def update_render_job(render_job_id: int, status: str, progress: int, message: str = "", error: str | None = None, output_path: str | None = None) -> None:
     with connect() as conn:

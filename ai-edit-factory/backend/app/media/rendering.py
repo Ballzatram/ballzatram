@@ -291,15 +291,28 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
                 "-f", "concat", "-safe", "0", "-i", str(concat_file),
                 "-c", "copy", "-movflags", "+faststart", str(stitched_path),
             ])
-            music_start = max(0.0, float(plan.get("music_start_seconds") or 0.0))
+            settings = plan.get("music_settings") or {}
+            music_start = max(0.0, float(settings.get("source_start_s", plan.get("music_start_seconds") or 0.0) or 0.0))
+            music_end = settings.get("source_end_s")
+            volume = max(0.0, min(2.0, float(settings.get("volume", 0.85) or 0.85)))
+            fade_in = max(0.0, float(settings.get("fade_in_s", 0.15) or 0.0))
+            fade_out = max(0.0, float(settings.get("fade_out_s", 0.25) or 0.0))
             music_input = ["-stream_loop", "-1"]
             if music_start > 0:
                 music_input.extend(["-ss", f"{music_start:.3f}"])
+            if music_end is not None and float(music_end) > music_start:
+                music_input.extend(["-t", f"{float(music_end) - music_start:.3f}"])
             music_input.extend(["-i", str(music)])
+            audio_filters = [f"volume={volume:.3f}"]
+            if fade_in > 0:
+                audio_filters.append(f"afade=t=in:st=0:d={fade_in:.3f}")
+            if fade_out > 0:
+                total_duration = max(0.1, timeline)
+                audio_filters.append(f"afade=t=out:st={max(0.0, total_duration - fade_out):.3f}:d={fade_out:.3f}")
             _run([
                 "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
                 *music_input, "-i", str(stitched_path),
-                "-map", "1:v:0", "-map", "0:a:0",
+                "-map", "1:v:0", "-map", "0:a:0", "-af", ",".join(audio_filters),
                 "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
                 "-shortest", "-movflags", "+faststart", str(output_path),
             ])
