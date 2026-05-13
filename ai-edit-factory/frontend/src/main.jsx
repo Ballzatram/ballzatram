@@ -1,191 +1,255 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
 const API = import.meta.env.VITE_API_URL || window.location.origin;
-const templates = ['all', 'fast_cut', 'high_motion', 'slow_mo', 'lyric_caption', 'random_montage', 'retro_tv_filter'];
+const demoPrompt = 'Make this a chaotic 20-second TikTok clip with dramatic captions and dark funny energy.';
+const allowedVideoTypes = ['mp4', 'mov', 'webm'];
+const maxUploadMb = 750;
+
+function prettyBytes(bytes = 0) {
+  if (!bytes) return '0 MB';
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function PlanJson({ plan }) {
+  if (!plan) return null;
+  return <pre className="jsonBlock">{JSON.stringify(plan, null, 2)}</pre>;
+}
+
+function CaptionPackages({ packages }) {
+  if (!packages) return null;
+  return (
+    <div className="captionGrid">
+      {Object.entries(packages).map(([platform, pack]) => (
+        <article className="miniCard" key={platform}>
+          <h3>{platform.replace('_', ' ')}</h3>
+          <p><strong>Titles</strong></p>
+          <ul>{pack.titles.map((item) => <li key={item}>{item}</li>)}</ul>
+          <p><strong>Captions</strong></p>
+          <ul>{pack.captions.map((item) => <li key={item}>{item}</li>)}</ul>
+          <p className="tags">{pack.hashtags.join(' ')}</p>
+        </article>
+      ))}
+    </div>
+  );
+}
 
 function App() {
   const [project, setProject] = useState(null);
-  const [name, setName] = useState('Day 1 edit batch');
-  const [numOutputs, setNumOutputs] = useState(10);
-  const [template, setTemplate] = useState('all');
-  const [song, setSong] = useState(null);
-  const [videos, setVideos] = useState([]);
-  const [youtubeUrl, setYoutubeUrl] = useState('');
-  const [youtubeKind, setYoutubeKind] = useState('video');
-  const [message, setMessage] = useState('Create a project, upload rights-approved files, then generate edits.');
+  const [name, setName] = useState('My AI clip');
+  const [video, setVideo] = useState(null);
+  const [rightsConfirmed, setRightsConfirmed] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [prompt, setPrompt] = useState(demoPrompt);
+  const [message, setMessage] = useState('Create a project, upload a rights-cleared source video, then generate a structured edit plan.');
   const [busy, setBusy] = useState(false);
 
-  const outputs = useMemo(() => project?.outputs || [], [project]);
   const assets = project?.assets || [];
-  const songCount = assets.filter((asset) => asset.kind === 'song' && asset.source_type === 'upload').length;
-  const videoCount = assets.filter((asset) => asset.kind === 'video' && asset.source_type === 'upload').length;
-  const job = project?.job;
-  const activeJob = job && !['finished', 'failed'].includes(job.status);
-  const canGenerate = Boolean(project && songCount > 0 && videoCount > 0 && !busy && !activeJob);
+  const sourceVideo = useMemo(() => [...assets].reverse().find((asset) => asset.kind === 'source_video'), [assets]);
+  const editPlan = project?.edit_plan?.plan;
+  const renderJob = project?.render_job;
+  const exports = project?.exports || [];
+  const canUpload = Boolean(project && video && rightsConfirmed && !busy);
+  const canPlan = Boolean(project && sourceVideo && prompt.trim().length >= 3 && !busy);
+  const canRender = Boolean(project && editPlan && !busy);
 
   async function api(path, options = {}) {
     let response;
     try {
       response = await fetch(`${API}${path}`, options);
     } catch (error) {
-      throw new Error(`Cannot reach the AI edit API at ${API}. Make sure the backend is running.`);
+      throw new Error(`Cannot reach the AI clip studio API at ${API}. Make sure the backend is running.`);
     }
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
     return data;
   }
 
-  async function createProject() {
-    setBusy(true);
-    try {
-      const data = await api('/api/projects', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, style_template: template, num_outputs: Number(numOutputs) }),
-      });
-      setProject({ ...data, assets: [], outputs: [] });
-      setMessage('Project created. Upload a song and at least one video clip.');
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function uploadFiles() {
-    if (!project) return setMessage('Create a project first.');
-    setBusy(true);
-    try {
-      if (song) {
-        const form = new FormData();
-        form.append('file', song);
-        await api(`/api/projects/${project.id}/song`, { method: 'POST', body: form });
-      }
-      if (videos.length) {
-        const form = new FormData();
-        videos.forEach((file) => form.append('files', file));
-        await api(`/api/projects/${project.id}/videos`, { method: 'POST', body: form });
-      }
-      await refresh(project.id);
-      setSong(null);
-      setVideos([]);
-      setMessage('Uploads saved. Start generation when ready.');
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function importYoutube() {
-    if (!project) return setMessage('Create a project first.');
-    if (!youtubeUrl) return setMessage('Paste a YouTube URL first.');
-    setBusy(true);
-    try {
-      await api(`/api/projects/${project.id}/youtube`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind: youtubeKind, url: youtubeUrl }),
-      });
-      await refresh(project.id);
-      setMessage('Metadata imported only. Downloads remain disabled unless explicitly rights-gated in CLI/deployment.');
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  async function generate() {
-    if (!project) return setMessage('Create a project first.');
-    setBusy(true);
-    try {
-      const nextJob = await api(`/api/projects/${project.id}/generate`, { method: 'POST' });
-      setProject((current) => ({ ...current, job: nextJob }));
-      setMessage(nextJob.rq_job_id?.startsWith('local-bg-')
-        ? 'Generation queued locally. Keep this page/server running while your edits render.'
-        : 'Generation queued on the site. The backend worker is rendering your edits now.');
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
   async function refresh(id = project?.id) {
     if (!id) return;
-    const data = await api(`/api/projects/${id}`);
+    const data = await api(`/api/studio/projects/${id}`);
     setProject(data);
   }
 
-  useEffect(() => {
-    if (!project?.id || !job || ['finished', 'failed'].includes(job.status)) return;
-    const timer = setInterval(() => refresh(project.id).catch((error) => setMessage(error.message)), 2000);
-    return () => clearInterval(timer);
-  }, [project?.id, job?.status]);
+  async function createProject() {
+    setBusy(true);
+    try {
+      const data = await api('/api/studio/projects', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name }),
+      });
+      setProject(data);
+      setMessage('Project created. Confirm rights and upload an mp4, mov, or webm source video.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  function validateVideo(file) {
+    if (!file) return 'Choose a video first.';
+    const extension = file.name.split('.').pop()?.toLowerCase();
+    if (!allowedVideoTypes.includes(extension)) return 'Use an mp4, mov, or webm video file.';
+    if (file.size > maxUploadMb * 1024 * 1024) return `Video is over the ${maxUploadMb} MB upload limit.`;
+    return '';
+  }
+
+  async function uploadVideo() {
+    if (!project) return setMessage('Create a project first.');
+    const validation = validateVideo(video);
+    if (validation) return setMessage(validation);
+    if (!rightsConfirmed) return setMessage('Confirm that you own, licensed, or have permission to use this video.');
+    setBusy(true);
+    setUploadProgress(0);
+    try {
+      const form = new FormData();
+      form.append('rights_confirmed', 'true');
+      form.append('file', video);
+      await new Promise((resolve, reject) => {
+        const request = new XMLHttpRequest();
+        request.open('POST', `${API}/api/studio/projects/${project.id}/video`);
+        request.upload.onprogress = (event) => {
+          if (event.lengthComputable) setUploadProgress(Math.round((event.loaded / event.total) * 100));
+        };
+        request.onload = () => {
+          const data = JSON.parse(request.responseText || '{}');
+          if (request.status >= 200 && request.status < 300) resolve(data);
+          else reject(new Error(data.detail || `Upload failed with status ${request.status}`));
+        };
+        request.onerror = () => reject(new Error('Upload failed. Check that the backend is running and accepts large files.'));
+        request.send(form);
+      });
+      await refresh(project.id);
+      setVideo(null);
+      setUploadProgress(100);
+      setMessage('Video uploaded and metadata saved. Add creative direction and generate the edit plan.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function generatePlan() {
+    if (!project) return setMessage('Create a project first.');
+    setBusy(true);
+    try {
+      await api(`/api/studio/projects/${project.id}/edit-plans`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, media_asset_id: sourceVideo?.id }),
+      });
+      await refresh(project.id);
+      setMessage('Structured AI edit plan ready for review.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function createRenderJob() {
+    if (!project) return setMessage('Create a project first.');
+    setBusy(true);
+    try {
+      const data = await api(`/api/studio/projects/${project.id}/render`, { method: 'POST' });
+      await refresh(project.id);
+      setMessage(data.message);
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
 
   return (
     <main className="shell">
-      <section className="hero">
+      <section className="hero studioHero">
         <a href="/" className="back">← Ballzatram</a>
-        <p className="kicker">Production MVP · ai-edit-factory</p>
-        <h1>Generate beat-synced vertical edits</h1>
-        <p className="lede">Upload media you own, licensed, or have permission to use. YouTube URLs import metadata only by default; this app does not bypass DRM, logins, private videos, geo-blocks, or platform restrictions.</p>
+        <p className="kicker">AI clip-making studio · MVP</p>
+        <h1>Turn long clips into short-form plans</h1>
+        <p className="lede">Upload media you own, licensed, or have permission to use. This studio does not scrape TV, movies, games, YouTube, TikTok, private videos, DRM-protected media, or platform-restricted content.</p>
       </section>
 
-      <section className="grid">
-        <div className="card">
+      <section className="studioGrid">
+        <article className="card">
           <span className="step">01</span>
           <h2>Project</h2>
           <label>Project name<input value={name} onChange={(event) => setName(event.target.value)} /></label>
-          <div className="row">
-            <label>Outputs<input type="number" min="1" max="30" value={numOutputs} onChange={(event) => setNumOutputs(event.target.value)} /></label>
-            <label>Style<select value={template} onChange={(event) => setTemplate(event.target.value)}>{templates.map((item) => <option key={item}>{item}</option>)}</select></label>
-          </div>
-          <button disabled={busy} onClick={createProject}>{project ? `Project #${project.id}` : 'Create project'}</button>
-        </div>
+          <button disabled={busy} onClick={createProject}>{project ? `Open project #${project.id}` : 'Create AI project'}</button>
+          {project && <p className="small">Status: <strong>{project.status}</strong></p>}
+        </article>
 
-        <div className="card">
+        <article className="card uploadCard">
           <span className="step">02</span>
-          <h2>Uploads</h2>
-          <label>Song file<input type="file" accept="audio/*" onChange={(event) => setSong(event.target.files?.[0] || null)} /></label>
-          <label>Video clips<input type="file" accept="video/*" multiple onChange={(event) => setVideos([...event.target.files])} /></label>
-          <p className="small">Saved uploads: {songCount} song · {videoCount} video{videoCount === 1 ? '' : 's'}</p>
-          <button disabled={busy || !project || (!song && videos.length === 0)} onClick={uploadFiles}>Upload files</button>
-        </div>
-
-        <div className="card">
-          <span className="step">03</span>
-          <h2>YouTube metadata</h2>
-          <p className="small">Metadata only. Downloads are disabled by default and require explicit rights confirmation in supported deployments.</p>
-          <div className="row"><select value={youtubeKind} onChange={(event) => setYoutubeKind(event.target.value)}><option>video</option><option>song</option></select></div>
-          <input placeholder="https://www.youtube.com/watch?v=..." value={youtubeUrl} onChange={(event) => setYoutubeUrl(event.target.value)} />
-          <button disabled={busy || !project} onClick={importYoutube}>Fetch metadata</button>
-        </div>
+          <h2>Source video</h2>
+          <label className="check"><input type="checkbox" checked={rightsConfirmed} onChange={(event) => setRightsConfirmed(event.target.checked)} /> I confirm I own, licensed, or have permission to process and edit this upload.</label>
+          <label>Upload mp4, mov, or webm<input type="file" accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" onChange={(event) => setVideo(event.target.files?.[0] || null)} /></label>
+          {video && <p className="small">Selected: {video.name} · {prettyBytes(video.size)}</p>}
+          <div className="progress"><span style={{ width: `${uploadProgress}%` }} /></div>
+          <button disabled={!canUpload} onClick={uploadVideo}>Upload video</button>
+          {sourceVideo && <p className="small">Saved: {sourceVideo.original_filename || 'source video'} · {Number(sourceVideo.duration || 0).toFixed(1)}s · {sourceVideo.width || '?'}×{sourceVideo.height || '?'} · {sourceVideo.file_type}</p>}
+        </article>
       </section>
 
-      <section className="card action">
-        <div><p className="kicker">Status</p><h2>{job ? `${job.status} · ${job.progress}%` : 'Ready'}</h2><p>{job?.message || message}</p>{!canGenerate && project && <p className="small">Generate unlocks after one uploaded song and one uploaded video are saved, and no render is currently running.</p>}{job?.error && <p className="error">{job.error}</p>}</div>
-        <button disabled={!canGenerate} onClick={generate}>Generate edits</button>
+      {sourceVideo?.preview_url && (
+        <section className="previewPanel">
+          <div className="phoneFrame"><video controls playsInline src={`${API}${sourceVideo.preview_url}`} /></div>
+          <article className="card promptCard">
+            <span className="step">03</span>
+            <h2>Creative direction</h2>
+            <textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows="6" placeholder={demoPrompt} />
+            <button disabled={!canPlan} onClick={generatePlan}>Generate structured edit plan</button>
+            <p className="small">The AI acts like a creative video editor and returns JSON optimized for hook, pacing, captions, replayability, and hashtag relevance.</p>
+          </article>
+        </section>
+      )}
+
+      <section className="card action studioStatus">
+        <div><p className="kicker">Studio status</p><h2>{renderJob ? `${renderJob.status} · ${renderJob.progress}%` : 'Ready'}</h2><p>{renderJob?.message || message}</p>{renderJob?.error && <p className="error">{renderJob.error}</p>}</div>
         <button disabled={!project} onClick={() => refresh()}>Refresh</button>
       </section>
 
-      <section className="outputs">
-        <h2>Ranked outputs</h2>
-        {outputs.length === 0 && <p>No outputs yet. Finished renders will appear here best-first.</p>}
-        <div className="outputGrid">
-          {outputs.map((output) => (
-            <article className="output" key={output.id}>
-              <video controls playsInline src={`${API}/media/outputs/project_${project.id}/${output.filename}`} />
-              <strong>{output.filename}</strong>
-              <span>{output.template} · score {Number(output.score).toFixed(3)}</span>
-              <a href={`${API}/api/outputs/${output.id}/download`}>Download MP4</a>
-            </article>
-          ))}
-        </div>
-      </section>
+      {editPlan && (
+        <section className="planLayout">
+          <article className="card planSummary">
+            <span className="step">04</span>
+            <h2>Review plan</h2>
+            <div className="planStats">
+              <span>{editPlan.platform}</span><span>{editPlan.duration_seconds}s</span><span>{editPlan.aspect_ratio}</span><span>{editPlan.mood}</span>
+            </div>
+            <h3>Segments</h3>
+            <ol>{editPlan.segments.map((segment, index) => <li key={`${segment.source_start}-${index}`}>{segment.source_start}s–{segment.source_end}s · {segment.reason}</li>)}</ol>
+            <h3>Text overlays</h3>
+            <ol>{editPlan.text_overlays.map((overlay, index) => <li key={`${overlay.time}-${index}`}>{overlay.time}s · “{overlay.text}” · {overlay.style}</li>)}</ol>
+            <p><strong>Caption style:</strong> {editPlan.caption_style}</p>
+            <p><strong>Music vibe:</strong> {editPlan.music_vibe}</p>
+            <p><strong>Export notes:</strong> {editPlan.export_notes}</p>
+            <button disabled={!canRender} onClick={createRenderJob}>Create render/export job</button>
+          </article>
+          <article className="card">
+            <h2>Structured JSON</h2>
+            <PlanJson plan={editPlan} />
+          </article>
+        </section>
+      )}
+
+      {editPlan?.caption_packages && (
+        <section className="outputs">
+          <h2>Captions, titles & hashtags</h2>
+          <CaptionPackages packages={editPlan.caption_packages} />
+        </section>
+      )}
+
+      {exports.length > 0 && (
+        <section className="outputs">
+          <h2>Exports</h2>
+          <div className="outputGrid">{exports.map((item) => <article className="output" key={item.id}><strong>{item.platform}</strong><span>{item.status}</span><span>{item.path || 'Render path pending'}</span></article>)}</div>
+        </section>
+      )}
     </main>
   );
 }
