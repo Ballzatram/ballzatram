@@ -534,6 +534,11 @@ h3 {
   color: #ffd5dc;
 }
 
+.inline-feedback[data-type="warning"] {
+  border-color: rgba(255, 209, 102, 0.5);
+  color: #fff0c2;
+}
+
 .upload-grid,
 .recipe-grid,
 .render-layout,
