@@ -12,7 +12,7 @@ Parcel is evolving from a simple listing finder into a full **land intelligence 
 - Parameterized discovery UI with investment-oriented filters.
 - Web discovery with resilient fallback dataset.
 - Ranking and shortlist rendering in browser.
-- Pipeline scaffolding for scoring + daily automation.
+- Operational scoring pipeline foundation for repeatable shortlist generation.
 
 ## Next Milestones (Acquisition-grade)
 1. **Source Connectors Layer**

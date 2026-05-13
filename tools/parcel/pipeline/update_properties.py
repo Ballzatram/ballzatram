@@ -1,7 +1,8 @@
 """Parcel scoring pipeline.
 
-TODO: Add listing ingestion connectors when source APIs/feeds are selected.
-Current source of truth remains tools/parcel/data/properties.csv.
+The current production input is tools/parcel/data/properties.csv. Source-specific
+ingestion connectors should write into that normalized CSV contract before this
+scoring step runs.
 """
 
 from __future__ import annotations

@@ -19,7 +19,7 @@
         click generate, then preview and download beat-synced vertical MP4s in the browser.
       </p>
       <div class="cta-row">
-        <a class="cta" href="http://localhost:8000">Launch the site app →</a>
+        <a class="cta" href="#run-locally">Run the site app →</a>
         <a class="cta secondary" href="README.md">Deployment guide →</a>
       </div>
     </header>
@@ -44,11 +44,11 @@
       </article>
     </section>
 
-    <section class="command-card" aria-label="Site command">
+    <section class="command-card" id="run-locally" aria-label="Site command">
       <p class="kicker">Runnable site command</p>
       <pre><code>cd ai-edit-factory
 docker compose up --build</code></pre>
-      <p class="note">Open <a href="http://localhost:8000">http://localhost:8000</a> for the full browser workflow. Generated files are still persisted under <code>outputs/</code> for deployment storage.</p>
+      <p class="note">After the container starts, open <code>http://localhost:8000</code> for the full browser workflow. Generated files are still persisted under <code>outputs/</code> for deployment storage.</p>
     </section>
   </main>
 </body>

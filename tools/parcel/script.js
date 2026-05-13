@@ -107,7 +107,22 @@ function render(rows, query) {
 
   enriched.forEach((row) => {
     const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${row.title || 'Listing'}</td><td>${row.source || 'web'}</td><td>${row.fit}</td><td>Matched location + thesis + acreage criteria.</td><td><a href="${row.url}" target="_blank" rel="noreferrer">View property listing</a></td>`;
+    const titleCell = document.createElement('td');
+    titleCell.textContent = row.title || 'Listing';
+    const sourceCell = document.createElement('td');
+    sourceCell.textContent = row.source || 'web';
+    const fitCell = document.createElement('td');
+    fitCell.textContent = String(row.fit);
+    const rationaleCell = document.createElement('td');
+    rationaleCell.textContent = 'Matched location + thesis + acreage criteria.';
+    const linkCell = document.createElement('td');
+    const link = document.createElement('a');
+    link.href = row.url;
+    link.target = '_blank';
+    link.rel = 'noreferrer';
+    link.textContent = 'View property listing';
+    linkCell.appendChild(link);
+    tr.append(titleCell, sourceCell, fitCell, rationaleCell, linkCell);
     resultsEl.appendChild(tr);
   });
 

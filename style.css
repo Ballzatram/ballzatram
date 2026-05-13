@@ -948,3 +948,62 @@ body {
     text-align: left;
   }
 }
+
+.weather-submit {
+  width: 100%;
+  cursor: pointer;
+}
+
+.weather-submit:hover,
+.weather-submit:focus-visible {
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.alert-output {
+  display: grid;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  border: 3px solid rgba(185, 251, 255, 0.55);
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.36);
+  color: #d9ffff;
+  font-weight: 900;
+  line-height: 1.45;
+}
+
+.alert-output strong {
+  color: #ffec99;
+  font-family: Impact, "Anton", system-ui, sans-serif;
+  font-size: 1.45rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.status-positive {
+  color: #0c5f24;
+}
+
+.status-neutral {
+  color: #7a310c;
+}
+
+.primary-button:hover,
+.secondary-button:hover,
+.dock-card a:hover,
+.primary-button:focus-visible,
+.secondary-button:focus-visible,
+.dock-card a:focus-visible,
+.nav-panel a:focus-visible {
+  filter: brightness(1.08);
+  outline: 3px solid #fff3cf;
+  outline-offset: 3px;
+  transform: translateY(-1px);
+}
+
+.brand-logo:focus-visible {
+  border-radius: 18px;
+  outline: 4px solid #fff3cf;
+  outline-offset: 6px;
+}
