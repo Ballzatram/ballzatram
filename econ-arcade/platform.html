@@ -13,6 +13,7 @@
     <header class="studio-header">
       <a href="index.html" class="back-link">← Econ Arcade</a>
       <nav aria-label="Studio navigation">
+        <a href="#curriculum">Curriculum</a>
         <a href="#worlds">Worlds</a>
         <a href="#simulation">Simulation</a>
         <a href="#architecture">Architecture</a>
@@ -29,12 +30,32 @@
           games, incomplete information, signaling, auctions, and mechanism design through simulation,
           strategic experimentation, visualization, and debriefs.
         </p>
+        <div class="hero-stage" aria-hidden="true">
+          <div class="orbit orbit-one"></div>
+          <div class="orbit orbit-two"></div>
+          <div class="payoff-tile tile-a">C,C<br><span>3 / 3</span></div>
+          <div class="payoff-tile tile-b">D,C<br><span>5 / 0</span></div>
+          <div class="payoff-tile tile-c">Bayes<br><span>P(type | signal)</span></div>
+          <div class="signal-beam"></div>
+        </div>
         <div class="hero-metrics" aria-label="Platform coverage metrics">
-          <div><strong id="worldCount">5</strong><span>Worlds</span></div>
-          <div><strong id="moduleCount">30+</strong><span>Modules</span></div>
+          <div><strong id="worldCount">6</strong><span>Worlds</span></div>
+          <div><strong id="moduleCount">28+</strong><span>Modules</span></div>
           <div><strong>7</strong><span>Playable engines</span></div>
           <div><strong>∞</strong><span>Counterfactuals</span></div>
         </div>
+      </section>
+
+      <section id="curriculum" class="curriculum-panel" aria-labelledby="curriculumTitle">
+        <div class="section-heading">
+          <p class="kicker">Curriculum path</p>
+          <h2 id="curriculumTitle">From choices to rule design</h2>
+          <p>
+            The new game theory spine is a six-world campaign: each stop introduces a formal idea,
+            turns it into a visual mechanic, then asks learners to break and rebuild the incentive system.
+          </p>
+        </div>
+        <div id="curriculumTrack" class="curriculum-track" aria-label="Six-step game theory curriculum"></div>
       </section>
 
       <section id="worlds" class="worlds-panel" aria-labelledby="worldsTitle">
@@ -45,11 +66,13 @@
         </div>
         <div id="worldTabs" class="world-tabs" role="tablist" aria-label="Game theory worlds"></div>
         <div class="world-detail">
-          <div>
+          <div class="world-copy">
+            <div id="worldDetailArt" class="world-art" aria-hidden="true"></div>
             <p id="worldKicker" class="kicker">World</p>
             <h3 id="worldTitle"></h3>
             <p id="worldDescription"></p>
             <div id="worldTags" class="tag-row"></div>
+            <div class="capstone-card"><span>Capstone</span><p id="worldCapstone"></p></div>
           </div>
           <div id="moduleGrid" class="module-grid"></div>
         </div>

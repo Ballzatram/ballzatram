@@ -317,3 +317,93 @@ body::before {
     font-size: clamp(3.6rem, 19vw, 5.5rem);
   }
 }
+
+.roadmap-grid article span {
+  display: inline-grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  margin-bottom: 12px;
+  background: rgba(103, 232, 249, 0.1);
+  font-size: 1.45rem;
+}
+
+button,
+a {
+  touch-action: manipulation;
+}
+
+@media (max-width: 760px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .arcade-header nav {
+    width: 100%;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .arcade-header nav a,
+  .back-link {
+    white-space: nowrap;
+  }
+
+  .menu-card a {
+    position: relative;
+    left: auto;
+    bottom: auto;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .menu-card {
+    display: flex;
+    min-height: auto;
+    flex-direction: column;
+  }
+
+  .menu-card ul {
+    margin-bottom: 18px;
+  }
+
+  .roadmap-grid {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .roadmap-grid article {
+    flex: 0 0 min(82vw, 320px);
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 480px) {
+  .arcade-shell {
+    width: min(100% - 18px, 1180px);
+    padding: calc(10px + env(safe-area-inset-top)) 0 44px;
+  }
+
+  .arcade-hero,
+  .roadmap-panel,
+  .menu-card {
+    border-radius: 22px;
+    padding: 22px;
+  }
+
+  .hero-actions a {
+    width: 100%;
+  }
+
+  .card-topline {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
