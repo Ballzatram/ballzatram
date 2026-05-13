@@ -16,8 +16,9 @@
         <span>Ballzatram</span>
       </a>
       <div class="api-control">
-        <span id="apiStatus" class="api-status is-checking">Checking API</span>
+        <span id="apiStatus" class="api-status is-checking">Checking backend</span>
         <button id="apiSettingsButton" class="ghost-button" type="button">Backend settings</button>
+      <small id="diagnosticsSummary" class="diagnostics-summary">Diagnostics not loaded yet.</small>
       </div>
     </header>
 
@@ -180,6 +181,7 @@
       selectedVideoId: null,
       busy: false,
       apiOnline: false,
+      diagnostics: null,
       localMode: false,
       localId: 1,
       pollTimer: null,
@@ -302,7 +304,7 @@
       $('uploadVideos').disabled = state.busy || !hasProject || !rights || videoFiles.length === 0;
       $('uploadMusic').disabled = state.busy || !hasProject || !rights || !musicFile;
       $('generateRecipe').disabled = state.busy || !hasProject || !selectedSource() || $('prompt').value.trim().length < 3;
-      $('renderVideo').disabled = state.busy || !hasProject || !hasRecipe || activeRender;
+      $('renderVideo').disabled = state.busy || !state.apiOnline || state.localMode || !hasProject || !hasRecipe || activeRender;
       $('refreshProject').disabled = state.busy || !hasProject;
       $('createProject').disabled = state.busy;
     }
@@ -339,7 +341,7 @@
         return;
       }
       frame.classList.add('has-video');
-      frame.innerHTML = `<video controls playsinline src="${mediaUrl(source.preview_url)}"></video>`;
+      frame.innerHTML = `${state.apiOnline && !state.localMode ? '<div class="preview-label">Backend uploaded source preview</div>' : '<div class="preview-label is-warning">Browser source preview — backend offline</div>'}<video controls playsinline src="${mediaUrl(source.preview_url)}"></video>`;
     }
 
     function renderRecipe() {
@@ -366,11 +368,20 @@
         $('exportsOutput').innerHTML = '';
         return;
       }
-      $('exportsOutput').innerHTML = `<h3>Exports</h3><div class="export-grid">${exports.map((item) => `
+      if (state.localMode || !state.apiOnline) {
+        $('exportsOutput').innerHTML = '<div class="offline-export-note"><strong>Backend offline: preview mode only.</strong><span>Real exports are hidden until the FastAPI backend renders an MP4. The source preview is not an export.</span></div>';
+        return;
+      }
+      const realExports = exports;
+      if (!realExports.length) {
+        $('exportsOutput').innerHTML = '';
+        return;
+      }
+      $('exportsOutput').innerHTML = `<h3>Exports</h3><div class="export-grid">${realExports.map((item) => `
         <article class="export-card">
           <strong>${escapeHtml(item.platform)}</strong>
           <span>${escapeHtml(item.status)}</span>
-          ${item.download_url ? `<video controls playsinline src="${mediaUrl(item.download_url)}"></video><a href="${mediaUrl(item.download_url)}" download>${state.localMode ? 'Download source preview' : 'Download MP4'}</a>` : `<span>${escapeHtml(item.path || 'Render path pending')}</span>`}
+          ${item.download_url ? `<video controls playsinline src="${mediaUrl(item.download_url)}"></video><a href="${mediaUrl(item.download_url)}" download>Download rendered MP4</a>` : `<span>${escapeHtml(item.path || 'Render path pending')}</span>`}
         </article>`).join('')}</div>`;
     }
 
@@ -379,7 +390,7 @@
       $('projectMeta').textContent = project ? `${state.localMode ? 'Browser draft' : 'Project'} #${project.id} · ${project.status}` : 'No project is open yet.';
       $('createProject').textContent = project ? `${state.localMode ? 'Browser draft' : 'Project'} #${project.id} open` : 'Create project';
       const job = project?.render_job;
-      if (job) setStatus(`${job.status} · ${job.progress}% · ${job.message || 'Render job updated.'}`, job.status === 'failed' ? 'error' : (job.status === 'preview-only' ? 'warning' : 'info'));
+      if (job) setStatus(`${job.status} · ${job.progress}% · ${job.message || 'Render job updated.'}`, job.status === 'failed' ? 'error' : 'info');
       renderAssets();
       renderPreview();
       renderRecipe();
@@ -394,17 +405,20 @@
 
     async function checkHealth() {
       $('apiBaseInput').value = state.apiBase;
-      setApiStatus('Checking API', 'is-checking');
+      setApiStatus('Checking backend', 'is-checking');
       const originalApiBase = state.apiBase;
       for (const candidate of apiBaseCandidates()) {
         $('apiBaseInput').value = candidate;
         try {
           state.apiBase = candidate;
-          await api('/api/health');
+          const diagnostics = await api('/api/diagnostics');
+          state.diagnostics = diagnostics;
+          console.info('AI Edit Factory diagnostics', diagnostics);
+          $('diagnosticsSummary').textContent = `Backend diagnostics: ffmpeg=${diagnostics.ffmpeg_available ? 'yes' : 'no'} · ffprobe=${diagnostics.ffprobe_available ? 'yes' : 'no'} · redis=${diagnostics.redis_available ? 'yes' : 'no'} · mode=${diagnostics.app_mode}`;
           state.apiOnline = true;
           if (!state.project || !String(state.project.id).startsWith('project_')) state.localMode = false;
-          setApiStatus('API online', 'is-online');
-          const onlineMessage = state.localMode ? 'Backend connected. Click the project button again to create a persisted server project when ready.' : 'Backend connected. You can create a project.';
+          setApiStatus('Connected to backend', 'is-online');
+          const onlineMessage = state.localMode ? 'Connected to backend. Click the project button again to create a persisted server project before rendering.' : 'Connected to backend. Uploads, plans, renders, and exports will persist server-side.';
           setProjectFeedback(onlineMessage, 'success');
           setStatus(onlineMessage, 'success');
           if (candidate !== window.location.origin) localStorage.setItem('aiefApiBase', candidate);
@@ -417,8 +431,9 @@
       state.apiBase = originalApiBase;
       $('apiBaseInput').value = originalApiBase;
       state.apiOnline = false;
-      setApiStatus('Browser mode', 'is-offline');
-      const message = 'The hosted page cannot reach the render backend, so project setup and uploads will run in browser draft mode. Use Backend settings with a FastAPI backend for server uploads, edit-plan persistence, and real MP4 rendering.';
+      setApiStatus('Backend offline: preview mode only', 'is-offline');
+      $('diagnosticsSummary').textContent = 'Backend diagnostics unavailable. Static frontend-only hosting cannot render MP4 exports.';
+      const message = 'Backend offline: preview mode only. You can preview selected browser files, but Render MP4 and real downloads are disabled until FastAPI/Redis/worker/ffmpeg are reachable.';
       setProjectFeedback(message, 'warning');
       setStatus(message, 'warning');
       updateControls();
@@ -436,8 +451,8 @@
         exports: [],
       };
       const suffix = reason ? ` (${reason})` : '';
-      setProjectFeedback(`Browser draft is ready${suffix}. Confirm rights, then add media.`, 'success');
-      setStatus('Browser draft mode is active. Uploads stay in this tab; connect the API for real MP4 rendering.', 'warning');
+      setProjectFeedback(`Backend offline: preview mode only${suffix}. Confirm rights to preview browser files; real exports require the backend.`, 'warning');
+      setStatus('Backend offline: preview mode only. Uploads stay in this tab and Render MP4 is disabled.', 'warning');
       renderProject();
     }
 
@@ -459,7 +474,7 @@
         renderProject();
       } catch (error) {
         createLocalProject('API request failed');
-        setProjectFeedback(`The API request failed: ${error.message}. Browser draft mode is active so you can continue selecting media.`, 'warning');
+        setProjectFeedback(`The API request failed: ${error.message}. Backend offline preview mode is active; rendering and exports stay disabled.`, 'warning');
       } finally {
         setBusy(false);
       }
@@ -510,7 +525,7 @@
       state.selectedVideoId = assets.at(-1)?.id || state.selectedVideoId;
       $('videoFiles').value = '';
       $('videoSelection').textContent = `${assets.length} video${assets.length === 1 ? '' : 's'} added to this browser draft.`;
-      setStatus('Videos added locally. Generate an edit plan or connect the API for server-side uploads.', 'success');
+      setStatus('Browser source preview added. Connect the backend before rendering or downloading a real export.', 'warning');
       renderProject();
     }
 
@@ -533,7 +548,7 @@
       state.project.status = 'media_uploaded';
       $('musicFile').value = '';
       $('musicSelection').textContent = 'Music added to this browser draft.';
-      setStatus('Music added locally. Run the backend for server-side rendering with this music bed.', 'success');
+      setStatus('Music selected only in this browser. It will not be mixed until the backend is connected and the file is uploaded.', 'warning');
       renderProject();
     }
 
@@ -645,7 +660,7 @@
       });
       return {
         clip_type: $('clipType').value,
-        platform: 'browser-preview',
+        platform: 'browser_draft',
         duration_seconds: targetDuration,
         aspect_ratio: '9:16',
         mood: $('clipType').value,
@@ -668,7 +683,7 @@
           const plan = buildLocalPlan();
           state.project.edit_plan = { id: nextLocalId('plan'), media_asset_id: selectedSource()?.id, plan };
           state.project.status = 'plan_ready';
-          setStatus('Browser edit plan generated. Connect the API to render a real MP4 export.', 'success');
+          setStatus('Browser draft plan generated for preview only. Render MP4 remains disabled until the backend is connected.', 'warning');
           renderProject();
           return;
         }
@@ -706,19 +721,8 @@
     async function renderVideo() {
       setBusy(true);
       try {
-        if (state.localMode) {
-          const source = selectedSource();
-          if (!source?.preview_url) throw new Error('Add a source video before preparing a preview download.');
-          state.project.render_job = { status: 'preview-only', progress: 100, message: 'Browser draft prepared. Run the backend for ffmpeg MP4 rendering.' };
-          state.project.exports = [{
-            id: nextLocalId('export'),
-            platform: 'browser-preview',
-            status: 'preview-only',
-            download_url: source.preview_url,
-            path: source.original_filename,
-          }];
-          state.project.status = 'preview_ready';
-          setStatus('Browser preview is ready. This downloads the selected source; real vertical MP4 rendering requires the API backend.', 'warning');
+        if (state.localMode || !state.apiOnline) {
+          setStatus('Backend offline: preview mode only. Render MP4 is disabled and browser source previews are not exports.', 'warning');
           renderProject();
           return;
         }

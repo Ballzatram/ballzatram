@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from app import db
+from app.api.diagnostics import router as diagnostics_router
 from app.api.jobs import router as jobs_router
 from app.api.outputs import router as outputs_router
 from app.api.projects import router as projects_router
@@ -17,6 +18,7 @@ logger = logging.getLogger("ai-edit-factory")
 
 app = FastAPI(title="ai-edit-factory", version="0.1.0")
 app.add_middleware(CORSMiddleware, allow_origins=CORS_ORIGINS, allow_credentials=True, allow_methods=["*"], allow_headers=["*"])
+app.include_router(diagnostics_router)
 app.include_router(projects_router)
 app.include_router(studio_router)
 app.include_router(jobs_router)

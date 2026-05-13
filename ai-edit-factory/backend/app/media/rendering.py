@@ -236,13 +236,13 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
     source_path = Path(source_path)
     if not source_path.exists():
         raise FileNotFoundError(f"Uploaded source video is missing on disk: {source_path}")
-    source_lookup: dict[int, tuple[Path, float | None]] = {}
+    source_lookup: dict[int, tuple[Path, float | None, bool]] = {}
     for asset in source_assets or []:
         asset_id = _source_asset_id(asset.get("id"))
         asset_path = Path(str(asset.get("path") or ""))
         if asset_id is None or not asset_path.exists():
             continue
-        source_lookup[asset_id] = (asset_path, asset.get("duration"))
+        source_lookup[asset_id] = (asset_path, asset.get("duration"), bool(asset.get("has_audio")))
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     music = Path(music_path) if music_path else None
@@ -251,9 +251,12 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
     aspect = str(plan.get("aspect_ratio") or "9:16")
     width, height = (1080, 1920) if aspect != "4:5" else (1080, 1350)
     overlays = plan.get("text_overlays") or []
-    source_durations = {asset_id: duration for asset_id, (_, duration) in source_lookup.items() if duration}
+    source_durations = {asset_id: duration for asset_id, (_, duration, _) in source_lookup.items() if duration}
     segments = _safe_segments(plan, source_duration, source_durations)
-    mute_segment_audio = bool(music) or len(source_lookup) > 1
+    music_settings = plan.get("music_settings") or {}
+    duck_original_audio = bool(music_settings.get("duck_original_audio", True))
+    preserve_segment_audio = bool(music and duck_original_audio)
+    mute_segment_audio = (bool(music) and not preserve_segment_audio) or len(source_lookup) > 1
     with tempfile.TemporaryDirectory(prefix="ai-edit-studio-") as temp_dir_name:
         temp_dir = Path(temp_dir_name)
         segment_paths: list[Path] = []
@@ -261,24 +264,45 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
         for index, segment in enumerate(segments):
             start = segment["source_start"]
             duration = max(0.1, segment["source_end"] - start)
-            segment_source_path = source_lookup.get(_source_asset_id(segment.get("source_asset_id")), (source_path, source_duration))[0]
+            segment_source = source_lookup.get(_source_asset_id(segment.get("source_asset_id")), (source_path, source_duration, False))
+            segment_source_path = segment_source[0]
+            segment_has_audio = bool(segment_source[2])
             segment_path = temp_dir / f"studio_segment_{index:03d}.mp4"
-            command = [
-                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                "-ss", f"{start:.3f}", "-t", f"{duration:.3f}", "-i", str(segment_source_path),
-                "-map", "0:v:0",
-            ]
-            if mute_segment_audio:
-                command.append("-an")
+            if preserve_segment_audio:
+                command = [
+                    "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                    "-ss", f"{start:.3f}", "-t", f"{duration:.3f}", "-i", str(segment_source_path),
+                ]
+                if segment_has_audio:
+                    command.extend([
+                        "-map", "0:v:0", "-map", "0:a:0",
+                        "-vf", _studio_segment_filter(width, height, overlays, timeline, timeline + duration),
+                        "-af", "volume=0.22",
+                    ])
+                else:
+                    command.extend([
+                        "-f", "lavfi", "-t", f"{duration:.3f}", "-i", "anullsrc=r=44100:cl=stereo",
+                        "-map", "0:v:0", "-map", "1:a:0",
+                        "-vf", _studio_segment_filter(width, height, overlays, timeline, timeline + duration),
+                    ])
+                command.extend(["-c:v", "libx264", "-preset", "veryfast", "-crf", "23", "-c:a", "aac", "-b:a", "128k", "-ar", "44100", "-movflags", "+faststart", str(segment_path)])
             else:
-                command.extend(["-map", "0:a?"])
-            command.extend([
-                "-vf", _studio_segment_filter(width, height, overlays, timeline, timeline + duration),
-                "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
-            ])
-            if not mute_segment_audio:
-                command.extend(["-c:a", "aac", "-b:a", "160k", "-ar", "44100"])
-            command.extend(["-movflags", "+faststart", str(segment_path)])
+                command = [
+                    "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                    "-ss", f"{start:.3f}", "-t", f"{duration:.3f}", "-i", str(segment_source_path),
+                    "-map", "0:v:0",
+                ]
+                if mute_segment_audio:
+                    command.append("-an")
+                else:
+                    command.extend(["-map", "0:a?"])
+                command.extend([
+                    "-vf", _studio_segment_filter(width, height, overlays, timeline, timeline + duration),
+                    "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+                ])
+                if not mute_segment_audio:
+                    command.extend(["-c:a", "aac", "-b:a", "160k", "-ar", "44100"])
+                command.extend(["-movflags", "+faststart", str(segment_path)])
             _run(command)
             segment_paths.append(segment_path)
             timeline += duration
@@ -291,18 +315,42 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
                 "-f", "concat", "-safe", "0", "-i", str(concat_file),
                 "-c", "copy", "-movflags", "+faststart", str(stitched_path),
             ])
-            music_start = max(0.0, float(plan.get("music_start_seconds") or 0.0))
+            settings = plan.get("music_settings") or {}
+            music_start = max(0.0, float(settings.get("source_start_s", plan.get("music_start_seconds") or 0.0) or 0.0))
+            music_end = settings.get("source_end_s")
+            volume = max(0.0, min(2.0, float(settings.get("volume", 0.85) or 0.85)))
+            fade_in = max(0.0, float(settings.get("fade_in_s", 0.15) or 0.0))
+            fade_out = max(0.0, float(settings.get("fade_out_s", 0.25) or 0.0))
             music_input = ["-stream_loop", "-1"]
             if music_start > 0:
                 music_input.extend(["-ss", f"{music_start:.3f}"])
+            if music_end is not None and float(music_end) > music_start:
+                music_input.extend(["-t", f"{float(music_end) - music_start:.3f}"])
             music_input.extend(["-i", str(music)])
-            _run([
-                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-                *music_input, "-i", str(stitched_path),
-                "-map", "1:v:0", "-map", "0:a:0",
-                "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
-                "-shortest", "-movflags", "+faststart", str(output_path),
-            ])
+            audio_filters = [f"volume={volume:.3f}"]
+            if fade_in > 0:
+                audio_filters.append(f"afade=t=in:st=0:d={fade_in:.3f}")
+            if fade_out > 0:
+                total_duration = max(0.1, timeline)
+                audio_filters.append(f"afade=t=out:st={max(0.0, total_duration - fade_out):.3f}:d={fade_out:.3f}")
+            if preserve_segment_audio:
+                filter_complex = f"[0:a]{','.join(audio_filters)}[music];[1:a]volume=0.22[orig];[orig][music]amix=inputs=2:duration=shortest:normalize=0[aout]"
+                _run([
+                    "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                    *music_input, "-i", str(stitched_path),
+                    "-filter_complex", filter_complex,
+                    "-map", "1:v:0", "-map", "[aout]",
+                    "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
+                    "-shortest", "-movflags", "+faststart", str(output_path),
+                ])
+            else:
+                _run([
+                    "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                    *music_input, "-i", str(stitched_path),
+                    "-map", "1:v:0", "-map", "0:a:0", "-af", ",".join(audio_filters),
+                    "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
+                    "-shortest", "-movflags", "+faststart", str(output_path),
+                ])
         elif mute_segment_audio:
             stitched_path = temp_dir / "stitched_video.mp4"
             _run([

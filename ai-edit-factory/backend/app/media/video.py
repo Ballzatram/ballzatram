@@ -4,6 +4,8 @@ import json
 import subprocess
 from pathlib import Path
 
+from app.media.probe import probe_media_metadata
+
 ALLOWED_VIDEO_EXTENSIONS = {".mp4", ".mov", ".m4v", ".avi", ".mkv", ".webm"}
 STUDIO_ALLOWED_VIDEO_EXTENSIONS = {".mp4", ".mov", ".webm"}
 
@@ -26,33 +28,4 @@ def probe_duration(video_path: str | Path) -> float:
 
 
 def probe_video_metadata(video_path: str | Path) -> dict:
-    video_path = Path(video_path)
-    metadata = {
-        "duration": None,
-        "width": None,
-        "height": None,
-        "file_type": video_path.suffix.lower().lstrip("."),
-    }
-    try:
-        result = subprocess.run(
-            [
-                "ffprobe", "-v", "error",
-                "-select_streams", "v:0",
-                "-show_entries", "stream=width,height:format=duration,format_name",
-                "-of", "json", str(video_path),
-            ],
-            check=True, capture_output=True, text=True,
-        )
-        data = json.loads(result.stdout or "{}")
-        stream = (data.get("streams") or [{}])[0]
-        fmt = data.get("format") or {}
-        metadata.update({
-            "duration": float(fmt["duration"]) if fmt.get("duration") else None,
-            "width": int(stream["width"]) if stream.get("width") else None,
-            "height": int(stream["height"]) if stream.get("height") else None,
-            "file_type": metadata["file_type"] or fmt.get("format_name"),
-        })
-    except (subprocess.SubprocessError, FileNotFoundError, KeyError, ValueError, json.JSONDecodeError):
-        # Keep local/dev uploads usable when ffprobe is not installed; rendering will still surface ffmpeg requirements.
-        pass
-    return metadata
+    return probe_media_metadata(video_path)

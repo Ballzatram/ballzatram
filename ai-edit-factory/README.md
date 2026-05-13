@@ -52,7 +52,7 @@ cd ai-edit-factory
 docker compose up --build
 ```
 
-Open the browser UI at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The app is operated entirely from the browser, but MP4 rendering does not run inside the browser tab: the browser uploads media to the FastAPI backend, and the backend uses ffmpeg to edit/splice/export reliable MP4 files. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin. If no API can be reached, the page enters **browser draft mode** instead of leaving buttons inert: users can create a draft project, confirm rights, add local video/audio selections, preview selected video files from object URLs, generate a draft edit plan, and prepare a source-preview download. Browser draft mode does not upload files, persist projects, or run ffmpeg; connect the API origin to render a real vertical MP4. For phone testing on the same Wi-Fi network, open the site through the computer's local IP address and use an API origin like `http://<local-ip>:8000` if auto-detection cannot reach the backend.
+Open the browser UI at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The app is operated entirely from the browser, but MP4 rendering does not run inside the browser tab: the browser uploads media to the FastAPI backend, and the backend uses ffmpeg to edit/splice/export reliable MP4 files. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin. If no API can be reached, the page enters **Backend offline: preview mode only** instead of leaving the workflow ambiguous: users can create a draft project, confirm rights, add local video/audio selections, preview selected video files from object URLs, and generate a draft edit plan, but **Render MP4** and real export/download actions stay disabled. Offline preview mode does not upload files, persist projects, mix music, or run ffmpeg; connect the API origin to render a real vertical MP4. For phone testing on the same Wi-Fi network, open the site through the computer's local IP address and use an API origin like `http://<local-ip>:8000` if auto-detection cannot reach the backend.
 
 AI edit factory flow (site-native):
 
@@ -220,3 +220,63 @@ Operational requirements:
 - Install/ship ffmpeg in any non-Docker environment; the provided backend Dockerfile already includes it.
 - Do not use copyrighted media unless you own it, licensed it, or have explicit permission to process it.
 - Do not connect scraping tools to TikTok. Use official/permissioned trend data feeds or manually curated trend signals.
+
+## MVP acceptance script
+
+This repository is intentionally local/single-node for the MVP. The end-to-end proof path is:
+
+```bash
+cd ai-edit-factory
+docker compose up --build
+```
+
+Then open <http://localhost:8000> and verify:
+
+1. Create a project with `name`, optional `description`, and a `target_platform` (stored in SQLite `projects`).
+2. Upload one or more owned/licensed source videos and optional owned/licensed music.
+3. Confirm each `media_assets` row stores `path`, `original_filename`, `asset_type`, `duration`, `width`, `height`, `fps`, `has_audio`, `analysis_json`, and a thumbnail path when ffmpeg can extract one.
+4. Click **Generate 3 versions**. The backend creates deterministic `edit_plans` for `fast_montage`, `hook_buildup_reveal`, and `beat_sync` using the `mvp.edit_plan.v1` JSON schema (`target_platform`, duration, style/template, video clips, text overlays, music settings, crop mode, and timing).
+5. In **Review and render**, change the music start time and save it. This updates `music_settings.source_start_s` on the edit plan and allows re-rendering.
+6. Render a version. The render job uses local ffmpeg to write a vertical 1080x1920 H.264/AAC MP4 into `outputs/`, creates `render_jobs` and `exports` records, and exposes a `/media/outputs/...` download URL.
+7. Download the MP4 from **Exports**.
+8. Save feedback using **Works**, **Needs tighter cuts**, or related feedback controls. The MVP stores `feedback_events` (`works`, `needs_tighter_cuts`, `wrong_music_section`, `bad_captions`, `bad_crop`, or `other`) for future improvement; it does not train a model.
+9. Restart Docker Compose and verify projects, assets, plans, exports, feedback, and curated trend signals still load from the persisted `data/` volume.
+
+Programmatic checks used by maintainers:
+
+```bash
+PYTHONPATH=backend python -m pytest -q
+npm --prefix frontend run build
+```
+
+Network-restricted environments may not be able to install Python packages from PyPI. Use Docker Compose for a reproducible dependency environment.
+
+## Trend insights MVP
+
+The app does not scrape TikTok or any social platform. `trend_signals` is seeded locally with manually curated guidance fields:
+
+- `format_name`
+- `hook_style`
+- `pacing_style`
+- `caption_style`
+- `music_guidance`
+- `hashtags`
+- `category`
+- `region`
+- `freshness_score`
+
+The React **Insights** section displays these rows, and the `/api/studio/projects/{id}/versions` planner can use them as optional context when generating deterministic edit-plan variants.
+
+## Production deployment note: preview-only static hosting vs real rendering
+
+Static frontend-only hosting can only provide browser source previews. It cannot upload media into the MVP persistence layer, cannot run ffmpeg, cannot enqueue worker jobs, cannot mix uploaded music, and must not present a browser object URL as a rendered export.
+
+Real MP4 rendering requires the full stack:
+
+- FastAPI API reachable by the browser (`/api/health` and `/api/diagnostics` should return successfully)
+- Redis plus the RQ worker for queued render jobs, or the documented local FastAPI background fallback
+- ffmpeg and ffprobe installed in the backend/worker runtime
+- writable persistent `inputs/`, `outputs/`, and `data/`/SQLite storage
+- frontend served by the backend container or configured with the correct API base URL
+
+For `ballzatram.com`, either serve the built frontend from the FastAPI backend container or configure the hosted frontend API origin to the deployed backend. If the UI says **Backend offline: preview mode only**, uploads are local browser selections, **Render MP4** is disabled, and no download should be treated as a real export. Use `GET /api/diagnostics` to verify `ffmpeg_available`, `ffprobe_available`, Redis/queue availability, writable paths, detected frontend dist, and `app_mode` before testing production renders.

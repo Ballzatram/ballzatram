@@ -840,3 +840,48 @@ h3 {
     grid-template-columns: 1fr;
   }
 }
+
+.diagnostics-summary {
+  display: block;
+  flex-basis: 100%;
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.preview-label {
+  position: absolute;
+  top: 0.75rem;
+  left: 50%;
+  z-index: 1;
+  transform: translateX(-50%);
+  border: 1px solid rgba(66, 245, 158, 0.45);
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  color: #dfffea;
+  background: rgba(2, 6, 23, 0.82);
+  font-size: 0.78rem;
+  font-weight: 950;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.preview-label.is-warning {
+  border-color: rgba(255, 209, 102, 0.65);
+  color: #fff3cc;
+}
+
+.phone-preview.has-video {
+  position: relative;
+}
+
+.offline-export-note {
+  display: grid;
+  gap: 0.35rem;
+  border: 1px dashed rgba(255, 209, 102, 0.52);
+  border-radius: 18px;
+  padding: 1rem;
+  color: #fff3cc;
+  background: rgba(255, 209, 102, 0.08);
+  font-weight: 850;
+}
