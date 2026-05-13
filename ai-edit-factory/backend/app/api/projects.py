@@ -18,6 +18,8 @@ router = APIRouter(prefix="/api/projects", tags=["projects"])
 
 class ProjectCreate(BaseModel):
     name: str = Field(default="Untitled edit", min_length=1, max_length=100)
+    description: str = Field(default="", max_length=500)
+    target_platform: str = Field(default="tiktok", max_length=40)
     style_template: str = "all"
     num_outputs: int = Field(default=10, ge=1, le=30)
 
@@ -45,7 +47,7 @@ def list_projects() -> list[dict]:
 @router.post("")
 def create_project(payload: ProjectCreate) -> dict:
     style = payload.style_template if payload.style_template == "all" else normalize_template(payload.style_template)
-    return db.create_project(payload.name, style, normalize_num_edits(payload.num_outputs))
+    return db.create_project(payload.name, style, normalize_num_edits(payload.num_outputs), payload.description, payload.target_platform)
 
 
 @router.get("/{project_id}")

@@ -182,3 +182,49 @@ def test_studio_feedback_updates_learning_profile() -> None:
     refreshed = client.get(f"/api/studio/projects/{project['id']}").json()
     assert refreshed["learning_profile"]["sample_size"] == 3
     assert refreshed["learning_profile"]["recommended_pacing"] == "faster"
+
+
+def test_versions_music_feedback_and_insights_flow(tmp_path: Path) -> None:
+    client = studio_client()
+    project = client.post("/api/studio/projects", json={"name": "Version factory"}).json()
+    video_path = tmp_path / "clip.mp4"
+    video_path.write_bytes(b"placeholder video bytes")
+    with video_path.open("rb") as handle:
+        upload = client.post(
+            f"/api/studio/projects/{project['id']}/video",
+            data={"rights_confirmed": "true"},
+            files={"file": ("clip.mp4", handle, "video/mp4")},
+        )
+    assert upload.status_code == 200
+    asset = upload.json()
+    assert "analysis_json" in asset
+    assert "fps" in asset
+    assert "has_audio" in asset
+
+    versions = client.post(
+        f"/api/studio/projects/{project['id']}/versions",
+        json={"count": 3, "prompt": "Make three TikTok-ready versions", "media_asset_id": asset["id"], "target_platform": "tiktok"},
+    )
+    assert versions.status_code == 200
+    plans = versions.json()["edit_plans"]
+    assert [plan["plan"]["style_template"] for plan in plans] == ["fast_montage", "hook_buildup_reveal", "beat_sync"]
+    assert plans[0]["plan"]["schema_version"] == "mvp.edit_plan.v1"
+    assert versions.json()["trend_signals"]
+
+    music_update = client.patch(
+        f"/api/studio/projects/{project['id']}/edit-plans/{plans[0]['id']}/music",
+        json={"music_asset_id": None, "source_start_s": 1.25, "volume": 0.7, "fade_in_s": 0.2, "fade_out_s": 0.3, "duck_original_audio": True},
+    )
+    assert music_update.status_code == 200
+    assert music_update.json()["plan"]["music_settings"]["source_start_s"] == 1.25
+
+    feedback = client.post(
+        f"/api/studio/projects/{project['id']}/feedback",
+        json={"edit_plan_id": plans[0]["id"], "event_type": "wrong_music_section", "rating": 2, "notes": "Start later"},
+    )
+    assert feedback.status_code == 200
+    assert feedback.json()["feedback"]["event_type"] == "wrong_music_section"
+
+    refreshed = client.get(f"/api/studio/projects/{project['id']}").json()
+    assert len(refreshed["edit_plans"]) >= 3
+    assert refreshed["trend_signals"]

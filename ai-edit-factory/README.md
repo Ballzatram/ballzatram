@@ -220,3 +220,49 @@ Operational requirements:
 - Install/ship ffmpeg in any non-Docker environment; the provided backend Dockerfile already includes it.
 - Do not use copyrighted media unless you own it, licensed it, or have explicit permission to process it.
 - Do not connect scraping tools to TikTok. Use official/permissioned trend data feeds or manually curated trend signals.
+
+## MVP acceptance script
+
+This repository is intentionally local/single-node for the MVP. The end-to-end proof path is:
+
+```bash
+cd ai-edit-factory
+docker compose up --build
+```
+
+Then open <http://localhost:8000> and verify:
+
+1. Create a project with `name`, optional `description`, and a `target_platform` (stored in SQLite `projects`).
+2. Upload one or more owned/licensed source videos and optional owned/licensed music.
+3. Confirm each `media_assets` row stores `path`, `original_filename`, `asset_type`, `duration`, `width`, `height`, `fps`, `has_audio`, `analysis_json`, and a thumbnail path when ffmpeg can extract one.
+4. Click **Generate 3 versions**. The backend creates deterministic `edit_plans` for `fast_montage`, `hook_buildup_reveal`, and `beat_sync` using the `mvp.edit_plan.v1` JSON schema (`target_platform`, duration, style/template, video clips, text overlays, music settings, crop mode, and timing).
+5. In **Review and render**, change the music start time and save it. This updates `music_settings.source_start_s` on the edit plan and allows re-rendering.
+6. Render a version. The render job uses local ffmpeg to write a vertical 1080x1920 H.264/AAC MP4 into `outputs/`, creates `render_jobs` and `exports` records, and exposes a `/media/outputs/...` download URL.
+7. Download the MP4 from **Exports**.
+8. Save feedback using **Works**, **Needs tighter cuts**, or related feedback controls. The MVP stores `feedback_events` (`works`, `needs_tighter_cuts`, `wrong_music_section`, `bad_captions`, `bad_crop`, or `other`) for future improvement; it does not train a model.
+9. Restart Docker Compose and verify projects, assets, plans, exports, feedback, and curated trend signals still load from the persisted `data/` volume.
+
+Programmatic checks used by maintainers:
+
+```bash
+PYTHONPATH=backend python -m pytest -q
+npm --prefix frontend run build
+```
+
+Network-restricted environments may not be able to install Python packages from PyPI. Use Docker Compose for a reproducible dependency environment.
+
+## Trend insights MVP
+
+The app does not scrape TikTok or any social platform. `trend_signals` is seeded locally with manually curated guidance fields:
+
+- `format_name`
+- `hook_style`
+- `pacing_style`
+- `caption_style`
+- `music_guidance`
+- `hashtags`
+- `category`
+- `region`
+- `freshness_score`
+
+The React **Insights** section displays these rows, and the `/api/studio/projects/{id}/versions` planner can use them as optional context when generating deterministic edit-plan variants.

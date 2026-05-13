@@ -108,7 +108,9 @@ function App() {
   const musicAssets = useMemo(() => assets.filter((asset) => asset.kind === 'music_audio'), [assets]);
   const selectedSource = sourceVideos.find((asset) => asset.id === selectedVideoId) || sourceVideos.at(-1);
   const selectedMusic = musicAssets.at(-1);
+  const editPlans = project?.edit_plans || [];
   const editPlan = project?.edit_plan?.plan;
+  const trendSignals = project?.trend_signals || [];
   const renderJob = project?.render_job;
   const exports = project?.exports || [];
   const renderActive = ['pending', 'running'].includes(renderJob?.status) || ['rendering', 'render_queued'].includes(project?.status);
@@ -231,6 +233,42 @@ function App() {
     }
   }
 
+  async function generateVersions() {
+    if (!project) return setMessage('Create a project first.');
+    setBusy(true);
+    try {
+      await api(`/api/studio/projects/${project.id}/versions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt, count: 3, media_asset_id: selectedSource?.id, target_platform: 'tiktok', use_trends: true }),
+      });
+      await refresh(project.id);
+      setMessage('Generated 3 deterministic versions: fast montage, hook/buildup/reveal, and beat-sync.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function updateLatestMusicSettings() {
+    if (!project?.edit_plan?.id) return setMessage('Generate versions first.');
+    setBusy(true);
+    try {
+      await api(`/api/studio/projects/${project.id}/edit-plans/${project.edit_plan.id}/music`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ music_asset_id: selectedMusic?.id || null, source_start_s: musicStart !== '' ? Number(musicStart) : 0, source_end_s: null, volume: 0.85, fade_in_s: 0.15, fade_out_s: 0.25, duck_original_audio: true }),
+      });
+      await refresh(project.id);
+      setMessage('Music start updated. Re-render this plan to export the revised audio section.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
   async function generatePlan() {
     if (!project) return setMessage('Create a project first.');
     setBusy(true);
@@ -268,7 +306,8 @@ function App() {
           edit_plan_id: project.edit_plan?.id,
           export_id: exportId,
           rating,
-          signal: rating >= 4 ? 'liked_export' : 'needs_improvement',
+          event_type: rating >= 4 ? 'works' : 'needs_tighter_cuts',
+          signal: rating >= 4 ? 'works' : 'needs_tighter_cuts',
         }),
       });
       await refresh(project.id);
@@ -280,11 +319,11 @@ function App() {
     }
   }
 
-  async function createRenderJob() {
+  async function createRenderJob(editPlanId = project?.edit_plan?.id) {
     if (!project) return setMessage('Create a project first.');
     setBusy(true);
     try {
-      const data = await api(`/api/studio/projects/${project.id}/render`, { method: 'POST' });
+      const data = await api(`/api/studio/projects/${project.id}/render`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ edit_plan_id: editPlanId }) });
       await refresh(project.id);
       setMessage(data.message);
     } catch (error) {
@@ -301,7 +340,7 @@ function App() {
         <p className="kicker">AI edit factory · native web workflow</p>
         <h1>Upload. Plan. Render clips.</h1>
         <p className="lede">A self-contained short-form workspace: upload permitted clips/music, let the built-in editor choose cuts, captions, hashtags, and render a downloadable MP4 without asking creators to connect an external editing API.</p>
-        <div className="heroStats"><StatusPill>Built-in AI heuristics</StatusPill><StatusPill>Music start control</StatusPill><StatusPill>Trainable feedback</StatusPill></div>
+        <div className="heroStats"><StatusPill>Built-in AI heuristics</StatusPill><StatusPill>Music start control</StatusPill><StatusPill>Feedback loop</StatusPill></div>
       </section>
 
       <section className="factoryBoard">
@@ -353,7 +392,7 @@ function App() {
             <label className="check"><input type="checkbox" checked={addHashtags} onChange={(event) => setAddHashtags(event.target.checked)} /> Generate #s</label>
           </div>
           <label>Direction<textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows="6" placeholder={defaultPrompt} /></label>
-          <button disabled={!canPlan} onClick={generatePlan}>Generate edit plan</button>
+          <button disabled={!canPlan} onClick={generateVersions}>Generate 3 versions</button><button disabled={!canPlan} onClick={generatePlan} className="secondary">Generate one custom plan</button>
         </article>
       </section>
 
@@ -373,10 +412,10 @@ function App() {
             <h3>Cuts</h3>
             <ol>{editPlan.segments.map((segment, index) => <li key={`${segment.source_start}-${index}`}>{segment.source_filename ? `${segment.source_filename} · ` : ''}{segment.source_start}s–{segment.source_end}s · {segment.reason}</li>)}</ol>
             {editPlan.text_overlays.length > 0 && <><h3>Captions</h3><ol>{editPlan.text_overlays.map((overlay, index) => <li key={`${overlay.time}-${index}`}>{overlay.time}s · “{overlay.text}” · {overlay.style}</li>)}</ol></>}
-            <p><strong>Music:</strong> {editPlan.music_asset_id ? `Uploaded bed #${editPlan.music_asset_id} starting at ${editPlan.music_start_seconds || 0}s` : editPlan.music_vibe}</p>
+            <p><strong>Music:</strong> {editPlan.music_asset_id ? `Uploaded bed #${editPlan.music_asset_id} starting at ${editPlan.music_settings?.source_start_s ?? editPlan.music_start_seconds ?? 0}s` : editPlan.music_vibe}</p><label>Adjust music start for this version<input type="number" min="0" step="0.1" value={musicStart} onChange={(event) => setMusicStart(event.target.value)} /></label><button type="button" disabled={busy || !selectedMusic} onClick={updateLatestMusicSettings}>Save music timing</button>
             <p><strong>Export notes:</strong> {editPlan.export_notes}</p>
             <p className="small">Learning: {editPlan.learning_profile?.sample_size || 0} feedback sample(s). {editPlan.trend_context}</p>
-            <button disabled={!canRender} onClick={createRenderJob}>Render downloadable MP4</button>
+            <button disabled={!canRender} onClick={() => createRenderJob(project.edit_plan?.id)}>Render downloadable MP4</button>
           </article>
           <article className="card">
             <h2>Edit plan JSON</h2>
@@ -384,6 +423,10 @@ function App() {
           </article>
         </section>
       )}
+
+      {editPlans.length > 1 && (<section className="outputs"><h2>Generated versions</h2><div className="captionGrid">{editPlans.map((row) => <article className="miniCard" key={row.id}><h3>{row.plan.style_template || row.plan.template || 'custom'}</h3><p>{row.plan.duration_seconds}s · {row.plan.platform}</p><p>{row.plan.timing?.cut_strategy}</p><button type="button" disabled={busy} onClick={() => createRenderJob(row.id)}>Render this version</button></article>)}</div></section>)}
+
+      {trendSignals.length > 0 && (<section className="outputs"><h2>Insights</h2><div className="captionGrid">{trendSignals.map((signal) => <article className="miniCard" key={signal.id}><h3>{signal.format_name}</h3><p><strong>Hook:</strong> {signal.hook_style}</p><p><strong>Pacing:</strong> {signal.pacing_style}</p><p className="tags">{(signal.hashtags || []).join(' ')}</p></article>)}</div></section>)}
 
       {editPlan?.caption_packages && (
         <section className="outputs">
@@ -401,7 +444,7 @@ function App() {
               <span>{item.status}</span>
               {item.download_url ? <video controls playsInline src={`${API}${item.download_url}`} /> : <span>{item.path || 'Render path pending'}</span>}
               {item.download_url && <a href={`${API}${item.download_url}`} download>Download MP4</a>}
-              {item.download_url && <div className="feedbackRow"><button type="button" disabled={busy} onClick={() => sendFeedback(5, item.id)}>Works</button><button type="button" disabled={busy} onClick={() => sendFeedback(2, item.id)}>Needs tighter cuts</button></div>}
+              {item.download_url && <div className="feedbackRow"><button type="button" disabled={busy} onClick={() => sendFeedback(5, item.id)}>Works</button><button type="button" disabled={busy} onClick={() => sendFeedback(2, item.id)}>Needs tighter cuts</button><button type="button" disabled={busy} onClick={() => sendFeedback(2, item.id)}>Wrong music section</button></div>}
             </article>
           ))}</div>
         </section>
