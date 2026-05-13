@@ -1,6 +1,6 @@
 # ai-edit-factory
 
-Production-ready MVP for Ballzatram that generates 10-30 vertical TikTok-style music edits from rights-approved uploaded or local media. It includes a FastAPI backend, RQ/Redis worker, SQLite persistence, a site-hosted Vite React frontend, Docker Compose, and an independent CLI.
+Production-ready MVP for Ballzatram that generates 10-30 vertical TikTok-style music edits from rights-approved uploaded or local media. It now also includes an AI clip-making studio where users upload a long source video, describe the desired mood/style, review a structured short-form edit plan, and create a clean render/export stub job. The app includes a FastAPI backend, RQ/Redis worker, SQLite persistence, a site-hosted Vite React frontend, Docker Compose, and an independent CLI.
 
 ## Legal and compliance guardrails
 
@@ -14,6 +14,7 @@ YouTube support is metadata-first. Media downloading is disabled by default. A Y
 ## What ships in this MVP
 
 - FastAPI project API for project creation, uploads, YouTube metadata import, generation jobs, and output downloads.
+- AI clip-making studio API for rights-confirmed source video uploads, metadata capture, structured edit plans, captions/titles/hashtags, and pending render/export jobs.
 - RQ worker backed by Redis so rendering never blocks the web server, with an in-process FastAPI background fallback when Redis is unavailable during local/manual runs.
 - SQLite job/project/output tables with a small DB layer that can be swapped for Postgres later.
 - Local-file media pipeline: librosa beat detection, PySceneDetect/fixed-window scene detection, OpenCV clip scoring, ffmpeg rendering.
@@ -52,13 +53,22 @@ docker compose up --build
 
 Open the site app at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`.
 
-Day-1 flow:
+AI clip studio flow:
 
-1. Open <http://localhost:8000> and create a project.
+1. Open <http://localhost:8000> and create an AI project.
+2. Confirm that you own, licensed, or have permission to process the upload.
+3. Upload one source video (`mp4`, `mov`, or `webm`). The app shows upload progress, saves duration/dimensions/file type/preview path when `ffprobe` is available, and shows an inline preview.
+4. Enter creative direction such as: “Make this a chaotic 20-second TikTok clip with dramatic captions and dark funny energy.”
+5. Click **Generate structured edit plan** to review JSON segments, overlays, caption style, music vibe, export notes, and platform packages for TikTok, Instagram Reels, YouTube Shorts, and X.
+6. Click **Create render/export job**. Rendering is intentionally stubbed for this studio MVP and creates a pending `render_jobs`/`exports` record with an export-ready output path for the next ffmpeg integration phase.
+
+Legacy beat-edit flow (API-compatible):
+
+1. Create a project via the existing project API.
 2. Upload a song file (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`).
 3. Upload one or more video clips (`mp4`, `mov`, `m4v`, `avi`, `mkv`, or `webm`).
 4. Choose 1-30 outputs and a style template.
-5. Click **Generate edits**. The button unlocks only after the uploaded song and at least one uploaded video are saved.
+5. Click/generate through the legacy API. Generation unlocks only after the uploaded song and at least one uploaded video are saved.
 6. Wait for the worker to finish, preview ranked outputs, then download MP4 files.
 
 Generated files are rendered by the backend worker and saved under `outputs/project_<id>/`. If Redis is unavailable in a non-Docker local run, the API queues a local background render instead and shows that status in the UI.
@@ -115,6 +125,14 @@ ALLOW_YOUTUBE_DOWNLOADS=true python app.py --song-youtube-url URL --video-youtub
 - `GET /api/projects/{id}` returns assets, latest job status, and ranked outputs.
 - `GET /api/outputs/{id}/download` downloads a generated MP4.
 
+AI clip studio endpoints:
+
+- `POST /api/studio/projects` creates a studio video project.
+- `GET /api/studio/projects/{id}` returns source assets, latest edit plan, render job, exports, and upload limits.
+- `POST /api/studio/projects/{id}/video` uploads one rights-confirmed `mp4`, `mov`, or `webm` source video.
+- `POST /api/studio/projects/{id}/edit-plans` creates a structured short-form edit plan from a creative prompt.
+- `POST /api/studio/projects/{id}/render` creates a pending stub render job and export record.
+
 ## Testing
 
 ```bash
@@ -122,13 +140,15 @@ cd ai-edit-factory
 PYTHONPATH=backend python -m pytest -q
 ```
 
-The test suite covers YouTube URL parsing, beat interval shapes, scene detection wrappers, clip scoring helpers, render planning, upload validation, and API project creation. An integration test creates tiny sample media when ffmpeg is available.
+The test suite covers YouTube URL parsing, beat interval shapes, scene detection wrappers, clip scoring helpers, render planning, upload validation, API project creation, and the studio edit-plan/render-stub workflow. An integration test creates tiny sample media when ffmpeg is available.
 
 ## Manual QA checklist
 
 - [ ] `docker compose up --build` starts Redis, the API-hosted site, and the worker.
 - [ ] The site app opens at `http://localhost:8000` on a phone-sized viewport without horizontal scrolling.
 - [ ] Compliance copy is visible before upload/generation.
+- [ ] The AI clip studio requires the rights-confirmation checkbox before source video upload.
+- [ ] Upload progress, playable source preview, metadata, structured edit-plan JSON, platform captions/hashtags, and pending render/export state appear in the studio flow.
 - [ ] Creating a project succeeds.
 - [ ] Invalid upload types are rejected.
 - [ ] Uploading one rights-approved song and one rights-approved clip succeeds.
