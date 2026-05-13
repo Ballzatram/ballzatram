@@ -23,22 +23,22 @@
 
     <section class="hero-studio" aria-labelledby="pageTitle">
       <div class="hero-copy">
-        <p class="eyebrow">Site-hosted AI video production</p>
-        <h1 id="pageTitle">Make the edit here.</h1>
+        <p class="eyebrow">AI video production</p>
+        <h1 id="pageTitle">Make a short-form edit.</h1>
         <p class="hero-lede">
-          Create a project, upload rights-approved clips and audio, generate a short-form edit recipe,
-          render a vertical MP4, then preview and download the export without leaving the site.
+          Start a project, add clips and music you have permission to use, generate a practical edit plan,
+          render a vertical MP4, then preview and download it from one place.
         </p>
         <div class="hero-actions">
-          <a class="primary-link" href="#factoryWorkspace">Start the web workflow</a>
-          <a class="secondary-link" href="README.md">Read deployment notes</a>
+          <a class="primary-link" href="#factoryWorkspace">Start editing</a>
+          <a class="secondary-link" href="README.md">Read setup notes</a>
         </div>
       </div>
       <aside class="render-card" aria-label="Render capability summary">
         <div class="pulse-dot" aria-hidden="true"></div>
-        <p>Backend render path</p>
-        <strong>Upload → Recipe → ffmpeg MP4</strong>
-        <span>Uses the same production API endpoints as the Docker-hosted app.</span>
+        <p>Render pipeline</p>
+        <strong>Upload → Plan → ffmpeg MP4</strong>
+        <span>Runs through the same upload, planning, and render API used by the Docker app.</span>
       </aside>
     </section>
 
@@ -64,7 +64,7 @@
       <aside class="rail" aria-label="Workflow status">
         <div class="rail-step is-active" data-step="project"><span>1</span><strong>Project</strong><small>Name and rights gate</small></div>
         <div class="rail-step" data-step="upload"><span>2</span><strong>Uploads</strong><small>Source clips and music</small></div>
-        <div class="rail-step" data-step="recipe"><span>3</span><strong>Recipe</strong><small>Creative direction</small></div>
+        <div class="rail-step" data-step="recipe"><span>3</span><strong>Plan</strong><small>Choose the edit direction</small></div>
         <div class="rail-step" data-step="render"><span>4</span><strong>Render</strong><small>Preview and download</small></div>
       </aside>
 
@@ -72,7 +72,7 @@
         <section class="panel project-panel" aria-labelledby="projectTitle">
           <div class="panel-heading">
             <p class="eyebrow">Step 1</p>
-            <h2 id="projectTitle">Open a factory project</h2>
+            <h2 id="projectTitle">Start a project</h2>
           </div>
           <label>
             Project name
@@ -80,21 +80,22 @@
           </label>
           <label class="rights-check">
             <input id="rightsConfirmed" type="checkbox" />
-            <span>I confirm every uploaded file is owned, licensed, or permitted for processing.</span>
+            <span>I own these files or have permission to edit them.</span>
           </label>
-          <button id="createProject" type="button">Create project on site</button>
-          <p id="projectMeta" class="muted">No active project yet.</p>
+          <button id="createProject" type="button">Create project</button>
+          <p id="projectFeedback" class="inline-feedback" aria-live="polite">Ready when you are.</p>
+          <p id="projectMeta" class="muted">No project is open yet.</p>
         </section>
 
         <section class="panel upload-panel" aria-labelledby="uploadTitle">
           <div class="panel-heading">
             <p class="eyebrow">Step 2</p>
-            <h2 id="uploadTitle">Upload source media</h2>
+            <h2 id="uploadTitle">Add your media</h2>
           </div>
           <div class="upload-grid">
             <div class="upload-box">
               <label>
-                Source videos to splice
+                Video clips
                 <input id="videoFiles" type="file" multiple accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" />
               </label>
               <button id="uploadVideos" type="button" disabled>Add videos</button>
@@ -116,7 +117,7 @@
         <section class="panel recipe-panel" aria-labelledby="recipeTitle">
           <div class="panel-heading">
             <p class="eyebrow">Step 3</p>
-            <h2 id="recipeTitle">Generate an edit recipe</h2>
+            <h2 id="recipeTitle">Choose the edit direction</h2>
           </div>
           <div class="recipe-grid">
             <label>
@@ -130,30 +131,30 @@
                 <option value="storytime">Storytime</option>
               </select>
             </label>
-            <div class="toggle-row" role="group" aria-label="Recipe options">
+            <div class="toggle-row" role="group" aria-label="Edit plan options">
               <label><input id="addMusic" type="checkbox" checked /> Music</label>
               <label><input id="addCaptions" type="checkbox" checked /> Captions</label>
               <label><input id="addHashtags" type="checkbox" checked /> Hashtags</label>
             </div>
           </div>
           <label>
-            Creative direction
+            What should the edit feel like?
             <textarea id="prompt" rows="5">Find the strongest hook, cut the boring parts, keep it vertical, and make the ending replayable.</textarea>
           </label>
-          <button id="generateRecipe" type="button" disabled>Generate recipe</button>
+          <button id="generateRecipe" type="button" disabled>Generate edit plan</button>
         </section>
 
         <section class="panel render-panel" aria-labelledby="renderTitle">
           <div class="panel-heading">
             <p class="eyebrow">Step 4</p>
-            <h2 id="renderTitle">Render and download</h2>
+            <h2 id="renderTitle">Preview, render, download</h2>
           </div>
           <div class="render-layout">
             <div class="phone-preview" id="previewFrame">Upload a source video to preview it here.</div>
             <div class="render-summary">
               <div id="statusMessage" class="status-message">Ready. Create a project to begin.</div>
               <button id="refreshProject" class="subtle-button" type="button" disabled>Refresh project</button>
-              <button id="renderVideo" type="button" disabled>Render vertical MP4</button>
+              <button id="renderVideo" type="button" disabled>Render MP4</button>
             </div>
           </div>
           <div id="recipeOutput" class="recipe-output"></div>
@@ -164,8 +165,17 @@
   </main>
 
   <script>
+    function inferDefaultApiBase() {
+      const saved = localStorage.getItem('aiefApiBase');
+      if (saved) return saved;
+      const { protocol, hostname, port, origin } = window.location;
+      const isLocalHost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname);
+      if (port === '5173') return `${protocol}//${isLocalHost ? 'localhost' : hostname}:8000`;
+      return origin;
+    }
+
     const state = {
-      apiBase: localStorage.getItem('aiefApiBase') || window.location.origin,
+      apiBase: inferDefaultApiBase(),
       project: null,
       selectedVideoId: null,
       busy: false,
@@ -196,6 +206,12 @@
       $('statusMessage').dataset.type = type;
     }
 
+    function setProjectFeedback(message, type = 'info') {
+      const node = $('projectFeedback');
+      node.textContent = message;
+      node.dataset.type = type;
+    }
+
     function setApiStatus(message, statusClass) {
       const node = $('apiStatus');
       node.textContent = message;
@@ -216,8 +232,21 @@
       }[character]));
     }
 
+    function apiBaseCandidates() {
+      const { protocol, hostname, port, origin } = window.location;
+      const candidates = [state.apiBase, origin];
+      if (port !== '8000') candidates.push(`${protocol}//${hostname}:8000`);
+      if (['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname)) candidates.push('http://localhost:8000');
+      return [...new Set(candidates.map((value) => value.replace(/\/$/, '')))];
+    }
+
     async function api(path, options = {}) {
-      const response = await fetch(apiUrl(path), options);
+      let response;
+      try {
+        response = await fetch(apiUrl(path), options);
+      } catch (error) {
+        throw new Error(`Cannot reach the render API at ${state.apiBase}. If you are testing on your phone, open the site from the machine running Docker or set API settings to that machine's http://<local-ip>:8000 address.`);
+      }
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
       return data;
@@ -308,11 +337,11 @@
       const captions = (plan.text_overlays || []).map((overlay) => `<li>${overlay.time}s · ${escapeHtml(overlay.text)}</li>`).join('');
       $('recipeOutput').innerHTML = `
         <article class="recipe-card">
-          <h3>Recipe ready</h3>
+          <h3>Edit plan ready</h3>
           <div class="metric-row"><span>${escapeHtml(plan.clip_type || plan.mood)}</span><span>${escapeHtml(plan.platform)}</span><span>${plan.duration_seconds}s</span><span>${escapeHtml(plan.aspect_ratio)}</span></div>
           <h4>Cuts</h4><ol>${cuts}</ol>
           ${captions ? `<h4>Captions</h4><ol>${captions}</ol>` : ''}
-          <details><summary>View JSON recipe</summary><pre>${escapeHtml(JSON.stringify(plan, null, 2))}</pre></details>
+          <details><summary>View JSON plan</summary><pre>${escapeHtml(JSON.stringify(plan, null, 2))}</pre></details>
         </article>`;
     }
 
@@ -332,8 +361,8 @@
 
     function renderProject() {
       const project = state.project;
-      $('projectMeta').textContent = project ? `Project #${project.id} · ${project.status}` : 'No active project yet.';
-      $('createProject').textContent = project ? `Project #${project.id} open` : 'Create project on site';
+      $('projectMeta').textContent = project ? `Project #${project.id} · ${project.status}` : 'No project is open yet.';
+      $('createProject').textContent = project ? `Project #${project.id} open` : 'Create project';
       const job = project?.render_job;
       if (job) setStatus(`${job.status} · ${job.progress}% · ${job.message || 'Render job updated.'}`, job.status === 'failed' ? 'error' : 'info');
       renderAssets();
@@ -351,13 +380,23 @@
     async function checkHealth() {
       $('apiBaseInput').value = state.apiBase;
       setApiStatus('Checking API', 'is-checking');
-      try {
-        await api('/api/health');
-        setApiStatus('API online', 'is-online');
-      } catch (error) {
-        setApiStatus('API not connected', 'is-offline');
-        setStatus(`The page loaded, but the render API is not reachable at ${state.apiBase}. Open API settings if this site uses a separate backend.`, 'warning');
+      for (const candidate of apiBaseCandidates()) {
+        state.apiBase = candidate;
+        $('apiBaseInput').value = candidate;
+        try {
+          await api('/api/health');
+          setApiStatus('API online', 'is-online');
+          setProjectFeedback('API connected. You can create a project.', 'success');
+          if (candidate !== window.location.origin) localStorage.setItem('aiefApiBase', candidate);
+          return;
+        } catch (error) {
+          // Keep trying common local-development API origins before showing an error.
+        }
       }
+      setApiStatus('API not connected', 'is-offline');
+      const message = 'The page is open, but the render API is not reachable. For phone testing, set API settings to the computer running Docker, for example http://192.168.1.25:8000.';
+      setProjectFeedback(message, 'error');
+      setStatus(message, 'warning');
     }
 
     async function createProject() {
@@ -368,9 +407,11 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: $('projectName').value.trim() || 'Creator clip factory' }),
         });
-        setStatus('Project created. Confirm rights, then upload source media.', 'success');
+        setProjectFeedback(`Project #${state.project.id} is ready. Confirm rights, then add media.`, 'success');
+        setStatus('Project created. Confirm rights, then add media.', 'success');
         renderProject();
       } catch (error) {
+        setProjectFeedback(error.message, 'error');
         setStatus(error.message, 'error');
       } finally {
         setBusy(false);
@@ -424,7 +465,7 @@
         await refreshProject();
         $('videoFiles').value = '';
         $('videoSelection').textContent = 'Video uploaded. Select it from the shelf below.';
-        setStatus('Source shelf updated. Generate a recipe when ready.', 'success');
+        setStatus('Sources updated. Generate an edit plan when ready.', 'success');
       } catch (error) {
         setStatus(error.message, 'error');
       } finally {
@@ -442,7 +483,7 @@
         await uploadFile(`/api/studio/projects/${state.project.id}/music`, file, 0, 100);
         await refreshProject();
         $('musicFile').value = '';
-        $('musicSelection').textContent = 'Music uploaded and ready for recipes.';
+        $('musicSelection').textContent = 'Music uploaded and ready for edit plans.';
         setStatus('Music bed saved.', 'success');
       } catch (error) {
         setStatus(error.message, 'error');
@@ -467,7 +508,7 @@
           }),
         });
         await refreshProject();
-        setStatus('Recipe generated. Review it, then render the MP4.', 'success');
+        setStatus('Edit plan generated. Review it, then render the MP4.', 'success');
       } catch (error) {
         setStatus(error.message, 'error');
       } finally {
@@ -501,13 +542,13 @@
 
     $('apiSettingsButton').addEventListener('click', () => { $('apiSettingsPanel').hidden = !$('apiSettingsPanel').hidden; });
     $('saveApiBase').addEventListener('click', () => {
-      state.apiBase = $('apiBaseInput').value.trim().replace(/\/$/, '') || window.location.origin;
+      state.apiBase = $('apiBaseInput').value.trim().replace(/\/$/, '') || inferDefaultApiBase();
       localStorage.setItem('aiefApiBase', state.apiBase);
       checkHealth();
     });
     $('resetApiBase').addEventListener('click', () => {
-      state.apiBase = window.location.origin;
       localStorage.removeItem('aiefApiBase');
+      state.apiBase = inferDefaultApiBase();
       checkHealth();
     });
     $('createProject').addEventListener('click', createProject);

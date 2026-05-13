@@ -2,7 +2,23 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './styles.css';
 
-const API = import.meta.env.VITE_API_URL || window.location.origin;
+function resolveApiBase() {
+  const configured = import.meta.env.VITE_API_URL || window.location.origin;
+  try {
+    const url = new URL(configured, window.location.origin);
+    const browserHost = window.location.hostname;
+    const configuredHostIsLocal = ['localhost', '127.0.0.1', '0.0.0.0'].includes(url.hostname);
+    const browserHostIsLocal = ['localhost', '127.0.0.1', '0.0.0.0'].includes(browserHost);
+    if (configuredHostIsLocal && !browserHostIsLocal) {
+      url.hostname = browserHost;
+    }
+    return url.origin;
+  } catch (error) {
+    return window.location.origin;
+  }
+}
+
+const API = resolveApiBase();
 const clipTypes = ['Funny', 'Emotional', 'Hype', 'Dramatic', 'Clean', 'Storytime'];
 const defaultPrompt = 'Find the strongest hook, cut the boring parts, keep it vertical, and make the ending replayable.';
 const allowedVideoTypes = ['mp4', 'mov', 'webm'];
@@ -34,7 +50,7 @@ function StatusPill({ children }) {
 }
 
 function AssetList({ assets, selectedId, onSelect }) {
-  if (!assets.length) return <p className="emptyState">No uploads yet. Add rights-cleared clips to build your source shelf.</p>;
+  if (!assets.length) return <p className="emptyState">No uploads yet. Add clips you have permission to edit.</p>;
   return (
     <div className="assetList">
       {assets.map((asset) => (
@@ -83,7 +99,7 @@ function App() {
   const [addCaptions, setAddCaptions] = useState(true);
   const [addHashtags, setAddHashtags] = useState(true);
   const [prompt, setPrompt] = useState(defaultPrompt);
-  const [message, setMessage] = useState('Create a project, upload rights-cleared media, choose a clip style, then generate and render from this page.');
+  const [message, setMessage] = useState('Create a project, add media you have permission to use, choose a style, then generate and render from this page.');
   const [busy, setBusy] = useState(false);
 
   const assets = project?.assets || [];
@@ -115,7 +131,7 @@ function App() {
     try {
       response = await fetch(`${API}${path}`, options);
     } catch (error) {
-      throw new Error(`Cannot reach the AI clip factory API at ${API}. Make sure the backend is running.`);
+      throw new Error(`Cannot reach the AI clip factory API at ${API}. Make sure the backend is running. On a phone, open the site through the computer running Docker or set VITE_API_URL to that computer's local-network address.`);
     }
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
@@ -137,7 +153,7 @@ function App() {
         body: JSON.stringify({ name: name.trim() || 'Creator clip factory' }),
       });
       setProject(data);
-      setMessage('Factory opened. Upload one or more source videos and optional rights-cleared music.');
+      setMessage('Project created. Add one or more source videos and optional music.');
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -186,7 +202,7 @@ function App() {
       await refresh(project.id);
       setVideos([]);
       setUploadProgress(100);
-      setMessage('Source shelf updated. Pick the strongest clip, then generate the AI edit recipe.');
+      setMessage('Sources updated. Pick the strongest clip, then generate the edit plan.');
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -231,7 +247,7 @@ function App() {
         }),
       });
       await refresh(project.id);
-      setMessage('AI edit recipe ready. Review the cuts, captions, hashtags, and render settings before export.');
+      setMessage('Edit plan ready. Review the cuts, captions, hashtags, and render settings before export.');
     } catch (error) {
       setMessage(error.message);
     } finally {
@@ -258,35 +274,35 @@ function App() {
       <section className="factoryHero">
         <a href="/" className="back">← Ballzatram</a>
         <p className="kicker">AI edit factory · native web workflow</p>
-        <h1>Upload. Direct. Generate clips.</h1>
-        <p className="lede">A one-stop short-form workspace for rights-cleared uploads, clip style decisions, music, captions, hashtags, render status, previews, and MP4 downloads.</p>
+        <h1>Upload. Plan. Render clips.</h1>
+        <p className="lede">A short-form workspace for permitted uploads, simple creative choices, music, captions, hashtags, render status, previews, and MP4 downloads.</p>
         <div className="heroStats"><StatusPill>Vertical MP4 exports</StatusPill><StatusPill>Music bed support</StatusPill><StatusPill>Captions + hashtags</StatusPill></div>
       </section>
 
       <section className="factoryBoard">
         <article className="card setupCard">
           <span className="step">01</span>
-          <h2>Factory</h2>
+          <h2>Project</h2>
           <label>Project name<input value={name} onChange={(event) => setName(event.target.value)} /></label>
-          <button disabled={busy} onClick={createProject}>{project ? `Factory #${project.id} open` : 'Open clip factory'}</button>
+          <button disabled={busy} onClick={createProject}>{project ? `Project #${project.id} open` : 'Create project'}</button>
           {project && <p className="small">Status: <strong>{project.status}</strong></p>}
-          <label className="check"><input type="checkbox" checked={rightsConfirmed} onChange={(event) => setRightsConfirmed(event.target.checked)} /> I confirm every upload is owned, licensed, or permitted for editing.</label>
+          <label className="check"><input type="checkbox" checked={rightsConfirmed} onChange={(event) => setRightsConfirmed(event.target.checked)} /> I own these files or have permission to edit them.</label>
         </article>
 
         <article className="card dropZone">
           <span className="step">02</span>
           <h2>Sources</h2>
-          <p className="small">Upload multiple source videos. The AI starts with your selected clip, then splices moments from the full source shelf into the edit.</p>
+          <p className="small">Upload multiple source videos. The editor starts with your selected clip, then can splice in moments from the rest of your sources.</p>
           <label>Video upload(s)<input type="file" multiple accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" onChange={(event) => setVideos(selectedFiles(event.target.files))} /></label>
           {videos.length > 0 && <p className="small">Selected: {videos.map((file) => `${file.name} (${prettyBytes(file.size)})`).join(', ')}</p>}
-          <button disabled={!canUploadVideos} onClick={uploadVideos}>Add videos to source shelf</button>
+          <button disabled={!canUploadVideos} onClick={uploadVideos}>Add videos</button>
           <AssetList assets={sourceVideos} selectedId={selectedSource?.id} onSelect={setSelectedVideoId} />
         </article>
 
         <article className="card musicCard">
           <span className="step">03</span>
           <h2>Music</h2>
-          <p className="small">Optional. Upload rights-cleared audio and enable Add music in the recipe.</p>
+          <p className="small">Optional. Upload audio you can use, then leave Add music enabled.</p>
           <label>Music upload<input type="file" accept=".mp3,.wav,.m4a,.aac,.flac,.ogg,audio/*" onChange={(event) => setMusic(event.target.files?.[0] || null)} /></label>
           {music && <p className="small">Selected: {music.name} · {prettyBytes(music.size)}</p>}
           <button disabled={!canUploadMusic} onClick={uploadMusic}>Add music bed</button>
@@ -302,7 +318,7 @@ function App() {
         </div>
         <article className="card recipeCard">
           <span className="step">04</span>
-          <h2>Clip recipe</h2>
+          <h2>Edit direction</h2>
           <div className="chipGrid" role="group" aria-label="Type of clips to make">
             {clipTypes.map((type) => <button type="button" key={type} className={clipType === type ? 'chip active' : 'chip'} onClick={() => setClipType(type)}>{type}</button>)}
           </div>
@@ -312,7 +328,7 @@ function App() {
             <label className="check"><input type="checkbox" checked={addHashtags} onChange={(event) => setAddHashtags(event.target.checked)} /> Generate #s</label>
           </div>
           <label>Direction<textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows="6" placeholder={defaultPrompt} /></label>
-          <button disabled={!canPlan} onClick={generatePlan}>Generate AI edit recipe</button>
+          <button disabled={!canPlan} onClick={generatePlan}>Generate edit plan</button>
         </article>
       </section>
 
@@ -325,7 +341,7 @@ function App() {
         <section className="planLayout">
           <article className="card planSummary">
             <span className="step">05</span>
-            <h2>Review & render</h2>
+            <h2>Review and render</h2>
             <div className="planStats">
               <span>{editPlan.clip_type || editPlan.mood}</span><span>{editPlan.platform}</span><span>{editPlan.duration_seconds}s</span><span>{editPlan.aspect_ratio}</span>
             </div>
@@ -337,7 +353,7 @@ function App() {
             <button disabled={!canRender} onClick={createRenderJob}>Render downloadable MP4</button>
           </article>
           <article className="card">
-            <h2>Recipe JSON</h2>
+            <h2>Edit plan JSON</h2>
             <PlanJson plan={editPlan} />
           </article>
         </section>
