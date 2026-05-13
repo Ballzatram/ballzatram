@@ -1,38 +1,46 @@
-import Link from "next/link";
-import { AgentWidget } from "@/components/AgentWidget";
+"use client";
 
-const nav = [
-  ["Dashboard", "/dashboard"],
-  ["Stock Analysis", "/stock"],
-  ["Portfolio Analysis", "/portfolio"],
-  ["Scenario Lab", "/scenario"],
-  ["Event Study", "/event-study"],
-  ["Model Comparison", "/model-compare"],
-  ["Model Classroom", "/classroom"],
-  ["Reports", "/reports"],
-] as const;
+import Link from "next/link";
+import type { Route } from "next";
+import { usePathname } from "next/navigation";
+import { AgentWidget } from "@/components/AgentWidget";
+import { workflows } from "@/lib/workflows";
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
   return (
     <div className="min-h-dvh bg-slate-950 text-slate-100">
-      <header className="sticky top-0 z-20 border-b border-slate-700/80 bg-slate-950/95 px-4 py-3 backdrop-blur sm:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/dashboard" className="text-2xl font-bold text-emerald-300 sm:text-3xl">
-            MacroBoard
-          </Link>
+      <header className="sticky top-0 z-20 border-b border-slate-800/90 bg-slate-950/95 px-4 py-3 backdrop-blur sm:px-6">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+          <div>
+            <Link href="/dashboard" className="text-2xl font-bold text-emerald-300 sm:text-3xl">
+              MacroBoard
+            </Link>
+            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Macro risk intelligence</p>
+          </div>
           <nav
             className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:justify-end sm:px-0"
             aria-label="MacroBoard sections"
           >
-            {nav.map(([label, href]) => (
-              <Link
-                key={href}
-                href={href}
-                className="min-h-11 shrink-0 rounded-full border border-slate-600 px-3 py-2 text-sm font-medium text-slate-100 transition hover:border-emerald-300 hover:text-emerald-200"
-              >
-                {label}
-              </Link>
-            ))}
+            {workflows.map((workflow) => {
+              const href = `/${workflow.slug}` as Route;
+              const active = pathname === href;
+              return (
+                <Link
+                  key={href}
+                  href={href}
+                  aria-current={active ? "page" : undefined}
+                  className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
+                    active
+                      ? "border-emerald-300 bg-emerald-300 text-slate-950"
+                      : "border-slate-700 text-slate-100 hover:border-emerald-300 hover:text-emerald-200"
+                  }`}
+                >
+                  {workflow.navLabel}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       </header>

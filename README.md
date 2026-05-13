@@ -3,9 +3,19 @@
 Investor-grade macro + stock analysis foundation with a FastAPI backend, Next.js frontend, and a static homepage-launched MacroBoard tool.
 
 
+## Site quality audit and shipped polish
+
+A May 2026 pass tightened the public Ballzatram surface and MacroBoard app so the site feels less like a collection of placeholders and more like a coherent product:
+
+- The homepage now describes each tool with user-facing readiness, risk, and workflow expectations instead of experimental copy.
+- Weather Prop Bot is a paper-trading scanner worksheet with live edge math, capped paper sizing, settlement-review reminders, and an explicit browser safety boundary that prevents credential collection or live orders.
+- The Next.js MacroBoard pages now use a shared workflow model with polished hero sections, metrics, charts, next actions, empty states, review checklists, and governance caveats across all navigation tabs.
+- API client errors now handle non-JSON backend failures cleanly so user-facing surfaces do not collapse on unexpected responses.
+- Parcel result rendering avoids injecting listing titles/URLs through HTML strings, reducing XSS risk from remote search results.
+
 ## Econ Arcade
 
-The static homepage now links to `econ-arcade/index.html`, a dedicated strategy-learning menu for economics games and macro tools. `econ-arcade/platform.html` now provides the curriculum-wide Strategy Studio covering rational choice, static games, dynamic games, incomplete information, auctions, signaling, bargaining, and mechanism design with multiple playable concept engines. The first full standalone game theory module is `econ-arcade/prisoners-dilemma.html`, which implements a repeated Prisoner’s Dilemma lab with AI opponent archetypes, a live payoff matrix, a cooperation trace, and educational debriefs. Dependency-free Node API scaffolds for Prisoner’s Dilemma and the broader scenario catalog live in `econ-arcade/backend/`. The product/architecture blueprint lives in `docs/game-theory-platform.md`, Prisma schema in `prisma/schema.prisma`, and shared simulation contracts in `packages/sim-core/src/types.ts`.
+The static homepage now links to `econ-arcade/index.html`, a dedicated strategy-learning menu for economics games and macro tools. `econ-arcade/platform.html` now provides the curriculum-wide Strategy Studio covering rational choice, static games, dynamic games, incomplete information, auctions, signaling, bargaining, and mechanism design with multiple playable concept engines. The first full standalone game theory module is `econ-arcade/prisoners-dilemma.html`, which implements a repeated Prisoner’s Dilemma lab with AI opponent archetypes, a live payoff matrix, a cooperation trace, and educational debriefs. Dependency-free Node API foundations for Prisoner’s Dilemma and the broader scenario catalog live in `econ-arcade/backend/`. The product/architecture blueprint lives in `docs/game-theory-platform.md`, Prisma schema in `prisma/schema.prisma`, and shared simulation contracts in `packages/sim-core/src/types.ts`.
 
 ## Architecture (text diagram)
 - `backend/app/data`: ingestion adapters, normalization, validation, caching

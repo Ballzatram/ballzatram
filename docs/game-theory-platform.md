@@ -305,11 +305,11 @@ prisma/schema.prisma
 
 ## 9. Sample implementation shipped in this repo
 
-The curriculum-wide scaffold is `econ-arcade/platform.html`, `econ-arcade/platform.css`, and `econ-arcade/platform.js`. It covers every requested world with a module map plus playable concept engines for utility, lotteries/risk, Cournot competition, auctions, signaling, bargaining, and mechanism design.
+The curriculum-wide interactive suite is `econ-arcade/platform.html`, `econ-arcade/platform.css`, and `econ-arcade/platform.js`. It covers every requested world with a module map plus playable concept engines for utility, lotteries/risk, Cournot competition, auctions, signaling, bargaining, and mechanism design.
 
 The standalone sample implementation is `econ-arcade/prisoners-dilemma.html`, `econ-arcade/prisoners-dilemma.css`, and `econ-arcade/prisoners-dilemma.js`. It includes a complete browser-playable module with a decision UI, payoff matrix, repeated-game simulation logic, AI opponent policies, live visualization, and educational feedback.
 
-The backend scaffold is `econ-arcade/backend/prisoners-dilemma-engine.mjs`, `econ-arcade/backend/game-theory-engine.mjs`, and `econ-arcade/backend/server.mjs`. It exposes dependency-free Node HTTP APIs for match creation, action submission, match retrieval, deterministic seeded AI decisions, scenario catalog retrieval, generic scenario simulation, summary metrics, and structured debrief JSON. The concrete Prisma schema is in `prisma/schema.prisma`; shared simulation interfaces are in `packages/sim-core/src/types.ts`. A production version should replace the in-memory match map with Redis/PostgreSQL persistence and put the same engines behind authoritative `/api/matches/:id/actions` and `/api/scenarios/:id/simulate` routes.
+The backend foundation is `econ-arcade/backend/prisoners-dilemma-engine.mjs`, `econ-arcade/backend/game-theory-engine.mjs`, and `econ-arcade/backend/server.mjs`. It exposes dependency-free Node HTTP APIs for match creation, action submission, match retrieval, deterministic seeded AI decisions, scenario catalog retrieval, generic scenario simulation, summary metrics, and structured debrief JSON. The concrete Prisma schema is in `prisma/schema.prisma`; shared simulation interfaces are in `packages/sim-core/src/types.ts`. A production version should replace the in-memory match map with Redis/PostgreSQL persistence and put the same engines behind authoritative `/api/matches/:id/actions` and `/api/scenarios/:id/simulate` routes.
 
 ## 10. Future expansion ideas
 

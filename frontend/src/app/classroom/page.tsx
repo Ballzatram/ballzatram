@@ -1,4 +1,6 @@
-import { Layout } from "@/components/Layout";
-import { AssumptionPanel, KPI, MiniChart } from "@/components/WorkflowPanels";
-const data = [{name:"t1",value:1},{name:"t2",value:3},{name:"t3",value:2},{name:"t4",value:4}];
-export default function Page(){return <Layout><h2 className="mb-4 text-2xl font-semibold capitalize tracking-tight sm:text-3xl">classroom</h2><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><KPI label="Signal" value="0.82"/><KPI label="Risk" value="Medium"/><KPI label="Coverage" value="24m"/></div><div className="my-4"><MiniChart data={data}/></div><AssumptionPanel/></Layout>}
+import { WorkflowPage } from "@/components/WorkflowPage";
+import { workflowBySlug } from "@/lib/workflows";
+
+export default function Page() {
+  return <WorkflowPage workflow={workflowBySlug["classroom"]} />;
+}
