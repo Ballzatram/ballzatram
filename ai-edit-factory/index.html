@@ -94,7 +94,7 @@
           <div class="upload-grid">
             <div class="upload-box">
               <label>
-                Source videos
+                Source videos to splice
                 <input id="videoFiles" type="file" multiple accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" />
               </label>
               <button id="uploadVideos" type="button" disabled>Add videos</button>
@@ -304,7 +304,7 @@
         $('recipeOutput').innerHTML = '';
         return;
       }
-      const cuts = (plan.segments || []).map((segment) => `<li>${segment.source_start}s–${segment.source_end}s · ${escapeHtml(segment.reason)}</li>`).join('');
+      const cuts = (plan.segments || []).map((segment) => `<li>${segment.source_filename ? `${escapeHtml(segment.source_filename)} · ` : ''}${segment.source_start}s–${segment.source_end}s · ${escapeHtml(segment.reason)}</li>`).join('');
       const captions = (plan.text_overlays || []).map((overlay) => `<li>${overlay.time}s · ${escapeHtml(overlay.text)}</li>`).join('');
       $('recipeOutput').innerHTML = `
         <article class="recipe-card">

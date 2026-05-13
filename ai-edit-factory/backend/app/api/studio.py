@@ -145,9 +145,11 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
         assets = db.list_video_project_assets(video_project_id, "source_video")
         if not assets:
             raise ValueError("Upload a rights-confirmed source video before generating an edit plan.")
-        asset = next((item for item in assets if item["id"] == payload.media_asset_id), assets[-1])
+        ordered_assets = _ordered_source_assets(assets, payload.media_asset_id)
+        asset = ordered_assets[0]
+        total_duration = sum(_positive_duration(item, 0.0) for item in ordered_assets) or asset.get("duration")
         metadata = VideoMetadata(
-            duration=asset.get("duration"),
+            duration=total_duration,
             width=asset.get("width"),
             height=asset.get("height"),
             file_type=asset.get("file_type"),
@@ -166,6 +168,7 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
             "captions": payload.add_captions,
             "hashtags": payload.add_hashtags,
         }
+        _annotate_splice_segments(plan, ordered_assets)
         if not payload.add_captions:
             plan["text_overlays"] = []
             plan["caption_style"] = "captions disabled by the user"
@@ -173,7 +176,7 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
             for package in plan.get("caption_packages", {}).values():
                 package["hashtags"] = []
         if not payload.add_music:
-            plan["music_vibe"] = "music disabled; preserve source audio when available"
+            plan["music_vibe"] = "music disabled; preserve source audio for one source, or use silent AAC for multi-source splices"
         music_assets = db.list_video_project_assets(video_project_id, "music_audio")
         plan["music_asset_id"] = music_assets[-1]["id"] if payload.add_music and music_assets else None
         row = db.create_edit_plan(video_project_id, asset["id"], creative_prompt, plan)
@@ -183,16 +186,58 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+
+def _ordered_source_assets(assets: list[dict], selected_asset_id: int | None) -> list[dict]:
+    if not assets:
+        return []
+    selected = next((item for item in assets if item["id"] == selected_asset_id), assets[-1])
+    return [selected, *[item for item in assets if item["id"] != selected["id"]]]
+
+
+def _positive_duration(asset: dict, fallback: float = 6.0) -> float:
+    try:
+        duration = float(asset.get("duration") or 0)
+    except (TypeError, ValueError):
+        duration = 0.0
+    return duration if duration > 0 else fallback
+
+
+def _annotate_splice_segments(plan: dict, source_assets: list[dict]) -> None:
+    if not source_assets:
+        return
+    raw_segments = plan.get("segments") or []
+    if not raw_segments:
+        raw_segments = [{"source_start": 0, "source_end": min(6.0, _positive_duration(source_assets[0])), "reason": "opens with the strongest uploaded clip"}]
+    annotated: list[dict] = []
+    for index, segment in enumerate(raw_segments):
+        asset = source_assets[index % len(source_assets)]
+        source_duration = _positive_duration(asset)
+        requested_duration = max(0.8, float(segment.get("source_end", 3) or 3) - float(segment.get("source_start", 0) or 0))
+        segment_duration = min(requested_duration, source_duration)
+        max_start = max(0.0, source_duration - segment_duration)
+        local_start = round(min(max_start, (index * 1.7) % (max_start + 0.001 if max_start else 1)), 2)
+        annotated.append({
+            **segment,
+            "source_asset_id": asset["id"],
+            "source_filename": asset.get("original_filename") or Path(str(asset.get("path", "uploaded clip"))).name,
+            "source_start": local_start,
+            "source_end": round(local_start + segment_duration, 2),
+        })
+    plan["segments"] = annotated
+    plan["source_mode"] = "uploaded_splice"
+    plan["source_asset_ids"] = [asset["id"] for asset in source_assets]
+    plan["source_asset_count"] = len(source_assets)
+
 def _output_download_url(path: Path) -> str:
     return f"/media/outputs/{path.relative_to(OUTPUTS_DIR).as_posix()}"
 
 
-def _run_studio_render(video_project_id: int, job_id: int, export_id: int, asset: dict, plan: dict, output_path: Path, music_asset: dict | None = None) -> None:
+def _run_studio_render(video_project_id: int, job_id: int, export_id: int, asset: dict, plan: dict, output_path: Path, music_asset: dict | None = None, source_assets: list[dict] | None = None) -> None:
     try:
         db.update_render_job(job_id, "running", 10, "Rendering vertical MP4 with ffmpeg")
         db.update_video_project(video_project_id, status="rendering")
         music_path = music_asset.get("path") if music_asset else None
-        render_studio_edit(asset["path"], plan, output_path, source_duration=asset.get("duration"), music_path=music_path)
+        render_studio_edit(asset["path"], plan, output_path, source_duration=asset.get("duration"), music_path=music_path, source_assets=source_assets)
         download_url = _output_download_url(output_path)
         db.update_render_job(job_id, "finished", 100, "Render complete", output_path=str(output_path))
         db.update_export(export_id, "ready", str(output_path), download_url)
@@ -211,10 +256,12 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) 
         if not plan:
             raise ValueError("Generate and review an edit plan before rendering.")
         assets = db.list_video_project_assets(video_project_id, "source_video")
-        asset = next((item for item in assets if item["id"] == plan.get("media_asset_id")), assets[-1] if assets else None)
+        plan_json = json.loads(plan["plan_json"])
+        source_asset_ids = plan_json.get("source_asset_ids") or []
+        source_assets = [item for item in assets if item["id"] in source_asset_ids] if source_asset_ids else assets
+        asset = next((item for item in assets if item["id"] == plan.get("media_asset_id")), source_assets[0] if source_assets else None)
         if not asset or not asset.get("path"):
             raise ValueError("Upload a rights-confirmed source video before rendering.")
-        plan_json = json.loads(plan["plan_json"])
         music_assets = db.list_video_project_assets(video_project_id, "music_audio")
         music_asset = None
         if plan_json.get("features", {}).get("music") and plan_json.get("music_asset_id"):
@@ -223,7 +270,8 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) 
             music_asset = music_assets[-1]
         platform = plan_json.get("platform", "tiktok")
         output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"edit_plan_{plan['id']}_{platform}.mp4"
-        message = "Render queued. The site will export a real vertical MP4 from your uploaded video%s." % (" and music" if music_asset else "")
+        video_label = "videos" if len(source_assets) > 1 else "video"
+        message = "Render queued. The site will export a real vertical MP4 by splicing your uploaded %s%s." % (video_label, " and music" if music_asset else "")
         job = db.create_render_job(video_project_id, plan["id"], message, str(output_path), render_interface="ffmpeg")
         export = db.create_export(
             video_project_id,
@@ -235,7 +283,7 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) 
             None,
         )
         db.update_video_project(video_project_id, status="render_queued")
-        background_tasks.add_task(_run_studio_render, video_project_id, job["id"], export["id"], asset, plan_json, output_path, music_asset)
+        background_tasks.add_task(_run_studio_render, video_project_id, job["id"], export["id"], asset, plan_json, output_path, music_asset, source_assets)
         return {**job, "export": export, "project_status": project.get("status")}
     except (KeyError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

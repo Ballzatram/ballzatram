@@ -52,17 +52,17 @@ cd ai-edit-factory
 docker compose up --build
 ```
 
-Open the site app at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin.
+Open the browser UI at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The app is operated entirely from the browser, but MP4 rendering does not run inside the browser tab: the browser uploads media to the FastAPI backend, and the backend uses ffmpeg to edit/splice/export reliable MP4 files. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin.
 
 AI edit factory flow (site-native):
 
 1. Open <http://localhost:8000> (or the deployed `ai-edit-factory/index.html` page with its API origin connected) and open a clip factory project.
 2. Confirm that every uploaded video or audio file is owned, licensed, or otherwise permitted for editing.
-3. Upload one or more source videos (`mp4`, `mov`, or `webm`). The app shows upload progress, stores each upload on a source shelf, saves duration/dimensions/file type/preview path when `ffprobe` is available, and lets the user choose which source drives the next recipe.
-4. Optionally upload a rights-cleared music bed (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`). If **Add music** is enabled, the renderer uses that upload as the export audio bed; otherwise it preserves source audio where available.
+3. Upload one or more source videos (`mp4`, `mov`, or `webm`). The app shows upload progress, stores each upload on a source shelf, saves duration/dimensions/file type/preview path when `ffprobe` is available, and lets the user choose the first/primary clip while the AI recipe can splice across the full uploaded source shelf.
+4. Optionally upload a rights-cleared music bed (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`). If **Add music** is enabled, the renderer uses that upload as the export audio bed; otherwise single-source edits preserve source audio where available and multi-source splice edits use silent AAC for consistent MP4 exports.
 5. Choose the type of clips to make, such as funny, emotional, hype, dramatic, clean, or storytime. Toggle music, burned-in captions, and hashtag generation, then add creative direction.
-6. Click **Generate AI edit recipe** to review JSON segments, overlays, caption style, music handling, export notes, and platform packages for TikTok, Instagram Reels, YouTube Shorts, and X.
-7. Click **Render downloadable MP4**. The backend runs ffmpeg against the selected uploaded source video, crops/exports a vertical short-form MP4, optionally burns captions and swaps in the uploaded music bed, updates render status automatically, and exposes an inline preview plus a download link when the export is ready.
+6. Click **Generate AI edit recipe** to review JSON segments, source clip picks, overlays, caption style, music handling, export notes, and platform packages for TikTok, Instagram Reels, YouTube Shorts, and X.
+7. Click **Render downloadable MP4**. The backend runs ffmpeg against the uploaded source videos, splices the planned moments into a vertical short-form MP4, optionally burns captions and swaps in the uploaded music bed, updates render status automatically, and exposes an inline preview plus a download link when the export is ready.
 
 Legacy beat-edit flow (API-compatible):
 
@@ -133,8 +133,8 @@ AI edit factory endpoints:
 - `GET /api/studio/projects/{id}` returns source and music assets, latest edit recipe, render job, exports, and upload limits.
 - `POST /api/studio/projects/{id}/video` uploads one rights-confirmed `mp4`, `mov`, or `webm` source video. The frontend can call this repeatedly for multi-video source shelves.
 - `POST /api/studio/projects/{id}/music` uploads one rights-confirmed `mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg` music bed.
-- `POST /api/studio/projects/{id}/edit-plans` creates a structured short-form edit recipe from clip type, creative prompt, selected source, and music/caption/hashtag toggles.
-- `POST /api/studio/projects/{id}/render` creates a real ffmpeg render job and export record.
+- `POST /api/studio/projects/{id}/edit-plans` creates a structured short-form edit recipe from clip type, creative prompt, selected primary source, the full uploaded source shelf, and music/caption/hashtag toggles.
+- `POST /api/studio/projects/{id}/render` creates a real ffmpeg render job and export record that splices the planned uploaded source videos.
 
 ## Testing
 
@@ -154,9 +154,9 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 - [ ] Upload progress, source shelf selection, playable source preview, optional music bed metadata, recipe JSON, platform captions/hashtags, and render/export state appear in the factory flow.
 - [ ] Creating a project succeeds.
 - [ ] Invalid upload types are rejected.
-- [ ] Uploading one rights-approved song and one rights-approved clip succeeds.
+- [ ] Uploading one rights-approved song and one or more rights-approved clips succeeds.
 - [ ] YouTube URL import shows metadata and does not download media by default.
-- [ ] Clicking generate stays disabled until required uploads exist, then changes job status from queued/running to finished.
+- [ ] Clicking generate stays disabled until required uploads exist, then creates a multi-clip recipe and changes job status from queued/running to finished.
 - [ ] At least 5 vertical 1080x1920 MP4 outputs are created for suitable input media.
 - [ ] Outputs appear best-first in the UI, preview inline, and download.
 - [ ] Failed jobs show a useful error instead of spinning forever.
