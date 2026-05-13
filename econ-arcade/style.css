@@ -407,3 +407,148 @@ a {
     flex-direction: column;
   }
 }
+
+.skip-link {
+  position: fixed;
+  left: 16px;
+  top: 12px;
+  z-index: 20;
+  transform: translateY(-150%);
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: #06101f;
+  font-weight: 900;
+  text-decoration: none;
+  transition: transform 0.18s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.arcade-header a:hover,
+.arcade-header a:focus-visible,
+.primary-action:hover,
+.primary-action:focus-visible,
+.secondary-action:hover,
+.secondary-action:focus-visible,
+.menu-card a:hover,
+.menu-card a:focus-visible {
+  outline: 3px solid rgba(103, 232, 249, 0.34);
+  outline-offset: 3px;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
+}
+
+.hero-proof,
+.card-meta {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.hero-proof {
+  margin-top: 28px;
+}
+
+.hero-proof span,
+.card-meta span {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #dce8ff;
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.hero-proof span {
+  padding: 10px 13px;
+}
+
+.hero-proof strong {
+  color: var(--gold);
+}
+
+.learning-contract {
+  display: grid;
+  grid-template-columns: minmax(0, 0.85fr) minmax(320px, 1.15fr);
+  gap: 18px;
+  margin-top: 20px;
+  border: 1px solid rgba(125, 243, 177, 0.24);
+  border-radius: 30px;
+  padding: clamp(24px, 4vw, 38px);
+  background:
+    radial-gradient(circle at 92% 8%, rgba(125, 243, 177, 0.12), transparent 22rem),
+    linear-gradient(145deg, rgba(11, 28, 35, 0.92), rgba(7, 11, 18, 0.88));
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.28);
+}
+
+.learning-contract h2 {
+  margin: 0 0 12px;
+  font-size: clamp(2rem, 4vw, 4.9rem);
+  letter-spacing: -0.07em;
+  line-height: 0.94;
+}
+
+.learning-contract p {
+  color: #c7d5ef;
+  line-height: 1.65;
+}
+
+.contract-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.contract-grid article {
+  border: 1px solid var(--line);
+  border-radius: 22px;
+  padding: 18px;
+  background: rgba(255, 255, 255, 0.055);
+}
+
+.contract-grid span {
+  display: inline-flex;
+  margin-bottom: 18px;
+  border-radius: 999px;
+  padding: 7px 10px;
+  background: rgba(103, 232, 249, 0.13);
+  color: var(--accent);
+  font-weight: 950;
+}
+
+.contract-grid h3 {
+  margin: 0 0 8px;
+}
+
+.card-meta {
+  margin: -6px 0 72px;
+}
+
+.card-meta span {
+  padding: 7px 10px;
+  color: #c7d5ef;
+}
+
+.menu-card.macro-card {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(125, 243, 177, 0.16), transparent 20rem),
+    linear-gradient(145deg, rgba(16, 43, 49, 0.96), rgba(8, 13, 23, 0.92));
+}
+
+@media (max-width: 980px) {
+  .learning-contract,
+  .contract-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 760px) {
+  .card-meta {
+    margin-bottom: 14px;
+  }
+}

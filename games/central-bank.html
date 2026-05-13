@@ -30,7 +30,7 @@
         <div>
           <p class="eyebrow">Before the oath ceremony</p>
           <h2 id="setupTitle">Choose advisor mode</h2>
-          <p class="setup-copy">Each mode uses the same economy and actions. Only the scripted AI advisor changes how much help it gives.</p>
+          <p class="setup-copy">Each mode uses the same economy and actions. Only the scripted AI advisor changes how much help it gives. Your goal is to finish ten quarters with inflation near target, unemployment contained, banks stable, and credibility intact.</p>
         </div>
         <div class="mode-grid" role="radiogroup" aria-label="Advisor mode">
           <button class="mode-card active" type="button" data-mode="learn" aria-pressed="true">
@@ -45,6 +45,23 @@
             <strong>Test Mode</strong>
             <span>Situation only. No hints, no mercy, one tiny clipboard.</span>
           </button>
+        </div>
+        <div class="curriculum-brief" aria-label="Central Banker curriculum">
+          <article>
+            <span>Learn</span>
+            <h3>Inflation targeting</h3>
+            <p>Use interest rates and expectations to steer inflation toward 2% without crushing output.</p>
+          </article>
+          <article>
+            <span>Practice</span>
+            <h3>Policy lags</h3>
+            <p>Actions echo into later quarters, so overreacting can create tomorrow's crisis.</p>
+          </article>
+          <article>
+            <span>Debrief</span>
+            <h3>Tradeoff reasoning</h3>
+            <p>Every ending explains which macro concepts your term demonstrated.</p>
+          </article>
         </div>
         <p id="modeDetails" class="mode-details"></p>
         <button id="startGame" class="chunky primary" type="button">Enter The Briefing Room ▶</button>
@@ -75,6 +92,15 @@
           <section class="briefing-section">
             <h3>Available Policy Actions</h3>
             <div id="actionList" class="action-list"></div>
+          </section>
+
+          <section class="briefing-section notebook" aria-labelledby="notebookTitle">
+            <h3 id="notebookTitle">Policy Notebook</h3>
+            <dl>
+              <div><dt>Learning objective</dt><dd id="lessonObjective">Stabilize inflation without breaking jobs, banks, or credibility.</dd></div>
+              <div><dt>Watch signal</dt><dd id="watchSignal">Inflation gap, unemployment, bank stability, volatility, and political pressure.</dd></div>
+              <div><dt>Success rule</dt><dd id="successRule">Prefer targeted tools when one dashboard risk is dominant; avoid pushing all levers at once.</dd></div>
+            </dl>
           </section>
 
           <section class="briefing-section aftermath">
@@ -141,6 +167,10 @@
       <h2 id="endingTitle">Ending</h2>
       <p id="endingText"></p>
       <p id="endingScore" class="ending-score"></p>
+      <div class="ending-debrief">
+        <h3>Concept debrief</h3>
+        <ul id="endingConcepts"></ul>
+      </div>
       <div class="action-row">
         <button id="playAgain" class="chunky primary" type="button">Play Again</button>
         <button id="closeEnding" class="chunky" type="button">Review Dashboard</button>
