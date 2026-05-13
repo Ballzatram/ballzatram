@@ -51,6 +51,42 @@ def test_studio_upload_requires_rights_confirmation(tmp_path: Path) -> None:
     assert "Confirm" in response.json()["detail"]
 
 
+def test_studio_edit_plan_splices_multiple_uploaded_videos(tmp_path: Path) -> None:
+    client = studio_client()
+    project = client.post("/api/studio/projects", json={"name": "Multi clip splice"}).json()
+    uploaded_assets = []
+    for index in range(2):
+        video_path = tmp_path / f"clip_{index}.mp4"
+        video_path.write_bytes(b"placeholder video bytes")
+        with video_path.open("rb") as handle:
+            response = client.post(
+                f"/api/studio/projects/{project['id']}/video",
+                data={"rights_confirmed": "true"},
+                files={"file": (video_path.name, handle, "video/mp4")},
+            )
+        assert response.status_code == 200
+        uploaded_assets.append(response.json())
+
+    plan_response = client.post(
+        f"/api/studio/projects/{project['id']}/edit-plans",
+        json={
+            "prompt": "Make a 12 second fast montage that splices all uploaded clips to the music.",
+            "media_asset_id": uploaded_assets[0]["id"],
+            "clip_type": "hype",
+            "add_music": False,
+            "add_captions": True,
+            "add_hashtags": True,
+        },
+    )
+
+    assert plan_response.status_code == 200
+    plan = plan_response.json()["plan"]
+    assert plan["source_mode"] == "uploaded_splice"
+    assert plan["source_asset_ids"] == [asset["id"] for asset in uploaded_assets]
+    assert {segment["source_asset_id"] for segment in plan["segments"]} == {asset["id"] for asset in uploaded_assets}
+    assert all(segment["source_filename"] for segment in plan["segments"])
+
+
 @pytest.mark.skipif(shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None, reason="ffmpeg not installed")
 def test_studio_project_plan_and_real_render(tmp_path: Path) -> None:
     client = studio_client()
@@ -110,45 +146,6 @@ def test_studio_project_plan_and_real_render(tmp_path: Path) -> None:
     render = client.post(f"/api/studio/projects/{project['id']}/render")
     assert render.status_code == 200
     assert render.json()["render_interface"] == "ffmpeg"
-
-    refreshed = client.get(f"/api/studio/projects/{project['id']}").json()
-    assert refreshed["render_job"]["status"] == "finished"
-    assert refreshed["exports"][0]["status"] == "ready"
-    assert refreshed["exports"][0]["download_url"].startswith("/media/outputs/")
-    assert Path(refreshed["exports"][0]["path"]).exists()
-
-
-def test_studio_prompt_video_generation_without_source_upload(monkeypatch: pytest.MonkeyPatch) -> None:
-    pytest.importorskip("fastapi")
-    from app.api import studio
-
-    def fake_render_prompt_video(plan: dict, output_path: str | Path, music_path: str | Path | None = None) -> Path:
-        path = Path(output_path)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(b"fake mp4 bytes")
-        return path
-
-    monkeypatch.setattr(studio, "render_prompt_video", fake_render_prompt_video)
-    client = studio_client()
-    project = client.post("/api/studio/projects", json={"name": "Prompt video"}).json()
-
-    response = client.post(
-        f"/api/studio/projects/{project['id']}/generate-video",
-        json={
-            "prompt": "Create a neon launch teaser for a creator tool with bold captions.",
-            "clip_type": "hype",
-            "duration_seconds": 6,
-            "add_music": False,
-            "add_captions": True,
-            "add_hashtags": True,
-        },
-    )
-
-    assert response.status_code == 200
-    body = response.json()
-    assert body["render_interface"] == "ffmpeg_prompt_video"
-    assert body["edit_plan"]["plan"]["generation_mode"] == "prompt_video"
-    assert body["edit_plan"]["plan"]["source"] == "ai_generated_motion_graphics"
 
     refreshed = client.get(f"/api/studio/projects/{project['id']}").json()
     assert refreshed["render_job"]["status"] == "finished"

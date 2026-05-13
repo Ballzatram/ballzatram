@@ -83,7 +83,6 @@ function App() {
   const [addCaptions, setAddCaptions] = useState(true);
   const [addHashtags, setAddHashtags] = useState(true);
   const [prompt, setPrompt] = useState(defaultPrompt);
-  const [aiDuration, setAiDuration] = useState(18);
   const [message, setMessage] = useState('Create a project, upload rights-cleared media, choose a clip style, then generate and render from this page.');
   const [busy, setBusy] = useState(false);
 
@@ -100,7 +99,6 @@ function App() {
   const canUploadMusic = Boolean(project && music && rightsConfirmed && !busy);
   const canPlan = Boolean(project && selectedSource && prompt.trim().length >= 3 && !busy);
   const canRender = Boolean(project && editPlan && !busy && !['running', 'pending'].includes(renderJob?.status));
-  const canGenerateAiVideo = Boolean(project && prompt.trim().length >= 3 && !busy && !renderActive);
 
   useEffect(() => {
     if (!selectedVideoId && sourceVideos.length) setSelectedVideoId(sourceVideos.at(-1).id);
@@ -241,32 +239,6 @@ function App() {
     }
   }
 
-
-  async function generateAiVideo() {
-    if (!project) return setMessage('Create a project first.');
-    setBusy(true);
-    try {
-      const data = await api(`/api/studio/projects/${project.id}/generate-video`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          prompt,
-          clip_type: clipType.toLowerCase(),
-          duration_seconds: Number(aiDuration),
-          add_music: addMusic,
-          add_captions: addCaptions,
-          add_hashtags: addHashtags,
-        }),
-      });
-      await refresh(project.id);
-      setMessage(data.message || 'AI prompt video queued.');
-    } catch (error) {
-      setMessage(error.message);
-    } finally {
-      setBusy(false);
-    }
-  }
-
   async function createRenderJob() {
     if (!project) return setMessage('Create a project first.');
     setBusy(true);
@@ -304,7 +276,7 @@ function App() {
         <article className="card dropZone">
           <span className="step">02</span>
           <h2>Sources</h2>
-          <p className="small">Upload multiple source videos. The selected shelf item becomes the source for the next AI edit recipe.</p>
+          <p className="small">Upload multiple source videos. The AI starts with your selected clip, then splices moments from the full source shelf into the edit.</p>
           <label>Video upload(s)<input type="file" multiple accept=".mp4,.mov,.webm,video/mp4,video/quicktime,video/webm" onChange={(event) => setVideos(selectedFiles(event.target.files))} /></label>
           {videos.length > 0 && <p className="small">Selected: {videos.map((file) => `${file.name} (${prettyBytes(file.size)})`).join(', ')}</p>}
           <button disabled={!canUploadVideos} onClick={uploadVideos}>Add videos to source shelf</button>
@@ -340,12 +312,7 @@ function App() {
             <label className="check"><input type="checkbox" checked={addHashtags} onChange={(event) => setAddHashtags(event.target.checked)} /> Generate #s</label>
           </div>
           <label>Direction<textarea value={prompt} onChange={(event) => setPrompt(event.target.value)} rows="6" placeholder={defaultPrompt} /></label>
-          <label>AI video length<input type="number" min="6" max="60" value={aiDuration} onChange={(event) => setAiDuration(event.target.value)} /></label>
-          <div className="actionStack">
-            <button disabled={!canPlan} onClick={generatePlan}>Generate AI edit recipe from uploaded video</button>
-            <button disabled={!canGenerateAiVideo} onClick={generateAiVideo}>Generate AI video from prompt</button>
-          </div>
-          <p className="small">Use prompt generation when you want a new AI motion-graphic MP4 without uploaded source footage. Upload music first if you want a custom audio bed.</p>
+          <button disabled={!canPlan} onClick={generatePlan}>Generate AI edit recipe</button>
         </article>
       </section>
 
@@ -363,7 +330,7 @@ function App() {
               <span>{editPlan.clip_type || editPlan.mood}</span><span>{editPlan.platform}</span><span>{editPlan.duration_seconds}s</span><span>{editPlan.aspect_ratio}</span>
             </div>
             <h3>Cuts</h3>
-            <ol>{editPlan.segments.map((segment, index) => <li key={`${segment.source_start}-${index}`}>{segment.source_start}s–{segment.source_end}s · {segment.reason}</li>)}</ol>
+            <ol>{editPlan.segments.map((segment, index) => <li key={`${segment.source_start}-${index}`}>{segment.source_filename ? `${segment.source_filename} · ` : ''}{segment.source_start}s–{segment.source_end}s · {segment.reason}</li>)}</ol>
             {editPlan.text_overlays.length > 0 && <><h3>Captions</h3><ol>{editPlan.text_overlays.map((overlay, index) => <li key={`${overlay.time}-${index}`}>{overlay.time}s · “{overlay.text}” · {overlay.style}</li>)}</ol></>}
             <p><strong>Music:</strong> {editPlan.music_asset_id ? `Uploaded bed #${editPlan.music_asset_id}` : editPlan.music_vibe}</p>
             <p><strong>Export notes:</strong> {editPlan.export_notes}</p>
