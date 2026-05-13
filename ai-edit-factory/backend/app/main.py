@@ -24,11 +24,6 @@ app.include_router(outputs_router)
 app.mount("/media/outputs", StaticFiles(directory=OUTPUTS_DIR), name="outputs")
 app.mount("/media/inputs", StaticFiles(directory=INPUTS_DIR), name="inputs")
 
-if FRONTEND_DIST_DIR.exists():
-    app.mount("/", StaticFiles(directory=FRONTEND_DIST_DIR, html=True), name="site")
-else:
-    logger.warning("Frontend build not found at %s; API-only mode enabled", FRONTEND_DIST_DIR)
-
 
 @app.on_event("startup")
 def startup() -> None:
@@ -39,3 +34,10 @@ def startup() -> None:
 @app.get("/api/health")
 def health() -> dict:
     return {"ok": True}
+
+
+# Keep the catch-all site mount last so API routes and health checks always win.
+if FRONTEND_DIST_DIR.exists():
+    app.mount("/", StaticFiles(directory=FRONTEND_DIST_DIR, html=True), name="site")
+else:
+    logger.warning("Frontend build not found at %s; API-only mode enabled", FRONTEND_DIST_DIR)

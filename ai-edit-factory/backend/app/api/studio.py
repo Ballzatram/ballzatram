@@ -3,13 +3,14 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
 from pydantic import BaseModel, Field
 
 from app import db
 from app.ai_editor import VideoMetadata, generate_edit_plan
 from app.api.uploads import save_upload
 from app.config import INPUTS_DIR, MAX_UPLOAD_MB, OUTPUTS_DIR
+from app.media.rendering import render_studio_edit
 from app.media.video import STUDIO_ALLOWED_VIDEO_EXTENSIONS, probe_video_metadata
 
 router = APIRouter(prefix="/api/studio", tags=["ai clip studio"])
@@ -121,27 +122,52 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+def _output_download_url(path: Path) -> str:
+    return f"/media/outputs/{path.relative_to(OUTPUTS_DIR).as_posix()}"
+
+
+def _run_studio_render(video_project_id: int, job_id: int, export_id: int, asset: dict, plan: dict, output_path: Path) -> None:
+    try:
+        db.update_render_job(job_id, "running", 10, "Rendering vertical MP4 with ffmpeg")
+        db.update_video_project(video_project_id, status="rendering")
+        render_studio_edit(asset["path"], plan, output_path, source_duration=asset.get("duration"))
+        download_url = _output_download_url(output_path)
+        db.update_render_job(job_id, "finished", 100, "Render complete", output_path=str(output_path))
+        db.update_export(export_id, "ready", str(output_path), download_url)
+        db.update_video_project(video_project_id, status="finished")
+    except Exception as exc:  # noqa: BLE001 - persist clear render errors for UI.
+        db.update_render_job(job_id, "failed", 100, "Render failed", str(exc), output_path=str(output_path))
+        db.update_export(export_id, "failed", str(output_path), None)
+        db.update_video_project(video_project_id, status="failed")
+
+
 @router.post("/projects/{video_project_id}/render")
-def create_render_job(video_project_id: int) -> dict:
+def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) -> dict:
     try:
         project = db.get_video_project(video_project_id)
         plan = db.latest_edit_plan(video_project_id)
         if not plan:
             raise ValueError("Generate and review an edit plan before rendering.")
+        assets = db.list_video_project_assets(video_project_id, "source_video")
+        asset = next((item for item in assets if item["id"] == plan.get("media_asset_id")), assets[-1] if assets else None)
+        if not asset or not asset.get("path"):
+            raise ValueError("Upload a rights-confirmed source video before rendering.")
         plan_json = json.loads(plan["plan_json"])
-        output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"planned_{plan['id']}_{plan_json.get('platform', 'short')}.mp4"
-        message = "Render job created with stub renderer. TODO: connect this clean interface to the ffmpeg render pipeline."
-        job = db.create_render_job(video_project_id, plan["id"], message, str(output_path))
+        platform = plan_json.get("platform", "tiktok")
+        output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"edit_plan_{plan['id']}_{platform}.mp4"
+        message = "Render queued. The site will export a real vertical MP4 from your uploaded video."
+        job = db.create_render_job(video_project_id, plan["id"], message, str(output_path), render_interface="ffmpeg")
         export = db.create_export(
             video_project_id,
             job["id"],
             plan["id"],
-            plan_json.get("platform", "tiktok"),
-            "pending_render",
+            platform,
+            "rendering",
             str(output_path),
             None,
         )
-        db.update_video_project(video_project_id, status="render_pending")
+        db.update_video_project(video_project_id, status="render_queued")
+        background_tasks.add_task(_run_studio_render, video_project_id, job["id"], export["id"], asset, plan_json, output_path)
         return {**job, "export": export, "project_status": project.get("status")}
     except (KeyError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc

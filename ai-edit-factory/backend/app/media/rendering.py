@@ -147,3 +147,105 @@ def generate_edits(song_path: str | Path, beats: list[float], candidates: list[C
         render_edit(plan, song_path, output_path, current_template)
         outputs.append(GeneratedOutput(output_path, current_template, edit_score(plan, index)))
     return sorted(outputs, key=lambda item: item.score, reverse=True)
+
+
+def _escape_drawtext(text: object) -> str:
+    value = str(text or "").replace("\\", "\\\\")
+    return value.replace(":", "\\:").replace("'", "\\'").replace("%", "\\%")[:120]
+
+
+def _studio_drawtext_filters(overlays: list[dict], timeline_start: float, timeline_end: float) -> list[str]:
+    filters: list[str] = []
+    for overlay in overlays:
+        try:
+            time_at = float(overlay.get("time", 0))
+        except (TypeError, ValueError):
+            continue
+        if not (timeline_start <= time_at < timeline_end):
+            continue
+        local_start = max(0.0, time_at - timeline_start)
+        local_end = min(timeline_end - timeline_start, local_start + 2.2)
+        text = _escape_drawtext(overlay.get("text", ""))
+        if not text:
+            continue
+        y_expr = "h*0.18" if overlay.get("style") == "bold_center" else "h*0.76"
+        filters.append(
+            "drawtext="
+            f"text='{text}':x=(w-text_w)/2:y={y_expr}:fontsize=64:"
+            "fontcolor=white:borderw=5:bordercolor=black:"
+            "box=1:boxcolor=black@0.35:boxborderw=18:"
+            f"enable='between(t,{local_start:.3f},{local_end:.3f})'"
+        )
+    return filters
+
+
+def _studio_segment_filter(width: int, height: int, overlays: list[dict], timeline_start: float, timeline_end: float) -> str:
+    filters = [
+        f"scale={width}:{height}:force_original_aspect_ratio=increase",
+        f"crop={width}:{height}",
+        "setsar=1",
+        "fps=30",
+        "eq=contrast=1.06:saturation=1.08",
+    ]
+    filters.extend(_studio_drawtext_filters(overlays, timeline_start, timeline_end))
+    filters.append("format=yuv420p")
+    return ",".join(filters)
+
+
+def _safe_segments(plan: dict, source_duration: float | None) -> list[dict[str, float]]:
+    source_max = max(0.1, float(source_duration or plan.get("duration_seconds") or 20))
+    raw_segments = plan.get("segments") or []
+    segments: list[dict[str, float]] = []
+    for item in raw_segments:
+        try:
+            start = max(0.0, min(float(item.get("source_start", 0)), source_max - 0.1))
+            end = max(start + 0.1, min(float(item.get("source_end", start + 3)), source_max))
+        except (TypeError, ValueError):
+            continue
+        if end > start:
+            segments.append({"source_start": start, "source_end": end})
+    if not segments:
+        duration = max(1.0, min(float(plan.get("duration_seconds") or 20), source_max))
+        segments.append({"source_start": 0.0, "source_end": duration})
+    return segments[:24]
+
+
+def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | Path, source_duration: float | None = None) -> Path:
+    """Render a site-generated AI edit plan into a real vertical MP4."""
+    ensure_ffmpeg()
+    source_path = Path(source_path)
+    if not source_path.exists():
+        raise FileNotFoundError(f"Uploaded source video is missing on disk: {source_path}")
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    aspect = str(plan.get("aspect_ratio") or "9:16")
+    width, height = (1080, 1920) if aspect != "4:5" else (1080, 1350)
+    overlays = plan.get("text_overlays") or []
+    segments = _safe_segments(plan, source_duration)
+    with tempfile.TemporaryDirectory(prefix="ai-edit-studio-") as temp_dir_name:
+        temp_dir = Path(temp_dir_name)
+        segment_paths: list[Path] = []
+        timeline = 0.0
+        for index, segment in enumerate(segments):
+            start = segment["source_start"]
+            duration = max(0.1, segment["source_end"] - start)
+            segment_path = temp_dir / f"studio_segment_{index:03d}.mp4"
+            _run([
+                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                "-ss", f"{start:.3f}", "-t", f"{duration:.3f}", "-i", str(source_path),
+                "-map", "0:v:0", "-map", "0:a?",
+                "-vf", _studio_segment_filter(width, height, overlays, timeline, timeline + duration),
+                "-c:v", "libx264", "-preset", "veryfast", "-crf", "23",
+                "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
+                "-movflags", "+faststart", str(segment_path),
+            ])
+            segment_paths.append(segment_path)
+            timeline += duration
+        concat_file = temp_dir / "segments.txt"
+        concat_file.write_text("".join(f"file '{path.as_posix()}'\n" for path in segment_paths), encoding="utf-8")
+        _run([
+            "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+            "-f", "concat", "-safe", "0", "-i", str(concat_file),
+            "-c", "copy", "-movflags", "+faststart", str(output_path),
+        ])
+    return output_path
