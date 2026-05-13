@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import json
+import subprocess
 from pathlib import Path
 
 ALLOWED_AUDIO_EXTENSIONS = {".mp3", ".wav", ".m4a", ".aac", ".flac", ".ogg"}
@@ -34,3 +36,27 @@ def beat_intervals(beats: list[float], min_duration: float = 0.25, max_duration:
             continue
         intervals.append((start, min(end, start + max_duration)))
     return intervals
+
+
+def probe_audio_metadata(audio_path: str | Path) -> dict:
+    audio_path = Path(audio_path)
+    metadata = {
+        "duration": None,
+        "file_type": audio_path.suffix.lower().lstrip("."),
+    }
+    try:
+        result = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration,format_name", "-of", "json", str(audio_path)],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+        data = json.loads(result.stdout or "{}")
+        fmt = data.get("format") or {}
+        metadata.update({
+            "duration": float(fmt["duration"]) if fmt.get("duration") else None,
+            "file_type": metadata["file_type"] or fmt.get("format_name"),
+        })
+    except (subprocess.SubprocessError, FileNotFoundError, KeyError, ValueError, json.JSONDecodeError):
+        pass
+    return metadata

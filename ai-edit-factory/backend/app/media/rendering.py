@@ -210,14 +210,21 @@ def _safe_segments(plan: dict, source_duration: float | None) -> list[dict[str, 
     return segments[:24]
 
 
-def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | Path, source_duration: float | None = None) -> Path:
-    """Render a site-generated AI edit plan into a real vertical MP4."""
+def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | Path, source_duration: float | None = None, music_path: str | Path | None = None) -> Path:
+    """Render a site-generated AI edit plan into a real vertical MP4.
+
+    When a rights-cleared music upload is provided, it becomes the export audio bed.
+    Otherwise the source video audio is preserved where available.
+    """
     ensure_ffmpeg()
     source_path = Path(source_path)
     if not source_path.exists():
         raise FileNotFoundError(f"Uploaded source video is missing on disk: {source_path}")
     output_path = Path(output_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
+    music = Path(music_path) if music_path else None
+    if music and not music.exists():
+        raise FileNotFoundError(f"Uploaded music file is missing on disk: {music}")
     aspect = str(plan.get("aspect_ratio") or "9:16")
     width, height = (1080, 1920) if aspect != "4:5" else (1080, 1350)
     overlays = plan.get("text_overlays") or []
@@ -243,9 +250,24 @@ def render_studio_edit(source_path: str | Path, plan: dict, output_path: str | P
             timeline += duration
         concat_file = temp_dir / "segments.txt"
         concat_file.write_text("".join(f"file '{path.as_posix()}'\n" for path in segment_paths), encoding="utf-8")
-        _run([
-            "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
-            "-f", "concat", "-safe", "0", "-i", str(concat_file),
-            "-c", "copy", "-movflags", "+faststart", str(output_path),
-        ])
+        if music:
+            stitched_path = temp_dir / "stitched_video.mp4"
+            _run([
+                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                "-f", "concat", "-safe", "0", "-i", str(concat_file),
+                "-c", "copy", "-movflags", "+faststart", str(stitched_path),
+            ])
+            _run([
+                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                "-stream_loop", "-1", "-i", str(music), "-i", str(stitched_path),
+                "-map", "1:v:0", "-map", "0:a:0",
+                "-c:v", "copy", "-c:a", "aac", "-b:a", "160k", "-ar", "44100",
+                "-shortest", "-movflags", "+faststart", str(output_path),
+            ])
+        else:
+            _run([
+                "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+                "-f", "concat", "-safe", "0", "-i", str(concat_file),
+                "-c", "copy", "-movflags", "+faststart", str(output_path),
+            ])
     return output_path
