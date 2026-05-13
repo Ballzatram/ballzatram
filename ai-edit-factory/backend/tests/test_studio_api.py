@@ -74,13 +74,37 @@ def test_studio_project_plan_and_real_render(tmp_path: Path) -> None:
     assert asset["file_type"] == "mp4"
     assert asset["preview_url"].startswith("/media/inputs/")
 
+    song_path = tmp_path / "music.wav"
+    subprocess.run([
+        "ffmpeg", "-y", "-hide_banner", "-loglevel", "error",
+        "-f", "lavfi", "-i", "sine=frequency=880:duration=3", str(song_path),
+    ], check=True)
+    with song_path.open("rb") as handle:
+        music_upload = client.post(
+            f"/api/studio/projects/{project['id']}/music",
+            data={"rights_confirmed": "true"},
+            files={"file": ("music.wav", handle, "audio/wav")},
+        )
+    assert music_upload.status_code == 200
+    music_asset = music_upload.json()
+    assert music_asset["kind"] == "music_audio"
+
     plan_response = client.post(
         f"/api/studio/projects/{project['id']}/edit-plans",
-        json={"prompt": "Make this a chaotic 2-second TikTok clip.", "media_asset_id": asset["id"]},
+        json={
+            "prompt": "Make this a chaotic 2-second TikTok clip.",
+            "media_asset_id": asset["id"],
+            "clip_type": "funny",
+            "add_music": True,
+            "add_captions": True,
+            "add_hashtags": True,
+        },
     )
     assert plan_response.status_code == 200
     plan = plan_response.json()["plan"]
     assert plan["segments"]
+    assert plan["features"] == {"music": True, "captions": True, "hashtags": True}
+    assert plan["music_asset_id"] == music_asset["id"]
     assert plan["caption_packages"]["youtube_shorts"]["hashtags"]
 
     render = client.post(f"/api/studio/projects/{project['id']}/render")

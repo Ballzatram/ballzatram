@@ -10,6 +10,7 @@ from app import db
 from app.ai_editor import VideoMetadata, generate_edit_plan
 from app.api.uploads import save_upload
 from app.config import INPUTS_DIR, MAX_UPLOAD_MB, OUTPUTS_DIR
+from app.media.audio import ALLOWED_AUDIO_EXTENSIONS, probe_audio_metadata
 from app.media.rendering import render_studio_edit
 from app.media.video import STUDIO_ALLOWED_VIDEO_EXTENSIONS, probe_video_metadata
 
@@ -23,6 +24,10 @@ class StudioProjectCreate(BaseModel):
 class EditPlanCreate(BaseModel):
     prompt: str = Field(min_length=3, max_length=1200)
     media_asset_id: int | None = None
+    clip_type: str = Field(default="funny", max_length=80)
+    add_music: bool = True
+    add_captions: bool = True
+    add_hashtags: bool = True
 
 
 def _decode_plan(row: dict | None) -> dict | None:
@@ -43,6 +48,7 @@ def _payload(video_project_id: int) -> dict:
         "limits": {
             "max_upload_mb": MAX_UPLOAD_MB,
             "allowed_video_types": sorted(ext.lstrip(".") for ext in STUDIO_ALLOWED_VIDEO_EXTENSIONS),
+            "allowed_audio_types": sorted(ext.lstrip(".") for ext in ALLOWED_AUDIO_EXTENSIONS),
         },
     }
 
@@ -100,6 +106,38 @@ async def upload_video(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
+@router.post("/projects/{video_project_id}/music")
+async def upload_music(
+    video_project_id: int,
+    rights_confirmed: bool = Form(...),
+    file: UploadFile = File(...),
+) -> dict:
+    if not rights_confirmed:
+        raise HTTPException(status_code=400, detail="Confirm that you own, licensed, or have permission to use this music before upload.")
+    try:
+        db.get_video_project(video_project_id)
+        destination = INPUTS_DIR / f"studio_project_{video_project_id}" / "music"
+        path = await save_upload(file, destination, ALLOWED_AUDIO_EXTENSIONS)
+        metadata = probe_audio_metadata(path)
+        preview_url = f"/media/inputs/{path.relative_to(INPUTS_DIR).as_posix()}"
+        asset = db.add_video_project_asset(
+            video_project_id,
+            "music_audio",
+            "upload",
+            path=str(path),
+            url=preview_url,
+            duration=metadata.get("duration"),
+            file_type=metadata.get("file_type"),
+            bytes=path.stat().st_size,
+            original_filename=file.filename,
+            preview_url=preview_url,
+        )
+        db.update_video_project(video_project_id, status="media_uploaded")
+        return asset
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
 @router.post("/projects/{video_project_id}/edit-plans")
 def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
     try:
@@ -114,9 +152,32 @@ def create_edit_plan(video_project_id: int, payload: EditPlanCreate) -> dict:
             height=asset.get("height"),
             file_type=asset.get("file_type"),
         )
-        plan = generate_edit_plan(payload.prompt, metadata)
-        row = db.create_edit_plan(video_project_id, asset["id"], payload.prompt, plan)
-        db.update_video_project(video_project_id, status="plan_ready", creative_prompt=payload.prompt)
+        creative_prompt = (
+            f"Type of clips: {payload.clip_type}. "
+            f"Add music: {'yes' if payload.add_music else 'no'}. "
+            f"Add captions: {'yes' if payload.add_captions else 'no'}. "
+            f"Add hashtags: {'yes' if payload.add_hashtags else 'no'}. "
+            f"Direction: {payload.prompt}"
+        )
+        plan = generate_edit_plan(creative_prompt, metadata)
+        plan["clip_type"] = payload.clip_type
+        plan["features"] = {
+            "music": payload.add_music,
+            "captions": payload.add_captions,
+            "hashtags": payload.add_hashtags,
+        }
+        if not payload.add_captions:
+            plan["text_overlays"] = []
+            plan["caption_style"] = "captions disabled by the user"
+        if not payload.add_hashtags:
+            for package in plan.get("caption_packages", {}).values():
+                package["hashtags"] = []
+        if not payload.add_music:
+            plan["music_vibe"] = "music disabled; preserve source audio when available"
+        music_assets = db.list_video_project_assets(video_project_id, "music_audio")
+        plan["music_asset_id"] = music_assets[-1]["id"] if payload.add_music and music_assets else None
+        row = db.create_edit_plan(video_project_id, asset["id"], creative_prompt, plan)
+        db.update_video_project(video_project_id, status="plan_ready", creative_prompt=creative_prompt)
         return _decode_plan(row)
     except (KeyError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
@@ -126,11 +187,12 @@ def _output_download_url(path: Path) -> str:
     return f"/media/outputs/{path.relative_to(OUTPUTS_DIR).as_posix()}"
 
 
-def _run_studio_render(video_project_id: int, job_id: int, export_id: int, asset: dict, plan: dict, output_path: Path) -> None:
+def _run_studio_render(video_project_id: int, job_id: int, export_id: int, asset: dict, plan: dict, output_path: Path, music_asset: dict | None = None) -> None:
     try:
         db.update_render_job(job_id, "running", 10, "Rendering vertical MP4 with ffmpeg")
         db.update_video_project(video_project_id, status="rendering")
-        render_studio_edit(asset["path"], plan, output_path, source_duration=asset.get("duration"))
+        music_path = music_asset.get("path") if music_asset else None
+        render_studio_edit(asset["path"], plan, output_path, source_duration=asset.get("duration"), music_path=music_path)
         download_url = _output_download_url(output_path)
         db.update_render_job(job_id, "finished", 100, "Render complete", output_path=str(output_path))
         db.update_export(export_id, "ready", str(output_path), download_url)
@@ -153,9 +215,15 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) 
         if not asset or not asset.get("path"):
             raise ValueError("Upload a rights-confirmed source video before rendering.")
         plan_json = json.loads(plan["plan_json"])
+        music_assets = db.list_video_project_assets(video_project_id, "music_audio")
+        music_asset = None
+        if plan_json.get("features", {}).get("music") and plan_json.get("music_asset_id"):
+            music_asset = next((item for item in music_assets if item["id"] == plan_json.get("music_asset_id")), None)
+        elif plan_json.get("features", {}).get("music") and music_assets:
+            music_asset = music_assets[-1]
         platform = plan_json.get("platform", "tiktok")
         output_path = OUTPUTS_DIR / f"studio_project_{video_project_id}" / f"edit_plan_{plan['id']}_{platform}.mp4"
-        message = "Render queued. The site will export a real vertical MP4 from your uploaded video."
+        message = "Render queued. The site will export a real vertical MP4 from your uploaded video%s." % (" and music" if music_asset else "")
         job = db.create_render_job(video_project_id, plan["id"], message, str(output_path), render_interface="ffmpeg")
         export = db.create_export(
             video_project_id,
@@ -167,7 +235,7 @@ def create_render_job(video_project_id: int, background_tasks: BackgroundTasks) 
             None,
         )
         db.update_video_project(video_project_id, status="render_queued")
-        background_tasks.add_task(_run_studio_render, video_project_id, job["id"], export["id"], asset, plan_json, output_path)
+        background_tasks.add_task(_run_studio_render, video_project_id, job["id"], export["id"], asset, plan_json, output_path, music_asset)
         return {**job, "export": export, "project_status": project.get("status")}
     except (KeyError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
