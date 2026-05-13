@@ -21,7 +21,7 @@ YouTube support is metadata-first. Media downloading is disabled by default. A Y
 - Templates: `fast_cut`, `high_motion`, `slow_mo`, `lyric_caption`, `random_montage`, and `retro_tv_filter`.
 - Ranked outputs based on clip quality, variety, and template spread.
 - Mobile-first React UI served by the API container for one-stop source uploads, source shelf selection, music/caption/hashtag toggles, progress polling, previews, and downloads.
-- Public `ai-edit-factory/index.html` web studio with the same project/upload/recipe/render workflow for site deployments; it defaults to same-origin `/api` and includes API-origin settings for split frontend/backend deployments.
+- Public `ai-edit-factory/index.html` web studio with the same project/upload/plan/render workflow for site deployments; it defaults to same-origin `/api`, auto-tries common local API origins for phone testing, and includes API-origin settings for split frontend/backend deployments.
 - CLI for local batch generation.
 
 ## Repo layout
@@ -52,16 +52,16 @@ cd ai-edit-factory
 docker compose up --build
 ```
 
-Open the browser UI at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The app is operated entirely from the browser, but MP4 rendering does not run inside the browser tab: the browser uploads media to the FastAPI backend, and the backend uses ffmpeg to edit/splice/export reliable MP4 files. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin.
+Open the browser UI at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The app is operated entirely from the browser, but MP4 rendering does not run inside the browser tab: the browser uploads media to the FastAPI backend, and the backend uses ffmpeg to edit/splice/export reliable MP4 files. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin. For phone testing on the same Wi-Fi network, open the site through the computer's local IP address and use an API origin like `http://<local-ip>:8000` if auto-detection cannot reach the backend.
 
 AI edit factory flow (site-native):
 
-1. Open <http://localhost:8000> (or the deployed `ai-edit-factory/index.html` page with its API origin connected) and open a clip factory project.
+1. Open <http://localhost:8000> (or the deployed `ai-edit-factory/index.html` page with its API origin connected) and create a project.
 2. Confirm that every uploaded video or audio file is owned, licensed, or otherwise permitted for editing.
 3. Upload one or more source videos (`mp4`, `mov`, or `webm`). The app shows upload progress, stores each upload on a source shelf, saves duration/dimensions/file type/preview path when `ffprobe` is available, and lets the user choose the first/primary clip while the AI recipe can splice across the full uploaded source shelf.
 4. Optionally upload a rights-cleared music bed (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`). If **Add music** is enabled, the renderer uses that upload as the export audio bed; otherwise single-source edits preserve source audio where available and multi-source splice edits use silent AAC for consistent MP4 exports.
 5. Choose the type of clips to make, such as funny, emotional, hype, dramatic, clean, or storytime. Toggle music, burned-in captions, and hashtag generation, then add creative direction.
-6. Click **Generate AI edit recipe** to review JSON segments, source clip picks, overlays, caption style, music handling, export notes, and platform packages for TikTok, Instagram Reels, YouTube Shorts, and X.
+6. Click **Generate edit plan** to review JSON segments, source clip picks, overlays, caption style, music handling, export notes, and platform packages for TikTok, Instagram Reels, YouTube Shorts, and X.
 7. Click **Render downloadable MP4**. The backend runs ffmpeg against the uploaded source videos, splices the planned moments into a vertical short-form MP4, optionally burns captions and swaps in the uploaded music bed, updates render status automatically, and exposes an inline preview plus a download link when the export is ready.
 
 Legacy beat-edit flow (API-compatible):
@@ -152,7 +152,7 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 - [ ] Compliance copy is visible before upload/generation.
 - [ ] The AI edit factory requires the rights-confirmation checkbox before source video or music upload.
 - [ ] Upload progress, source shelf selection, playable source preview, optional music bed metadata, recipe JSON, platform captions/hashtags, and render/export state appear in the factory flow.
-- [ ] Creating a project succeeds.
+- [ ] Creating a project succeeds and Step 1 shows either a clear success message or a clear API connection fix.
 - [ ] Invalid upload types are rejected.
 - [ ] Uploading one rights-approved song and one or more rights-approved clips succeeds.
 - [ ] YouTube URL import shows metadata and does not download media by default.
