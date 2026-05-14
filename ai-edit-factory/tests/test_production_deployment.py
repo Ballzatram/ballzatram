@@ -1,6 +1,12 @@
 from pathlib import Path
+import re
+import shutil
+import subprocess
+
+import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = ROOT.parent
 
 
 def test_production_compose_declares_backed_site_stack() -> None:
@@ -28,11 +34,22 @@ def test_caddy_serves_launchpad_and_routes_ai_edit_to_api() -> None:
     assert "root * /srv/ballzatram" in caddyfile
     assert "@api path /api/*" in caddyfile
     assert "@media path /media/*" in caddyfile
+    assert "@outputs path /outputs/*" in caddyfile
+    assert "@inputs path /inputs/*" in caddyfile
     assert "@aiEdit path /ai-edit-factory /ai-edit-factory/*" in caddyfile
     assert "reverse_proxy api:8000" in caddyfile
     assert "file_server" in caddyfile
     assert "max_size 750MB" in caddyfile
     assert "response_header_timeout 300s" in caddyfile
+    assert "@assets path /assets/*" not in caddyfile
+    assert not re.search(r"handle\s*\{\s*reverse_proxy\s+api:8000", caddyfile)
+
+
+def test_root_homepage_links_to_ai_edit_factory_subpath() -> None:
+    html = (REPO_ROOT / "index.html").read_text()
+
+    assert 'href="/ai-edit-factory/"' in html
+    assert 'href="ai-edit-factory/index.html"' not in html
 
 
 def test_production_env_example_and_verify_script_cover_diagnostics() -> None:
@@ -76,7 +93,23 @@ def test_deployment_docs_make_static_preview_non_production() -> None:
 
 def test_frontend_build_targets_ai_edit_subpath() -> None:
     package_json = (ROOT / "frontend/package.json").read_text()
+    vite_config = (ROOT / "frontend/vite.config.js").read_text()
     app_main = (ROOT / "backend/app/main.py").read_text()
 
-    assert "vite build --base=/ai-edit-factory/" in package_json
+    assert '"build": "vite build"' in package_json
+    assert "base: mode === 'production' ? '/ai-edit-factory/' : '/'" in vite_config
     assert 'app.mount("/ai-edit-factory", StaticFiles' in app_main
+    assert 'app.mount("/outputs", StaticFiles' in app_main
+    assert 'app.mount("/inputs", StaticFiles' in app_main
+
+
+def test_frontend_production_build_rewrites_assets_to_ai_edit_subpath() -> None:
+    if not shutil.which("npm"):
+        pytest.skip("npm is required to verify the production Vite asset base")
+
+    subprocess.run(["npm", "run", "build"], cwd=ROOT / "frontend", check=True)
+    built_html = (ROOT / "frontend/dist/index.html").read_text()
+
+    assert "/ai-edit-factory/assets/" in built_html
+    assert 'src="/assets/' not in built_html
+    assert 'href="/assets/' not in built_html

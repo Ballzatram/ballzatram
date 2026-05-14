@@ -32,6 +32,30 @@ ballzatram.com {
     }
   }
 
+  @outputs path /outputs/*
+  handle @outputs {
+    reverse_proxy api:8000 {
+      transport http {
+        dial_timeout 30s
+        response_header_timeout 300s
+        read_timeout 1h
+        write_timeout 1h
+      }
+    }
+  }
+
+  @inputs path /inputs/*
+  handle @inputs {
+    reverse_proxy api:8000 {
+      transport http {
+        dial_timeout 30s
+        response_header_timeout 300s
+        read_timeout 1h
+        write_timeout 1h
+      }
+    }
+  }
+
   @aiEdit path /ai-edit-factory /ai-edit-factory/*
   handle @aiEdit {
     reverse_proxy api:8000 {
