@@ -38,8 +38,10 @@ def health() -> dict:
     return {"ok": True}
 
 
-# Keep the catch-all site mount last so API routes and health checks always win.
+# Keep frontend mounts last so API routes, media, and health checks always win.
 if FRONTEND_DIST_DIR.exists():
+    app.mount("/ai-edit-factory", StaticFiles(directory=FRONTEND_DIST_DIR, html=True), name="ai-edit-factory")
+    # Preserve direct-container/local behavior where the tool is opened at the API origin root.
     app.mount("/", StaticFiles(directory=FRONTEND_DIST_DIR, html=True), name="site")
 else:
     logger.warning("Frontend build not found at %s; API-only mode enabled", FRONTEND_DIST_DIR)
