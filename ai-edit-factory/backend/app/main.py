@@ -23,8 +23,10 @@ app.include_router(projects_router)
 app.include_router(studio_router)
 app.include_router(jobs_router)
 app.include_router(outputs_router)
-app.mount("/media/outputs", StaticFiles(directory=OUTPUTS_DIR), name="outputs")
-app.mount("/media/inputs", StaticFiles(directory=INPUTS_DIR), name="inputs")
+app.mount("/media/outputs", StaticFiles(directory=OUTPUTS_DIR), name="media-outputs")
+app.mount("/media/inputs", StaticFiles(directory=INPUTS_DIR), name="media-inputs")
+app.mount("/outputs", StaticFiles(directory=OUTPUTS_DIR), name="outputs")
+app.mount("/inputs", StaticFiles(directory=INPUTS_DIR), name="inputs")
 
 
 @app.on_event("startup")
