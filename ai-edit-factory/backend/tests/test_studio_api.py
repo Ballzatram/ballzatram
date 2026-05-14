@@ -211,6 +211,27 @@ def test_versions_music_feedback_and_insights_flow(tmp_path: Path) -> None:
     assert plans[0]["plan"]["schema_version"] == "mvp.edit_plan.v1"
     assert versions.json()["trend_signals"]
 
+    recipe_update = client.patch(
+        f"/api/studio/projects/{project['id']}/edit-plans/{plans[0]['id']}",
+        json={
+            "segments": [
+                {
+                    "source_asset_id": asset["id"],
+                    "source_filename": asset["original_filename"],
+                    "source_start": 0.1,
+                    "source_end": 1.4,
+                    "reason": "manual punch-in",
+                }
+            ],
+            "text_overlays": [{"time": 0.2, "text": "custom caption", "style": "bold_center"}],
+        },
+    )
+    assert recipe_update.status_code == 200
+    updated_plan = recipe_update.json()["plan"]
+    assert updated_plan["segments"] == [{"source_asset_id": asset["id"], "source_filename": asset["original_filename"], "source_start": 0.1, "source_end": 1.4, "reason": "manual punch-in"}]
+    assert updated_plan["text_overlays"] == [{"time": 0.2, "text": "custom caption", "style": "bold_center"}]
+    assert updated_plan["duration_seconds"] == 1.3
+
     music_update = client.patch(
         f"/api/studio/projects/{project['id']}/edit-plans/{plans[0]['id']}/music",
         json={"music_asset_id": None, "source_start_s": 1.25, "volume": 0.7, "fade_in_s": 0.2, "fade_out_s": 0.3, "duck_original_audio": True},

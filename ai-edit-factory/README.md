@@ -61,8 +61,9 @@ AI edit factory flow (site-native):
 3. Upload one or more source videos (`mp4`, `mov`, or `webm`). The app shows upload progress, stores each upload on a source shelf, saves duration/dimensions/file type/preview path when `ffprobe` is available, and lets the user choose the first/primary clip while the AI recipe can splice across the full uploaded source shelf.
 4. Optionally upload a rights-cleared music bed (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`). If **Add music** is enabled, the renderer uses that upload as the export audio bed; otherwise single-source edits preserve source audio where available and multi-source splice edits use silent AAC for consistent MP4 exports.
 5. Choose the type of clips to make, such as funny, emotional, hype, dramatic, clean, or storytime. Toggle music, burned-in captions, and hashtag generation, then add creative direction.
-6. Click **Generate edit plan** to review JSON segments, source clip picks, overlays, caption style, music handling, export notes, and platform packages for TikTok, Instagram Reels, YouTube Shorts, and X.
-7. Click **Render downloadable MP4**. The backend runs ffmpeg against the uploaded source videos, splices the planned moments into a vertical short-form MP4, optionally burns captions and swaps in the uploaded music bed, updates render status automatically, and exposes an inline preview plus a download link when the export is ready.
+6. Click **Make 3 versions** to create polished generated edit cards. The normal UI shows version names, preview/export status, duration, cut count, music start, caption count, feedback buttons, and download controls instead of raw JSON.
+7. When diagnostics report `full_stack_render_ready`, the browser queues MP4 exports for the generated versions automatically. If the backend is not ready, use the visible **Render all** / **Export MP4** controls after the stack is healthy.
+8. Open **Edit** on a generated version to adjust the readable edit recipe: remove/reorder cuts, edit cut start/end timings, add/edit/delete captions, save the plan, and re-export. Captions in `text_overlays` are burned into MP4s by the ffmpeg renderer. Raw plan JSON is available only from the collapsed **Show technical JSON** debug control.
 
 Legacy beat-edit flow (API-compatible):
 
@@ -134,6 +135,8 @@ AI edit factory endpoints:
 - `POST /api/studio/projects/{id}/video` uploads one rights-confirmed `mp4`, `mov`, or `webm` source video. The frontend can call this repeatedly for multi-video source shelves.
 - `POST /api/studio/projects/{id}/music` uploads one rights-confirmed `mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg` music bed.
 - `POST /api/studio/projects/{id}/edit-plans` creates a structured short-form edit recipe from clip type, creative prompt, selected primary source, the full uploaded source shelf, and music/caption/hashtag toggles.
+- `PATCH /api/studio/projects/{id}/edit-plans/{edit_plan_id}` persists manual cut-list and caption edits so subsequent renders use the updated recipe.
+- `PATCH /api/studio/projects/{id}/edit-plans/{edit_plan_id}/music` persists music-bed timing changes for the selected version.
 - `POST /api/studio/projects/{id}/render` creates a real ffmpeg render job and export record that splices the planned uploaded source videos.
 
 ## Testing
@@ -142,6 +145,8 @@ AI edit factory endpoints:
 cd ai-edit-factory
 PYTHONPATH=backend python -m pytest -q
 ```
+
+For realistic edit-quality checks, do not judge the planner with only one short 15-second source clip. Use at least three source videos, 30-120 seconds of total footage, one rights-cleared music file, and **Make 3 versions**. Single-short-clip tests can naturally produce similar-looking versions because the planner has little material to cut between.
 
 The test suite covers YouTube URL parsing, beat interval shapes, scene detection wrappers, clip scoring helpers, render planning, upload validation, API project creation, and the studio edit-plan/render workflow. An integration test creates tiny sample media when ffmpeg is available.
 
@@ -178,7 +183,7 @@ The studio no longer depends on a creator-supplied editing API key or third-part
 - `generate_edit_plan(...)` chooses platform, duration, pacing, source segments, text overlays, caption packages, hashtags, music guidance, and a suggested `music_start_seconds` from the uploaded media metadata and prompt.
 - The React studio exposes a **Song start second** control after music upload so a user can choose which hook/drop of the song is used before generating and rendering the MP4.
 - Rendered files now include a slug of the project name in `outputs/studio_project_<id>/<project-name>_plan_<plan-id>_<platform>.mp4`, so exports are recognizable instead of only numeric/opaque names.
-- Every export can receive quick feedback through **Works** / **Needs tighter cuts**. Feedback is stored in SQLite and returned as `learning_profile`; future edit plans for that project adjust pacing and caption density based on the profile.
+- Every export can receive quick feedback through **Nailed it** / **Tighten cuts** / music / caption / crop feedback. Feedback is stored in SQLite and returned as `learning_profile`; future edit plans for that project adjust pacing and caption density based on the profile.
 - TikTok/trend relevance must be fed through permissioned or official sources. This repo intentionally does not scrape TikTok or bypass platform controls. For a production trend system, import approved trend signals into the database, then expose them to `generate_edit_plan(...)` the same way first-party feedback is exposed today.
 
 New studio feedback endpoint:
@@ -207,12 +212,12 @@ Body:
 4. Create a named project; the generated MP4 filename will include a slug of that name.
 5. Check the rights confirmation box.
 6. Upload one or more short source videos (`mp4`, `mov`, or `webm`). For fastest iteration, start with clips under 60 seconds.
-7. Optional: upload a rights-cleared song (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`) and set **Song start second** to the part of the song you want under the edit.
-8. Choose a clip type, keep music/captions/hashtags enabled or disable what you do not want, then click **Generate edit plan**.
-9. Review cuts, captions, hashtags, and the suggested music start.
-10. Click **Render downloadable MP4** and wait for the status to reach `finished`.
-11. Preview and download the MP4 in the **Exports** section.
-12. Click **Works** or **Needs tighter cuts** on the export so the local learning profile can tune future plans for that project.
+7. Optional: upload a rights-cleared tune (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`) and set **Tune start second** to the part of the song you want under the edit.
+8. Pick a vibe, keep tune/captions/hashtags enabled or disable what you do not want, then click **Make 3 versions**.
+9. Review the generated edit cards. Open **Edit** to adjust cuts, captions, and music timing without touching raw JSON.
+10. When the stack is render-ready, exports queue automatically; otherwise click **Render all** or **Export MP4**. Per-version status moves through queued/rendering/ready/failed states.
+11. Preview each ready version and click **Download MP4**.
+12. Click **Nailed it**, **Tighten cuts**, **Wrong music moment**, **Bad captions**, or **Bad crop** so the local learning profile can tune future plans for that project.
 
 Operational requirements:
 
@@ -235,11 +240,11 @@ Then open <http://localhost:8000> and verify:
 1. Create a project with `name`, optional `description`, and a `target_platform` (stored in SQLite `projects`).
 2. Upload one or more owned/licensed source videos and optional owned/licensed music.
 3. Confirm each `media_assets` row stores `path`, `original_filename`, `asset_type`, `duration`, `width`, `height`, `fps`, `has_audio`, `analysis_json`, and a thumbnail path when ffmpeg can extract one.
-4. Click **Generate 3 versions**. The backend creates deterministic `edit_plans` for `fast_montage`, `hook_buildup_reveal`, and `beat_sync` using the `mvp.edit_plan.v1` JSON schema (`target_platform`, duration, style/template, video clips, text overlays, music settings, crop mode, and timing).
-5. In **Review and render**, change the music start time and save it. This updates `music_settings.source_start_s` on the edit plan and allows re-rendering.
-6. Render a version. The render job uses local ffmpeg to write a vertical 1080x1920 H.264/AAC MP4 into `outputs/`, creates `render_jobs` and `exports` records, and exposes a `/media/outputs/...` download URL.
-7. Download the MP4 from **Exports**.
-8. Save feedback using **Works**, **Needs tighter cuts**, or related feedback controls. The MVP stores `feedback_events` (`works`, `needs_tighter_cuts`, `wrong_music_section`, `bad_captions`, `bad_crop`, or `other`) for future improvement; it does not train a model.
+4. Click **Make 3 versions**. The backend creates deterministic `edit_plans` for `fast_montage`, `hook_buildup_reveal`, and `beat_sync` using the `mvp.edit_plan.v1` schema (`target_platform`, duration, style/template, video clips, text overlays, music settings, crop mode, and timing).
+5. Open a generated card's **Edit** panel, change music start time, adjust caption text, remove/reorder cuts, and save. This updates the edit plan and allows re-rendering.
+6. Export a version. The render job uses local ffmpeg to write a vertical 1080x1920 H.264/AAC MP4 into `outputs/`, creates `render_jobs` and `exports` records, and exposes a `/media/outputs/...` download URL.
+7. Download the MP4 from the ready generated edit card.
+8. Save feedback using **Nailed it**, **Tighten cuts**, **Wrong music moment**, **Bad captions**, or **Bad crop**. The MVP stores `feedback_events` (`works`, `needs_tighter_cuts`, `wrong_music_section`, `bad_captions`, `bad_crop`, or `other`) for future improvement; it does not train a model.
 9. Restart Docker Compose and verify projects, assets, plans, exports, feedback, and curated trend signals still load from the persisted `data/` volume.
 
 Programmatic checks used by maintainers:

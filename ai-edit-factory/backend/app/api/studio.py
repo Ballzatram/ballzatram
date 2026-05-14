@@ -65,6 +65,25 @@ class EditFeedbackCreate(BaseModel):
     metadata_json: dict = Field(default_factory=dict)
 
 
+class SegmentUpdate(BaseModel):
+    source_asset_id: int | None = None
+    source_filename: str | None = Field(default=None, max_length=255)
+    source_start: float = Field(ge=0, le=7200)
+    source_end: float = Field(ge=0, le=7200)
+    reason: str = Field(default="manual cut", max_length=240)
+
+
+class TextOverlayUpdate(BaseModel):
+    time: float = Field(ge=0, le=7200)
+    text: str = Field(default="", max_length=120)
+    style: str = Field(default="bottom_sticker", max_length=60)
+
+
+class EditPlanUpdate(BaseModel):
+    segments: list[SegmentUpdate] = Field(default_factory=list, max_length=24)
+    text_overlays: list[TextOverlayUpdate] = Field(default_factory=list, max_length=20)
+
+
 def _decode_plan(row: dict | None) -> dict | None:
     if not row:
         return None
@@ -324,6 +343,47 @@ def generate_versions(video_project_id: int, payload: VersionsCreate) -> dict:
             created.append(_decode_plan(row))
         db.update_video_project(video_project_id, status="versions_ready", creative_prompt=payload.prompt)
         return {"edit_plans": created, "trend_signals": trends}
+    except (KeyError, ValueError) as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.patch("/projects/{video_project_id}/edit-plans/{edit_plan_id}")
+def update_edit_plan_recipe(video_project_id: int, edit_plan_id: int, payload: EditPlanUpdate) -> dict:
+    try:
+        db.get_video_project(video_project_id)
+        row = db.get_edit_plan(edit_plan_id)
+        if row["video_project_id"] != video_project_id:
+            raise ValueError("Edit plan does not belong to this project.")
+        plan = json.loads(row["plan_json"])
+        source_assets = db.list_video_project_assets(video_project_id, "source_video")
+        source_ids = {asset["id"] for asset in source_assets}
+        clean_segments = []
+        for segment in payload.segments:
+            if segment.source_end <= segment.source_start:
+                raise ValueError("Each cut end time must be greater than its start time.")
+            if segment.source_asset_id is not None and segment.source_asset_id not in source_ids:
+                raise ValueError("Cut source asset does not belong to this project.")
+            clean_segments.append({
+                "source_asset_id": segment.source_asset_id,
+                "source_filename": segment.source_filename,
+                "source_start": round(segment.source_start, 3),
+                "source_end": round(segment.source_end, 3),
+                "reason": segment.reason.strip() or "manual cut",
+            })
+        if not clean_segments:
+            raise ValueError("Keep at least one cut in the edit recipe.")
+        clean_overlays = [
+            {"time": round(overlay.time, 3), "text": overlay.text.strip(), "style": overlay.style.strip() or "bottom_sticker"}
+            for overlay in payload.text_overlays
+            if overlay.text.strip()
+        ]
+        plan["segments"] = clean_segments
+        plan["text_overlays"] = clean_overlays
+        plan["duration_seconds"] = round(sum(item["source_end"] - item["source_start"] for item in clean_segments), 2)
+        plan["manual_edits"] = {"cuts_updated": True, "captions_updated": True}
+        updated = db.update_edit_plan(edit_plan_id, plan)
+        db.update_video_project(video_project_id, status="plan_ready")
+        return _decode_plan(updated)
     except (KeyError, ValueError) as exc:
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
