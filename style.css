@@ -125,8 +125,8 @@ body {
   position: relative;
   z-index: 20;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 360px);
-  gap: clamp(1rem, 2.5vw, 2.2rem);
+  grid-template-columns: minmax(0, 1fr) minmax(320px, clamp(360px, 34vw, 540px));
+  gap: clamp(0.5rem, 1.8vw, 1.75rem);
   align-items: center;
   min-height: 0;
 }
@@ -252,21 +252,11 @@ body {
 .ballzatram {
   position: relative;
   z-index: 25;
-  justify-self: center;
-  width: min(27vw, 340px);
+  justify-self: end;
+  width: clamp(340px, 28vw, 520px);
+  margin-left: clamp(-2.5rem, -3vw, -1rem);
+  transform-origin: 50% 58%;
   animation: ballzatram-float 6s ease-in-out infinite;
-}
-
-.ballzatram::before {
-  content: "";
-  position: absolute;
-  inset: 18% 4% 10% 7%;
-  z-index: -1;
-  border: 5px solid rgba(31, 13, 3, 0.45);
-  border-radius: 999px;
-  background: rgba(255, 241, 201, 0.18);
-  filter: blur(0.2px);
-  transform: rotate(-6deg);
 }
 
 .ballzatram img {
@@ -274,18 +264,28 @@ body {
   width: 100%;
   height: auto;
   filter:
-    drop-shadow(-4px -3px 0 rgba(31, 13, 3, 0.8))
-    drop-shadow(10px 16px 18px rgba(0, 0, 0, 0.35));
+    drop-shadow(-5px -4px 0 rgba(255, 241, 201, 0.72))
+    drop-shadow(12px 18px 0 rgba(46, 21, 8, 0.25))
+    drop-shadow(0 18px 30px rgba(0, 0, 0, 0.25));
+  transition: filter 0.22s ease, transform 0.22s ease;
+}
+
+.ballzatram:hover img {
+  filter:
+    drop-shadow(-6px -5px 0 rgba(255, 241, 201, 0.84))
+    drop-shadow(14px 20px 0 rgba(46, 21, 8, 0.28))
+    drop-shadow(0 22px 34px rgba(0, 0, 0, 0.28));
+  transform: translateY(-0.25rem);
 }
 
 @keyframes ballzatram-float {
   0%,
   100% {
-    transform: translateY(0) rotate(-1.5deg);
+    transform: rotate(-4deg) translateY(8px);
   }
 
   50% {
-    transform: translateY(-0.75rem) rotate(1.5deg);
+    transform: rotate(-1.5deg) translate(0.35rem, -0.65rem);
   }
 }
 
@@ -472,7 +472,12 @@ body {
   }
 
   .hero-shell {
-    grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+  }
+
+  .ballzatram {
+    width: clamp(320px, 33vw, 410px);
+    margin-left: clamp(-1.5rem, -2vw, -0.5rem);
   }
 
   .hero-copy h1 {
@@ -508,7 +513,9 @@ body {
   }
 
   .ballzatram {
-    width: min(62vw, 360px);
+    justify-self: center;
+    width: clamp(280px, 55vw, 380px);
+    margin-left: 0;
   }
 
   .dock {
@@ -599,7 +606,7 @@ body {
   }
 
   .ballzatram {
-    width: min(84vw, 340px);
+    width: clamp(240px, 78vw, 330px);
   }
 
   .dock {
