@@ -1,0 +1,20 @@
+{
+  "name": "weather-trader",
+  "version": "0.1.0",
+  "description": "Local weather prediction-market bot backend scaffold with paper-mode status API only.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "dev": "npm run build && node dist/server.js",
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test \"dist/**/*.test.js\""
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/node": "20.14.12",
+    "typescript": "5.5.4"
+  }
+}

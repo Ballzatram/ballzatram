@@ -39,9 +39,10 @@
         </div>
         <div class="weather-console" aria-label="Weather bot status console">
           <div class="console-row"><span>Exchange</span><strong>Public market review</strong></div>
-          <div class="console-row"><span>Weather sources</span><strong>NWS / NOAA / paid APIs</strong></div>
+          <div class="console-row"><span>Weather sources</span><strong>NWS / Open-Meteo</strong></div>
           <div class="console-row"><span>Execution</span><strong>Paper alerts only</strong></div>
-          <div class="console-row warning"><span>Live trading</span><strong>Blocked in browser</strong></div>
+          <div class="console-row"><span>Backend</span><strong id="backend-console-status">Offline calculator</strong></div>
+          <div class="console-row warning"><span>Live trading</span><strong id="live-lock-status">Locked</strong></div>
         </div>
       </section>
 
@@ -50,6 +51,70 @@
         <p>⚠ Settlement depends on each market’s exact source, station, and timestamp rules.</p>
         <p>⚠ Credentials belong only in a user-controlled local runner.</p>
         <p>⚠ Treat every output as a review queue, not an order instruction.</p>
+      </section>
+
+
+      <section class="backend-grid" aria-label="Local weather-trader backend monitor">
+        <article class="dashboard-card backend-status-card">
+          <span class="card-kicker">Local backend</span>
+          <h2>Runner Link</h2>
+          <div class="metric-stack">
+            <div><span>Connection</span><strong id="backend-connection">Offline calculator</strong></div>
+            <div><span>Bot mode</span><strong id="backend-mode">Paper worksheet</strong></div>
+            <div><span>Latest scan</span><strong id="latest-scan-time">Not run this session</strong></div>
+            <div><span>Live mode</span><strong id="live-mode-locked">Locked in browser</strong></div>
+          </div>
+          <div class="backend-actions">
+            <button class="primary-button weather-submit" id="backend-refresh" type="button">Check Local Backend</button>
+            <button class="primary-button weather-submit" id="backend-run-once" type="button">Run Paper Scan</button>
+          </div>
+          <p class="backend-note" id="backend-note">Optional: start <code>weather-trader</code> locally. This hosted page keeps working offline and never asks for credentials.</p>
+        </article>
+
+        <article class="dashboard-card backend-status-card">
+          <span class="card-kicker">Paper portfolio</span>
+          <h2>Backend Snapshot</h2>
+          <div class="metric-stack">
+            <div><span>Candidate trades</span><strong id="candidate-trades-count">0</strong></div>
+            <div><span>Blocked trades</span><strong id="blocked-trades-count">0</strong></div>
+            <div><span>Paper exposure</span><strong id="paper-exposure-label">$0.00</strong></div>
+            <div><span>Open paper trades</span><strong id="open-paper-trades-label">0</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="content-grid backend-output-grid" aria-label="Local backend paper decisions">
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Candidate trades</span>
+          <h2>Review Queue</h2>
+          <div class="decision-list" id="candidate-trades-list" aria-live="polite">No backend candidate trades loaded.</div>
+        </article>
+
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Blocked trades</span>
+          <h2>Risk Blocks</h2>
+          <div class="decision-list" id="blocked-trades-list" aria-live="polite">No backend blocked trades loaded.</div>
+        </article>
+      </section>
+
+      <section class="content-grid backend-output-grid" aria-label="Recent local backend decisions">
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Recent decisions</span>
+          <h2>Paper Log</h2>
+          <div class="decision-list" id="recent-decisions-list" aria-live="polite">Run a local paper scan to populate recent decisions.</div>
+        </article>
+
+        <article class="terminal-card architecture-card">
+          <span class="card-kicker">Safety lock</span>
+          <h2>Live Mode Locked</h2>
+          <p class="backend-lock-copy">The browser dashboard can read local paper-mode status and decision logs only. It contains no private-key fields, no signing flow, and no live order code.</p>
+          <div class="code-panel" aria-label="Browser safety lock">
+            <code>LOCAL_BACKEND_OPTIONAL=true</code>
+            <code>BROWSER_LIVE_TRADING=false</code>
+            <code>PRIVATE_KEY_INPUTS=false</code>
+            <code>ORDERS_ALLOWED=false</code>
+          </div>
+        </article>
       </section>
 
       <section class="dashboard-grid" aria-label="Weather bot paper-trading configuration">
