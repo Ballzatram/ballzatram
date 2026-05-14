@@ -23,6 +23,7 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-https://ballzatram.com}
       ALLOW_YOUTUBE_DOWNLOADS: ${ALLOW_YOUTUBE_DOWNLOADS:-false}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-750}
+    working_dir: /app/backend
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips="*"
     volumes:
       - ./inputs:/app/inputs
@@ -67,6 +68,7 @@ services:
       - "443:443/udp"
     volumes:
       - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../:/srv/ballzatram:ro
       - caddy_data:/data
       - caddy_config:/config
 

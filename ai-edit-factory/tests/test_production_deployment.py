@@ -17,13 +17,20 @@ def test_production_compose_declares_backed_site_stack() -> None:
     assert '"8000:8000"' not in compose
     assert "python /app/worker/worker.py" in compose
     assert "PYTHONPATH: /app/backend" in compose
+    assert "working_dir: /app/backend" in compose
+    assert "../:/srv/ballzatram:ro" in compose
 
 
-def test_caddy_reverse_proxies_ballzatram_to_api() -> None:
+def test_caddy_serves_launchpad_and_routes_ai_edit_to_api() -> None:
     caddyfile = (ROOT / "deploy/caddy/Caddyfile").read_text()
 
     assert "ballzatram.com" in caddyfile
+    assert "root * /srv/ballzatram" in caddyfile
+    assert "@api path /api/*" in caddyfile
+    assert "@media path /media/*" in caddyfile
+    assert "@aiEdit path /ai-edit-factory /ai-edit-factory/*" in caddyfile
     assert "reverse_proxy api:8000" in caddyfile
+    assert "file_server" in caddyfile
     assert "max_size 750MB" in caddyfile
     assert "response_header_timeout 300s" in caddyfile
 
@@ -61,7 +68,15 @@ def test_deployment_docs_make_static_preview_non_production() -> None:
     docs = (ROOT / "docs/DEPLOYMENT.md").read_text()
 
     assert "https://ballzatram.com/api/diagnostics" in docs
-    assert "Static-only hosting is preview-only" in docs
+    assert "Static-only hosting of AI Edit is preview-only" in docs
     assert "docker compose -f docker-compose.prod.yml up -d --build" in docs
     assert "./scripts/verify_production.sh https://ballzatram.com" in docs
     assert "backend settings, API-origin fields, diagnostics panels, or debug controls" in docs
+
+
+def test_frontend_build_targets_ai_edit_subpath() -> None:
+    package_json = (ROOT / "frontend/package.json").read_text()
+    app_main = (ROOT / "backend/app/main.py").read_text()
+
+    assert "vite build --base=/ai-edit-factory/" in package_json
+    assert 'app.mount("/ai-edit-factory", StaticFiles' in app_main

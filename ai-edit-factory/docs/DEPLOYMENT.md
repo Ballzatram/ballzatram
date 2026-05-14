@@ -1,19 +1,24 @@
 # Production deployment: ballzatram.com
 
-This deployment path makes `ballzatram.com` a FastAPI-backed app instead of a static-only site. Production should serve the built creator frontend, `/api/*`, `/api/diagnostics`, uploaded media previews, and rendered MP4 outputs from the same Docker stack behind HTTPS.
+This deployment path makes `ballzatram.com` the Ballzatram launchpad while keeping AI Edit as a backend-powered tool route. Production should serve the repo-root homepage and static launchpad assets from Caddy, serve AI Edit at `/ai-edit-factory/`, and keep `/api/*`, `/api/diagnostics`, uploaded media previews, and rendered MP4 outputs behind HTTPS.
 
 ## Target architecture
 
-- **Caddy** terminates HTTPS for `ballzatram.com` and reverse-proxies all traffic to `api:8000`.
-- **FastAPI API** serves the built frontend, studio routes, `/api/diagnostics`, `/media/inputs/*`, and `/media/outputs/*`.
+- **Caddy** terminates HTTPS for `ballzatram.com`, serves the repo-root static Ballzatram launchpad from `/srv/ballzatram`, and reverse-proxies only backend-owned routes to `api:8000`.
+- **FastAPI API** serves studio routes, `/api/diagnostics`, `/media/inputs/*`, `/media/outputs/*`, and the built AI Edit frontend under `/ai-edit-factory/`.
 - **Redis** stores the render queue.
 - **Worker** runs the same backend image as the API and processes ffmpeg render jobs.
 - **Bind mounts** persist user media and the SQLite database across container restarts:
   - `./inputs:/app/inputs`
   - `./outputs:/app/outputs`
   - `./data:/app/data`
+- **Production routes**:
+  - `/` plus root files such as `/style.css`, `/script.js`, `/assets/*`, `/econ-arcade/index.html`, `/tools/parcel/index.html`, and `/weather-bot.html` are served from the repo root.
+  - `/ai-edit-factory/` is reverse-proxied to FastAPI, which serves the built AI Edit frontend at that subpath.
+  - `/api/*` remains reverse-proxied to FastAPI for diagnostics, project creation, uploads, renders, and feedback.
+  - `/media/*` remains reverse-proxied to FastAPI for uploaded previews and rendered exports.
 
-Static-only hosting is preview-only and is **not** the desired production state for `ballzatram.com`.
+Static-only hosting of AI Edit is preview-only and is **not** the desired production state for the editor. The domain root must remain the Ballzatram launchpad.
 
 ## 1. Provision a VPS
 
