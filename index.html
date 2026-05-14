@@ -27,105 +27,102 @@
       </nav>
     </header>
 
-    <main class="hero-shell">
-      <section class="hero-copy">
-        <p class="eyebrow">★ Production-ready tools, games, and analysis labs ★</p>
+    <main class="homepage-main">
+      <section class="hero-shell" aria-labelledby="homeHeroTitle">
+        <div class="hero-copy">
+          <p class="eyebrow">Production-ready tools, games, and analysis labs</p>
 
-        <h1>
-          Tools, games,<br />
-          and <em>strange</em><br />
-          little machines.
-        </h1>
+          <h1 id="homeHeroTitle">Tools, games, and <em>strange</em> little machines.</h1>
 
-        <div class="headline-rule"></div>
+          <div class="headline-rule"></div>
 
-        <p class="hero-text">
-          Ballzatram is a polished launchpad for useful economics tools, playable strategy labs, and carefully bounded automation surfaces—built to teach, explore, and ship without pretending toys are production systems.
-        </p>
+          <p class="hero-text">
+            Ballzatram is a launchpad for practical economics tools, playable strategy labs, and bounded automation experiments — built to teach, explore, and ship without pretending toys are production systems.
+          </p>
 
-        <div class="trust-row" aria-label="Site quality markers">
-          <span>Curriculum-backed games</span>
-          <span>Clear risk boundaries</span>
-          <span>Responsive static launchpad</span>
+          <div class="trust-row" aria-label="Site quality markers">
+            <span>Curriculum-backed games</span>
+            <span>Clear risk boundaries</span>
+            <span>Responsive static launchpad</span>
+          </div>
+
+          <div class="hero-actions">
+            <a class="primary-button" href="econ-arcade/index.html">🧠 Enter Econ Arcade</a>
+            <a class="secondary-button" href="#tools">🚀 View Tools</a>
+            <a class="secondary-button weather-action" href="weather-bot.html">☁ Weather Prop Bot</a>
+          </div>
         </div>
 
-        <div class="hero-actions">
-          <a class="primary-button" href="econ-arcade/index.html">🧠 Enter Econ Arcade</a>
-          <a class="secondary-button" href="#tools">🚀 View Tools</a>
-          <a class="secondary-button weather-action" href="weather-bot.html">☁ Weather Prop Bot</a>
+        <div class="ballzatram">
+          <img src="assets/ballzatram.png" alt="Ballzatram rocketeer flying with guitar" />
         </div>
       </section>
 
-      <div class="ballzatram">
-        <img src="assets/ballzatram.png" alt="Ballzatram rocketeer flying with guitar" />
-      </div>
+      <section class="mission-panel" aria-labelledby="missionTitle">
+        <p class="eyebrow">Polish pass</p>
+        <h2 id="missionTitle">A sharper path from curiosity to understanding</h2>
+        <div class="mission-grid">
+          <article><strong>Play</strong><span>Economics concepts become decisions, not lectures.</span></article>
+          <article><strong>Inspect</strong><span>Dashboards and debriefs show why outcomes changed.</span></article>
+          <article><strong>Apply</strong><span>Tools connect game intuition to real analysis workflows.</span></article>
+        </div>
+      </section>
+
+      <section class="dock" aria-label="Ballzatram sections">
+        <article class="dock-card featured" id="tools">
+          <div class="card-icon">🚀</div>
+          <div>
+            <span class="card-kicker">Tool 001</span>
+            <h2>Parcel</h2>
+            <p>
+              A land intelligence engine for discovering and ranking property
+              investment opportunities with scored, reviewable shortlists.
+            </p>
+            <a href="tools/parcel/index.html">Launch Parcel →</a>
+          </div>
+        </article>
+
+        <article class="dock-card">
+          <div class="card-icon purple">🎬</div>
+          <div>
+            <span class="card-kicker">Tool 002</span>
+            <h2>AI Edit</h2>
+            <p>Site-hosted video editing that turns uploaded songs and clips into vertical MP4 edits with explicit rights and rendering guidance.</p>
+            <a href="ai-edit-factory/index.html">Open AI Edit →</a>
+          </div>
+        </article>
+
+        <article class="dock-card weather-feature">
+          <div class="card-icon teal">☁</div>
+          <div>
+            <span class="card-kicker">Tool 003</span>
+            <h2>Weather Prop Bot</h2>
+            <p>Paper-trading weather-market scanner with settlement checks, risk rails, and a local-runner security boundary.</p>
+            <a href="weather-bot.html">Open Weather Prop Bot →</a>
+          </div>
+        </article>
+
+        <article class="dock-card" id="games">
+          <div class="card-icon blue">🎮</div>
+          <div>
+            <span class="card-kicker">Econ Games + Macro</span>
+            <h2>Econ Arcade</h2>
+            <p>A strategic learning bay for game theory simulations, macro policy games, and MacroBoard analysis workflows with playable modules.</p>
+            <a href="econ-arcade/index.html">Open Econ Arcade →</a>
+          </div>
+        </article>
+
+        <article class="dock-card" id="projects">
+          <div class="card-icon">⚙</div>
+          <div>
+            <span class="card-kicker">Econ Arcade tool</span>
+            <h2>MacroBoard</h2>
+            <p>Portfolio manager assistant with CSV workflows, scenario analysis, model education, and quant-style learning flows inside the Econ Arcade wing.</p>
+            <a href="tools/macroboard/index.html">Open MacroBoard →</a>
+          </div>
+        </article>
+      </section>
     </main>
-
-    <section class="mission-panel" aria-labelledby="missionTitle">
-      <p class="eyebrow">Polish pass</p>
-      <h2 id="missionTitle">A sharper path from curiosity to understanding</h2>
-      <div class="mission-grid">
-        <article><strong>Play</strong><span>Economics concepts become decisions, not lectures.</span></article>
-        <article><strong>Inspect</strong><span>Dashboards and debriefs show why outcomes changed.</span></article>
-        <article><strong>Apply</strong><span>Tools connect game intuition to real analysis workflows.</span></article>
-      </div>
-    </section>
-
-    <section class="dock" aria-label="Ballzatram sections">
-      <article class="dock-card featured" id="tools">
-        <div class="card-icon">🚀</div>
-        <div>
-          <span class="card-kicker">Tool 001</span>
-          <h2>Parcel</h2>
-          <p>
-            A land intelligence engine for discovering and ranking property
-            investment opportunities with scored, reviewable shortlists.
-          </p>
-          <a href="tools/parcel/index.html">Launch Parcel →</a>
-        </div>
-      </article>
-
-      <article class="dock-card">
-        <div class="card-icon purple">🎬</div>
-        <div>
-          <span class="card-kicker">Tool 002</span>
-          <h2>AI Edit</h2>
-          <p>Site-hosted video editing that turns uploaded songs and clips into vertical MP4 edits with explicit rights and rendering guidance.</p>
-          <a href="ai-edit-factory/index.html">Open AI Edit →</a>
-        </div>
-      </article>
-
-
-      <article class="dock-card weather-feature">
-        <div class="card-icon teal">☁</div>
-        <div>
-          <span class="card-kicker">Tool 003</span>
-          <h2>Weather Prop Bot</h2>
-          <p>Paper-trading weather-market scanner with settlement checks, risk rails, and a local-runner security boundary.</p>
-          <a href="weather-bot.html">Open Weather Prop Bot →</a>
-        </div>
-      </article>
-
-      <article class="dock-card" id="games">
-        <div class="card-icon blue">🎮</div>
-        <div>
-          <span class="card-kicker">Econ Games + Macro</span>
-          <h2>Econ Arcade</h2>
-          <p>A strategic learning bay for game theory simulations, macro policy games, and MacroBoard analysis workflows with playable modules.</p>
-          <a href="econ-arcade/index.html">Open Econ Arcade →</a>
-        </div>
-      </article>
-
-      <article class="dock-card" id="projects">
-        <div class="card-icon">⚙</div>
-        <div>
-          <span class="card-kicker">Econ Arcade tool</span>
-          <h2>MacroBoard</h2>
-          <p>Portfolio manager assistant with CSV workflows, scenario analysis, model education, and quant-style learning flows inside the Econ Arcade wing.</p>
-          <a href="tools/macroboard/index.html">Open MacroBoard →</a>
-        </div>
-      </article>
-    </section>
 
     <footer class="site-footer">
       <span>★</span>

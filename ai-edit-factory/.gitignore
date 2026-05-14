@@ -13,3 +13,8 @@ inputs/project_*/
 inputs/youtube_*/
 outputs/*
 !outputs/.gitkeep
+
+inputs/
+outputs/
+data/
+
