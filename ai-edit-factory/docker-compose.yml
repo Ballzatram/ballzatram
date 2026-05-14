@@ -8,11 +8,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
+    working_dir: /app/backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     environment:
       REDIS_URL: redis://redis:6379/0
+      PYTHONPATH: /app/backend
       AIEF_BASE_DIR: /app
       AIEF_DB_PATH: /app/data/ai_edit_factory.sqlite3
-      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
+      CORS_ORIGINS: http://localhost:5173,http://127.0.0.1:5173,http://localhost:8000,http://127.0.0.1:8000
       ALLOW_YOUTUBE_DOWNLOADS: "false"
     volumes:
       - ./inputs:/app/inputs
@@ -27,9 +30,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.backend
-    command: python worker/worker.py
+    working_dir: /app
+    command: python /app/worker/worker.py
     environment:
       REDIS_URL: redis://redis:6379/0
+      PYTHONPATH: /app/backend
       AIEF_BASE_DIR: /app
       AIEF_DB_PATH: /app/data/ai_edit_factory.sqlite3
       ALLOW_YOUTUBE_DOWNLOADS: "false"
