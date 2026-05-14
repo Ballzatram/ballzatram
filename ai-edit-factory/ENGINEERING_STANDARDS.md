@@ -25,7 +25,7 @@ A user should be able to open the site, create a project, upload media they have
 ## Engineering standards
 
 - Keep API base resolution explicit and testable.
-- Never swallow network errors; surface the API origin and a concrete fix.
+- Never swallow network errors; surface a creator-safe render-service status and a concrete fix without exposing backend/API-origin settings in the normal UI.
 - Preserve same-origin production behavior while supporting split frontend/backend development.
 - Keep file validation client-side and server-side.
 - Run backend tests and a frontend build after workflow changes.

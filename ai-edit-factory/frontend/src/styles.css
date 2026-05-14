@@ -29,7 +29,7 @@ input[type="checkbox"] { width: 20px; min-width: 20px; height: 20px; accent-colo
 label { display: grid; gap: .42rem; margin: .65rem 0; color: #dfe9f7; font-weight: 820; }
 code, pre { font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace; }
 .factoryShell { width: min(1220px, calc(100% - 1.25rem)); margin: 0 auto; padding: clamp(.7rem, 2vw, 1.4rem) 0 3.5rem; }
-.factoryHero, .card, .versionCard, .output, .miniCard, .progressStrip, .systemStatus { border: 1px solid var(--line); background: linear-gradient(180deg, rgba(20,28,49,.9), rgba(8,13,26,.9)); box-shadow: var(--shadow); backdrop-filter: blur(20px); }
+.factoryHero, .card, .versionCard, .output, .miniCard, .progressStrip { border: 1px solid var(--line); background: linear-gradient(180deg, rgba(20,28,49,.9), rgba(8,13,26,.9)); box-shadow: var(--shadow); backdrop-filter: blur(20px); }
 .factoryHero { position: relative; overflow: hidden; min-height: auto; border-radius: 30px; padding: clamp(1.05rem, 3.8vw, 2.8rem); margin-bottom: .9rem; }
 .factoryHero::after { position: absolute; right: -8rem; bottom: -12rem; width: 25rem; height: 25rem; border-radius: 999px; content: ""; background: radial-gradient(circle, rgba(100,210,255,.3), transparent 68%); }
 .back { display: inline-flex; align-items: center; justify-content: center; min-height: 40px; border: 1px solid var(--line); border-radius: 999px; padding: .48rem .82rem; color: var(--text); background: rgba(255,255,255,.055); text-decoration: none; font-weight: 900; }
@@ -60,7 +60,7 @@ p { line-height: 1.45; }
 .phoneFrame video { width: 100%; aspect-ratio: 9 / 16; display: block; background: #000; object-fit: contain; }
 .phoneEmpty { display: grid; place-items: center; width: 100%; aspect-ratio: 9 / 16; color: var(--muted); background: linear-gradient(160deg, rgba(100,210,255,.18), rgba(155,124,255,.12), rgba(0,0,0,.32)); padding: 1rem; text-align: center; font-weight: 900; }
 .previewBadge { position: absolute; top: .7rem; left: 50%; transform: translateX(-50%); z-index: 1; border: 1px solid rgba(66,245,158,.46); border-radius: 999px; padding: .32rem .65rem; color: #dfffea; background: rgba(2,6,23,.82); font-size: .7rem; font-weight: 950; text-transform: uppercase; letter-spacing: .05em; }
-.chipGrid, .toggleGrid, .captionGrid, .outputGrid, .versionGrid, .metricGrid, .diagnosticGrid { display: grid; gap: .6rem; }
+.chipGrid, .toggleGrid, .captionGrid, .outputGrid, .versionGrid, .metricGrid { display: grid; gap: .6rem; }
 .chipGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); margin: .65rem 0; }
 .chip { min-height: 42px; color: var(--text); background: rgba(255,255,255,.07); box-shadow: none; }
 .chip.active { color: #03111f; background: linear-gradient(135deg, var(--green), var(--blue)); }
@@ -90,8 +90,5 @@ p { line-height: 1.45; }
 .captionGrid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
 .miniCard ul { padding-left: 1.15rem; }
 .tags { color: var(--green); font-weight: 900; overflow-wrap: anywhere; }
-.systemStatus { border-radius: 18px; padding: .85rem 1rem; margin-top: 1.2rem; color: var(--muted); }
-.systemStatus summary { cursor: pointer; color: #dfe9f7; font-weight: 950; }
-.diagnosticGrid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-top: .85rem; font-weight: 800; }
 @media (max-width: 1040px) { .factoryBoard, .workbench { grid-template-columns: 1fr; } .phoneFrame { max-width: 360px; margin: 0 auto; } .cutRow, .captionRow { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 760px) { .factoryShell { width: min(100% - .75rem, 560px); } .factoryHero, .card, .versionCard, .miniCard { border-radius: 20px; } h1 { font-size: clamp(3.2rem, 18vw, 5.4rem); } .progressStrip { position: static; } .toggleGrid, .chipGrid, .metricGrid, .cutRow, .captionRow { grid-template-columns: 1fr; } .sectionHeader { display: grid; } .buttonRow { align-items: stretch; } .buttonRow > * { flex: 1 1 auto; } }

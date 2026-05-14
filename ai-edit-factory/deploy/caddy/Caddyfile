@@ -1,0 +1,17 @@
+ballzatram.com {
+  encode zstd gzip
+
+  # Match the app upload limit so large rights-approved source files can reach FastAPI.
+  request_body {
+    max_size 750MB
+  }
+
+  reverse_proxy api:8000 {
+    transport http {
+      dial_timeout 30s
+      response_header_timeout 300s
+      read_timeout 1h
+      write_timeout 1h
+    }
+  }
+}

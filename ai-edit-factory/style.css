@@ -173,9 +173,7 @@ pre {
   background: linear-gradient(135deg, var(--green), var(--blue));
 }
 
-.api-control,
 .hero-actions,
-.settings-actions,
 .toggle-row {
   display: flex;
   flex-wrap: wrap;
@@ -183,38 +181,6 @@ pre {
   gap: 0.7rem;
 }
 
-.api-status {
-  display: inline-flex;
-  align-items: center;
-  min-height: 36px;
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  padding: 0.35rem 0.72rem;
-  color: var(--muted);
-  background: rgba(255, 255, 255, 0.055);
-  font-size: 0.88rem;
-  font-weight: 900;
-}
-
-.api-status::before {
-  width: 9px;
-  height: 9px;
-  margin-right: 0.45rem;
-  border-radius: 999px;
-  content: "";
-  background: var(--amber);
-}
-
-.api-status.is-online::before {
-  background: var(--green);
-  box-shadow: 0 0 18px rgba(66, 245, 158, 0.8);
-}
-
-.api-status.is-offline::before {
-  background: var(--red);
-}
-
-.ghost-button,
 .subtle-button,
 .secondary-link {
   color: var(--text);
@@ -232,7 +198,6 @@ pre {
 
 .hero-copy,
 .render-card,
-.settings-panel,
 .panel,
 .rail,
 .status-message,
@@ -376,32 +341,6 @@ h3 {
   border-radius: 999px;
   background: var(--green);
   box-shadow: 0 0 0 10px rgba(66, 245, 158, 0.12), 0 0 28px rgba(66, 245, 158, 0.78);
-}
-
-.settings-panel {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 420px) auto;
-  gap: 1rem;
-  align-items: end;
-  margin-bottom: 1rem;
-  border-radius: 24px;
-  padding: 1rem;
-}
-
-.settings-panel[hidden] {
-  display: none;
-}
-
-.settings-panel h2,
-.settings-panel p {
-  margin: 0;
-}
-
-.settings-panel p {
-  margin-top: 0.4rem;
-  color: var(--muted);
-  font-weight: 680;
-  line-height: 1.45;
 }
 
 .workspace {
@@ -787,7 +726,6 @@ h3 {
 @media (max-width: 980px) {
   .hero-studio,
   .workspace,
-  .settings-panel,
   .project-panel,
   .upload-grid,
   .recipe-grid,
@@ -814,7 +752,6 @@ h3 {
   }
 
   .topbar,
-  .api-control,
   .panel-heading {
     align-items: stretch;
     flex-direction: column;
@@ -839,14 +776,6 @@ h3 {
   .rail {
     grid-template-columns: 1fr;
   }
-}
-
-.diagnostics-summary {
-  display: block;
-  flex-basis: 100%;
-  color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 800;
 }
 
 .preview-label {

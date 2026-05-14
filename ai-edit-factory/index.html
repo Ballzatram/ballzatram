@@ -15,11 +15,6 @@
         <span class="brand-mark">B</span>
         <span>Ballzatram</span>
       </a>
-      <div class="api-control">
-        <span id="apiStatus" class="api-status is-checking">Checking backend</span>
-        <button id="apiSettingsButton" class="ghost-button" type="button">Backend settings</button>
-      <small id="diagnosticsSummary" class="diagnostics-summary">Diagnostics not loaded yet.</small>
-      </div>
     </header>
 
     <section class="hero-studio" aria-labelledby="pageTitle">
@@ -39,26 +34,8 @@
         <div class="pulse-dot" aria-hidden="true"></div>
         <p>Render pipeline</p>
         <strong>Upload → Plan → ffmpeg MP4</strong>
-        <span>Runs through the same upload, planning, and render API used by the Docker app.</span>
+        <span>Runs through the same upload, planning, and MP4 render pipeline used by the local app.</span>
       </aside>
-    </section>
-
-    <section id="apiSettingsPanel" class="settings-panel" hidden>
-      <div>
-        <h2>Render backend</h2>
-        <p>
-          Leave this as this site’s origin when the backend serves the page. For split deployments,
-          paste the API origin only, for example <code>https://api.example.com</code>.
-        </p>
-      </div>
-      <label>
-        API origin
-        <input id="apiBaseInput" type="url" inputmode="url" autocomplete="url" />
-      </label>
-      <div class="settings-actions">
-        <button id="saveApiBase" type="button">Save API origin</button>
-        <button id="resetApiBase" class="subtle-button" type="button">Use this site</button>
-      </div>
     </section>
 
     <section id="factoryWorkspace" class="workspace" aria-label="AI Edit Factory web app">
@@ -167,8 +144,6 @@
 
   <script>
     function inferDefaultApiBase() {
-      const saved = localStorage.getItem('aiefApiBase');
-      if (saved) return saved;
       const { protocol, hostname, port, origin } = window.location;
       const isLocalHost = ['localhost', '127.0.0.1', '0.0.0.0'].includes(hostname);
       if (port === '5173') return `${protocol}//${isLocalHost ? 'localhost' : hostname}:8000`;
@@ -217,12 +192,6 @@
       node.dataset.type = type;
     }
 
-    function setApiStatus(message, statusClass) {
-      const node = $('apiStatus');
-      node.textContent = message;
-      node.className = `api-status ${statusClass}`;
-    }
-
     function apiUrl(path) {
       return `${state.apiBase.replace(/\/$/, '')}${path}`;
     }
@@ -262,7 +231,7 @@
       try {
         response = await fetch(apiUrl(path), options);
       } catch (error) {
-        throw new Error(`Cannot reach the render API at ${state.apiBase}. If you are testing on your phone, open the site from the machine running Docker or set Backend settings to that machine's http://<local-ip>:8000 address.`);
+        throw new Error('Render engine temporarily unavailable. Please try again shortly.');
       }
       const data = await response.json().catch(() => ({}));
       if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
@@ -341,7 +310,7 @@
         return;
       }
       frame.classList.add('has-video');
-      frame.innerHTML = `${state.apiOnline && !state.localMode ? '<div class="preview-label">Backend uploaded source preview</div>' : '<div class="preview-label is-warning">Browser source preview — backend offline</div>'}<video controls playsinline src="${mediaUrl(source.preview_url)}"></video>`;
+      frame.innerHTML = `${state.apiOnline && !state.localMode ? '<div class="preview-label">Uploaded source preview</div>' : '<div class="preview-label is-warning">Browser source preview</div>'}<video controls playsinline src="${mediaUrl(source.preview_url)}"></video>`;
     }
 
     function renderRecipe() {
@@ -369,7 +338,7 @@
         return;
       }
       if (state.localMode || !state.apiOnline) {
-        $('exportsOutput').innerHTML = '<div class="offline-export-note"><strong>Backend offline: preview mode only.</strong><span>Real exports are hidden until the FastAPI backend renders an MP4. The source preview is not an export.</span></div>';
+        $('exportsOutput').innerHTML = '<div class="offline-export-note"><strong>Preview mode only.</strong><span>MP4 exports appear here as soon as the local render engine is available. The source preview is not an export.</span></div>';
         return;
       }
       const realExports = exports;
@@ -404,38 +373,22 @@
     }
 
     async function checkHealth() {
-      $('apiBaseInput').value = state.apiBase;
-      setApiStatus('Checking backend', 'is-checking');
       const originalApiBase = state.apiBase;
       for (const candidate of apiBaseCandidates()) {
-        $('apiBaseInput').value = candidate;
         try {
           state.apiBase = candidate;
-          const diagnostics = await api('/api/diagnostics');
-          state.diagnostics = diagnostics;
-          console.info('AI Edit Factory diagnostics', diagnostics);
-          $('diagnosticsSummary').textContent = `Backend diagnostics: ffmpeg=${diagnostics.ffmpeg_available ? 'yes' : 'no'} · ffprobe=${diagnostics.ffprobe_available ? 'yes' : 'no'} · redis=${diagnostics.redis_available ? 'yes' : 'no'} · mode=${diagnostics.app_mode}`;
+          state.diagnostics = await api('/api/diagnostics');
           state.apiOnline = true;
           if (!state.project || !String(state.project.id).startsWith('project_')) state.localMode = false;
-          setApiStatus('Connected to backend', 'is-online');
-          const onlineMessage = state.localMode ? 'Connected to backend. Click the project button again to create a persisted server project before rendering.' : 'Connected to backend. Uploads, plans, renders, and exports will persist server-side.';
-          setProjectFeedback(onlineMessage, 'success');
-          setStatus(onlineMessage, 'success');
-          if (candidate !== window.location.origin) localStorage.setItem('aiefApiBase', candidate);
+          updateControls();
           return;
         } catch (error) {
           state.apiBase = originalApiBase;
-          // Keep trying common local-development API origins before showing an error.
+          // Keep trying common local-development render origins silently.
         }
       }
       state.apiBase = originalApiBase;
-      $('apiBaseInput').value = originalApiBase;
       state.apiOnline = false;
-      setApiStatus('Backend offline: preview mode only', 'is-offline');
-      $('diagnosticsSummary').textContent = 'Backend diagnostics unavailable. Static frontend-only hosting cannot render MP4 exports.';
-      const message = 'Backend offline: preview mode only. You can preview selected browser files, but Render MP4 and real downloads are disabled until FastAPI/Redis/worker/ffmpeg are reachable.';
-      setProjectFeedback(message, 'warning');
-      setStatus(message, 'warning');
       updateControls();
     }
 
@@ -451,8 +404,8 @@
         exports: [],
       };
       const suffix = reason ? ` (${reason})` : '';
-      setProjectFeedback(`Backend offline: preview mode only${suffix}. Confirm rights to preview browser files; real exports require the backend.`, 'warning');
-      setStatus('Backend offline: preview mode only. Uploads stay in this tab and Render MP4 is disabled.', 'warning');
+      setProjectFeedback(`Render engine temporarily unavailable${suffix}. Preview mode is available for browser files; real exports will return shortly.`, 'warning');
+      setStatus('Render engine temporarily unavailable. Uploads stay in this tab and Render MP4 is disabled.', 'warning');
       renderProject();
     }
 
@@ -460,7 +413,7 @@
       setBusy(true);
       try {
         if (!state.apiOnline) {
-          createLocalProject('backend not running');
+          createLocalProject('render engine not ready');
           return;
         }
         state.project = await api('/api/studio/projects', {
@@ -473,8 +426,8 @@
         setStatus('Project created. Confirm rights, then add media.', 'success');
         renderProject();
       } catch (error) {
-        createLocalProject('API request failed');
-        setProjectFeedback(`The API request failed: ${error.message}. Backend offline preview mode is active; rendering and exports stay disabled.`, 'warning');
+        createLocalProject('project saving unavailable');
+        setProjectFeedback(`Project saving is temporarily unavailable: ${error.message}. Preview mode is active; rendering and exports stay disabled.`, 'warning');
       } finally {
         setBusy(false);
       }
@@ -525,7 +478,7 @@
       state.selectedVideoId = assets.at(-1)?.id || state.selectedVideoId;
       $('videoFiles').value = '';
       $('videoSelection').textContent = `${assets.length} video${assets.length === 1 ? '' : 's'} added to this browser draft.`;
-      setStatus('Browser source preview added. Connect the backend before rendering or downloading a real export.', 'warning');
+      setStatus('Browser source preview added. Render engine temporarily unavailable for MP4 exports.', 'warning');
       renderProject();
     }
 
@@ -548,7 +501,7 @@
       state.project.status = 'media_uploaded';
       $('musicFile').value = '';
       $('musicSelection').textContent = 'Music added to this browser draft.';
-      setStatus('Music selected only in this browser. It will not be mixed until the backend is connected and the file is uploaded.', 'warning');
+      setStatus('Music selected only in this browser. Render engine temporarily unavailable for upload, mix, and render.', 'warning');
       renderProject();
     }
 
@@ -575,7 +528,7 @@
           if (request.status >= 200 && request.status < 300) resolve(data);
           else reject(new Error(data.detail || `Upload failed with status ${request.status}`));
         };
-        request.onerror = () => reject(new Error('Upload failed. Check the Render backend and deployment upload limits.'));
+        request.onerror = () => reject(new Error('Upload failed. The render engine is temporarily unavailable or the file exceeds deployment upload limits.'));
         request.send(form);
       });
     }
@@ -584,7 +537,7 @@
       if (!state.project?.id) return;
       if (state.localMode) {
         renderProject();
-        setStatus('Browser draft refreshed. Connect the API for persisted server state.', 'warning');
+        setStatus('Browser draft refreshed. Render engine temporarily unavailable for saving and rendering.', 'warning');
         return;
       }
       state.project = await api(`/api/studio/projects/${state.project.id}`);
@@ -672,7 +625,7 @@
         segments: segments.length ? segments : [{ source_asset_id: source?.id, source_start: 0, source_end: 6, reason: 'local preview segment' }],
         text_overlays: $('addCaptions').checked ? [{ time: 0, text: 'Hook starts here' }, { time: Math.max(1, Math.round(targetDuration / 2)), text: 'Keep watching' }] : [],
         hashtags: $('addHashtags').checked ? ['#shorts', '#edit', `#${$('clipType').value}`] : [],
-        export_note: 'Browser draft plans are previews. Use the FastAPI backend to render a real vertical MP4.',
+        export_note: 'Browser draft plans are previews. The render engine must be available to export a real vertical MP4.',
       };
     }
 
@@ -683,7 +636,7 @@
           const plan = buildLocalPlan();
           state.project.edit_plan = { id: nextLocalId('plan'), media_asset_id: selectedSource()?.id, plan };
           state.project.status = 'plan_ready';
-          setStatus('Browser draft plan generated for preview only. Render MP4 remains disabled until the backend is connected.', 'warning');
+          setStatus('Draft plan generated for preview. Render engine temporarily unavailable for MP4 export.', 'warning');
           renderProject();
           return;
         }
@@ -722,7 +675,7 @@
       setBusy(true);
       try {
         if (state.localMode || !state.apiOnline) {
-          setStatus('Backend offline: preview mode only. Render MP4 is disabled and browser source previews are not exports.', 'warning');
+          setStatus('Render engine temporarily unavailable. Render MP4 is disabled while preview mode is active.', 'warning');
           renderProject();
           return;
         }
@@ -737,17 +690,6 @@
       }
     }
 
-    $('apiSettingsButton').addEventListener('click', () => { $('apiSettingsPanel').hidden = !$('apiSettingsPanel').hidden; });
-    $('saveApiBase').addEventListener('click', () => {
-      state.apiBase = $('apiBaseInput').value.trim().replace(/\/$/, '') || inferDefaultApiBase();
-      localStorage.setItem('aiefApiBase', state.apiBase);
-      checkHealth();
-    });
-    $('resetApiBase').addEventListener('click', () => {
-      localStorage.removeItem('aiefApiBase');
-      state.apiBase = inferDefaultApiBase();
-      checkHealth();
-    });
     $('createProject').addEventListener('click', createProject);
     $('uploadVideos').addEventListener('click', uploadVideos);
     $('uploadMusic').addEventListener('click', uploadMusic);
