@@ -8,6 +8,10 @@ from app.models import CandidateClip
 
 
 def clip_metrics(video_path: str | Path, start: float, end: float, sample_fps: float = 4.0) -> tuple[float, float, float]:
+    video_path = Path(video_path)
+    if not video_path.exists():
+        return 0.0, 0.0, 0.0
+
     try:
         import cv2
     except ModuleNotFoundError:
