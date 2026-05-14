@@ -4,11 +4,15 @@ from pathlib import Path
 PUBLIC_STUDIO = Path(__file__).resolve().parents[1] / "index.html"
 
 
-def test_public_studio_has_backend_offline_preview_mode() -> None:
+def test_public_studio_has_creator_preview_mode_without_backend_settings() -> None:
     html = PUBLIC_STUDIO.read_text()
 
     assert "function createLocalProject" in html
-    assert "Backend offline: preview mode only" in html
+    assert "Preview mode only" in html
+    assert "Backend settings" not in html
+    assert "API origin" not in html
+    assert "apiSettingsButton" not in html
+    assert "aiefApiBase" not in html
     assert "if (!state.apiOnline)" in html
     assert "addLocalVideos" in html
     assert "buildLocalPlan" in html
@@ -16,7 +20,7 @@ def test_public_studio_has_backend_offline_preview_mode() -> None:
     assert "platform: 'browser-preview'" not in html
 
 
-def test_public_studio_preserves_api_base_when_health_candidates_fail() -> None:
+def test_public_studio_preserves_auto_detect_base_when_health_candidates_fail() -> None:
     html = PUBLIC_STUDIO.read_text()
 
     assert "const originalApiBase = state.apiBase" in html

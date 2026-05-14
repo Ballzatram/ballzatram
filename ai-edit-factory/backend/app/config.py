@@ -3,6 +3,7 @@ from __future__ import annotations
 import os
 from pathlib import Path
 
+APP_MODE = os.getenv("APP_MODE", "development")
 BASE_DIR = Path(os.getenv("AIEF_BASE_DIR", Path(__file__).resolve().parents[2]))
 DATA_DIR = Path(os.getenv("AIEF_DATA_DIR", BASE_DIR / "data"))
 INPUTS_DIR = Path(os.getenv("AIEF_INPUTS_DIR", BASE_DIR / "inputs"))

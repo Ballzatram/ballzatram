@@ -10,7 +10,7 @@ from redis import Redis
 from redis.exceptions import RedisError
 from rq import Queue
 
-from app.config import DB_PATH, FRONTEND_DIST_DIR, INPUTS_DIR, OUTPUTS_DIR, REDIS_URL
+from app.config import APP_MODE, DB_PATH, FRONTEND_DIST_DIR, INPUTS_DIR, OUTPUTS_DIR, REDIS_URL
 
 router = APIRouter(prefix="/api", tags=["diagnostics"])
 
@@ -50,9 +50,10 @@ def diagnostics() -> dict:
     outputs_path_writable = _path_writable(OUTPUTS_DIR)
     db_path_writable = _path_writable(DB_PATH, is_file=True)
     frontend_dist_detected = FRONTEND_DIST_DIR.exists()
-    render_ready = ffmpeg_available and ffprobe_available and inputs_path_writable and outputs_path_writable and db_path_writable
+    render_ready = ffmpeg_available and ffprobe_available and redis_available and worker_queue_available and inputs_path_writable and outputs_path_writable and db_path_writable and frontend_dist_detected
     return {
         "api_ok": True,
+        "configured_app_mode": APP_MODE,
         "ffmpeg_available": ffmpeg_available,
         "ffprobe_available": ffprobe_available,
         "redis_available": redis_available,

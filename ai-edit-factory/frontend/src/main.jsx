@@ -219,7 +219,7 @@ function App() {
   async function api(path, options = {}) {
     let response;
     try { response = await fetch(`${API}${path}`, options); }
-    catch (error) { throw new Error(`Cannot reach the AI clip factory API at ${API}. Make sure the backend is running.`); }
+    catch (error) { throw new Error(`Cannot reach the AI clip factory yet. Make sure the local app stack is running.`); }
     const data = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(data.detail || `Request failed with status ${response.status}`);
     return data;
@@ -232,7 +232,7 @@ function App() {
     } catch (error) {
       setBackendOnline(false);
       setDiagnostics(null);
-      setMessage('Backend offline. Uploads, rendering, and MP4 downloads need the FastAPI Docker stack.');
+      setMessage('Render engine temporarily unavailable. Uploads, rendering, and MP4 downloads will return shortly.');
     }
   }
   async function refresh(id = project?.id) { if (id) setProject(await api(`/api/studio/projects/${id}`)); }
@@ -250,7 +250,7 @@ function App() {
       const request = new XMLHttpRequest(); request.open('POST', `${API}${path}`);
       request.upload.onprogress = (event) => { if (event.lengthComputable) setUploadProgress(Math.round(progressStart + ((progressEnd - progressStart) * (event.loaded / event.total)))); };
       request.onload = () => { const data = JSON.parse(request.responseText || '{}'); request.status >= 200 && request.status < 300 ? resolve(data) : reject(new Error(data.detail || `Upload failed with status ${request.status}`)); };
-      request.onerror = () => reject(new Error('Upload failed. Check that the backend is running and accepts large files.'));
+      request.onerror = () => reject(new Error('Upload failed. Check that the local render engine is running and accepts large files.'));
       request.send(form);
     });
   }
@@ -290,7 +290,7 @@ function App() {
     setBusy(true);
     try {
       const data = await api(`/api/studio/projects/${project.id}/versions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ prompt, count, media_asset_id: selectedSource?.id, target_platform: 'tiktok', use_trends: true }) });
-      setMessage(fullStackReady ? `Made ${count} versions and started MP4 exports.` : `Made ${count} versions. Use Render all when the backend is ready.`);
+      setMessage(fullStackReady ? `Made ${count} versions and started MP4 exports.` : `Made ${count} versions. Use Render all when the render engine is ready.`);
       setTimeout(() => generatedRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80);
       if (fullStackReady) for (const row of data.edit_plans || []) await queueRender(row.id);
       await refresh(project.id);
@@ -351,7 +351,7 @@ function App() {
         <div className="heroStats"><StatusPill>No editing timeline required</StatusPill><StatusPill>Music timing controls</StatusPill><StatusPill>Multiple versions</StatusPill><StatusPill>Feedback loop</StatusPill></div>
       </section>
 
-      {!backendOnline && <section className="card warning"><strong>Backend offline.</strong><p>Start the Docker stack to upload media, render MP4s, and download exports.</p></section>}
+      {!backendOnline && <section className="card warning"><strong>Render engine temporarily unavailable.</strong><p>You can keep planning, but uploads, rendering, and MP4 downloads will return shortly.</p></section>}
 
       <section className="factoryBoard">
         <article className="card setupCard"><span className="step">01</span><h2>Project</h2><label>Project name<input value={name} onChange={(event) => setName(event.target.value)} /></label><button disabled={busy} onClick={createProject}>{project ? `Project #${project.id} open` : 'Create project'}</button>{project && <p className="small">Ready for edits.</p>}<label className="check"><input type="checkbox" checked={rightsConfirmed} onChange={(event) => setRightsConfirmed(event.target.checked)} /> I own these files or have permission to edit them.</label></article>
@@ -379,7 +379,6 @@ function App() {
       {trendSignals.length > 0 && <section className="outputs"><h2>Vibe ideas</h2><div className="captionGrid">{trendSignals.map((signal) => <article className="miniCard" key={signal.id}><h3>{signal.format_name}</h3><p><strong>Hook:</strong> {signal.hook_style}</p><p><strong>Pacing:</strong> {signal.pacing_style}</p><p className="tags">{(signal.hashtags || []).join(' ')}</p></article>)}</div></section>}
       {editPlans[0]?.plan?.caption_packages && <section className="outputs"><h2>Caption starters</h2><CaptionPackages packages={editPlans[0].plan.caption_packages} /></section>}
 
-      <details className="systemStatus"><summary>System status: {fullStackReady ? 'ready' : backendOnline ? 'needs attention' : 'offline'}</summary>{diagnostics ? <div className="diagnosticGrid"><span>ffmpeg: {diagnostics.ffmpeg_available ? 'yes' : 'no'}</span><span>ffprobe: {diagnostics.ffprobe_available ? 'yes' : 'no'}</span><span>redis: {diagnostics.redis_available ? 'yes' : 'no'}</span><span>mode: {diagnostics.app_mode}</span></div> : <p>API diagnostics unavailable.</p>}</details>
     </main>
   );
 }

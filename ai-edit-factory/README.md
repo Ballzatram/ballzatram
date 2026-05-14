@@ -21,7 +21,7 @@ YouTube support is metadata-first. Media downloading is disabled by default. A Y
 - Templates: `fast_cut`, `high_motion`, `slow_mo`, `lyric_caption`, `random_montage`, and `retro_tv_filter`.
 - Ranked outputs based on clip quality, variety, and template spread.
 - Mobile-first React UI served by the API container for one-stop source uploads, source shelf selection, music/caption/hashtag toggles, progress polling, previews, and downloads.
-- Public `ai-edit-factory/index.html` web studio with the same project/upload/plan/render workflow for site deployments; it defaults to same-origin `/api`, auto-tries common local API origins for phone testing, includes API-origin settings for split frontend/backend deployments, and falls back to an explicit browser draft mode when no render API is reachable so project creation, file selection, previews, and edit-plan review still respond instead of appearing broken.
+- Public `ai-edit-factory/index.html` web studio with the same polished project/upload/plan/render workflow for site deployments; it defaults to same-origin `/api`, silently auto-tries common local render origins for phone testing, never asks creators to configure backend/API origins, and falls back to a clear browser draft mode when no render engine is reachable so project creation, file selection, previews, and edit-plan review still respond instead of appearing broken.
 - CLI for local batch generation.
 
 ## Repo layout
@@ -45,6 +45,9 @@ ai-edit-factory/
 
 ## Run with Docker Compose
 
+Production deployment for `ballzatram.com` is documented in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). The production target is the FastAPI-backed Docker stack, not static-only hosting.
+
+
 Prerequisites: Docker Desktop or Docker Engine.
 
 ```bash
@@ -52,17 +55,17 @@ cd ai-edit-factory
 docker compose up --build
 ```
 
-Open the browser UI at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The app is operated entirely from the browser, but MP4 rendering does not run inside the browser tab: the browser uploads media to the FastAPI backend, and the backend uses ffmpeg to edit/splice/export reliable MP4 files. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: when served by the same origin as the API, it calls `/api/studio/*` directly; when the API is on a separate host, use **API settings** on that page to save the backend origin. If no API can be reached, the page enters **Backend offline: preview mode only** instead of leaving the workflow ambiguous: users can create a draft project, confirm rights, add local video/audio selections, preview selected video files from object URLs, and generate a draft edit plan, but **Render MP4** and real export/download actions stay disabled. Offline preview mode does not upload files, persist projects, mix music, or run ffmpeg; connect the API origin to render a real vertical MP4. For phone testing on the same Wi-Fi network, open the site through the computer's local IP address and use an API origin like `http://<local-ip>:8000` if auto-detection cannot reach the backend.
+Open the browser UI at <http://localhost:8000>. The API health check is <http://localhost:8000/api/health>. The app is operated entirely from the browser, but MP4 rendering does not run inside the browser tab: the browser uploads media to the FastAPI backend, and the backend uses ffmpeg to edit/splice/export reliable MP4 files. The standalone Vite dev server remains available at <http://localhost:5173> when you run the optional dev profile (`docker compose --profile dev up frontend`) or `npm run dev`. The public `ai-edit-factory/index.html` page is also a runnable studio shell: it auto-detects the render service from same-origin `/api` plus common local development origins, including local-IP phone testing, without exposing backend/API-origin settings to creators. If no render service can be reached, the page enters **Preview mode only** instead of leaving the workflow ambiguous: users can create a draft project, confirm rights, add local video/audio selections, preview selected video files from object URLs, and generate a draft edit plan, but **Render MP4** and real export/download actions stay disabled. Preview mode does not upload files, persist projects, mix music, or run ffmpeg; start or deploy the render service to export a real vertical MP4.
 
 AI edit factory flow (site-native):
 
-1. Open <http://localhost:8000> (or the deployed `ai-edit-factory/index.html` page with its API origin connected) and create a project. On static hosts without a backend, the page will clearly switch to browser draft mode so the workflow remains clickable while explaining that API connection is required for server uploads and MP4 rendering.
+1. Open <http://localhost:8000> (or the deployed `ai-edit-factory/index.html` page) and create a project. The studio auto-detects the render service silently; on static hosts without one, the page switches to browser draft mode so the workflow remains clickable while explaining that the local render engine is required for server uploads and MP4 rendering.
 2. Confirm that every uploaded video or audio file is owned, licensed, or otherwise permitted for editing.
 3. Upload one or more source videos (`mp4`, `mov`, or `webm`). The app shows upload progress, stores each upload on a source shelf, saves duration/dimensions/file type/preview path when `ffprobe` is available, and lets the user choose the first/primary clip while the AI recipe can splice across the full uploaded source shelf.
 4. Optionally upload a rights-cleared music bed (`mp3`, `wav`, `m4a`, `aac`, `flac`, or `ogg`). If **Add music** is enabled, the renderer uses that upload as the export audio bed; otherwise single-source edits preserve source audio where available and multi-source splice edits use silent AAC for consistent MP4 exports.
 5. Choose the type of clips to make, such as funny, emotional, hype, dramatic, clean, or storytime. Toggle music, burned-in captions, and hashtag generation, then add creative direction.
 6. Click **Make 3 versions** to create polished generated edit cards. The normal UI shows version names, preview/export status, duration, cut count, music start, caption count, feedback buttons, and download controls instead of raw JSON.
-7. When diagnostics report `full_stack_render_ready`, the browser queues MP4 exports for the generated versions automatically. If the backend is not ready, use the visible **Render all** / **Export MP4** controls after the stack is healthy.
+7. When the full render stack is ready, the browser queues MP4 exports for the generated versions automatically. If rendering is not ready yet, use the visible **Render all** / **Export MP4** controls after the stack is healthy.
 8. Open **Edit** on a generated version to adjust the readable edit recipe: remove/reorder cuts, edit cut start/end timings, add/edit/delete captions, save the plan, and re-export. Captions in `text_overlays` are burned into MP4s by the ffmpeg renderer. Raw plan JSON is available only from the collapsed **Show technical JSON** debug control.
 
 Legacy beat-edit flow (API-compatible):
@@ -157,7 +160,7 @@ The test suite covers YouTube URL parsing, beat interval shapes, scene detection
 - [ ] Compliance copy is visible before upload/generation.
 - [ ] The AI edit factory requires the rights-confirmation checkbox before source video or music upload.
 - [ ] Upload progress, source shelf selection, playable source preview, optional music bed metadata, recipe JSON, platform captions/hashtags, and render/export state appear in the factory flow.
-- [ ] Creating a project succeeds against a connected API, or the static page clearly enters browser draft mode with project/upload/plan controls still responding and copy that explains MP4 rendering requires the API.
+- [ ] Creating a project succeeds against the FastAPI-backed app, or a non-production static preview clearly enters browser draft mode with project/upload/plan controls still responding and copy that explains MP4 rendering requires the render service.
 - [ ] Invalid upload types are rejected.
 - [ ] Uploading one rights-approved song and one or more rights-approved clips succeeds.
 - [ ] YouTube URL import shows metadata and does not download media by default.

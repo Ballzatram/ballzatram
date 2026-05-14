@@ -1,0 +1,76 @@
+services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    expose:
+      - "6379"
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: ai-edit-factory-backend:prod
+    restart: unless-stopped
+    environment:
+      PYTHONPATH: /app/backend
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      AIEF_BASE_DIR: ${AIEF_BASE_DIR:-/app}
+      AIEF_DB_PATH: ${AIEF_DB_PATH:-/app/data/ai_edit_factory.sqlite3}
+      APP_MODE: ${APP_MODE:-production}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://ballzatram.com}
+      ALLOW_YOUTUBE_DOWNLOADS: ${ALLOW_YOUTUBE_DOWNLOADS:-false}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-750}
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --proxy-headers --forwarded-allow-ips="*"
+    volumes:
+      - ./inputs:/app/inputs
+      - ./outputs:/app/outputs
+      - ./data:/app/data
+    expose:
+      - "8000"
+    depends_on:
+      - redis
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: ai-edit-factory-backend:prod
+    restart: unless-stopped
+    environment:
+      PYTHONPATH: /app/backend
+      REDIS_URL: ${REDIS_URL:-redis://redis:6379/0}
+      AIEF_BASE_DIR: ${AIEF_BASE_DIR:-/app}
+      AIEF_DB_PATH: ${AIEF_DB_PATH:-/app/data/ai_edit_factory.sqlite3}
+      APP_MODE: ${APP_MODE:-production}
+      ALLOW_YOUTUBE_DOWNLOADS: ${ALLOW_YOUTUBE_DOWNLOADS:-false}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-750}
+    working_dir: /app
+    command: python /app/worker/worker.py
+    volumes:
+      - ./inputs:/app/inputs
+      - ./outputs:/app/outputs
+      - ./data:/app/data
+    depends_on:
+      - redis
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  redis_data:
+  caddy_data:
+  caddy_config:
