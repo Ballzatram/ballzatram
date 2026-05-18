@@ -24,9 +24,10 @@ jobs:
             git reset --hard origin/master
             if [ -f docker-compose.prod.yml ]; then
               docker compose -f docker-compose.prod.yml up -d --build
+              docker compose -f docker-compose.prod.yml ps
             else
               docker compose up -d --build
+              docker compose ps
             fi
             pwd
             git status --short
-            docker compose ps
