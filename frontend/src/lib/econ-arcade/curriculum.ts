@@ -18,7 +18,12 @@ export type ArcadeModule = {
   hrefLabel?: string;
   summary: string;
   learningGoal: string;
-  format: "Next.js lab" | "Static game" | "Strategy studio" | "Companion tool" | "Roadmap";
+  format:
+    | "Next.js lab"
+    | "Static game"
+    | "Strategy studio"
+    | "Companion tool"
+    | "Roadmap";
 };
 
 export const curriculumPhases: CurriculumPhase[] = [
@@ -26,7 +31,8 @@ export const curriculumPhases: CurriculumPhase[] = [
     id: "micro-foundations",
     phase: "Phase 1",
     title: "Micro Foundations",
-    focus: "Supply, demand, surplus, incentives, and the first market-control loops.",
+    focus:
+      "Supply, demand, surplus, incentives, and the first market-control loops.",
     status: "available",
     progress: 55,
   },
@@ -34,7 +40,8 @@ export const curriculumPhases: CurriculumPhase[] = [
     id: "macro-stability",
     phase: "Phase 2",
     title: "Macro Stability",
-    focus: "Inflation, unemployment, output gaps, credibility, and stabilization tradeoffs.",
+    focus:
+      "Inflation, unemployment, output gaps, credibility, and stabilization tradeoffs.",
     status: "available",
     progress: 45,
   },
@@ -42,7 +49,8 @@ export const curriculumPhases: CurriculumPhase[] = [
     id: "stats-forecasting",
     phase: "Phase 3",
     title: "Stats & Forecasting",
-    focus: "Signal extraction, confidence, noisy indicators, and forecast failure modes.",
+    focus:
+      "Signal extraction, confidence, noisy indicators, and forecast failure modes.",
     status: "locked",
     progress: 0,
   },
@@ -50,7 +58,8 @@ export const curriculumPhases: CurriculumPhase[] = [
     id: "game-theory",
     phase: "Phase 4",
     title: "Game Theory",
-    focus: "Strategic moves, credible threats, mixed incentives, and repeated games.",
+    focus:
+      "Strategic moves, credible threats, mixed incentives, and repeated games.",
     status: "available",
     progress: 50,
   },
@@ -58,7 +67,8 @@ export const curriculumPhases: CurriculumPhase[] = [
     id: "international-trade",
     phase: "Phase 5",
     title: "International Trade",
-    focus: "Comparative advantage, tariffs, retaliation, exchange rates, and global shocks.",
+    focus:
+      "Comparative advantage, tariffs, retaliation, exchange rates, and global shocks.",
     status: "locked",
     progress: 0,
   },
@@ -66,7 +76,8 @@ export const curriculumPhases: CurriculumPhase[] = [
     id: "invisible-hands-capstone",
     phase: "Phase 6",
     title: "Invisible Hands Capstone",
-    focus: "A systems simulator that combines micro, macro, banking, trade, and strategy.",
+    focus:
+      "A systems simulator that combines micro, macro, banking, trade, and strategy.",
     status: "capstone",
     progress: 35,
   },
@@ -82,20 +93,24 @@ export const arcadeModules: ArcadeModule[] = [
     route: "/econ-arcade/supply-demand-lab",
     hrefLabel: "Launch lab",
     format: "Next.js lab",
-    learningGoal: "Market clearing, surplus, price controls, taxes, and deadweight loss.",
-    summary: "Move curves, set controls, and watch prices, quantities, surplus, and deadweight loss react.",
+    learningGoal:
+      "Market clearing, surplus, price controls, taxes, and deadweight loss.",
+    summary:
+      "Move curves, set controls, and watch prices, quantities, surplus, and deadweight loss react.",
   },
   {
     id: "invisible-hands",
-    title: "Invisible Hands: Steel Crisis",
+    title: "Invisible Hands",
     phaseId: "invisible-hands-capstone",
     status: "playable",
     difficulty: "Advanced",
     route: "/econ-arcade/invisible-hands",
-    hrefLabel: "Play simulator",
+    hrefLabel: "Play Invisible Hands",
     format: "Next.js lab",
-    learningGoal: "Systems thinking across micro incentives, macro policy, trade retaliation, and expectations.",
-    summary: "Govern Port Meridian through a steel shock while markets, voters, banks, and trade partners respond.",
+    learningGoal:
+      "Systems thinking across micro incentives, macro policy, trade retaliation, and expectations.",
+    summary:
+      "The Steel Crisis scenario: govern Port Meridian while markets, voters, banks, and trade partners respond.",
   },
   {
     id: "invisible-hands-market",
@@ -106,8 +121,10 @@ export const arcadeModules: ArcadeModule[] = [
     href: "/econ-arcade/invisible-hands.html",
     hrefLabel: "Play market game",
     format: "Static game",
-    learningGoal: "Price signals, decentralized coordination, shortages, surpluses, and welfare.",
-    summary: "Clear a street market by tuning price, supply confidence, and demand heat until decentralized agents coordinate.",
+    learningGoal:
+      "Price signals, decentralized coordination, shortages, surpluses, and welfare.",
+    summary:
+      "Clear a street market by tuning price, supply confidence, and demand heat until decentralized agents coordinate.",
   },
   {
     id: "central-bank-simulator",
@@ -118,8 +135,10 @@ export const arcadeModules: ArcadeModule[] = [
     href: "/games/central-bank.html",
     hrefLabel: "Run policy game",
     format: "Static game",
-    learningGoal: "Inflation targeting, expectations, credibility, financial stability, and policy lags.",
-    summary: "Tune rates and guidance for ten quarters while inflation expectations, unemployment, and markets push back.",
+    learningGoal:
+      "Inflation targeting, expectations, credibility, financial stability, and policy lags.",
+    summary:
+      "Tune rates and guidance for ten quarters while inflation expectations, unemployment, and markets push back.",
   },
   {
     id: "prisoners-dilemma-arena",
@@ -130,8 +149,10 @@ export const arcadeModules: ArcadeModule[] = [
     href: "/econ-arcade/prisoners-dilemma.html",
     hrefLabel: "Enter arena",
     format: "Static game",
-    learningGoal: "Dominant strategies, Nash pressure, reputation, retaliation, and repeated-game cooperation.",
-    summary: "Probe cooperation and betrayal against AI opponent archetypes with a live payoff matrix and debriefs.",
+    learningGoal:
+      "Dominant strategies, Nash pressure, reputation, retaliation, and repeated-game cooperation.",
+    summary:
+      "Probe cooperation and betrayal against AI opponent archetypes with a live payoff matrix and debriefs.",
   },
   {
     id: "strategy-studio",
@@ -142,8 +163,10 @@ export const arcadeModules: ArcadeModule[] = [
     href: "/econ-arcade/platform.html",
     hrefLabel: "Open studio",
     format: "Strategy studio",
-    learningGoal: "Rational choice, static games, dynamic games, Bayesian information, auctions, signaling, bargaining, and mechanism design.",
-    summary: "A curriculum-wide game theory suite with multiple concept engines and a full campaign map.",
+    learningGoal:
+      "Rational choice, static games, dynamic games, Bayesian information, auctions, signaling, bargaining, and mechanism design.",
+    summary:
+      "A curriculum-wide game theory suite with multiple concept engines and a full campaign map.",
   },
   {
     id: "macroboard",
@@ -154,8 +177,10 @@ export const arcadeModules: ArcadeModule[] = [
     href: "/tools/macroboard/index.html",
     hrefLabel: "Open tool",
     format: "Companion tool",
-    learningGoal: "Applied macro data workflows, portfolio review, model governance, and scenario analysis.",
-    summary: "Analyze macro time series, stock workflows, portfolios, and stress scenarios in a quant-style dashboard.",
+    learningGoal:
+      "Applied macro data workflows, portfolio review, model governance, and scenario analysis.",
+    summary:
+      "Analyze macro time series, stock workflows, portfolios, and stress scenarios in a quant-style dashboard.",
   },
   {
     id: "signal-vs-noise",
@@ -165,8 +190,10 @@ export const arcadeModules: ArcadeModule[] = [
     difficulty: "Intermediate",
     hrefLabel: "Queued",
     format: "Roadmap",
-    learningGoal: "Forecast uncertainty, noisy indicators, confidence, overfitting, and evidence weighting.",
-    summary: "Decide which indicators deserve trust before a noisy forecast window closes.",
+    learningGoal:
+      "Forecast uncertainty, noisy indicators, confidence, overfitting, and evidence weighting.",
+    summary:
+      "Decide which indicators deserve trust before a noisy forecast window closes.",
   },
   {
     id: "tariff-lab",
@@ -176,9 +203,13 @@ export const arcadeModules: ArcadeModule[] = [
     difficulty: "Advanced",
     hrefLabel: "Queued",
     format: "Roadmap",
-    learningGoal: "Comparative advantage, pass-through, retaliation, incidence, and welfare losses.",
-    summary: "Push tariff policy through consumers, producers, trade partners, and retaliation risk.",
+    learningGoal:
+      "Comparative advantage, pass-through, retaliation, incidence, and welfare losses.",
+    summary:
+      "Push tariff policy through consumers, producers, trade partners, and retaliation risk.",
   },
 ];
 
-export const playableArcadeModules = arcadeModules.filter((module) => module.status === "playable" && (module.route || module.href));
+export const playableArcadeModules = arcadeModules.filter(
+  (module) => module.status === "playable" && (module.route || module.href),
+);
