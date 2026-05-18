@@ -25,9 +25,12 @@ jobs:
             if [ -f docker-compose.prod.yml ]; then
               docker compose -f docker-compose.prod.yml up -d --build
               docker compose -f docker-compose.prod.yml ps
-            else
+            elif [ -f docker-compose.yml ]; then
               docker compose up -d --build
               docker compose ps
+            else
+              echo "No Docker Compose file found; assuming static site deploy."
+              systemctl reload caddy || systemctl reload nginx || true
             fi
             pwd
             git status --short
