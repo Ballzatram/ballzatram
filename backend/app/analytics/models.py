@@ -2,22 +2,51 @@ from __future__ import annotations
 
 import numpy as np
 import pandas as pd
-import statsmodels.api as sm
+from scipy import stats
 from sklearn.cluster import KMeans
 from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import ElasticNet, Lasso, Ridge
 
 
-def run_ols(df: pd.DataFrame, y_col: str, x_cols: list[str]) -> dict:
-    X = sm.add_constant(df[x_cols])
-    y = df[y_col]
-    model = sm.OLS(y, X).fit()
-    ci = model.conf_int()
+def _fit_linear_model(df: pd.DataFrame, y_col: str, x_cols: list[str]) -> dict:
+    names = ["const", *x_cols]
+    x_values = df[x_cols].astype(float).to_numpy()
+    X = np.column_stack([np.ones(len(df)), x_values])
+    y = df[y_col].astype(float).to_numpy()
+
+    coefficients, _, _, _ = np.linalg.lstsq(X, y, rcond=None)
+    fitted = X @ coefficients
+    residuals = y - fitted
+    dof = max(len(y) - X.shape[1], 1)
+    rss = float(np.sum(residuals ** 2))
+    tss = float(np.sum((y - np.mean(y)) ** 2))
+    r_squared = 1.0 - rss / tss if tss > 0 else 0.0
+
+    xtx_inv = np.linalg.pinv(X.T @ X)
+    sigma2 = rss / dof
+    standard_errors = np.sqrt(np.maximum(np.diag(xtx_inv) * sigma2, 0))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        t_stats = np.divide(coefficients, standard_errors, out=np.zeros_like(coefficients), where=standard_errors > 0)
+    p_values = 2 * (1 - stats.t.cdf(np.abs(t_stats), dof))
+    critical = stats.t.ppf(0.975, dof)
+    ci_low = coefficients - critical * standard_errors
+    ci_high = coefficients + critical * standard_errors
+
     return {
-        "coefficients": {k: float(v) for k, v in model.params.items()},
-        "p_values": {k: float(v) for k, v in model.pvalues.items()},
-        "r_squared": float(model.rsquared),
-        "confidence_intervals": {k: [float(ci.loc[k, 0]), float(ci.loc[k, 1])] for k in ci.index},
+        "coefficients": dict(zip(names, coefficients)),
+        "p_values": dict(zip(names, p_values)),
+        "r_squared": float(r_squared),
+        "confidence_intervals": {name: [float(low), float(high)] for name, low, high in zip(names, ci_low, ci_high)},
+    }
+
+
+def run_ols(df: pd.DataFrame, y_col: str, x_cols: list[str]) -> dict:
+    fit = _fit_linear_model(df, y_col, x_cols)
+    return {
+        "coefficients": {k: float(v) for k, v in fit["coefficients"].items()},
+        "p_values": {k: float(v) for k, v in fit["p_values"].items()},
+        "r_squared": float(fit["r_squared"]),
+        "confidence_intervals": fit["confidence_intervals"],
     }
 
 
@@ -25,8 +54,8 @@ def rolling_regression(df: pd.DataFrame, y_col: str, x_col: str, window: int = 2
     rows = []
     for i in range(window, len(df) + 1):
         sample = df.iloc[i - window : i]
-        fit = sm.OLS(sample[y_col], sm.add_constant(sample[[x_col]])).fit()
-        rows.append({"date": str(sample.index[-1].date()), "beta": float(fit.params[x_col]), "r2": float(fit.rsquared)})
+        fit = _fit_linear_model(sample, y_col, [x_col])
+        rows.append({"date": str(sample.index[-1].date()), "beta": float(fit["coefficients"][x_col]), "r2": float(fit["r_squared"])})
     return rows
 
 

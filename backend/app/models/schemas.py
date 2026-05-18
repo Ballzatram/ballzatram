@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from datetime import date
+from datetime import date, datetime
 from enum import Enum
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Optional
 
 from pydantic import BaseModel, Field, field_validator
 
@@ -81,6 +81,10 @@ class AgentProcess(BaseModel):
     outcome: str
     starter_prompt: str
     steps: List[str]
+
+
+class AgentProcessesResponse(BaseModel):
+    processes: Dict[str, List[AgentProcess]]
 
 
 class AgentMessage(BaseModel):
