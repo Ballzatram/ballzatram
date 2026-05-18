@@ -8,6 +8,7 @@ const worlds = [
     capstone: "Design a personalized decision rule for a risky scholarship, a sure job, and a costly signal.",
     modules: [
       { title: "Utility Cartographer", copy: "Sketch indifference curves by dragging bundles through a neon budget canyon.", phase: "Core lab", engine: "utility", glyph: "⛰️" },
+      { title: "Invisible Hands Market", copy: "Tune price signals and watch decentralized buyers and sellers converge toward shortages, surpluses, or equilibrium.", phase: "Playable", href: "invisible-hands.html", engine: "invisibleHand", glyph: "🫥" },
       { title: "Risk & Lottery Engine", copy: "Compare expected value with expected utility while the same gamble mutates across risk types.", phase: "Playable", engine: "lottery", glyph: "🎲" },
       { title: "St. Petersburg Vault", copy: "Open impossible jackpots, then watch risk aversion and wealth effects tame infinity.", phase: "Challenge", engine: "lottery", glyph: "💎" },
       { title: "Patience Reactor", copy: "Tune discount factors, commitment devices, and temptation costs across time.", phase: "Scenario", engine: "utility", glyph: "⏳" },
@@ -126,6 +127,32 @@ const engines = {
         debrief: "Your chosen bundle reveals a tradeoff: utility rises when spending aligns with the preference weight, but concavity makes extreme bundles costly unless preferences are extreme.",
         formal: "Cobb-Douglas utility creates smooth indifference curves. Optimal choice equalizes marginal utility per dollar across goods.",
         replay: "Move the preference slider first, then rebalance the bundle. Notice that the optimal action changes only when preferences or constraints change.",
+      };
+    },
+  },
+  invisibleHand: {
+    world: "World 1 — Competitive Markets",
+    title: "Invisible Hand Market",
+    brief: "Set a price signal while demand and supply respond independently. The engine shows whether decentralized plans clear, create shortages, or leave costly surplus.",
+    controls: [
+      { id: "marketPrice", label: "Posted price", type: "range", min: 2, max: 18, value: 10 },
+      { id: "marketSupply", label: "Supplier confidence", type: "range", min: 0, max: 100, value: 54 },
+      { id: "marketDemand", label: "Demand heat", type: "range", min: 0, max: 100, value: 58 },
+    ],
+    simulate(values) {
+      const demand = Math.max(0, Math.round(118 + values.marketDemand * 0.7 - values.marketPrice * 7.4));
+      const supply = Math.max(0, Math.round(18 + values.marketSupply * 0.68 + values.marketPrice * 5.8));
+      const traded = Math.min(demand, supply);
+      const gap = supply - demand;
+      const welfare = Math.max(0, Math.round(traded * 2.4 - Math.abs(gap) * 1.15));
+      const stability = Math.max(0, Math.min(100, 100 - Math.abs(gap) * 1.4));
+      return {
+        visualTitle: "Supply, demand, and market-clearing pressure",
+        bars: [["Demand", demand, `${demand} buyers`], ["Supply", supply, `${supply} units`], ["Quantity traded", traded, `${traded} trades`], ["Imbalance", Math.abs(gap), gap === 0 ? "cleared" : `${Math.abs(gap)} ${gap > 0 ? "surplus" : "shortage"}`]],
+        metrics: [["Market state", Math.abs(gap) <= 6 ? "near equilibrium" : gap > 0 ? "surplus" : "shortage"], ["Welfare index", welfare], ["Stability", `${stability.toFixed(0)}%`]],
+        debrief: Math.abs(gap) <= 6 ? "Price is coordinating buyer willingness and seller costs, so decentralized plans nearly clear without a central allocator." : gap > 0 ? "The signal invited more production than buyers want at this price. Surplus inventory is feedback for sellers to cut price or output." : "The signal invited more demand than sellers can serve. Shortage pressure tells the market to raise price, increase supply, or cool demand.",
+        formal: "In competitive equilibrium, price adjusts until quantity demanded equals quantity supplied. Shortages and surpluses are disequilibrium signals.",
+        replay: "Raise demand heat, then find the price and supplier confidence combination that restores a small imbalance without commanding individual agents.",
       };
     },
   },
@@ -350,6 +377,7 @@ function mapModuleToEngine(title) {
   }
   const lower = title.toLowerCase();
   const engine = selected?.engine || (lower.includes("utility") ? "utility"
+    : lower.includes("hand") || lower.includes("market") ? "invisibleHand"
     : lower.includes("risk") || lower.includes("lottery") || lower.includes("petersburg") ? "lottery"
     : lower.includes("cournot") || lower.includes("collusion") ? "cournot"
     : lower.includes("auction") || lower.includes("winner") ? "auction"

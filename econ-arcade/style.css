@@ -552,3 +552,9 @@ a {
     margin-bottom: 14px;
   }
 }
+
+.menu-card.market-card {
+  background:
+    radial-gradient(circle at 82% 12%, rgba(116, 242, 167, 0.18), transparent 20rem),
+    linear-gradient(145deg, rgba(12, 43, 34, 0.96), rgba(8, 13, 23, 0.92));
+}

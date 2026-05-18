@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Play Invisible Hands, an Econ Arcade market-clearing game about supply, demand, prices, shortages, surpluses, and welfare." />
+  <title>Invisible Hands | Econ Arcade</title>
+  <link rel="stylesheet" href="invisible-hands.css" />
+</head>
+
+<body>
+  <div class="market-shell">
+    <header class="market-header">
+      <a href="index.html">← Econ Arcade</a>
+      <div>
+        <span>World 1</span>
+        <strong>Markets · supply and demand</strong>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero-panel" aria-labelledby="gameTitle">
+        <p class="kicker">Playable market-clearing challenge</p>
+        <h1 id="gameTitle">Invisible Hands</h1>
+        <p>
+          Nudge a street market toward equilibrium without directly commanding every buyer or seller.
+          Set price expectations, release supply, and watch decentralized choices create shortages,
+          surpluses, welfare gains, or deadweight loss.
+        </p>
+        <div class="hero-actions" aria-label="Game status">
+          <div><span>Goal</span><strong>Clear 5 market days</strong></div>
+          <div><span>Concept</span><strong>Price signals coordinate plans</strong></div>
+          <div><span>Best score</span><strong id="bestScore">0</strong></div>
+        </div>
+      </section>
+
+      <section class="control-panel" aria-labelledby="controlsTitle">
+        <div>
+          <p class="kicker">Your levers</p>
+          <h2 id="controlsTitle">Set the market signal</h2>
+          <p>
+            You do not control individual agents. Your posted price and producer guidance change the
+            incentives each side sees, then the invisible hand emerges from their responses.
+          </p>
+        </div>
+        <div class="control-grid">
+          <label>
+            Posted price
+            <input id="priceInput" type="range" min="2" max="18" value="10" />
+            <span><strong id="priceValue">$10</strong> per unit</span>
+          </label>
+          <label>
+            Supplier confidence
+            <input id="supplyInput" type="range" min="0" max="100" value="54" />
+            <span><strong id="supplyValue">54</strong> capacity index</span>
+          </label>
+          <label>
+            Demand heat
+            <input id="demandInput" type="range" min="0" max="100" value="58" />
+            <span><strong id="demandValue">58</strong> taste shock</span>
+          </label>
+        </div>
+        <div class="button-row">
+          <button id="advanceButton" type="button">Open market day →</button>
+          <button id="resetButton" type="button">Reset market</button>
+        </div>
+      </section>
+
+      <section class="market-grid" aria-label="Invisible Hands dashboard">
+        <article class="market-board">
+          <div class="panel-heading">
+            <p class="kicker">Live market</p>
+            <h2 id="dayTitle">Day 1</h2>
+          </div>
+          <div class="equilibrium-strip" aria-label="Market outcome comparison">
+            <div>
+              <span>Demand</span>
+              <strong id="demandMetric">0</strong>
+            </div>
+            <div>
+              <span>Supply</span>
+              <strong id="supplyMetric">0</strong>
+            </div>
+            <div>
+              <span>Gap</span>
+              <strong id="gapMetric">0</strong>
+            </div>
+          </div>
+          <div id="marketViz" class="market-viz" aria-label="Supply and demand visualization"></div>
+          <p id="outcomeText" class="outcome-text" aria-live="polite">
+            Tune the controls, then open the market day to see whether price coordinates buyers and sellers.
+          </p>
+        </article>
+
+        <article class="score-card">
+          <div class="panel-heading">
+            <p class="kicker">Learning score</p>
+            <h2>Coordination dashboard</h2>
+          </div>
+          <div class="score-grid">
+            <div><span>Welfare</span><strong id="welfareMetric">0</strong></div>
+            <div><span>Score</span><strong id="scoreMetric">0</strong></div>
+            <div><span>Stability</span><strong id="stabilityMetric">0%</strong></div>
+            <div><span>Market days</span><strong id="roundMetric">0 / 5</strong></div>
+          </div>
+          <div class="day-log" id="dayLog" aria-label="Market day log"></div>
+        </article>
+
+        <article class="lesson-card">
+          <p class="kicker">Debrief</p>
+          <h2>What the invisible hand is doing</h2>
+          <p id="lessonText">
+            Prices compress information. A high price invites production and screens out low-value buyers;
+            a low price expands demand but can create scarcity if producers cannot cover costs.
+          </p>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="invisible-hands.js"></script>
+</body>
+
+</html>
