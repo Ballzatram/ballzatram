@@ -24,6 +24,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
             aria-label="MacroBoard sections"
           >
             <Link
+              href={"/econ-arcade" as Route}
+              aria-current={pathname.startsWith("/econ-arcade") ? "page" : undefined}
+              className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
+                pathname.startsWith("/econ-arcade")
+                  ? "border-emerald-200 bg-emerald-300 text-slate-950"
+                  : "border-emerald-300/50 text-emerald-100 hover:border-emerald-200 hover:text-white"
+              }`}
+            >
+              Econ Arcade
+            </Link>
+            <Link
               href={"/invisible-hands" as Route}
               aria-current={pathname === "/invisible-hands" ? "page" : undefined}
               className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
