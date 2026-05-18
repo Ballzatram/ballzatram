@@ -23,6 +23,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
             className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:justify-end sm:px-0"
             aria-label="MacroBoard sections"
           >
+            <Link
+              href={"/invisible-hands" as Route}
+              aria-current={pathname === "/invisible-hands" ? "page" : undefined}
+              className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
+                pathname === "/invisible-hands"
+                  ? "border-cyan-200 bg-cyan-300 text-slate-950"
+                  : "border-cyan-300/50 text-cyan-100 hover:border-cyan-200 hover:text-white"
+              }`}
+            >
+              Invisible Hands
+            </Link>
             {workflows.map((workflow) => {
               const href = `/${workflow.slug}` as Route;
               const active = pathname === href;
