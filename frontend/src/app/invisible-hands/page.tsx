@@ -1,5 +1,5 @@
-import { InvisibleHandsPage } from "@/components/invisible-hands/InvisibleHandsPage";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <InvisibleHandsPage />;
+  redirect("/econ-arcade/invisible-hands");
 }
