@@ -91,7 +91,7 @@ export const arcadeModules: ArcadeModule[] = [
     phaseId: "invisible-hands-capstone",
     status: "playable",
     difficulty: "Advanced",
-    route: "/invisible-hands",
+    route: "/econ-arcade/invisible-hands",
     hrefLabel: "Play simulator",
     format: "Next.js lab",
     learningGoal: "Systems thinking across micro incentives, macro policy, trade retaliation, and expectations.",

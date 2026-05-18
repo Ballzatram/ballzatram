@@ -165,7 +165,7 @@ export function EconArcadePage() {
           <p className="mt-4 text-base leading-7 text-slate-200">
             Invisible Hands is no longer buried as a teaser: the current Steel Crisis simulator is a first-class playable module, and the market-clearing Invisible Hands static game remains linked for the shorter microeconomics version.
           </p>
-          <Link href={"/invisible-hands" as Route} className="mt-5 inline-flex rounded-full border border-cyan-200 px-5 py-3 text-sm font-bold uppercase tracking-[0.18em] text-cyan-100 hover:bg-cyan-200 hover:text-slate-950">
+          <Link href={"/econ-arcade/invisible-hands" as Route} className="mt-5 inline-flex rounded-full border border-cyan-200 px-5 py-3 text-sm font-bold uppercase tracking-[0.18em] text-cyan-100 hover:bg-cyan-200 hover:text-slate-950">
             Play Steel Crisis
           </Link>
         </article>

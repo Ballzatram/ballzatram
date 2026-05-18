@@ -8,6 +8,8 @@ import { workflows } from "@/lib/workflows";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const isInvisibleHands = pathname === "/econ-arcade/invisible-hands";
+  const isEconArcade = pathname.startsWith("/econ-arcade") && !isInvisibleHands;
 
   return (
     <div className="min-h-dvh bg-slate-950 text-slate-100">
@@ -25,9 +27,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
           >
             <Link
               href={"/econ-arcade" as Route}
-              aria-current={pathname.startsWith("/econ-arcade") ? "page" : undefined}
+              aria-current={isEconArcade ? "page" : undefined}
               className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
-                pathname.startsWith("/econ-arcade")
+                isEconArcade
                   ? "border-emerald-200 bg-emerald-300 text-slate-950"
                   : "border-emerald-300/50 text-emerald-100 hover:border-emerald-200 hover:text-white"
               }`}
@@ -35,10 +37,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
               Econ Arcade
             </Link>
             <Link
-              href={"/invisible-hands" as Route}
-              aria-current={pathname === "/invisible-hands" ? "page" : undefined}
+              href={"/econ-arcade/invisible-hands" as Route}
+              aria-current={isInvisibleHands ? "page" : undefined}
               className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
-                pathname === "/invisible-hands"
+                isInvisibleHands
                   ? "border-cyan-200 bg-cyan-300 text-slate-950"
                   : "border-cyan-300/50 text-cyan-100 hover:border-cyan-200 hover:text-white"
               }`}
