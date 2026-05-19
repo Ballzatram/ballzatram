@@ -1,268 +1,133 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { getEventForTurn } from "@/lib/invisible-hands/events";
-import { invisibleHandsInitialState } from "@/lib/invisible-hands/initialState";
-import { policyById } from "@/lib/invisible-hands/policies";
-import { getScorecard, resolveTurn } from "@/lib/invisible-hands/simulation";
-import type { Difficulty, EconomyState, GameState, PolicyAction, SectorState } from "@/lib/invisible-hands/types";
+import { actions, advanceTurn, initScenario, scenarios } from "@/lib/invisible-hands-v2/simulation";
+import { trackedStatKeys } from "@/lib/invisible-hands-v2/data";
+import type { Actor, GameLayer, GameState } from "@/lib/invisible-hands-v2/types";
 
-type ViewId = "nation" | "micro" | "central-bank" | "markets" | "trade";
+const layerColors: Record<GameLayer, string> = { micro: "#06b6d4", macro: "#8b5cf6", global: "#f59e0b" };
+const layerLayouts: Record<GameLayer, Record<string, [number, number]>> = {
+  micro: { "micro-energy": [16, 24], "micro-commodities": [34, 20], "micro-manufacturers": [50, 38], "micro-transport": [70, 30], "micro-agriculture": [74, 56], "micro-consumers": [50, 70], "micro-labor": [29, 58], "micro-banks": [16, 45] },
+  macro: { "macro-cb": [50, 14], "macro-markets": [26, 30], "macro-housing": [72, 30], "macro-consumer": [50, 50], "macro-labor": [26, 66], "macro-output": [74, 66], "macro-treasury": [50, 80], "macro-energy": [88, 50] },
+  global: { "global-domestic": [48, 49], "global-partner": [20, 20], "global-manu-competitor": [20, 74], "global-oil": [84, 18], "global-food": [81, 72], "global-fx": [62, 30], "global-resource": [64, 68], "global-chokepoint": [42, 84] },
+};
 
-const views: Array<{ id: ViewId; label: string }> = [
-  { id: "nation", label: "Nation" },
-  { id: "micro", label: "Micro / Sectors" },
-  { id: "central-bank", label: "Central Bank" },
-  { id: "markets", label: "Markets" },
-  { id: "trade", label: "Trade / Global" },
-];
-
-const centralBankActionIds = ["hold_rate", "hike_rate", "cut_rate", "emergency_liquidity", "hawkish_guidance", "dovish_guidance"];
-const tradeActionIds = ["steel_tariff_10", "steel_tariff_25", "steel_import_quota", "negotiate_with_eastport", "reduce_trade_barriers", "export_promotion", "local_content_requirement"];
-
-function formatValue(value: number, suffix = "") {
-  return `${Number.isInteger(value) ? value.toFixed(0) : value.toFixed(1)}${suffix}`;
+function stressTone(stress: number) {
+  if (stress >= 70) return "border-red-400/70 bg-red-500/10 text-red-200";
+  if (stress >= 45) return "border-amber-300/70 bg-amber-500/10 text-amber-200";
+  return "border-emerald-400/60 bg-emerald-500/10 text-emerald-200";
 }
 
-function riskTone(value: number, highIsBad = true) {
-  if (highIsBad) {
-    if (value >= 70) return "border-red-400/50 bg-red-500/10 text-red-100";
-    if (value >= 45) return "border-amber-300/50 bg-amber-400/10 text-amber-100";
-    return "border-emerald-300/30 bg-emerald-400/10 text-emerald-100";
-  }
-  if (value <= 35) return "border-red-400/50 bg-red-500/10 text-red-100";
-  if (value <= 55) return "border-amber-300/50 bg-amber-400/10 text-amber-100";
-  return "border-emerald-300/30 bg-emerald-400/10 text-emerald-100";
+function summarizeTurn(state: GameState) {
+  const last = state.history[state.history.length - 1];
+  if (!last) return "No turn resolved yet. Queue actions and advance.";
+  const prev = state.history[state.history.length - 2]?.statSnapshot;
+  if (!prev) return `Turn ${last.turn} resolved with ${last.actionIds.length} action(s).`;
+  const deltaInfl = last.statSnapshot.inflation - prev.inflation;
+  const deltaOut = last.statSnapshot.output - prev.output;
+  const deltaStress = last.statSnapshot.supplyStress - prev.supplyStress;
+  const inflText = deltaInfl > 0 ? `Inflation rose ${deltaInfl.toFixed(1)}` : `Inflation cooled ${Math.abs(deltaInfl).toFixed(1)}`;
+  const outText = deltaOut > 0 ? `output improved ${deltaOut.toFixed(1)}` : `output softened ${Math.abs(deltaOut).toFixed(1)}`;
+  const stressText = deltaStress > 0 ? `supply stress worsened ${deltaStress.toFixed(1)}` : `supply stress eased ${Math.abs(deltaStress).toFixed(1)}`;
+  return `${inflText}; ${outText}; ${stressText}.`;
 }
 
-function MetricTile({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone?: string }) {
+function MapView({ layer, actors, selectedActorId, onSelect }: { layer: GameLayer; actors: Actor[]; selectedActorId?: string; onSelect: (id: string) => void }) {
+  const pos = layerLayouts[layer];
   return (
-    <article className={`rounded-2xl border p-4 shadow-lg shadow-black/20 ${tone ?? "border-cyan-300/15 bg-slate-950/70"}`}>
-      <p className="text-[0.68rem] font-bold uppercase tracking-[0.22em] text-slate-400">{label}</p>
-      <p className="mt-2 font-mono text-2xl font-black text-white">{value}</p>
-      {sub ? <p className="mt-2 text-xs leading-5 text-slate-400">{sub}</p> : null}
-    </article>
-  );
-}
-
-function DifficultyIntro({ onStart }: { onStart: (difficulty: Difficulty) => void }) {
-  const [selected, setSelected] = useState<Difficulty>("easy");
-  const modes: Array<{ id: Difficulty; title: string; copy: string }> = [
-    { id: "easy", title: "Easy", copy: "Explicit advisor hints and likely consequences are visible." },
-    { id: "normal", title: "Normal", copy: "Advisor notes include ambiguity and conflicting priorities." },
-    { id: "hard", title: "Hard", copy: "Most hints are hidden; govern from raw metrics and terse briefings." },
-  ];
-
-  return (
-    <section className="overflow-hidden rounded-3xl border border-cyan-300/20 bg-[radial-gradient(circle_at_top_left,rgba(34,211,238,0.18),transparent_35%),linear-gradient(135deg,#020617,#0f172a_48%,#111827)] p-6 shadow-2xl shadow-black/40 sm:p-8">
-      <p className="font-mono text-xs font-bold uppercase tracking-[0.35em] text-cyan-200">Ballzatram systems simulation</p>
-      <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight text-white sm:text-6xl">Invisible Hands: Steel Crisis</h1>
-      <p className="mt-5 max-w-3xl text-lg leading-8 text-slate-300">
-        Govern Port Meridian through a 12-turn steel import crisis. Balance tariffs, inflation, exporters, voters, central bank credibility, and strategic retaliation from Eastport.
-      </p>
-      <div className="mt-8 grid gap-4 md:grid-cols-3">
-        {modes.map((mode) => (
-          <button
-            key={mode.id}
-            type="button"
-            onClick={() => setSelected(mode.id)}
-            className={`min-h-32 rounded-2xl border p-5 text-left transition focus:outline-none focus:ring-2 focus:ring-cyan-200 ${selected === mode.id ? "border-cyan-200 bg-cyan-300/15" : "border-slate-700 bg-slate-950/70 hover:border-cyan-300/60"}`}
-          >
-            <span className="font-mono text-lg font-black uppercase text-white">{mode.title}</span>
-            <span className="mt-3 block text-sm leading-6 text-slate-300">{mode.copy}</span>
-          </button>
-        ))}
-      </div>
-      <button
-        type="button"
-        onClick={() => onStart(selected)}
-        className="mt-8 min-h-12 rounded-full border border-emerald-200 bg-emerald-300 px-6 py-3 font-bold uppercase tracking-[0.18em] text-slate-950 shadow-lg shadow-emerald-950/30 transition hover:bg-emerald-200 focus:outline-none focus:ring-2 focus:ring-emerald-100"
-      >
-        Start Steel Crisis
-      </button>
-    </section>
-  );
-}
-
-function NationDashboard({ economy }: { economy: EconomyState }) {
-  return (
-    <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-      <MetricTile label="GDP growth" value={formatValue(economy.gdpGrowth, "%")} sub="Real output momentum" tone={riskTone(economy.gdpGrowth, false)} />
-      <MetricTile label="Inflation" value={formatValue(economy.inflation, "%")} sub="Consumer price pressure" tone={riskTone(economy.inflation)} />
-      <MetricTile label="Unemployment" value={formatValue(economy.unemployment, "%")} sub="Labor-market slack" tone={riskTone(economy.unemployment)} />
-      <MetricTile label="Debt / GDP" value={formatValue(economy.debtToGdp, "%")} sub={`Fiscal balance ${formatValue(economy.fiscalBalance, "%")}`} tone={riskTone(economy.debtToGdp)} />
-      <MetricTile label="Approval" value={formatValue(economy.approval)} sub="Political survival" tone={riskTone(economy.approval, false)} />
-      <MetricTile label="Welfare" value={formatValue(economy.welfare)} sub="Composite household welfare" tone={riskTone(economy.welfare, false)} />
-      <MetricTile label="Crisis risk" value={formatValue(economy.crisisRisk)} sub="Tail-risk pressure" tone={riskTone(economy.crisisRisk)} />
-      <MetricTile label="CB credibility" value={formatValue(economy.centralBankCredibility)} sub="Power of monetary signals" tone={riskTone(economy.centralBankCredibility, false)} />
-      <MetricTile label="Market confidence" value={formatValue(economy.marketConfidence)} sub="Investor trust" tone={riskTone(economy.marketConfidence, false)} />
+    <div className="rounded-3xl border border-slate-700 bg-[radial-gradient(circle_at_50%_35%,rgba(30,41,59,0.6),#020617)] p-3 shadow-2xl shadow-black/40">
+      <svg viewBox="0 0 100 92" className="h-[58vh] min-h-[420px] w-full">
+        <defs>
+          <marker id="arr" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><polygon points="0 0, 5 2.5, 0 5" fill="#334155" /></marker>
+        </defs>
+        {actors.flatMap((a) => a.connectedActorIds.map((t) => ({ from: a.id, to: t })) ).map((e) => {
+          const p1 = pos[e.from]; const p2 = pos[e.to]; if (!p1 || !p2) return null;
+          return <line key={`${e.from}-${e.to}`} x1={p1[0]} y1={p1[1]} x2={p2[0]} y2={p2[1]} stroke="#334155" strokeWidth="0.65" markerEnd="url(#arr)" opacity={0.8} />;
+        })}
+        {actors.map((a) => {
+          const p = pos[a.id] ?? [50, 50];
+          const selected = selectedActorId === a.id;
+          const isHot = a.stress > 70;
+          return (
+            <g key={a.id} onClick={() => onSelect(a.id)} className="cursor-pointer">
+              {isHot ? <circle cx={p[0]} cy={p[1]} r={selected ? 8.8 : 7.2} fill="none" stroke="#ef4444" strokeWidth="0.6" opacity={0.9} /> : null}
+              <circle cx={p[0]} cy={p[1]} r={selected ? 6.2 : 5} fill={`hsl(${120 - a.stress},85%,48%)`} stroke={selected ? "#e2e8f0" : layerColors[layer]} strokeWidth={selected ? 1.2 : 0.8} />
+              <text x={p[0]} y={p[1] - 7} textAnchor="middle" fontSize="2.8" fill="#e2e8f0">{a.name}</text>
+            </g>
+          );
+        })}
+      </svg>
     </div>
   );
-}
-
-function SectorCard({ name, sector }: { name: string; sector: SectorState }) {
-  const rows = Object.entries(sector).filter(([, value]) => typeof value === "number");
-  return (
-    <article className="rounded-2xl border border-slate-700/80 bg-slate-950/75 p-4">
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="text-xl font-black text-white">{name}</h3>
-        <span className={`rounded-full border px-3 py-1 font-mono text-xs ${riskTone(sector.stress)}`}>stress {formatValue(sector.stress)}</span>
-      </div>
-      <dl className="mt-4 grid grid-cols-2 gap-2 text-sm">
-        {rows.map(([key, value]) => (
-          <div key={key} className="rounded-xl border border-white/10 bg-white/[0.03] p-3">
-            <dt className="text-xs capitalize text-slate-400">{key.replace(/([A-Z])/g, " $1")}</dt>
-            <dd className="mt-1 font-mono text-base font-bold text-slate-100">{formatValue(value)}</dd>
-          </div>
-        ))}
-      </dl>
-    </article>
-  );
-}
-
-function PolicyButton({ policy, difficulty, onChoose, compact = false }: { policy: PolicyAction; difficulty: Difficulty; onChoose: (id: string) => void; compact?: boolean }) {
-  return (
-    <button
-      type="button"
-      onClick={() => onChoose(policy.id)}
-      className="rounded-2xl border border-cyan-300/20 bg-cyan-300/10 p-4 text-left transition hover:-translate-y-0.5 hover:border-cyan-200 hover:bg-cyan-300/15 focus:outline-none focus:ring-2 focus:ring-cyan-200"
-    >
-      <span className="font-mono text-xs font-bold uppercase tracking-[0.18em] text-cyan-200">{policy.category}</span>
-      <span className="mt-1 block text-base font-bold text-white">{policy.label}</span>
-      {!compact ? <span className="mt-2 block text-sm leading-6 text-slate-300">{policy.description}</span> : null}
-      {difficulty !== "hard" ? <span className="mt-3 block rounded-xl border border-amber-200/20 bg-amber-300/10 p-3 text-xs leading-5 text-amber-100">Advisor: {policy.advisorHint[difficulty]}</span> : null}
-    </button>
-  );
-}
-
-function ActiveView({ view, gameState, difficulty, onChoose }: { view: ViewId; gameState: GameState; difficulty: Difficulty; onChoose: (id: string) => void }) {
-  const { economy, sectors } = gameState;
-  if (view === "micro") {
-    return <div className="grid gap-4 lg:grid-cols-2"><SectorCard name="Steel" sector={sectors.steel} /><SectorCard name="Autos" sector={sectors.autos} /><SectorCard name="Agriculture" sector={sectors.agriculture} /><SectorCard name="Consumer Goods" sector={sectors.consumerGoods} /><SectorCard name="Banking" sector={sectors.banking} /></div>;
-  }
-  if (view === "central-bank") {
-    return <div className="space-y-5"><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><MetricTile label="Policy rate" value={formatValue(economy.policyRate, "%")} /><MetricTile label="Inflation expectations" value={formatValue(economy.inflationExpectations, "%")} tone={riskTone(economy.inflationExpectations)} /><MetricTile label="Unemployment pressure" value={formatValue(economy.unemployment, "%")} tone={riskTone(economy.unemployment)} /><MetricTile label="Currency index" value={formatValue(economy.currencyIndex)} tone={riskTone(economy.currencyIndex, false)} /><MetricTile label="Bank stress" value={formatValue(economy.bankStress)} tone={riskTone(economy.bankStress)} /><MetricTile label="Credibility" value={formatValue(economy.centralBankCredibility)} tone={riskTone(economy.centralBankCredibility, false)} /></div><ActionStrip actionIds={centralBankActionIds} difficulty={difficulty} onChoose={onChoose} /></div>;
-  }
-  if (view === "markets") {
-    return <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><MetricTile label="Bond yield" value={formatValue(economy.bondYield, "%")} tone={riskTone(economy.bondYield)} /><MetricTile label="Equity index" value={formatValue(economy.equityIndex)} tone={riskTone(economy.equityIndex, false)} /><MetricTile label="Currency index" value={formatValue(economy.currencyIndex)} tone={riskTone(economy.currencyIndex, false)} /><MetricTile label="Commodity pressure" value={formatValue(economy.commodityPressure)} tone={riskTone(economy.commodityPressure)} /><MetricTile label="Bank stress" value={formatValue(economy.bankStress)} tone={riskTone(economy.bankStress)} /><MetricTile label="Market confidence" value={formatValue(economy.marketConfidence)} tone={riskTone(economy.marketConfidence, false)} /></div>;
-  }
-  if (view === "trade") {
-    return <div className="space-y-5"><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3"><MetricTile label="Eastport relationship" value={formatValue(economy.eastportRelationship)} tone={riskTone(economy.eastportRelationship, false)} /><MetricTile label="Tariff level" value={formatValue(economy.tariffLevel, "%")} tone={riskTone(economy.tariffLevel)} /><MetricTile label="Retaliation risk" value={formatValue(economy.retaliationRisk)} tone={riskTone(economy.retaliationRisk)} /><MetricTile label="Export access" value={formatValue(economy.exportAccess)} tone={riskTone(economy.exportAccess, false)} /><MetricTile label="Trade balance" value={formatValue(economy.tradeBalance, "% GDP")} /><MetricTile label="Supply-chain stress" value={formatValue(economy.supplyChainStress)} tone={riskTone(economy.supplyChainStress)} /></div><ActionStrip actionIds={tradeActionIds} difficulty={difficulty} onChoose={onChoose} /></div>;
-  }
-  return <NationDashboard economy={economy} />;
-}
-
-function ActionStrip({ actionIds, difficulty, onChoose }: { actionIds: string[]; difficulty: Difficulty; onChoose: (id: string) => void }) {
-  return (
-    <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-4">
-      <h3 className="font-mono text-sm font-bold uppercase tracking-[0.22em] text-slate-300">Available from this console</h3>
-      <div className="mt-4 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {actionIds.map((id) => <PolicyButton key={id} policy={policyById[id]} difficulty={difficulty} onChoose={onChoose} compact />)}
-      </div>
-    </div>
-  );
-}
-
-function Scorecard({ gameState, onReplay }: { gameState: GameState; onReplay: () => void }) {
-  const score = getScorecard(gameState);
-  return (
-    <section className="space-y-5 rounded-3xl border border-emerald-300/25 bg-slate-950/90 p-6 shadow-2xl shadow-black/40">
-      <p className="font-mono text-xs font-bold uppercase tracking-[0.3em] text-emerald-200">Final scorecard</p>
-      <h2 className="text-4xl font-black text-white">{score.survivalRating}</h2>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
-        <MetricTile label="Welfare" value={String(score.welfareScore)} tone={riskTone(score.welfareScore, false)} />
-        <MetricTile label="Political survival" value={String(score.politicalSurvivalScore)} tone={riskTone(score.politicalSurvivalScore, false)} />
-        <MetricTile label="Macro stability" value={String(score.macroStabilityScore)} tone={riskTone(score.macroStabilityScore, false)} />
-        <MetricTile label="Trade stability" value={String(score.tradeStabilityScore)} tone={riskTone(score.tradeStabilityScore, false)} />
-        <MetricTile label="Market credibility" value={String(score.marketCredibilityScore)} tone={riskTone(score.marketCredibilityScore, false)} />
-      </div>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <DebriefList title="Best decisions" items={score.bestDecisions.length ? score.bestDecisions : ["No standout stabilizer recorded"]} />
-        <DebriefList title="Worst decisions" items={score.worstDecisions.length ? score.worstDecisions : ["No severe policy spiral recorded"]} />
-        <DebriefList title="Frameworks encountered" items={score.frameworksEncountered} />
-      </div>
-      <button type="button" onClick={onReplay} className="rounded-full border border-emerald-200 bg-emerald-300 px-5 py-3 font-bold uppercase tracking-[0.18em] text-slate-950">Replay Steel Crisis</button>
-    </section>
-  );
-}
-
-function DebriefList({ title, items }: { title: string; items: string[] }) {
-  return <article className="rounded-2xl border border-slate-700 bg-slate-900 p-4"><h3 className="font-bold text-white">{title}</h3><ul className="mt-3 space-y-2 text-sm leading-6 text-slate-300">{items.map((item) => <li key={item}>▸ {item}</li>)}</ul></article>;
 }
 
 export function InvisibleHandsPage() {
-  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
-  const [gameState, setGameState] = useState<GameState>(invisibleHandsInitialState);
-  const [activeView, setActiveView] = useState<ViewId>("nation");
-  const currentEvent = useMemo(() => getEventForTurn(Math.min(gameState.economy.turn, gameState.economy.maxTurns)), [gameState.economy.turn, gameState.economy.maxTurns]);
-  const finished = gameState.economy.turn > gameState.economy.maxTurns;
+  const [state, setState] = useState<GameState>(initScenario("inflation-spiral"));
+  const scenario = scenarios.find((s) => s.id === state.scenarioId)!;
+  const layerActors = useMemo(() => state.actors.filter((a) => a.layer === state.layer), [state.actors, state.layer]);
+  const layerActions = actions.filter((a) => a.layer === state.layer);
+  const selected = state.actors.find((a) => a.id === state.selectedActorId);
 
-  function start(mode: Difficulty) {
-    setDifficulty(mode);
-    setGameState(JSON.parse(JSON.stringify(invisibleHandsInitialState)) as GameState);
-    setActiveView("nation");
-  }
-
-  function chooseAction(actionId: string) {
-    if (!finished) setGameState((state) => resolveTurn(state, actionId));
-  }
-
-  if (!difficulty) return <DifficultyIntro onStart={start} />;
+  const toggleAction = (id: string) => setState((s) => ({ ...s, selectedActionIds: s.selectedActionIds.includes(id) ? s.selectedActionIds.filter((x) => x !== id) : [...s.selectedActionIds, id] }));
 
   return (
-    <section className="space-y-5">
-      <div className="rounded-3xl border border-cyan-300/20 bg-[linear-gradient(135deg,#020617,#0f172a_55%,#052e2b)] p-5 shadow-2xl shadow-black/30 sm:p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+    <section className="space-y-4 text-slate-100">
+      <header className="rounded-3xl border border-cyan-400/30 bg-slate-950 p-4 md:p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <p className="font-mono text-xs font-black uppercase tracking-[0.32em] text-cyan-200">Invisible Hands · Port Meridian</p>
-            <h1 className="mt-2 text-3xl font-black text-white sm:text-5xl">Steel Crisis</h1>
-            <p className="mt-3 max-w-3xl text-sm leading-6 text-slate-300">Turn {Math.min(gameState.economy.turn, gameState.economy.maxTurns)} of {gameState.economy.maxTurns}. Difficulty: <span className="font-bold text-emerald-200">{difficulty}</span>.</p>
+            <p className="text-xs uppercase tracking-[0.26em] text-cyan-300">Invisible Hands Command</p>
+            <h1 className="text-3xl font-black md:text-4xl">{scenario.name}</h1>
+            <p className="mt-1 text-sm text-slate-300">Turn {state.turn} · {scenario.objective}</p>
+            <p className="mt-1 text-xs text-slate-400">Concept focus: {scenario.recommendedConcepts.join(" · ")}</p>
           </div>
-          <button type="button" onClick={() => setDifficulty(null)} className="w-fit rounded-full border border-slate-600 px-4 py-2 text-sm font-bold text-slate-200 hover:border-cyan-200">Change difficulty</button>
+          <div className="flex items-center gap-2">
+            <select className="rounded-lg border border-slate-700 bg-slate-900 px-2 py-2 text-sm" value={state.scenarioId} onChange={(e) => setState(initScenario(e.target.value))}>{scenarios.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}</select>
+            <button className="rounded-lg bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-900" onClick={() => setState(advanceTurn(state))}>Advance Turn</button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {finished ? <Scorecard gameState={gameState} onReplay={() => start(difficulty)} /> : (
-        <>
-          <section className="grid gap-5 lg:grid-cols-[0.95fr_1.05fr]">
-            <article className="rounded-3xl border border-amber-300/25 bg-amber-300/10 p-5">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.25em] text-amber-100">Current event</p>
-              <h2 className="mt-3 text-2xl font-black text-white">{currentEvent.title}</h2>
-              <p className="mt-3 text-sm leading-6 text-amber-50/90">{currentEvent.description}</p>
-              {difficulty !== "hard" ? <p className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm leading-6 text-slate-200">Framework note: {currentEvent.educationalNote}</p> : null}
-              <div className="mt-4 flex flex-wrap gap-2">{currentEvent.frameworkTags.map((tag) => <span key={tag} className="rounded-full border border-amber-200/25 px-3 py-1 text-xs text-amber-100">{tag}</span>)}</div>
-            </article>
-            <article className="rounded-3xl border border-cyan-300/20 bg-slate-900/80 p-5">
-              <p className="font-mono text-xs font-bold uppercase tracking-[0.25em] text-cyan-200">Policy room</p>
-              <div className="mt-4 grid gap-3 md:grid-cols-2">
-                {currentEvent.availablePolicyActionIds.map((id) => <PolicyButton key={id} policy={policyById[id]} difficulty={difficulty} onChoose={chooseAction} />)}
-              </div>
-            </article>
-          </section>
+      <div className="grid gap-4 xl:grid-cols-[240px_minmax(0,1fr)_320px]">
+        <aside className="rounded-2xl border border-slate-700 bg-slate-900/70 p-3 text-sm">
+          <h3 className="mb-2 text-xs uppercase tracking-[0.2em] text-slate-300">Key Stats</h3>
+          {trackedStatKeys.map((k) => <div key={k} className="flex justify-between border-b border-slate-800 py-1"><span className="capitalize">{k}</span><strong>{Number(state[k]).toFixed(0)}</strong></div>)}
+        </aside>
 
-          <section className="rounded-3xl border border-slate-700 bg-slate-900/70 p-4 sm:p-5">
-            <div className="flex gap-2 overflow-x-auto pb-2" role="tablist" aria-label="Invisible Hands views">
-              {views.map((view) => (
-                <button key={view.id} type="button" onClick={() => setActiveView(view.id)} className={`min-h-11 shrink-0 rounded-full border px-4 py-2 text-sm font-bold ${activeView === view.id ? "border-cyan-200 bg-cyan-300 text-slate-950" : "border-slate-600 text-slate-200 hover:border-cyan-200"}`}>{view.label}</button>
-              ))}
-            </div>
-            <div className="mt-4"><ActiveView view={activeView} gameState={gameState} difficulty={difficulty} onChoose={chooseAction} /></div>
-          </section>
-        </>
-      )}
-
-      <section className="grid gap-4 lg:grid-cols-[1fr_1fr]">
-        <article className="rounded-3xl border border-slate-700 bg-slate-900/80 p-5">
-          <h2 className="font-mono text-sm font-black uppercase tracking-[0.25em] text-slate-300">Last debrief</h2>
-          {gameState.log[0] ? <div className="mt-4 space-y-3 text-sm leading-6 text-slate-300"><p><span className="font-bold text-white">Turn {gameState.log[0].turn}:</span> {gameState.log[0].actionLabel}</p><p>{gameState.log[0].explanation}</p>{gameState.log[0].delayedEffectsApplied.length ? <p className="text-emerald-200">Delayed effects appeared: {gameState.log[0].delayedEffectsApplied.join(", ")}</p> : null}</div> : <p className="mt-4 text-sm text-slate-400">Choose a policy to generate the first framework debrief.</p>}
-        </article>
-        <article className="rounded-3xl border border-slate-700 bg-slate-900/80 p-5">
-          <h2 className="font-mono text-sm font-black uppercase tracking-[0.25em] text-slate-300">Agent responses</h2>
-          <div className="mt-4 space-y-3">
-            {gameState.log[0]?.agentResponses.length ? gameState.log[0].agentResponses.map((response, index) => <div key={`${response.agent}-${index}`} className={`rounded-2xl border p-3 text-sm leading-6 ${response.tone === "positive" ? "border-emerald-300/25 bg-emerald-400/10 text-emerald-50" : response.tone === "negative" ? "border-red-300/25 bg-red-400/10 text-red-50" : "border-slate-600 bg-slate-950 text-slate-200"}`}><span className="font-bold">{response.agent}:</span> {response.message}</div>) : <p className="text-sm text-slate-400">Agents will react after each action.</p>}
+        <main className="space-y-3">
+          <div className="rounded-2xl border border-slate-700 bg-slate-900/50 p-3">
+            <p className="text-sm text-slate-300">{scenario.briefing}</p>
+            <div className="mt-2 flex flex-wrap gap-2">{(["micro", "macro", "global"] as GameLayer[]).map((l) => <button key={l} onClick={() => setState((s) => ({ ...s, layer: l }))} className={`rounded-md px-3 py-1.5 text-xs font-bold uppercase tracking-[0.16em] ${state.layer === l ? "bg-cyan-300 text-slate-900" : "bg-slate-800 text-slate-100"}`}>{l}</button>)}</div>
           </div>
-        </article>
-      </section>
+
+          <MapView layer={state.layer} actors={layerActors} selectedActorId={state.selectedActorId} onSelect={(id) => setState((s) => ({ ...s, selectedActorId: id }))} />
+
+          <div className="rounded-2xl border border-slate-700 bg-slate-900/60 p-3">
+            <h3 className="font-bold">Action Cards · {state.layer.toUpperCase()}</h3>
+            <div className="mt-2 grid gap-2 lg:grid-cols-2">
+              {layerActions.map((a) => <button key={a.id} onClick={() => toggleAction(a.id)} className={`rounded-xl border p-3 text-left transition ${state.selectedActionIds.includes(a.id) ? "border-emerald-300 bg-emerald-400/10" : "border-slate-700 hover:border-slate-500"}`}><p className="font-semibold">{a.name}</p><p className="mt-1 text-xs text-emerald-200">Upside: {a.upside}</p><p className="text-xs text-rose-200">Risk: {a.downside}</p><p className="mt-1 text-[11px] text-slate-300">{a.concept} · {a.conceptExplanation}</p></button>)}
+            </div>
+          </div>
+        </main>
+
+        <aside className="space-y-3">
+          <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-3">
+            <h3 className="font-bold">Selected Actor</h3>
+            {selected ? <><p className="mt-2">{selected.name}</p><p className="text-sm text-slate-300">{selected.currentStrategy}</p><p className={`mt-2 inline-block rounded-full border px-2 py-1 text-xs ${stressTone(selected.stress)}`}>Stress {selected.stress.toFixed(0)}</p><p className="mt-2 text-xs text-slate-400">Concept tags: {selected.conceptTags.join(" · ")}</p></> : <p className="mt-2 text-sm text-slate-400">Click a map node to inspect incentives.</p>}
+          </div>
+
+          <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-3">
+            <h3 className="font-bold">Turn Summary</h3>
+            <p className="mt-2 text-sm text-slate-200">{summarizeTurn(state)}</p>
+            <p className="mt-1 text-xs text-slate-400">Queued actions: {state.selectedActionIds.length} · Resolved turns: {state.history.length}</p>
+            {state.endState ? <p className="mt-2 rounded border border-amber-400/70 bg-amber-500/10 px-2 py-1 text-sm text-amber-200">End State: {state.endState}</p> : null}
+          </div>
+
+          <div className="rounded-2xl border border-slate-700 bg-slate-900/70 p-3">
+            <h3 className="font-bold">Event Log</h3>
+            <ul className="mt-2 space-y-2 text-sm">{state.activeEvents.map((e) => <li key={e.id} className="rounded border border-slate-800 bg-slate-950/70 p-2"><strong className="text-slate-100">{e.title}</strong><p className="text-slate-300">{e.body}</p><p className="text-[11px] text-cyan-200">{e.concept ? `Concept: ${e.concept}` : ""}</p></li>)}</ul>
+          </div>
+        </aside>
+      </div>
     </section>
   );
 }
