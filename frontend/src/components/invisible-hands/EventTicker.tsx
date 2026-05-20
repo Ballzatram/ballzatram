@@ -1,8 +1,11 @@
 import type { GameEvent } from "@/lib/invisible-hands-v2/types";
 
-export function EventTicker({ events, pending }: { events: GameEvent[]; pending: string[] }) {
-  return <div className="absolute bottom-0 left-0 right-0 z-20 border-t border-slate-700 bg-slate-950/90 p-2 text-xs text-slate-200">
-    <p className="mb-1 uppercase tracking-[0.2em] text-cyan-200">Event Feed</p>
-    <div className="flex gap-2 overflow-auto">{pending.map((p) => <span key={p} className="rounded border border-amber-400/50 px-2 py-1 text-amber-200">Pending: {p}</span>)}{events.slice(0,4).map((e) => <span key={e.id} className="rounded border border-slate-700 px-2 py-1">{e.title}</span>)}</div>
+type TurnPhase = "observe"|"preview"|"resolved";
+
+export function EventTicker({ events, pending, turnPhase }: { events: GameEvent[]; pending: string[]; turnPhase:TurnPhase }) {
+  const resolved = ["Trade balance improves from lower tariffs.","Oil prices rise on stronger demand.","Import competition intensifies.","Customs revenue declines after tariff cuts.","Investor confidence improves."];
+  return <div className="mt-2 rounded border border-[#c4c4c4] bg-[#f5f5f5] p-2 text-xs">
+    <p className="mb-2 text-sm font-semibold uppercase">{turnPhase==="preview"?"AWAITING TURN RESOLUTION":turnPhase==="resolved"?"TURN RESOLVED":"EVENT FEED"}</p>
+    <div className="grid grid-cols-5 gap-2">{(turnPhase==="resolved"?resolved:turnPhase==="preview"?["Policy enacted", "Potential response", "Market reaction", "Trade routes update", "Fiscal impact"]:[...pending,...events.slice(0,4).map((e)=>e.title)]).slice(0,5).map((item)=><div key={item} className="rounded border border-[#c7c7c7] bg-white p-2">{item}</div>)}</div>
   </div>;
 }
