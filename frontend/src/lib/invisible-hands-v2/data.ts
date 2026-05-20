@@ -1,4 +1,4 @@
-import type { Actor, GameAction, GameLayer, GameState, Scenario } from "./types";
+import type { Actor, GameAction, GameLayer, GameState, MapRoute, Scenario } from "./types";
 
 export const trackedStatKeys: Array<keyof GameState> = [
   "inflation","unemployment","output","publicConfidence","financialStability","currencyStrength","supplyStress","energyPrice","foodPrice","tradeBalance","marketVolatility","policyCredibility","fiscalSpace","stabilityScore",
@@ -64,8 +64,8 @@ export const actions: GameAction[] = [
   mk("release-strategic-reserves", "Release Strategic Reserves", "macro", "Signaling", "Relieves energy pressure.", "Markets may question policy depth."),
   mk("industrial-support", "Industrial Support", "macro", "Coordination game", "Protects capacity and jobs.", "Crowds out fiscal space."),
   mk("forward-guidance", "Forward Guidance", "macro", "Credible commitment", "Improves policy transmission.", "Backfires if inconsistent with actions."),
-  mk("raise-tariffs", "Raise Tariffs", "global", "Prisoner's dilemma", "Protects strategic firms now.", "Invites retaliation and price pressure."),
-  mk("lower-tariffs", "Lower Tariffs", "global", "Repeated game", "Reduces imported inflation.", "May hurt protected sectors."),
+  { ...mk("raise-tariffs", "Raise Tariffs", "global", "Prisoner's dilemma", "Protects strategic firms now.", "Invites retaliation and price pressure."), preview: { affectedActorIds:["global-domestic","global-partner","global-manu-competitor"], affectedRouteIds:["global-trade-import","global-tariff","global-retaliation"], expectedDeltas:[{label:"Domestic producers",value:"Protected",direction:"up"},{label:"Consumer prices",value:"Rise",direction:"up"},{label:"Retaliation risk",value:"Increases",direction:"up"},{label:"Trade volume",value:"May fall",direction:"down"}], pendingEvents:["Trade partner signals retaliation.","Manufacturing competition eases briefly.","Import costs move higher."] } },
+  { ...mk("lower-tariffs", "Lower Tariffs", "global", "Repeated game", "Reduces imported inflation.", "May hurt protected sectors."), preview: { affectedActorIds:["global-domestic","global-partner","global-manu-competitor"], affectedRouteIds:["global-trade-import","global-trade-export","global-tariff"], expectedDeltas:[{label:"Trade balance",value:"Shifts",direction:"mixed"},{label:"Import prices",value:"Ease",direction:"down"},{label:"Domestic competition",value:"Intensifies",direction:"up"},{label:"Customs revenue",value:"Falls",direction:"down"}], pendingEvents:["Import prices ease.","Exporters gain access.","Retaliation pressure cools."] } },
   mk("sign-trade-deal", "Sign Trade Deal", "global", "Bargaining power", "Improves access and confidence.", "Requires policy concessions."),
   mk("restrict-exports", "Restrict Exports", "global", "Dominant strategy", "Prioritizes domestic supply.", "Damages reputation and partner trust."),
   mk("diversify-suppliers", "Diversify Suppliers", "global", "Value of information", "Lowers concentration risk.", "Costs rise before resilience gains."),
@@ -73,6 +73,20 @@ export const actions: GameAction[] = [
   mk("strategic-resource-purchase", "Strategic Resource Purchase", "global", "Bayesian beliefs", "Secures key inputs.", "Raises near-term price pressure."),
   mk("negotiate-shipping-access", "Negotiate Shipping Access", "global", "Bargaining power", "Improves flow reliability.", "Dependent on counterpart incentives."),
   mk("retaliation-de-escalation", "Retaliation De-escalation", "global", "Reputation", "Cuts escalation risk.", "Can look weak if done unilaterally."),
+];
+
+
+
+export const mapRoutes: MapRoute[] = [
+  { id: "global-trade-import", layer: "global", from: "global-partner", to: "global-domestic", label: "$126B", kind: "imports", intensityStat: "tradeBalance" },
+  { id: "global-trade-export", layer: "global", from: "global-domestic", to: "global-partner", label: "$82B", kind: "exports", intensityStat: "tradeBalance" },
+  { id: "global-oil-flow", layer: "global", from: "global-oil", to: "global-domestic", label: "$91B", kind: "energy", stressStat: "energyPrice" },
+  { id: "global-food-flow", layer: "global", from: "global-food", to: "global-domestic", label: "$48B", kind: "strategic-resources", stressStat: "foodPrice" },
+  { id: "global-resource-flow", layer: "global", from: "global-resource", to: "global-domestic", label: "$68B", kind: "strategic-resources", stressStat: "supplyStress" },
+  { id: "global-shipping", layer: "global", from: "global-chokepoint", to: "global-domestic", label: "$230B", kind: "shipping", stressStat: "supplyStress" },
+  { id: "global-fx-capital", layer: "global", from: "global-fx", to: "global-domestic", label: "FX", kind: "capital", stressStat: "currencyStrength" },
+  { id: "global-tariff", layer: "global", from: "global-partner", to: "global-manu-competitor", label: "Tariff", kind: "tariff", stressStat: "marketVolatility" },
+  { id: "global-retaliation", layer: "global", from: "global-manu-competitor", to: "global-domestic", label: "Risk", kind: "sanction", stressStat: "marketVolatility" },
 ];
 
 export const scenarios: Scenario[] = [
