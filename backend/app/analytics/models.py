@@ -140,6 +140,82 @@ def rolling_regression(df: pd.DataFrame, y_col: str, x_col: str, window: int = 2
     return rows
 
 
+def compare_regularized(df: pd.DataFrame, y_col: str, x_cols: list[str]) -> dict:
+    y = df[y_col].astype(float).values
+    X = df[x_cols].astype(float).values
+    X_mean = X.mean(axis=0)
+    X_std = X.std(axis=0)
+    X_std[X_std == 0] = 1
+    Xz = (X - X_mean) / X_std
+    yz = y - y.mean()
+    rows = []
+    for alpha in [0.1, 1.0, 10.0]:
+        ridge = np.linalg.solve(Xz.T @ Xz + alpha * np.eye(Xz.shape[1]), Xz.T @ yz)
+        fitted = y.mean() + Xz @ ridge
+        ss_res = float(np.sum((y - fitted) ** 2))
+        ss_tot = float(np.sum((y - y.mean()) ** 2))
+        r2 = 1 - ss_res / ss_tot if ss_tot else 0.0
+        rows.append({"model": f"ridge_alpha_{alpha:g}", "r_squared": float(r2), "coefficients": {name: float(value) for name, value in zip(x_cols, ridge)}})
+    best = max(rows, key=lambda row: row["r_squared"]) if rows else None
+    return {"models": rows, "best_model": best, "methodology_note": "Ridge comparison on standardized factors."}
+
+
+def feature_importance(df: pd.DataFrame, y_col: str, x_cols: list[str]) -> list[dict]:
+    y = df[y_col].astype(float)
+    rows = []
+    for col in x_cols:
+        corr = float(df[[y_col, col]].corr().iloc[0, 1])
+        rows.append({"feature": col, "importance": abs(corr) if np.isfinite(corr) else 0.0, "direction": "positive" if corr >= 0 else "negative"})
+    total = sum(row["importance"] for row in rows) or 1.0
+    return [{**row, "share": float(row["importance"] / total)} for row in sorted(rows, key=lambda row: row["importance"], reverse=True)]
+
+
+def detect_regimes(df: pd.DataFrame, x_cols: list[str]) -> dict:
+    if not x_cols:
+        return {"current_regime": "unknown", "history": []}
+    factor = df[x_cols].astype(float).mean(axis=1)
+    z = (factor - factor.mean()) / (factor.std(ddof=1) or 1)
+    history = []
+    for date, value in z.tail(36).items():
+        if value > 0.75:
+            regime = "high_pressure"
+        elif value < -0.75:
+            regime = "low_pressure"
+        else:
+            regime = "neutral"
+        history.append({"date": str(date.date()), "score": float(value), "regime": regime})
+    return {"current_regime": history[-1]["regime"] if history else "unknown", "history": history}
+
+
+def event_study(df: pd.DataFrame, asset_col: str, benchmark_col: str, release_dates: list[pd.Timestamp], window: int) -> dict:
+    if asset_col not in df.columns:
+        raise ValueError(f"Asset column {asset_col} not found.")
+    benchmark = benchmark_col if benchmark_col in df.columns else asset_col
+    rows = []
+    for release_date in release_dates:
+        if release_date not in df.index:
+            nearest_pos = df.index.get_indexer([release_date], method="nearest")[0]
+        else:
+            nearest_pos = df.index.get_loc(release_date)
+        start = max(0, nearest_pos - window)
+        end = min(len(df), nearest_pos + window + 1)
+        sample = df.iloc[start:end]
+        for offset, (_, row) in enumerate(sample.iterrows(), start=start - nearest_pos):
+            abnormal = float(row[asset_col] - row[benchmark]) if benchmark != asset_col else float(row[asset_col])
+            rows.append({"event_date": str(release_date.date()), "offset": offset, "abnormal_return": abnormal})
+    if not rows:
+        return {"events": [], "average_abnormal_returns": [], "cumulative_abnormal_return": 0.0}
+    out = pd.DataFrame(rows)
+    avg = out.groupby("offset")["abnormal_return"].mean().reset_index()
+    avg_rows = [{"offset": int(row["offset"]), "aar": float(row["abnormal_return"])} for _, row in avg.iterrows()]
+    return {
+        "events": rows,
+        "average_abnormal_returns": avg_rows,
+        "cumulative_abnormal_return": float(avg["abnormal_return"].sum()),
+        "sample_size": len(release_dates),
+    }
+
+
 def stress_test(shocks: dict[str, float], holdings: dict[str, float]) -> dict:
     factor_map = {"rates": -0.24, "cpi": -0.11, "growth": 0.19, "oil": -0.07, "credit": -0.21}
     weight_sum = sum(holdings.values()) or 1.0

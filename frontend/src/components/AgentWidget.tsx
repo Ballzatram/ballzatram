@@ -2,7 +2,9 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
-import { api, AgentProcess, AgentMessage } from "@/lib/api";
+import { ResultCards } from "@/components/ai-tools/ToolPrimitives";
+import { api, AgentMessage, AgentProcess } from "@/lib/api";
+import type { ToolOutput } from "@/lib/toolOutput";
 
 function pageFromPath(pathname: string | null) {
   return (pathname ?? "/dashboard").replace(/^\//, "") || "dashboard";
@@ -15,9 +17,9 @@ export function AgentWidget() {
   const [processes, setProcesses] = useState<Record<string, AgentProcess[]>>({});
   const [selectedProcess, setSelectedProcess] = useState<string>("");
   const [messages, setMessages] = useState<AgentMessage[]>([]);
+  const [latestOutput, setLatestOutput] = useState<ToolOutput | null>(null);
   const [conversationId, setConversationId] = useState<string>();
   const [input, setInput] = useState("");
-  const [accessToken, setAccessToken] = useState("");
   const [status, setStatus] = useState("Ready to guide this page.");
   const [busy, setBusy] = useState(false);
 
@@ -34,27 +36,10 @@ export function AgentWidget() {
     if (activeProcess) setSelectedProcess(activeProcess.id);
   }, [activeProcess?.id]);
 
-  async function startCheckout() {
-    setBusy(true);
-    setStatus("Opening Stripe Checkout…");
-    try {
-      const origin = window.location.origin;
-      const res = await api.agentCheckout({
-        page_id: pageId,
-        success_url: `${origin}${pathname ?? "/dashboard"}?agent_paid=true&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${origin}${pathname ?? "/dashboard"}?agent_paid=false`,
-      });
-      window.location.href = res.checkout_url;
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : "Checkout is not configured");
-      setBusy(false);
-    }
-  }
-
   async function send(message = input) {
     if (!message.trim() || !activeProcess) return;
     setBusy(true);
-    setStatus("Thinking through the workflow…");
+    setStatus("Thinking through the workflow...");
     setInput("");
     try {
       const res = await api.agentChat({
@@ -62,11 +47,12 @@ export function AgentWidget() {
         page_id: pageId,
         process_id: activeProcess.id,
         conversation_id: conversationId,
-        access_token: accessToken || undefined,
+        // TODO: Add plan or entitlement context here after paid-tool packaging exists.
       });
       setConversationId(res.conversation_id);
       setMessages(res.history);
-      setStatus(res.paid_access ? "Agent response ready." : "Payment required.");
+      setLatestOutput(res.structured_output ?? null);
+      setStatus("Structured guidance ready.");
     } catch (err) {
       setStatus(err instanceof Error ? err.message : "Agent request failed");
     } finally {
@@ -122,18 +108,14 @@ export function AgentWidget() {
                   >
                     Start this process
                   </button>
-                  <button
-                    className="rounded-full border border-emerald-300/60 px-3 py-2 text-sm font-semibold text-emerald-100 hover:border-emerald-200 disabled:opacity-60"
-                    disabled={busy}
-                    onClick={() => void startCheckout()}
-                  >
-                    Unlock with Stripe
-                  </button>
+                  <span className="rounded-full border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-400">
+                    Free while workflow quality is refined
+                  </span>
                 </div>
               </div>
             ) : null}
 
-            <div className="max-h-72 space-y-3 overflow-y-auto pr-1">
+            <div className="max-h-56 space-y-3 overflow-y-auto pr-1">
               {messages.length === 0 ? <p className="text-sm text-slate-400">Ask the agent to help complete this page's process.</p> : null}
               {messages.map((message, index) => (
                 <div key={`${message.created_at}-${index}`} className={message.role === "assistant" ? "rounded-xl bg-emerald-400/10 p-3 text-sm text-emerald-50" : "rounded-xl bg-slate-800 p-3 text-sm text-slate-50"}>
@@ -143,18 +125,19 @@ export function AgentWidget() {
               ))}
             </div>
 
+            {latestOutput?.cards?.length ? (
+              <div className="max-h-72 overflow-y-auto rounded-xl border border-slate-800 bg-slate-950/60 p-3">
+                <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Structured output</p>
+                <ResultCards cards={latestOutput.cards.slice(0, 2)} />
+              </div>
+            ) : null}
+
             <form onSubmit={submit} className="space-y-2">
               <textarea
                 className="min-h-24 w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm text-white placeholder:text-slate-500"
-                placeholder="Tell the agent what you want to accomplish…"
+                placeholder="Tell the agent what you want to accomplish..."
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
-              />
-              <input
-                className="w-full rounded-lg border border-slate-700 bg-slate-900 p-2 text-sm text-white placeholder:text-slate-500"
-                placeholder="Paid access token or Stripe session ID (if required)"
-                value={accessToken}
-                onChange={(event) => setAccessToken(event.target.value)}
               />
               <div className="flex items-center justify-between gap-3">
                 <p className="text-xs text-slate-400">{status}</p>
@@ -176,3 +159,4 @@ export function AgentWidget() {
     </div>
   );
 }
+

@@ -22,6 +22,13 @@ class WorkspaceVersion:
     recommendations: list[dict[str, Any]]
     warnings: list[dict[str, Any]]
     data_sources: list[str] = field(default_factory=list)
+    summary: str = ""
+    risks: list[dict[str, Any]] = field(default_factory=list)
+    missing_data: list[str] = field(default_factory=list)
+    recommended_next_steps: list[str] = field(default_factory=list)
+    sources: list[dict[str, Any]] = field(default_factory=list)
+    confidence: str = "medium"
+    status: str = "complete"
 
 
 @dataclass
@@ -77,6 +84,13 @@ class WorkspaceStore:
             recommendations=result.get("recommendations", []),
             warnings=result.get("warnings", []),
             data_sources=result.get("dataSources", []),
+            summary=result.get("summary", ""),
+            risks=result.get("risks", []),
+            missing_data=result.get("missingData", []),
+            recommended_next_steps=result.get("recommendedNextSteps", []),
+            sources=result.get("sources", []),
+            confidence=result.get("confidence", "medium"),
+            status=result.get("status", "complete"),
         )
         record = WorkspaceRecord(
             workspace_id=str(uuid4()),
@@ -110,6 +124,13 @@ class WorkspaceStore:
                     recommendations=result.get("recommendations", []),
                     warnings=result.get("warnings", []),
                     data_sources=result.get("dataSources", []),
+                    summary=result.get("summary", ""),
+                    risks=result.get("risks", []),
+                    missing_data=result.get("missingData", []),
+                    recommended_next_steps=result.get("recommendedNextSteps", []),
+                    sources=result.get("sources", []),
+                    confidence=result.get("confidence", "medium"),
+                    status=result.get("status", "complete"),
                 ))
                 self._save(rows)
                 return asdict(row)

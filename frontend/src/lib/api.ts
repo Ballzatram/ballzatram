@@ -1,7 +1,9 @@
+import type { ToolOutput } from "@/lib/toolOutput";
+
 export type ApiError = { detail: string };
 export type AgentProcess = { id: string; title: string; outcome: string; starter_prompt: string; steps: string[] };
 export type AgentMessage = { role: "user" | "assistant"; content: string; created_at: string };
-export type AgentChatResponse = { conversation_id: string; page_id: string; process_id: string; answer: string; history: AgentMessage[]; paid_access: boolean };
+export type AgentChatResponse = { conversation_id: string; page_id: string; process_id: string; answer: string; structured_output?: ToolOutput; history: AgentMessage[]; paid_access: boolean };
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
 
