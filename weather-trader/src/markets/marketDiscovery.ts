@@ -2,6 +2,9 @@ import type { Logger } from "../logger/logger.js";
 import { GammaClient, GammaClientError, type GammaMarket } from "./gammaClient.js";
 import { persistMarketSnapshot, type MarketSnapshotStore } from "../db/marketSnapshotStore.js";
 import { decideMarket, type TradingDecision } from "../strategy/decisionEngine.js";
+import { parseWeatherMarket } from "../strategy/marketParser.js";
+import type { WeatherSourceRegistry } from "../weather/sourceRegistry.js";
+import { resolveWeatherSnapshots, type WeatherDataStatus } from "../weather/weatherSnapshotResolver.js";
 import { PaperBroker } from "../strategy/paperBroker.js";
 
 const WEATHER_KEYWORDS = [
@@ -33,6 +36,7 @@ export interface MarketDiscoveryOptions {
   store: MarketSnapshotStore;
   logger: Logger;
   limit: number;
+  weatherSourceRegistry: WeatherSourceRegistry;
 }
 
 export interface WeatherMarketSummary {
@@ -43,6 +47,13 @@ export interface WeatherMarketSummary {
   endDate: string | null;
   clobTokenIds: string[];
   matchedKeywords: string[];
+}
+
+export interface WeatherDataStatusSummary {
+  marketId: string;
+  status: WeatherDataStatus;
+  sourceNames: string[];
+  reasons: string[];
 }
 
 export interface MarketDiscoveryResult {
@@ -57,6 +68,10 @@ export interface MarketDiscoveryResult {
   paperTrades: number;
   noTrades: number;
   errors: Array<{ source: "gamma" | "sqlite" | "paper_broker"; message: string }>;
+  weatherSnapshotAttempts: number;
+  weatherSnapshotSuccesses: number;
+  weatherSnapshotFailures: number;
+  weatherDataStatuses: WeatherDataStatusSummary[];
 }
 
 export async function runMarketDiscovery(options: MarketDiscoveryOptions): Promise<MarketDiscoveryResult> {
@@ -72,6 +87,10 @@ export async function runMarketDiscovery(options: MarketDiscoveryOptions): Promi
     paperTrades: 0,
     noTrades: 0,
     errors: [],
+    weatherSnapshotAttempts: 0,
+    weatherSnapshotSuccesses: 0,
+    weatherSnapshotFailures: 0,
+    weatherDataStatuses: [],
   };
 
   let markets: GammaMarket[];
@@ -114,8 +133,28 @@ export async function runMarketDiscovery(options: MarketDiscoveryOptions): Promi
       result.storedWeatherMarkets += 1;
       options.logger.info("Discovered weather-like Polymarket market", { ...summary });
 
-      const decision = decideMarket(market);
+      const parsedMarket = parseWeatherMarket(market);
+      result.weatherSnapshotAttempts += 1;
+      const weatherResolution = await resolveWeatherSnapshots({
+        parsedMarket,
+        registry: options.weatherSourceRegistry,
+        logger: options.logger,
+      });
+      result.weatherDataStatuses.push({
+        marketId: market.id,
+        status: weatherResolution.status,
+        sourceNames: weatherResolution.sourcesUsed,
+        reasons: weatherResolution.reasons,
+      });
+      if (weatherResolution.status === "resolved") {
+        result.weatherSnapshotSuccesses += 1;
+      } else {
+        result.weatherSnapshotFailures += 1;
+      }
+
+      const decision = decideMarket(market, { weatherSnapshots: weatherResolution.snapshots });
       try {
+        options.store.saveWeatherSnapshotAudit?.(market.id, weatherResolution);
         paperBroker.recordDecision(decision);
         result.decisions.push(decision);
         if (decision.action === "PAPER_TRADE") {

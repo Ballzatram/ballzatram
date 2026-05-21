@@ -5,6 +5,7 @@ import { createStatusPayload } from "./api/status.js";
 import { GammaClient } from "./markets/gammaClient.js";
 import { runMarketDiscovery } from "./markets/marketDiscovery.js";
 import { openMarketSnapshotStore } from "./db/marketSnapshotStore.js";
+import { createDefaultWeatherSourceRegistry } from "./weather/sourceRegistry.js";
 
 const STATUS_PATH = "/api/weather-bot/status";
 const RUN_ONCE_PATH = "/api/weather-bot/run-once";
@@ -52,6 +53,7 @@ async function handleRequest(
         store,
         logger,
         limit: config.discoveryLimit,
+        weatherSourceRegistry: createDefaultWeatherSourceRegistry(config),
       });
 
       writeJson(response, result.ok ? 200 : 502, result);

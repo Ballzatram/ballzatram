@@ -4,6 +4,7 @@ import { createRequire } from "node:module";
 import { SQLITE_SCHEMA } from "./schema.js";
 import type { GammaMarket } from "../markets/gammaClient.js";
 import type { TradingDecision } from "../strategy/decisionEngine.js";
+import type { WeatherSnapshotResolution } from "../weather/weatherSnapshotResolver.js";
 
 type DatabaseSync = {
   exec(sql: string): void;
@@ -22,6 +23,7 @@ export interface MarketSnapshotStore {
   close(): void;
   saveMarketSnapshot(market: GammaMarket, isWeatherLike: boolean): void;
   saveTradingDecision(decision: TradingDecision): void;
+  saveWeatherSnapshotAudit?(marketId: string, resolution: WeatherSnapshotResolution): void;
 }
 
 const require = createRequire(import.meta.url);
@@ -36,6 +38,7 @@ export function openMarketSnapshotStore(dbPath: string): MarketSnapshotStore {
     close: () => db.close(),
     saveMarketSnapshot: (market, isWeatherLike) => saveMarketSnapshot(db, market, isWeatherLike),
     saveTradingDecision: (decision) => saveTradingDecision(db, decision),
+    saveWeatherSnapshotAudit: (marketId, resolution) => saveWeatherSnapshotAudit(db, marketId, resolution),
   };
 }
 
@@ -262,4 +265,35 @@ function normalizeInsertedId(value: number | bigint | undefined): number {
   }
 
   throw new Error("SQLite did not return a decision id for the paper trade.");
+}
+
+
+function saveWeatherSnapshotAudit(db: DatabaseSync, marketId: string, resolution: WeatherSnapshotResolution): void {
+  const now = new Date().toISOString();
+  for (const snapshot of resolution.snapshots) {
+    db.prepare(`
+      INSERT INTO weather_snapshot_audit (
+        external_market_id, source, fetched_at, target_time, temperature_c, precipitation_probability_percent, precipitation_mm, wind_speed_kph, status, reasons_json, raw_json
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `).run(
+      marketId,
+      snapshot.source,
+      snapshot.fetchedAt,
+      snapshot.forecastValidAt ?? snapshot.observedAt ?? now,
+      snapshot.temperatureC,
+      snapshot.precipitationProbabilityPercent,
+      snapshot.precipitationMm,
+      snapshot.windSpeedKph,
+      resolution.status,
+      JSON.stringify(resolution.reasons),
+      JSON.stringify(snapshot.raw),
+    );
+  }
+
+  if (resolution.snapshots.length === 0) {
+    db.prepare(`
+      INSERT INTO weather_snapshot_audit (external_market_id, source, fetched_at, target_time, status, reasons_json, raw_json)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `).run(marketId, null, now, now, resolution.status, JSON.stringify(resolution.reasons), null);
+  }
 }
