@@ -11,61 +11,59 @@
     <header class="topbar card">
       <div>
         <p class="kicker">Parcel Intelligence</p>
-        <h1>Current Opportunities</h1>
-        <p class="sub">Production search flow: parameters → search → AI synthesis → investor-ready dashboard.</p>
+        <h1>AI Land Acquisition Analyst</h1>
+        <p class="sub">Find, score, and pitch land opportunities with an AI acquisition analyst.</p>
       </div>
       <a href="../../index.html" class="back-link">Back</a>
     </header>
 
     <section class="stage stage-active card" id="stage-intake">
-      <h2>1) Parameter settings</h2>
+      <h2>1) Define investment thesis</h2>
+      <p class="section-copy">Create a clear thesis first. Parcel Intelligence then searches, normalizes, scores, and prioritizes opportunities.</p>
       <form id="search-form" class="search-grid">
-        <label>Target location
-          <input id="location" placeholder="City, county, state, or region" required />
-        </label>
-        <label>Acquisition thesis
-          <select id="goal">
-            <option>Equestrian / Polo</option>
-            <option>Farm / Ranch</option>
-            <option>Land Investment</option>
-            <option>Mixed-Use Development</option>
+        <label>Target use case
+          <select id="target-use" required>
+            <option>Equestrian Center</option><option>Country Club</option><option>Residential Development</option><option>Land Banking</option><option>Solar</option><option>Industrial</option><option>Hospitality</option><option>Mixed-Use</option>
           </select>
         </label>
-        <label>Minimum acres<input id="min-acres" type="number" value="20" min="0" /></label>
-        <label>Maximum budget (USD)<input id="max-price" type="number" value="5000000" min="0" /></label>
-        <label>Max drive time from CBD (minutes)<input id="max-drive" type="number" value="60" min="5" /></label>
-        <label>Required utilities
-          <select id="utilities"><option value="Any">Any</option><option>Power</option><option>Water</option><option>Sewer</option><option>Power + Water</option></select>
-        </label>
+        <label>Location / target market<input id="location" placeholder="City, county, state, or region" required /></label>
+        <label>Search radius (miles)<input id="radius" type="number" min="1" value="40" /></label>
+        <label>Acreage minimum<input id="acreage-min" type="number" min="0" value="20" /></label>
+        <label>Acreage maximum<input id="acreage-max" type="number" min="0" value="300" /></label>
+        <label>Budget ceiling (USD)<input id="budget-max" type="number" min="0" value="5000000" /></label>
+        <label>Must-have factors (comma separated)<input id="must-have" placeholder="Road frontage, utilities, zoning flexibility" /></label>
+        <label>Risk factors to avoid (comma separated)<input id="risk-factors" placeholder="Floodplain, inaccessible easements" /></label>
+        <label class="full">Thesis notes<textarea id="notes" rows="3" placeholder="Describe your strategy, ideal parcel profile, and non-negotiables."></textarea></label>
         <label>Search coverage
-          <select id="source">
-            <option value="all">All tracked land marketplaces</option>
-            <option value="landsearch">LandSearch</option>
-            <option value="land">Land.com</option>
-            <option value="loopnet">LoopNet</option>
-            <option value="zillow">Zillow</option>
-            <option value="realtor">Realtor</option>
-          </select>
+          <select id="source"><option value="all">All tracked land marketplaces</option><option value="landsearch">LandSearch</option><option value="land">Land.com</option><option value="loopnet">LoopNet</option><option value="zillow">Zillow</option><option value="realtor">Realtor</option></select>
         </label>
-        <button class="cta" type="submit">Run comprehensive search</button>
+        <button class="cta" type="submit">2) Find opportunities</button>
       </form>
     </section>
 
-    <section class="stage card" id="stage-processing">
-      <div class="spinner"></div>
-      <h2>2) Search + AI aggregation in progress</h2>
-      <p id="processing-text">Building multi-site queries...</p>
-    </section>
+    <section class="stage card" id="stage-processing"><div class="spinner"></div><h2>2) Search + scoring in progress</h2><p id="processing-text">Building thesis object, validating sources, and scoring opportunities.</p></section>
 
     <section class="stage card" id="stage-results">
-      <div class="dash-head">
-        <h2>3) Dashboard results</h2>
-        <button id="refresh-btn" class="ghost">Refresh data</button>
-      </div>
+      <div class="dash-head"><h2>3) Opportunity workspace</h2><button id="refresh-btn" class="ghost">Refresh</button></div>
+      <article class="thesis-block" id="thesis-block"></article>
       <p id="summary"></p>
       <div class="metrics" id="metrics"></div>
       <article class="ai-note" id="ai-note"></article>
-      <div class="table-wrap"><table><thead><tr><th>Property</th><th>Source</th><th>Fit</th><th>Rationale</th><th>Link</th></tr></thead><tbody id="results"></tbody></table></div>
+      <div id="results" class="opportunity-grid"></div>
+      <div class="empty" id="results-empty" hidden>No opportunities found. Try broadening geography, acreage, or budget criteria.</div>
+    </section>
+
+    <section class="stage card" id="stage-shortlist">
+      <div class="dash-head"><h2>4) Shortlist + compare</h2><button id="generate-deck" class="cta ghost">Generate Pitch Deck</button></div>
+      <article class="ai-note" id="compare-summary"></article>
+      <div class="table-wrap"><table><thead><tr><th>Title</th><th>Location</th><th>Acres</th><th>Asking</th><th>$/Acre</th><th>Fit</th><th>Risk</th><th>Confidence</th><th>Pitch</th><th>Summary</th></tr></thead><tbody id="shortlist-table"></tbody></table></div>
+      <p id="shortlist-empty" class="empty">No shortlisted opportunities yet. Save cards from results to compare and build a deck.</p>
+    </section>
+
+    <section class="stage card" id="stage-deck">
+      <h2>5) Pitch deck preview</h2>
+      <div id="deck-preview" class="deck-grid"></div>
+      <div class="deck-actions"><button class="ghost" disabled>Export PDF (coming soon)</button><button class="ghost" disabled>Export PowerPoint (coming soon)</button><button class="ghost" disabled>Share deck (coming soon)</button></div>
     </section>
   </main>
   <script src="./script.js"></script>
