@@ -6,6 +6,8 @@ from app.api.agent_routes import router as agent_router
 from app.data.timeseries import load_demo_series, parse_uploaded_csv
 from app.models.schemas import AnalysisRequest, CsvUploadRequest, EventStudyRequest, ReportRequest, ScenarioRequest
 from app.services.analytics import run_event_study, run_scenario, run_stock_analysis
+
+from app.services.macro_board import build_intake, build_research, get_market_data, get_series, run_macro_stress
 from app.services.reporting import render_markdown
 
 router = APIRouter()
@@ -49,3 +51,39 @@ def do_event_study(req: EventStudyRequest):
 @router.post('/reports/markdown')
 def create_markdown_report(req: ReportRequest):
     return {"markdown": render_markdown(req.title, req.findings, req.scenario_outcomes)}
+
+
+@router.post("/macro-board/intake")
+def macro_intake(payload: dict):
+    return build_intake(payload.get("prompt", ""))
+
+
+@router.post("/macro-board/research")
+def macro_research(payload: dict):
+    return build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
+
+
+@router.post("/macro-board/stress-test")
+def macro_stress(payload: dict):
+    return run_macro_stress(payload.get("scenario", {}), payload.get("holdings", {"SPY": 1.0}))
+
+
+@router.post("/macro-board/regime")
+def macro_regime(payload: dict):
+    return {"regime": "Transitional", "methodology": "Placeholder deterministic regime label from current macro factor z-scores."}
+
+
+@router.post("/macro-board/compare-tabs")
+def macro_compare_tabs(payload: dict):
+    tabs = payload.get("tabs", [])
+    return {"comparison": [{"title": t.get("title", "Untitled"), "cards": len(t.get("cards", []))} for t in tabs]}
+
+
+@router.get("/macro-board/series")
+def macro_series():
+    return get_series()
+
+
+@router.get("/macro-board/market-data")
+def macro_market_data():
+    return get_market_data()
