@@ -1,168 +1,45 @@
-const stages = {
-  intake: document.getElementById('stage-intake'),
-  processing: document.getElementById('stage-processing'),
-  results: document.getElementById('stage-results')
-};
+const stages={intake:document.getElementById('stage-intake'),processing:document.getElementById('stage-processing'),results:document.getElementById('stage-results'),shortlist:document.getElementById('stage-shortlist'),deck:document.getElementById('stage-deck')};
+const form=document.getElementById('search-form');
+const processingText=document.getElementById('processing-text');
+const summary=document.getElementById('summary');
+const metricsEl=document.getElementById('metrics');
+const aiNoteEl=document.getElementById('ai-note');
+const resultsEl=document.getElementById('results');
+const resultsEmpty=document.getElementById('results-empty');
+const thesisBlock=document.getElementById('thesis-block');
+const shortlistTable=document.getElementById('shortlist-table');
+const shortlistEmpty=document.getElementById('shortlist-empty');
+const compareSummary=document.getElementById('compare-summary');
+const deckPreview=document.getElementById('deck-preview');
+let shortlist=[]; let latestThesis=null; let latestResults=[];
+const SOURCES=['landsearch.com','land.com','loopnet.com','zillow.com','realtor.com','landwatch.com'];
+const activate=(k)=>Object.entries(stages).forEach(([name,s])=>s.classList.toggle('stage-active',name===k||['results','shortlist','deck'].includes(name)&&k==='results'));
+const wait=(ms)=>new Promise((r)=>setTimeout(r,ms));
+const splitCsv=(v)=>v.split(',').map((x)=>x.trim()).filter(Boolean);
 
-const form = document.getElementById('search-form');
-const refreshBtn = document.getElementById('refresh-btn');
-const processingText = document.getElementById('processing-text');
-const summary = document.getElementById('summary');
-const resultsEl = document.getElementById('results');
-const aiNoteEl = document.getElementById('ai-note');
-const metricsEl = document.getElementById('metrics');
-
-const SOURCES = ['landsearch.com', 'land.com', 'loopnet.com', 'zillow.com', 'realtor.com', 'landwatch.com'];
-
-const activate = (k) => {
-  Object.values(stages).forEach((s) => s.classList.remove('stage-active'));
-  stages[k].classList.add('stage-active');
-};
-
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
-function buildQuery() {
-  const loc = document.getElementById('location').value.trim();
-  const goal = document.getElementById('goal').value.trim();
-  const min = Number(document.getElementById('min-acres').value || 0);
-  const max = Number(document.getElementById('max-price').value || 0);
-  const maxDrive = Number(document.getElementById('max-drive').value || 60);
-  const utilities = document.getElementById('utilities').value;
-  const src = document.getElementById('source').value;
-
-  const selectedSources = src === 'all' ? SOURCES : SOURCES.filter((s) => s.includes(src));
-  const sourceClause = selectedSources.map((s) => `site:${s}`).join(' OR ');
-
-  return {
-    loc,
-    goal,
-    min,
-    max,
-    maxDrive,
-    utilities,
-    selectedSources,
-    raw: `land for sale ${loc} ${goal} at least ${min} acres under ${max} ${utilities} ${sourceClause}`.trim()
-  };
+function generateInvestmentThesis(){
+  const thesis={targetUse:document.getElementById('target-use').value,location:document.getElementById('location').value.trim(),radiusMiles:Number(document.getElementById('radius').value)||null,acreageMin:Number(document.getElementById('acreage-min').value)||null,acreageMax:Number(document.getElementById('acreage-max').value)||null,budgetMax:Number(document.getElementById('budget-max').value)||null,mustHaveFactors:splitCsv(document.getElementById('must-have').value),riskFactors:splitCsv(document.getElementById('risk-factors').value),notes:document.getElementById('notes').value.trim(),scoringWeights:{locationFit:18,acreageFit:14,priceFit:14,accessFit:10,zoningFit:10,utilityFit:9,floodRisk:8,demographicSupport:7,competitionGap:5,developmentComplexity:5}};
+  thesis.generatedSearchSummary=`${thesis.targetUse} strategy in ${thesis.location} within ${thesis.radiusMiles||'any'} miles; target ${thesis.acreageMin||'any'}-${thesis.acreageMax||'any'} acres and max budget $${(thesis.budgetMax||0).toLocaleString()}.`;
+  return thesis;
 }
+function parseJina(text){return text.split('\n').map((ln)=>ln.match(/\[(.*?)\]\((https?:\/\/[^)]+)\)/)).filter(Boolean).map((m)=>({title:m[1],url:m[2]})).filter((r)=>SOURCES.some((d)=>r.url.includes(d))).map((r)=>({...r,source:(new URL(r.url)).hostname.replace('www.','')}));}
+async function fallbackRows(){try{const r=await fetch('./output/seed_listings.json',{cache:'no-store'});return r.ok?await r.json():[];}catch{return[];}}
+async function validateSource(url){if(!url)return'unknown';try{const r=await fetch(url,{method:'HEAD',mode:'no-cors'});return r?'live':'partial';}catch{return'unknown';}}
+function scoreOpportunity(op,t){const dims={locationFit:45,acreageFit:50,priceFit:50,accessFit:55,zoningFit:50,utilityFit:50,floodRisk:50,demographicSupport:55,competitionGap:50,developmentComplexity:50};const text=(op.title||'').toLowerCase();if(text.includes(t.location.toLowerCase()))dims.locationFit=92;if(/acre|land|tract|ranch|farm/.test(text))dims.acreageFit=80;if(/highway|road|frontage/.test(text))dims.accessFit=75;if(/utility|electric|water|sewer/.test(text))dims.utilityFit=76;if(/flood/.test(text))dims.floodRisk=25;const weighted=Object.entries(dims).reduce((n,[k,v])=>n+v*(t.scoringWeights[k]||0),0)/100;const overallFitScore=Math.round(weighted);const developmentRisk=overallFitScore>75?'low':overallFitScore>58?'medium':'high';const pitchReadinessScore=Math.max(35,Math.round(overallFitScore-(op.dataConfidence==='low'?18:op.dataConfidence==='medium'?8:0)));return {overallFitScore,developmentRisk,pitchReadinessScore,scoreBreakdown:dims,scoreExplanation:[`Location fit ${dims.locationFit}/100 based on title/source match.`,`Acreage and land-type signal ${dims.acreageFit}/100 from listing context.`,`Price fit is conservative due to sparse verified asking data.`]};}
+function summarizeOpportunity(op,thesis){return `Potential ${thesis.targetUse.toLowerCase()} candidate in ${op.location}. Fit driven by location + parcel use signals. Validate zoning, utilities, and title chain before LOI.`;}
+function normalizeOpportunity(row,thesis){const sourceStatus=row.url?'unknown':'unknown'; const sourceType=row.source?.includes('county')?'county/GIS':'listing'; const askingPrice=row.price||null; const acreage=row.acreage||null; const pricePerAcre=(askingPrice&&acreage)?Math.round(askingPrice/acreage):null; let fields=0; ['title','url','source'].forEach((k)=>{if(row[k])fields+=1;});const dataConfidence=fields>=3?'medium':'low';const op={id:btoa((row.url||row.title||Math.random()).slice(0,50)),title:row.title||'Untitled Opportunity',location:thesis.location,acreage,askingPrice,pricePerAcre,sourceUrl:row.url||null,sourceStatus,sourceType,dataConfidence,aiSummary:'',fitReason:'',redFlags:'Unknown acreage/price; verify with broker/county records.',nextQuestions:'What is current zoning, utility tie-in cost, and floodplain status?'};const score=scoreOpportunity(op,thesis);op.aiSummary=summarizeOpportunity(op,thesis);op.fitReason=score.scoreExplanation[0];return {...op,...score};}
+function createCard(op){const card=document.createElement('article');card.className='opp-card';card.innerHTML=`<h3>${op.title}</h3><p>${op.aiSummary}</p><div class="badges"><span>Fit ${op.overallFitScore}/100</span><span>Risk ${op.developmentRisk}</span><span>Confidence ${op.dataConfidence}</span><span>Source ${op.sourceStatus}</span></div><ul><li><strong>Location:</strong> ${op.location}</li><li><strong>Acreage:</strong> ${op.acreage??'unknown/inferred'}</li><li><strong>Asking:</strong> ${op.askingPrice?`$${op.askingPrice.toLocaleString()}`:'unknown/inferred'}</li><li><strong>$/Acre:</strong> ${op.pricePerAcre?`$${op.pricePerAcre.toLocaleString()}`:'unknown/inferred'}</li><li><strong>Why it fits:</strong> ${op.fitReason}</li><li><strong>Red flags:</strong> ${op.redFlags}</li><li><strong>Next questions:</strong> ${op.nextQuestions}</li></ul><div class="actions"><a class="ghost" href="${op.sourceUrl||'#'}" target="_blank" rel="noreferrer">View Source</a><button class="ghost" data-save="${op.id}">Save to Shortlist</button><button class="ghost" data-compare="${op.id}">Compare</button><button class="ghost" disabled>Generate Slide</button><button class="ghost" disabled>Ask AI</button></div>`;return card;}
+function renderMetrics(rows){const shortlistCount=shortlist.length;const avg=rows.length?(rows.reduce((n,r)=>n+r.overallFitScore,0)/rows.length).toFixed(1):'0.0';metricsEl.innerHTML=[['Total Opportunities',rows.length],['Shortlisted',shortlistCount],['Avg Fit',avg],['Workflow','Thesis → Score → Pitch']].map(([k,v])=>`<div class="metric"><p>${k}</p><strong>${v}</strong></div>`).join('');}
+function generateComparisonSummary(list,thesis){if(!list.length)return'Add at least one opportunity to generate a comparison summary.';const best=[...list].sort((a,b)=>b.overallFitScore-a.overallFitScore)[0];return `Based on the current thesis for ${thesis.targetUse} in ${thesis.location}, ${best.title} is currently the strongest pitch candidate due to composite fit score and readiness. Lower-ranked parcels may still offer upside but require more diligence on zoning, utilities, and environmental risk.`;}
+function renderShortlist(){shortlistTable.innerHTML='';shortlist.forEach((op)=>{const tr=document.createElement('tr');tr.innerHTML=`<td>${op.title}</td><td>${op.location}</td><td>${op.acreage??'unknown'}</td><td>${op.askingPrice?`$${op.askingPrice.toLocaleString()}`:'unknown'}</td><td>${op.pricePerAcre?`$${op.pricePerAcre.toLocaleString()}`:'unknown'}</td><td>${op.overallFitScore}</td><td>${op.developmentRisk}</td><td>${op.dataConfidence}</td><td>${op.pitchReadinessScore}</td><td>${op.aiSummary}</td>`;shortlistTable.appendChild(tr);});shortlistEmpty.hidden=shortlist.length>0;compareSummary.textContent=generateComparisonSummary(shortlist,latestThesis);}
+function generatePitchDeck(list,thesis){if(!list.length){deckPreview.innerHTML='<p class="empty">Deck cannot be generated until at least one parcel is shortlisted.</p>';return;}const slides=[['Title Slide',`Parcel Intelligence acquisition pitch: ${thesis.targetUse} in ${thesis.location}`],['Investment Thesis',thesis.generatedSearchSummary],['Market/Search Criteria',`Radius ${thesis.radiusMiles||'any'} mi • Acres ${thesis.acreageMin||'any'}-${thesis.acreageMax||'any'} • Budget ceiling ${thesis.budgetMax?`$${thesis.budgetMax.toLocaleString()}`:'not set'}`],['Shortlist Summary',generateComparisonSummary(list,thesis)],['Opportunity Map Placeholder','Map preview coming soon — integrate GIS layer in next release.'],...list.map((op,idx)=>[`Opportunity ${idx+1}`,`${op.title} • Fit ${op.overallFitScore}/100 • Risk ${op.developmentRisk}`]),['Risk Matrix','Primary risks: zoning uncertainty, utility tie-in cost, floodplain, entitlement complexity.'],['Financial Assumptions Placeholder','IRR model, capex assumptions, and hold/sell scenarios coming soon.'],['Recommended Next Steps','Validate title/zoning, request utility letters, site visit, broker interviews, and investment committee memo.']];deckPreview.innerHTML=slides.map(([t,b])=>`<article class="slide"><h3>${t}</h3><p>${b}</p></article>`).join('');}
 
-function parseJina(text) {
-  const rows = [];
-  for (const ln of text.split('\n')) {
-    const match = ln.match(/\[(.*?)\]\((https?:\/\/[^)]+)\)/);
-    if (!match) continue;
-    const url = match[2];
-    if (!SOURCES.some((domain) => url.includes(domain))) continue;
-    rows.push({
-      title: match[1],
-      url,
-      source: (new URL(url)).hostname.replace('www.', '')
-    });
-  }
-  return rows;
-}
+async function executeSearch(){activate('processing'); latestThesis=generateInvestmentThesis(); thesisBlock.textContent=`Thesis: ${latestThesis.generatedSearchSummary}`; processingText.textContent='Running multi-source search and normalizing opportunities...'; await wait(300); const source=document.getElementById('source').value; const clause=(source==='all'?SOURCES:SOURCES.filter((s)=>s.includes(source))).map((s)=>`site:${s}`).join(' OR '); const query=`land for sale ${latestThesis.location} ${latestThesis.targetUse} ${clause}`; let rows=[]; try{const proxy=`https://r.jina.ai/http://duckduckgo.com/html/?q=${encodeURIComponent(query)}`; const txt=await fetch(proxy,{cache:'no-store'}).then((r)=>r.text()); rows=parseJina(txt);}catch{}
+if(!rows.length){processingText.textContent='Live sources sparse. Loading known inventory...';await wait(200);rows=await fallbackRows();}
+const normalized=await Promise.all(rows.slice(0,30).map(async (row)=>{const op=normalizeOpportunity(row,latestThesis);op.sourceStatus=await validateSource(op.sourceUrl);if(op.sourceStatus==='live'&&op.dataConfidence==='medium')op.dataConfidence='high';return op;}));
+latestResults=normalized.sort((a,b)=>b.overallFitScore-a.overallFitScore);resultsEl.innerHTML='';latestResults.forEach((op)=>resultsEl.appendChild(createCard(op)));resultsEmpty.hidden=latestResults.length>0;summary.textContent=latestResults.length?`Found ${latestResults.length} normalized opportunities. Dead/unknown sources are flagged so bad links do not dominate decisions.`:'No opportunities found.';aiNoteEl.textContent='AI layer: deterministic fallback active. Summaries and scores are transparent and based on thesis inputs + available listing signals.';renderMetrics(latestResults);renderShortlist();generatePitchDeck(shortlist,latestThesis);activate('results');}
 
-async function fallbackRows() {
-  try {
-    const r = await fetch('./output/seed_listings.json', { cache: 'no-store' });
-    if (!r.ok) return [];
-    return await r.json();
-  } catch {
-    return [];
-  }
-}
-
-function scoreRow(row, query) {
-  let score = 58;
-  const title = (row.title || '').toLowerCase();
-  if (title.includes(query.loc.toLowerCase())) score += 18;
-  if (/acre|farm|ranch|tract|land|development/.test(title)) score += 10;
-  if (query.goal.toLowerCase().includes('equestrian') && /horse|polo|pasture|farm/.test(title)) score += 14;
-  if (/price|reduced|new listing/.test(title)) score += 6;
-  return Math.min(100, score);
-}
-
-function aiNarrative(rows, query) {
-  if (!rows.length) return 'AI insight unavailable: no listings matched current constraints.';
-  const top = rows.slice(0, 3).map((r) => r.title).join(' • ');
-  return `AI market brief: scanned ${query.selectedSources.length} listing ecosystems for ${query.loc}. Prioritized ${query.goal} opportunities under $${query.max.toLocaleString()} with >= ${query.min} acres and ≤ ${query.maxDrive} min drive goal. Top signals: ${top}. Next diligence: zoning, utilities confirmation, floodplain, and broker status verification.`;
-}
-
-function renderMetrics(rows) {
-  const shortlist = rows.filter((r) => r.fit >= 75).length;
-  const avg = rows.length ? (rows.reduce((n, r) => n + r.fit, 0) / rows.length).toFixed(1) : '0.0';
-  metricsEl.innerHTML = [
-    ['Total Sites', rows.length],
-    ['Shortlist Sites', shortlist],
-    ['Avg. Score', avg],
-    ['Coverage', 'Multi-source']
-  ].map(([k, v]) => `<div class="metric"><p>${k}</p><strong>${v}</strong></div>`).join('');
-}
-
-function render(rows, query) {
-  resultsEl.innerHTML = '';
-  const enriched = rows
-    .map((row) => ({ ...row, fit: scoreRow(row, query) }))
-    .sort((a, b) => b.fit - a.fit)
-    .slice(0, 40);
-
-  enriched.forEach((row) => {
-    const tr = document.createElement('tr');
-    const titleCell = document.createElement('td');
-    titleCell.textContent = row.title || 'Listing';
-    const sourceCell = document.createElement('td');
-    sourceCell.textContent = row.source || 'web';
-    const fitCell = document.createElement('td');
-    fitCell.textContent = String(row.fit);
-    const rationaleCell = document.createElement('td');
-    rationaleCell.textContent = 'Matched location + thesis + acreage criteria.';
-    const linkCell = document.createElement('td');
-    const link = document.createElement('a');
-    link.href = row.url;
-    link.target = '_blank';
-    link.rel = 'noreferrer';
-    link.textContent = 'View property listing';
-    linkCell.appendChild(link);
-    tr.append(titleCell, sourceCell, fitCell, rationaleCell, linkCell);
-    resultsEl.appendChild(tr);
-  });
-
-  renderMetrics(enriched);
-  aiNoteEl.textContent = aiNarrative(enriched, query);
-  return enriched;
-}
-
-async function executeSearch() {
-  activate('processing');
-  const query = buildQuery();
-  processingText.textContent = 'Searching all configured property sources and building ranked set...';
-  await wait(450);
-
-  let rows = [];
-  try {
-    const proxy = `https://r.jina.ai/http://duckduckgo.com/html/?q=${encodeURIComponent(query.raw)}`;
-    const txt = await fetch(proxy, { cache: 'no-store' }).then((r) => r.text());
-    rows = parseJina(txt);
-  } catch {
-    // network-safe fallback below
-  }
-
-  if (!rows.length) {
-    processingText.textContent = 'Live search sparse. Loading verified seed inventory...';
-    await wait(350);
-    rows = await fallbackRows();
-  }
-
-  const enriched = render(rows, query);
-  summary.textContent = enriched.length
-    ? `Found ${enriched.length} candidate properties in ${query.loc}. Ranked by acquisition fit.`
-    : 'No listings found. Broaden location, budget, or acreage constraints.';
-
-  activate('results');
-}
-
-form.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  await executeSearch();
-});
-
-refreshBtn.addEventListener('click', executeSearch);
+form.addEventListener('submit',async(e)=>{e.preventDefault();await executeSearch();});
+document.getElementById('refresh-btn').addEventListener('click',executeSearch);
+document.getElementById('generate-deck').addEventListener('click',()=>generatePitchDeck(shortlist,latestThesis));
+resultsEl.addEventListener('click',(e)=>{const id=e.target?.dataset?.save||e.target?.dataset?.compare;if(!id)return;const pick=latestResults.find((r)=>r.id===id);if(!pick)return;if(!shortlist.some((s)=>s.id===id))shortlist.push(pick);renderMetrics(latestResults);renderShortlist();});
