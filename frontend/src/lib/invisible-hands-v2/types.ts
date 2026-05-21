@@ -8,6 +8,58 @@ export type Actor = { id:string; name:string; layer:GameLayer; type:string; desc
 export type RouteKind = "exports"|"imports"|"strategic-resources"|"energy"|"food"|"shipping"|"capital"|"tariff"|"retaliation"|"sanction";
 export type MapRoute = { id:string; layer:GameLayer; from:string; to:string; label:string; kind:RouteKind; intensityStat?:keyof GameState; stressStat?:keyof GameState };
 export type ActionPreview = { affectedActorIds:string[]; affectedRouteIds:string[]; expectedDeltas:Array<{label:string;value:string;direction:"up"|"down"|"mixed"|"neutral"}>; pendingEvents:string[] };
+export type GlobalNodeCard = {
+  id: string;
+  actorId?: string;
+  title: string;
+  subtitle: string;
+  icon: string;
+  x: number;
+  y: number;
+  status: string;
+  rows: Array<{
+    label: string;
+    value: string;
+    tone?: "good" | "warning" | "danger" | "neutral";
+  }>;
+};
+export type GlobalRoute = {
+  id: string;
+  from: string;
+  to: string;
+  label: string;
+  kind:
+    | "exports"
+    | "imports"
+    | "energy"
+    | "food"
+    | "strategic-resources"
+    | "shipping"
+    | "capital"
+    | "tariff"
+    | "retaliation";
+  value?: string;
+  direction?: "outbound" | "inbound" | "bidirectional";
+  risk?: "low" | "medium" | "high";
+};
+export type GlobalActionGroup = { title: string; actionIds: string[] };
+export type GlobalPreviewEffect = {
+  actionId: string;
+  affectedActorIds: string[];
+  affectedRouteIds: string[];
+  expectedDeltas: Array<{
+    label: string;
+    value: string;
+    direction: "up" | "down" | "mixed" | "neutral";
+  }>;
+  pendingEvents: string[];
+};
+export type GlobalResolvedOutcome = {
+  actionId: string;
+  actionLabel: string;
+  bullets: Array<{ text: string; tone: "positive" | "negative" | "neutral" }>;
+  nextPressure: string;
+};
 
 export type GameAction = { id:string; name:string; layer:GameLayer; description:string; upside:string; downside:string; affectedStats:Partial<Record<keyof GameState,number>>; affectedActors:string[]; concept:string; conceptExplanation:string; preview?: ActionPreview };
 export type GameEvent = { id:string; turn:number; title:string; body:string; affectedActors:string[]; affectedStats:string[]; severity:"low"|"medium"|"high"; concept?:string };
