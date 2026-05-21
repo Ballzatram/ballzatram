@@ -4,3 +4,7 @@ node_modules/
 frontend/node_modules/
 frontend/.next/
 frontend/tsconfig.tsbuildinfo
+.env.local
+backend/.venv*/
+backend/data/
+frontend/debug.log

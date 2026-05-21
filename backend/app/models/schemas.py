@@ -93,6 +93,48 @@ class AgentMessage(BaseModel):
     created_at: datetime
 
 
+class ToolSource(BaseModel):
+    title: str
+    url: Optional[str] = None
+    status: Literal["live", "fallback", "missing", "unknown"] = "unknown"
+    description: str = ""
+
+
+class ToolAction(BaseModel):
+    label: str
+    description: str = ""
+    href: Optional[str] = None
+
+
+class ToolCard(BaseModel):
+    title: str
+    type: Literal["opportunity", "risk", "recommendation", "data", "next_step"]
+    content: str
+    confidence: Literal["low", "medium", "high"] = "medium"
+    assumptions: List[str] = Field(default_factory=list)
+    sources: List[ToolSource] = Field(default_factory=list)
+    actions: List[ToolAction] = Field(default_factory=list)
+
+
+class ToolRisk(BaseModel):
+    title: str
+    severity: Literal["low", "medium", "high"] = "medium"
+    content: str
+    mitigation: str = ""
+    confidence: Literal["low", "medium", "high"] = "medium"
+
+
+class ToolOutput(BaseModel):
+    summary: str
+    cards: List[ToolCard] = Field(default_factory=list)
+    risks: List[ToolRisk] = Field(default_factory=list)
+    missingData: List[str] = Field(default_factory=list)
+    recommendedNextSteps: List[str] = Field(default_factory=list)
+    sources: List[ToolSource] = Field(default_factory=list)
+    confidence: Literal["low", "medium", "high"] = "medium"
+    status: Literal["empty", "complete", "partial_success", "error"] = "complete"
+
+
 class AgentChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     page_id: str = Field(min_length=1, max_length=64)
@@ -106,6 +148,7 @@ class AgentChatResponse(BaseModel):
     page_id: str
     process_id: str
     answer: str
+    structured_output: Optional[ToolOutput] = None
     history: List[AgentMessage]
     paid_access: bool
 

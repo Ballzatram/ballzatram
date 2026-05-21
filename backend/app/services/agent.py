@@ -2,15 +2,100 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 from uuid import uuid4
 
 
 from app.models.schemas import AgentMessage, AgentProcess
 
 MODEL = os.getenv("OPENAI_AGENT_MODEL", "gpt-4.1-mini")
+
+TOOL_OUTPUT_JSON_SCHEMA: dict[str, Any] = {
+    "type": "object",
+    "additionalProperties": False,
+    "properties": {
+        "summary": {"type": "string"},
+        "cards": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "title": {"type": "string"},
+                    "type": {"type": "string", "enum": ["opportunity", "risk", "recommendation", "data", "next_step"]},
+                    "content": {"type": "string"},
+                    "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+                    "assumptions": {"type": "array", "items": {"type": "string"}},
+                    "sources": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": {
+                                "title": {"type": "string"},
+                                "url": {"type": "string"},
+                                "status": {"type": "string", "enum": ["live", "fallback", "missing", "unknown"]},
+                                "description": {"type": "string"},
+                            },
+                            "required": ["title", "url", "status", "description"],
+                        },
+                    },
+                    "actions": {
+                        "type": "array",
+                        "items": {
+                            "type": "object",
+                            "additionalProperties": False,
+                            "properties": {
+                                "label": {"type": "string"},
+                                "description": {"type": "string"},
+                                "href": {"type": "string"},
+                            },
+                            "required": ["label", "description", "href"],
+                        },
+                    },
+                },
+                "required": ["title", "type", "content", "confidence", "assumptions", "sources", "actions"],
+            },
+        },
+        "risks": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "title": {"type": "string"},
+                    "severity": {"type": "string", "enum": ["low", "medium", "high"]},
+                    "content": {"type": "string"},
+                    "mitigation": {"type": "string"},
+                    "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+                },
+                "required": ["title", "severity", "content", "mitigation", "confidence"],
+            },
+        },
+        "missingData": {"type": "array", "items": {"type": "string"}},
+        "recommendedNextSteps": {"type": "array", "items": {"type": "string"}},
+        "sources": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "title": {"type": "string"},
+                    "url": {"type": "string"},
+                    "status": {"type": "string", "enum": ["live", "fallback", "missing", "unknown"]},
+                    "description": {"type": "string"},
+                },
+                "required": ["title", "url", "status", "description"],
+            },
+        },
+        "confidence": {"type": "string", "enum": ["low", "medium", "high"]},
+        "status": {"type": "string", "enum": ["empty", "complete", "partial_success", "error"]},
+    },
+    "required": ["summary", "cards", "risks", "missingData", "recommendedNextSteps", "sources", "confidence", "status"],
+}
 
 PROCESS_REGISTRY: Dict[str, List[AgentProcess]] = {
     "dashboard": [
@@ -92,7 +177,8 @@ _PAID_SESSIONS: set[str] = set()
 
 
 def _history_path() -> Path:
-    return Path(os.getenv("AGENT_HISTORY_PATH", "/tmp/macroboard_agent_history.json"))
+    default_path = Path(tempfile.gettempdir()) / "macroboard_agent_history.json"
+    return Path(os.getenv("AGENT_HISTORY_PATH", str(default_path)))
 
 
 def _load_history() -> None:
@@ -121,14 +207,8 @@ def default_process(page_id: str) -> AgentProcess:
 
 
 def has_paid_access(access_token: Optional[str] = None) -> tuple[bool, str]:
-    if os.getenv("AGENT_REQUIRE_PAYMENT", "false").lower() != "true":
-        return True, "payment not required in this environment"
-    dev_access_code = os.getenv("AGENT_DEV_ACCESS_CODE")
-    if access_token and dev_access_code and access_token == dev_access_code:
-        return True, "developer access code accepted"
-    if access_token and access_token in _PAID_SESSIONS:
-        return True, "verified Stripe checkout session"
-    return False, "paid access required"
+    # TODO: Add plan and entitlement checks after the core tools are strong enough to monetize.
+    return True, "payment not required while product workflow quality is being validated"
 
 
 def remember_paid_session(session_id: str) -> None:
@@ -141,6 +221,7 @@ def build_instructions(page_id: str, process: AgentProcess) -> str:
         "You are MacroBoard Agent, a specialized macro/portfolio analytics copilot. "
         "Help users accomplish the selected workflow on the current page. Be concise, practical, and financially cautious. "
         "Never claim investment certainty; surface assumptions, risks, and next checks. "
+        "Return output that can render as product UI cards, not unstructured prose. "
         f"Current page: {page_id}. Workflow: {process.title}. Desired end result: {process.outcome}. "
         f"Workflow steps:\n{steps}"
     )
@@ -154,6 +235,55 @@ def _fallback_answer(page_id: str, process: AgentProcess, message: str) -> str:
         f"1) {process.steps[0]}, 2) {process.steps[1]}, 3) {process.steps[2]}. "
         "Configure OPENAI_API_KEY to replace this deterministic development response with a live OpenAI response."
     )
+
+
+def _fallback_output(page_id: str, process: AgentProcess, message: str) -> dict[str, Any]:
+    return {
+        "summary": f"I can guide the {process.title} workflow for the {page_id} page.",
+        "cards": [
+            {
+                "title": "Clarify the decision",
+                "type": "next_step",
+                "content": f"Start by turning {message!r} into a concrete decision, owner, and horizon.",
+                "confidence": "high",
+                "assumptions": ["The user wants workflow guidance before a final output."],
+                "sources": [],
+                "actions": [{"label": process.steps[0], "description": "Complete this before asking for final recommendations.", "href": ""}],
+            },
+            {
+                "title": "Evidence before recommendation",
+                "type": "recommendation",
+                "content": f"Use the workflow steps to build {process.outcome.lower()} rather than accepting a generic answer.",
+                "confidence": "medium",
+                "assumptions": ["Live OpenAI response generation may be disabled in development."],
+                "sources": [],
+                "actions": [{"label": process.steps[1], "description": "Use the page data and assumptions as evidence.", "href": ""}],
+            },
+        ],
+        "risks": [
+            {
+                "title": "Generic prompt risk",
+                "severity": "medium",
+                "content": "Without a ticker, portfolio, horizon, or decision context, the agent can only provide broad process guidance.",
+                "mitigation": "Add the missing context in the next message.",
+                "confidence": "high",
+            }
+        ],
+        "missingData": ["Ticker or portfolio", "Decision horizon", "Risk constraint"],
+        "recommendedNextSteps": process.steps[:3],
+        "sources": [],
+        "confidence": "medium",
+        "status": "partial_success",
+    }
+
+
+def _coerce_tool_output(raw: Any, page_id: str, process: AgentProcess, message: str) -> dict[str, Any]:
+    if isinstance(raw, dict) and "summary" in raw and "cards" in raw:
+        return raw
+    fallback = _fallback_output(page_id, process, message)
+    fallback["summary"] = str(raw) if raw else fallback["summary"]
+    fallback["status"] = "partial_success"
+    return fallback
 
 
 def chat(page_id: str, process_id: Optional[str], message: str, conversation_id: Optional[str], access_token: Optional[str]) -> dict:
@@ -173,15 +303,30 @@ def chat(page_id: str, process_id: Optional[str], message: str, conversation_id:
 
         client = OpenAI()
         transcript = [f"{m.role}: {m.content}" for m in history[-10:]]
-        response = client.responses.create(
-            model=MODEL,
-            instructions=build_instructions(normalized_page, process),
-            input="\n".join(transcript),
-        )
-        answer = response.output_text
+        try:
+            # TODO: Stream lifecycle events to the UI after partial card rendering is supported.
+            response = client.responses.create(
+                model=MODEL,
+                instructions=build_instructions(normalized_page, process),
+                input="\n".join(transcript),
+                text={
+                    "format": {
+                        "type": "json_schema",
+                        "name": "macroboard_tool_output",
+                        "strict": True,
+                        "schema": TOOL_OUTPUT_JSON_SCHEMA,
+                    }
+                },
+            )
+            structured_output = _coerce_tool_output(json.loads(response.output_text), normalized_page, process, message)
+        except Exception as exc:
+            structured_output = _fallback_output(normalized_page, process, message)
+            structured_output["summary"] = f"The live model response could not be rendered as structured cards: {exc}"
+            structured_output["status"] = "partial_success"
     else:
-        answer = _fallback_answer(normalized_page, process, message)
+        structured_output = _fallback_output(normalized_page, process, message)
 
+    answer = structured_output["summary"]
     history.append(AgentMessage(role="assistant", content=answer, created_at=datetime.now(timezone.utc)))
     _persist_history()
     return {
@@ -189,6 +334,7 @@ def chat(page_id: str, process_id: Optional[str], message: str, conversation_id:
         "page_id": normalized_page,
         "process_id": process.id,
         "answer": answer,
+        "structured_output": structured_output,
         "history": history,
         "paid_access": paid,
     }
@@ -200,38 +346,10 @@ def get_history(conversation_id: str) -> List[AgentMessage]:
 
 
 def create_checkout_session(success_url: str, cancel_url: str, customer_email: Optional[str], page_id: str) -> dict:
-    stripe_key = os.getenv("STRIPE_SECRET_KEY")
-    stripe_price_id = os.getenv("STRIPE_AGENT_PRICE_ID")
-    if not stripe_key or not stripe_price_id:
-        raise RuntimeError("Stripe is not configured. Set STRIPE_SECRET_KEY and STRIPE_AGENT_PRICE_ID.")
-    import stripe
-
-    stripe.api_key = stripe_key
-    session = stripe.checkout.Session.create(
-        mode="payment",
-        line_items=[{"price": stripe_price_id, "quantity": 1}],
-        success_url=success_url,
-        cancel_url=cancel_url,
-        customer_email=customer_email,
-        metadata={"feature": "macroboard-agent", "page_id": normalize_page_id(page_id)},
-    )
-    return {"checkout_url": session.url, "session_id": session.id}
+    # TODO: Reintroduce checkout only after entitlement design and paid-tool packaging are ready.
+    raise RuntimeError("Checkout is intentionally disabled during the product-quality pass.")
 
 
 def verify_checkout_session(session_id: Optional[str], access_token: Optional[str]) -> tuple[bool, str]:
-    paid, reason = has_paid_access(access_token)
-    if paid:
-        return paid, reason
-    if not session_id:
-        return False, "missing Stripe session_id"
-    stripe_key = os.getenv("STRIPE_SECRET_KEY")
-    if not stripe_key:
-        return False, "Stripe is not configured"
-    import stripe
-
-    stripe.api_key = stripe_key
-    session = stripe.checkout.Session.retrieve(session_id)
-    if session.payment_status == "paid":
-        remember_paid_session(session_id)
-        return True, "Stripe payment verified"
-    return False, f"Stripe payment status is {session.payment_status}"
+    # TODO: Replace this placeholder with real entitlement verification after monetization planning.
+    return has_paid_access(access_token)
