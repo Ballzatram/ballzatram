@@ -5,7 +5,7 @@ export type Stats = Pick<GameState, "inflation"|"unemployment"|"output"|"publicC
 
 export type ActorVisual = { icon: string; zoneLabel: string; mapRole: string; normalState: string; stressedState: string };
 export type Actor = { id:string; name:string; layer:GameLayer; type:string; description:string; stress:number; stats:Record<string,number>; incentives:string[]; respondsTo:string[]; currentStrategy:string; connectedActorIds:string[]; conceptTags:string[]; visual?: ActorVisual };
-export type RouteKind = "exports"|"imports"|"strategic-resources"|"energy"|"shipping"|"capital"|"tariff"|"sanction";
+export type RouteKind = "exports"|"imports"|"strategic-resources"|"energy"|"food"|"shipping"|"capital"|"tariff"|"retaliation"|"sanction";
 export type MapRoute = { id:string; layer:GameLayer; from:string; to:string; label:string; kind:RouteKind; intensityStat?:keyof GameState; stressStat?:keyof GameState };
 export type ActionPreview = { affectedActorIds:string[]; affectedRouteIds:string[]; expectedDeltas:Array<{label:string;value:string;direction:"up"|"down"|"mixed"|"neutral"}>; pendingEvents:string[] };
 
