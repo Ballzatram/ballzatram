@@ -1,6 +1,5 @@
-import { WorkflowPage } from "@/components/WorkflowPage";
-import { workflowBySlug } from "@/lib/workflows";
+import { redirect } from "next/navigation";
 
 export default function Page() {
-  return <WorkflowPage workflow={workflowBySlug["dashboard"]} />;
+  redirect("/macro-board");
 }
