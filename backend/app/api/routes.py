@@ -8,6 +8,7 @@ from app.models.schemas import AnalysisRequest, CsvUploadRequest, EventStudyRequ
 from app.services.analytics import run_event_study, run_scenario, run_stock_analysis
 
 from app.services.macro_board import build_intake, build_research, get_market_data, get_series, run_macro_stress
+from app.services.workspace_store import WorkspaceStore
 from app.services.reporting import render_markdown
 
 router = APIRouter()
@@ -87,3 +88,51 @@ def macro_series():
 @router.get("/macro-board/market-data")
 def macro_market_data():
     return get_market_data()
+
+
+store = WorkspaceStore()
+
+@router.get("/macro-board/workspaces")
+def list_workspaces():
+    return {"workspaces": store.list_workspaces()}
+
+@router.get("/macro-board/workspaces/{workspace_id}")
+def get_workspace(workspace_id: str):
+    ws = store.get_workspace(workspace_id)
+    if not ws:
+        raise HTTPException(status_code=404, detail="workspace not found")
+    return ws
+
+@router.post("/macro-board/workspaces")
+def create_workspace(payload: dict):
+    result = build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
+    title = payload.get("title") or payload.get("prompt", "Untitled")[:48]
+    return store.create_workspace(title, payload.get("prompt", ""), payload.get("assumptions", {}), result)
+
+@router.post("/macro-board/workspaces/{workspace_id}/rerun")
+def rerun_workspace(workspace_id: str, payload: dict):
+    result = build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
+    try:
+        return store.rerun_workspace(workspace_id, payload.get("assumptions", {}), result)
+    except KeyError:
+        raise HTTPException(status_code=404, detail="workspace not found")
+
+@router.post("/macro-board/workspaces/{workspace_id}/duplicate")
+def duplicate_workspace(workspace_id: str):
+    ws = store.get_workspace(workspace_id)
+    if not ws:
+        raise HTTPException(status_code=404, detail="workspace not found")
+    latest = ws["versions"][-1] if ws["versions"] else {"cards": [], "analyst_outputs": [], "recommendations": [], "warnings": []}
+    result = {"cards": latest.get("cards", []), "analystTeam": latest.get("analyst_outputs", []), "recommendations": latest.get("recommendations", []), "warnings": latest.get("warnings", [])}
+    return store.create_workspace(ws["title"] + " (copy)", ws["original_prompt"], ws.get("assumptions", {}), result)
+
+@router.post("/macro-board/compare-versions")
+def compare_versions(payload: dict):
+    ws = store.get_workspace(payload.get("workspaceId", ""))
+    if not ws:
+        raise HTTPException(status_code=404, detail="workspace not found")
+    a = next((v for v in ws["versions"] if v["version_id"] == payload.get("leftVersionId")), None)
+    b = next((v for v in ws["versions"] if v["version_id"] == payload.get("rightVersionId")), None)
+    if not a or not b:
+        raise HTTPException(status_code=404, detail="version not found")
+    return {"left": a["version_id"], "right": b["version_id"], "changedAssumptions": {k: {"left": a["assumptions"].get(k), "right": b["assumptions"].get(k)} for k in set(a["assumptions"]).union(b["assumptions"]) if a["assumptions"].get(k) != b["assumptions"].get(k)}, "cardCount": {"left": len(a.get("cards", [])), "right": len(b.get("cards", []))}}
