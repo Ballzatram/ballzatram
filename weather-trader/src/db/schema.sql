@@ -84,7 +84,24 @@ CREATE TABLE IF NOT EXISTS paper_trades (
   opened_at TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
+
+CREATE TABLE IF NOT EXISTS weather_snapshot_audit (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  external_market_id TEXT NOT NULL,
+  source TEXT,
+  fetched_at TEXT NOT NULL,
+  target_time TEXT,
+  temperature_c REAL,
+  precipitation_probability_percent REAL,
+  precipitation_mm REAL,
+  wind_speed_kph REAL,
+  status TEXT NOT NULL CHECK (status IN ('resolved','skipped','failed')),
+  reasons_json TEXT,
+  raw_json TEXT
+);
+
 CREATE INDEX IF NOT EXISTS idx_weather_markets_event_date ON weather_markets(event_date);
+CREATE INDEX IF NOT EXISTS idx_weather_snapshot_audit_market ON weather_snapshot_audit(external_market_id);
 CREATE INDEX IF NOT EXISTS idx_weather_markets_slug ON weather_markets(slug);
 CREATE INDEX IF NOT EXISTS idx_market_snapshots_market_id ON polymarket_market_snapshots(market_id);
 CREATE INDEX IF NOT EXISTS idx_market_snapshots_fetched_at ON polymarket_market_snapshots(fetched_at);
