@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prisoner’s Dilemma Lab | Econ Arcade</title>
+  <link rel="stylesheet" href="prisoners-dilemma.css" />
+</head>
+
+<body>
+  <div class="lab-shell">
+    <header class="lab-header">
+      <a href="index.html">← Econ Arcade</a>
+      <div>
+        <span>World 2</span>
+        <strong>Static games · repeated interaction</strong>
+      </div>
+    </header>
+
+    <main>
+      <section class="intro-panel" aria-labelledby="labTitle">
+        <p class="kicker">Simulation-heavy game theory module</p>
+        <h1 id="labTitle">Prisoner’s Dilemma Lab</h1>
+        <p>
+          Choose whether to cooperate or defect against an AI strategist. Each round updates incentives,
+          reputation, trust, and an explanation engine that connects your play to Nash equilibrium,
+          repeated-game discipline, and strategic forgiveness.
+        </p>
+      </section>
+
+      <section class="control-strip" aria-label="Simulation controls">
+        <label>
+          Opponent
+          <select id="agentSelect"></select>
+        </label>
+        <label>
+          Rounds
+          <input id="roundInput" type="number" min="4" max="30" value="12" />
+        </label>
+        <label>
+          Continuation value
+          <input id="discountInput" type="range" min="0" max="100" value="82" />
+          <span id="discountValue">0.82</span>
+        </label>
+        <button id="resetButton" type="button">Reset match</button>
+      </section>
+
+      <section class="lab-grid">
+        <article class="decision-panel">
+          <div class="panel-heading">
+            <p class="kicker">Round decision</p>
+            <h2 id="roundTitle">Round 1</h2>
+          </div>
+          <p id="agentBrief" class="agent-brief"></p>
+          <div class="decision-buttons">
+            <button id="cooperateButton" class="cooperate" type="button">Cooperate</button>
+            <button id="defectButton" class="defect" type="button">Defect</button>
+          </div>
+          <div id="roundOutcome" class="round-outcome" aria-live="polite">
+            Make a move to reveal the opponent's action and update the strategic trace.
+          </div>
+        </article>
+
+        <article class="matrix-panel" aria-labelledby="matrixTitle">
+          <div class="panel-heading">
+            <p class="kicker">Normal form</p>
+            <h2 id="matrixTitle">Payoff matrix</h2>
+          </div>
+          <div class="payoff-matrix" role="table" aria-label="Prisoner's dilemma payoff matrix">
+            <div></div><div class="axis">AI cooperates</div><div class="axis">AI defects</div>
+            <div class="axis">You cooperate</div><div id="cellCC" class="payoff-cell">3 / 3</div><div id="cellCD" class="payoff-cell">0 / 5</div>
+            <div class="axis">You defect</div><div id="cellDC" class="payoff-cell">5 / 0</div><div id="cellDD" class="payoff-cell">1 / 1</div>
+          </div>
+          <p class="matrix-note">Numbers are your payoff / AI payoff. Defection is the one-shot dominant strategy, but repeated play can make cooperation incentive-compatible.</p>
+        </article>
+
+        <article class="score-panel">
+          <div class="panel-heading">
+            <p class="kicker">Match state</p>
+            <h2>Strategic dashboard</h2>
+          </div>
+          <div class="stat-grid">
+            <div><span>Your score</span><strong id="userScore">0</strong></div>
+            <div><span>AI score</span><strong id="aiScore">0</strong></div>
+            <div><span>Cooperation</span><strong id="coopRate">0%</strong></div>
+            <div><span>Trust index</span><strong id="trustIndex">50</strong></div>
+          </div>
+          <div id="historyChart" class="history-chart" aria-label="Round history chart"></div>
+        </article>
+
+        <article class="feedback-panel">
+          <div class="panel-heading">
+            <p class="kicker">Debrief engine</p>
+            <h2>Strategic feedback</h2>
+          </div>
+          <p id="feedbackText"></p>
+          <div class="insight-stack" id="insightStack"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="prisoners-dilemma.js"></script>
+</body>
+
+</html>

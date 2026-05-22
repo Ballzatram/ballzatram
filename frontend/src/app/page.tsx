@@ -58,6 +58,11 @@ export default function Home() {
             A retro-futurist traveler moves through eras with a guitar, a sack of impossible machinery,
             and a growing archive of games, music, manuscripts, simulations, and strange worlds.
           </p>
+          <div className="ballzatram-trust-row" aria-label="Ballzatram world markers">
+            <span>Games first</span>
+            <span>Songs as keys</span>
+            <span>Hidden manuscripts</span>
+          </div>
           <div className="ballzatram-actions" aria-label="Primary paths">
             <Link href={"/penitent" as Route} className="ballzatram-button ballzatram-button--gold">
               Discover the manuscript

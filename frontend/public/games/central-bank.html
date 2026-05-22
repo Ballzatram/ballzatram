@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Central Banker | Ballzatram Arcade</title>
+  <link rel="stylesheet" href="central-bank.css" />
+</head>
+
+<body>
+  <div class="cb-shell">
+    <header class="cb-header">
+      <a href="/econ-arcade" class="cb-brand">← Back to Econ Arcade</a>
+      <nav class="cb-nav" aria-label="Game navigation">
+        <a href="/econ-arcade">Econ Arcade</a>
+        <a href="/#workshop">Workshop</a>
+        <a href="/#arcade">Arcade</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" aria-labelledby="gameTitle">
+        <p class="kicker">Goblin Reserve Training Cassette // 10 Quarters</p>
+        <h1 id="gameTitle">Central Banker</h1>
+        <p class="hero-copy">You are the chair of the fictional Goblin Reserve. Keep prices, jobs, banks, markets, and politicians from all catching fire at once. It is definitely a serious educational simulator and not a haunted spreadsheet wearing a tie.</p>
+      </section>
+
+      <section id="setupPanel" class="panel setup-panel" aria-labelledby="setupTitle">
+        <div>
+          <p class="eyebrow">Before the oath ceremony</p>
+          <h2 id="setupTitle">Choose advisor mode</h2>
+          <p class="setup-copy">Each mode uses the same economy and actions. Only the scripted AI advisor changes how much help it gives. Your goal is to finish ten quarters with inflation near target, unemployment contained, banks stable, and credibility intact.</p>
+        </div>
+        <div class="mode-grid" role="radiogroup" aria-label="Advisor mode">
+          <button class="mode-card active" type="button" data-mode="learn" aria-pressed="true">
+            <strong>Learn Mode</strong>
+            <span>Classroom-friendly hints, tradeoffs, and suggested moves.</span>
+          </button>
+          <button class="mode-card" type="button" data-mode="standard" aria-pressed="false">
+            <strong>Standard Mode</strong>
+            <span>Context with fewer nudges. The goblin intern withholds some answers.</span>
+          </button>
+          <button class="mode-card" type="button" data-mode="test" aria-pressed="false">
+            <strong>Test Mode</strong>
+            <span>Situation only. No hints, no mercy, one tiny clipboard.</span>
+          </button>
+        </div>
+        <div class="curriculum-brief" aria-label="Central Banker curriculum">
+          <article>
+            <span>Learn</span>
+            <h3>Inflation targeting</h3>
+            <p>Use interest rates and expectations to steer inflation toward 2% without crushing output.</p>
+          </article>
+          <article>
+            <span>Practice</span>
+            <h3>Policy lags</h3>
+            <p>Actions echo into later quarters, so overreacting can create tomorrow's crisis.</p>
+          </article>
+          <article>
+            <span>Debrief</span>
+            <h3>Tradeoff reasoning</h3>
+            <p>Every ending explains which macro concepts your term demonstrated.</p>
+          </article>
+        </div>
+        <p id="modeDetails" class="mode-details"></p>
+        <button id="startGame" class="chunky primary" type="button">Enter The Briefing Room ▶</button>
+      </section>
+
+      <section id="gamePanel" class="game-layout hidden" aria-label="Central banker game">
+        <aside class="briefing-room" aria-labelledby="briefingTitle">
+          <div class="briefing-topline">
+            <p class="eyebrow">The Briefing Room</p>
+            <button id="restartGame" class="mini-button" type="button">Restart</button>
+          </div>
+          <h2 id="briefingTitle">Awaiting briefing</h2>
+          <p id="quarterLabel" class="quarter-pill">Quarter 1 of 10</p>
+
+          <section class="briefing-section">
+            <h3>Scenario Context</h3>
+            <p id="scenarioText"></p>
+          </section>
+
+          <section class="advisor-box" aria-live="polite">
+            <div class="advisor-header">
+              <span class="advisor-orb" aria-hidden="true"></span>
+              <h3>AI-ish Policy Advisor</h3>
+            </div>
+            <p id="advisorText"></p>
+          </section>
+
+          <section class="briefing-section">
+            <h3>Available Policy Actions</h3>
+            <div id="actionList" class="action-list"></div>
+          </section>
+
+          <section class="briefing-section notebook" aria-labelledby="notebookTitle">
+            <h3 id="notebookTitle">Policy Notebook</h3>
+            <dl>
+              <div><dt>Learning objective</dt><dd id="lessonObjective">Stabilize inflation without breaking jobs, banks, or credibility.</dd></div>
+              <div><dt>Watch signal</dt><dd id="watchSignal">Inflation gap, unemployment, bank stability, volatility, and political pressure.</dd></div>
+              <div><dt>Success rule</dt><dd id="successRule">Prefer targeted tools when one dashboard risk is dominant; avoid pushing all levers at once.</dd></div>
+            </dl>
+          </section>
+
+          <section class="briefing-section aftermath">
+            <h3>Post-decision Explanation</h3>
+            <p id="decisionExplanation">Choose a policy action to see how monetary policy ripples through the economy.</p>
+          </section>
+        </aside>
+
+        <section class="economy-stage" aria-labelledby="economyTitle">
+          <div class="stage-topbar">
+            <div>
+              <p class="eyebrow">Live Economy View</p>
+              <h2 id="economyTitle">Goblinopolis Financial District</h2>
+            </div>
+            <div class="score-box" aria-label="Scoreboard">
+              <p>Best score: <span id="bestScore">0</span></p>
+              <p>Current score: <span id="currentScore">0</span></p>
+            </div>
+          </div>
+
+          <div id="dashboard" class="dashboard" aria-label="Economic gauges"></div>
+
+          <div id="economyView" class="economy-view stable" aria-live="polite">
+            <div class="sky-noise" aria-hidden="true"></div>
+            <div class="sun-moon" aria-hidden="true">☼</div>
+            <div class="ticker" aria-label="Market ticker"><span id="tickerText">GOBX +0.4% · Treasury goblins calm · Soup futures normal</span></div>
+            <div class="headline-board">
+              <p class="eyebrow">Fake Economic News</p>
+              <ul id="headlineList"></ul>
+            </div>
+            <div class="city" aria-hidden="true">
+              <div class="building bank"><span>GOBLIN<br>BANK</span></div>
+              <div class="building tower"></div>
+              <div class="building homes"><span>⌂ ⌂</span></div>
+              <div class="building market"><span>NYSE? <b id="marketArrow">↗</b></span></div>
+              <div class="building factory"><span>⚙</span></div>
+            </div>
+            <div class="street" aria-hidden="true">
+              <span class="person">🧌</span>
+              <span class="person">🧑‍🏫</span>
+              <span class="person">👔</span>
+              <span id="panicMob" class="panic-mob">🏃‍♂️💸🏃</span>
+            </div>
+          </div>
+
+          <div class="lower-panels">
+            <article class="lesson-card">
+              <h3>Quarterly Log</h3>
+              <ul id="eventLog" class="event-log"></ul>
+            </article>
+            <article class="lesson-card terms-card">
+              <h3>Classroom Terms</h3>
+              <p id="termsText">Inflation target, monetary policy lag, liquidity, market expectations, recession risk, and bank run will appear as your choices unfold.</p>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <div id="endingModal" class="ending-modal hidden" role="dialog" aria-modal="true" aria-labelledby="endingTitle">
+    <div class="ending-card">
+      <p class="eyebrow">Term completed / abruptly ended</p>
+      <h2 id="endingTitle">Ending</h2>
+      <p id="endingText"></p>
+      <p id="endingScore" class="ending-score"></p>
+      <div class="ending-debrief">
+        <h3>Concept debrief</h3>
+        <ul id="endingConcepts"></ul>
+      </div>
+      <div class="action-row">
+        <button id="playAgain" class="chunky primary" type="button">Play Again</button>
+        <button id="closeEnding" class="chunky" type="button">Review Dashboard</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="central-bank.js"></script>
+</body>
+
+</html>
