@@ -68,11 +68,11 @@ export function AgentWidget() {
   return (
     <div className="fixed bottom-4 right-4 z-30 w-[calc(100%-2rem)] max-w-md sm:bottom-6 sm:right-6">
       {open ? (
-        <section className="overflow-hidden rounded-2xl border border-emerald-300/40 bg-slate-950 shadow-2xl shadow-black/50" aria-label="MacroBoard AI agent">
+        <section className="overflow-hidden rounded-2xl border border-emerald-300/40 bg-slate-950 shadow-2xl shadow-black/50" aria-label="Ballzatram AI workflow agent">
           <div className="flex items-start justify-between gap-3 border-b border-slate-800 bg-slate-900 p-4">
             <div>
               <p className="text-xs uppercase tracking-[0.25em] text-emerald-300">AI workflow agent</p>
-              <h2 className="mt-1 text-lg font-semibold text-white">{activeProcess?.title ?? "MacroBoard Agent"}</h2>
+              <h2 className="mt-1 text-lg font-semibold text-white">{activeProcess?.title ?? "Ballzatram Guide"}</h2>
               <p className="mt-1 text-xs text-slate-400">Page: {pageId}</p>
             </div>
             <button className="rounded-full border border-slate-700 px-3 py-1 text-sm hover:border-emerald-300" onClick={() => setOpen(false)}>
@@ -116,7 +116,7 @@ export function AgentWidget() {
             ) : null}
 
             <div className="max-h-56 space-y-3 overflow-y-auto pr-1">
-              {messages.length === 0 ? <p className="text-sm text-slate-400">Ask the agent to help complete this page's process.</p> : null}
+              {messages.length === 0 ? <p className="text-sm text-slate-400">Ask the agent to help complete this tool's process.</p> : null}
               {messages.map((message, index) => (
                 <div key={`${message.created_at}-${index}`} className={message.role === "assistant" ? "rounded-xl bg-emerald-400/10 p-3 text-sm text-emerald-50" : "rounded-xl bg-slate-800 p-3 text-sm text-slate-50"}>
                   <p className="mb-1 text-xs uppercase tracking-wider text-slate-400">{message.role}</p>
@@ -153,10 +153,9 @@ export function AgentWidget() {
           className="ml-auto flex rounded-full border border-emerald-300/60 bg-emerald-400 px-5 py-3 font-semibold text-slate-950 shadow-xl shadow-black/30 hover:bg-emerald-300"
           onClick={() => setOpen(true)}
         >
-          Ask AI to complete this page
+          Ask AI to guide this tool
         </button>
       )}
     </div>
   );
 }
-

@@ -140,7 +140,6 @@ class AgentChatRequest(BaseModel):
     page_id: str = Field(min_length=1, max_length=64)
     process_id: Optional[str] = Field(default=None, max_length=64)
     conversation_id: Optional[str] = Field(default=None, max_length=80)
-    access_token: Optional[str] = Field(default=None, max_length=500)
 
 
 class AgentChatResponse(BaseModel):
@@ -150,33 +149,10 @@ class AgentChatResponse(BaseModel):
     answer: str
     structured_output: Optional[ToolOutput] = None
     history: List[AgentMessage]
-    paid_access: bool
 
 
 class AgentHistoryResponse(BaseModel):
     conversation_id: str
     messages: List[AgentMessage]
-
-
-class CheckoutRequest(BaseModel):
-    page_id: str = Field(default="dashboard", max_length=64)
-    success_url: str
-    cancel_url: str
-    customer_email: Optional[str] = Field(default=None, max_length=320)
-
-
-class CheckoutResponse(BaseModel):
-    checkout_url: str
-    session_id: str
-
-
-class AccessVerifyRequest(BaseModel):
-    session_id: Optional[str] = None
-    access_token: Optional[str] = None
-
-
-class AccessVerifyResponse(BaseModel):
-    paid_access: bool
-    reason: str
 
 

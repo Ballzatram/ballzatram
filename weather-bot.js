@@ -40,7 +40,7 @@ function formatCents(cents) {
 }
 
 function formatPercent(value) {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) return "--";
   return `${(value * 100).toFixed(1)}%`;
 }
 
@@ -65,6 +65,47 @@ function renderReviewItems(items) {
   });
 }
 
+function renderWeatherResult({ status, marketName, marketPrice, adjustedFair, edge, paperSize, haircut }) {
+  const card = document.createElement("article");
+  card.className = "weather-result-card";
+
+  const statusNode = document.createElement("strong");
+  statusNode.textContent = status;
+
+  const marketNode = document.createElement("span");
+  marketNode.textContent = marketName || "Selected weather market";
+
+  const metrics = document.createElement("div");
+  metrics.className = "weather-result-metrics";
+  [
+    ["Market price", `${marketPrice.toFixed(1)} cents`],
+    ["Risk-adjusted fair", `${adjustedFair.toFixed(1)}%`],
+    ["Edge", `${edge.toFixed(1)} pts`],
+    ["Paper size", `${currency(paperSize)} of ${currency(BANKROLL)}`],
+  ].forEach(([label, value]) => {
+    const metric = document.createElement("div");
+    const metricLabel = document.createElement("span");
+    metricLabel.textContent = label;
+    const metricValue = document.createElement("b");
+    metricValue.textContent = value;
+    metric.append(metricLabel, metricValue);
+    metrics.appendChild(metric);
+  });
+
+  const caveat = document.createElement("p");
+  caveat.textContent = edge >= MIN_EDGE_POINTS
+    ? "Recommendation: review this as a paper alert only after settlement source, station, and observation window are verified."
+    : "Recommendation: keep this in the watch log; the risk-adjusted edge is below the alert threshold.";
+
+  const confidence = document.createElement("p");
+  confidence.textContent = haircut >= 6
+    ? "Confidence: medium. The haircut leaves room for forecast error."
+    : "Confidence: low to medium. Use a larger haircut unless source agreement is strong.";
+
+  card.append(statusNode, marketNode, metrics, caveat, confidence);
+  alertOutput.replaceChildren(card);
+}
+
 function evaluateWeatherMarket(event) {
   event.preventDefault();
 
@@ -81,16 +122,7 @@ function evaluateWeatherMarket(event) {
 
   decisionStatus.textContent = status;
   decisionStatus.className = edge >= MIN_EDGE_POINTS ? "status-positive" : "status-neutral";
-
-  const statusNode = document.createElement("strong");
-  statusNode.textContent = status;
-  const marketNode = document.createElement("span");
-  marketNode.textContent = marketName || "Selected weather market";
-  const edgeNode = document.createElement("span");
-  edgeNode.textContent = `Market price: ${marketPrice.toFixed(1)}¢ · Risk-adjusted fair: ${adjustedFair.toFixed(1)}% · Edge: ${edge.toFixed(1)} pts`;
-  const sizeNode = document.createElement("span");
-  sizeNode.textContent = `Suggested paper size: ${currency(paperSize)} of ${currency(BANKROLL)} bankroll`;
-  alertOutput.replaceChildren(statusNode, marketNode, edgeNode, sizeNode);
+  renderWeatherResult({ status, marketName, marketPrice, adjustedFair, edge, paperSize, haircut });
 
   renderReviewItems([
     "Verify settlement station, data source, timezone, and observation window before trusting the estimate.",
@@ -106,7 +138,7 @@ function setBackendConnectionState(state, detail) {
   const labels = {
     connected: "Connected",
     offline: "Offline calculator",
-    checking: "Checking…",
+    checking: "Checking...",
     error: "Offline calculator",
   };
   const label = labels[state] || labels.offline;
@@ -148,7 +180,7 @@ async function fetchBackendJson(path, options = {}) {
 }
 
 async function checkBackendStatus() {
-  setBackendConnectionState("checking", `Checking ${getBackendBaseUrl()}…`);
+  setBackendConnectionState("checking", `Checking ${getBackendBaseUrl()}...`);
 
   try {
     const status = await fetchBackendJson("/api/weather-bot/status");
@@ -164,7 +196,7 @@ async function checkBackendStatus() {
 async function runBackendScan() {
   if (backendRunOnce) {
     backendRunOnce.disabled = true;
-    backendRunOnce.textContent = "Running Paper Scan…";
+    backendRunOnce.textContent = "Running Paper Scan...";
   }
 
   try {
@@ -233,13 +265,13 @@ function renderDecisionList(container, decisions, emptyText) {
     card.className = `decision-item ${decision.action === "PAPER_TRADE" ? "decision-item-positive" : "decision-item-blocked"}`;
 
     const heading = document.createElement("strong");
-    heading.textContent = `${decision.action || "NO_TRADE"} · ${decision.side || "skip"}`;
+    heading.textContent = `${decision.action || "NO_TRADE"} - ${decision.side || "skip"}`;
 
     const market = document.createElement("span");
     market.textContent = decision.question || decision.marketId || "Weather market";
 
     const metrics = document.createElement("span");
-    metrics.textContent = `Edge ${formatPercent(Number(decision.edge))} · Confidence ${formatPercent(Number(decision.confidence))} · Size ${formatCents(decision.stakeCents)}`;
+    metrics.textContent = `Edge ${formatPercent(Number(decision.edge))} - Confidence ${formatPercent(Number(decision.confidence))} - Size ${formatCents(decision.stakeCents)}`;
 
     const reason = document.createElement("p");
     reason.textContent = decision.reason || "Decision returned without a reason; treat as blocked.";

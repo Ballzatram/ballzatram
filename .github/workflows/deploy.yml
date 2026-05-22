@@ -22,7 +22,12 @@ jobs:
             cd /root/ballzatram
             git fetch origin master
             git reset --hard origin/master
-            if [ -f docker-compose.prod.yml ]; then
+            if [ -f ai-edit-factory/docker-compose.prod.yml ]; then
+              cd ai-edit-factory
+              docker compose -f docker-compose.prod.yml up -d --build
+              docker compose -f docker-compose.prod.yml ps
+              cd ..
+            elif [ -f docker-compose.prod.yml ]; then
               docker compose -f docker-compose.prod.yml up -d --build
               docker compose -f docker-compose.prod.yml ps
             elif [ -f docker-compose.yml ]; then
@@ -33,4 +38,5 @@ jobs:
               systemctl reload caddy || systemctl reload nginx || true
             fi
             pwd
+            git rev-parse --short HEAD
             git status --short

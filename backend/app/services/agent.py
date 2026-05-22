@@ -98,6 +98,15 @@ TOOL_OUTPUT_JSON_SCHEMA: dict[str, Any] = {
 }
 
 PROCESS_REGISTRY: Dict[str, List[AgentProcess]] = {
+    "macro-board": [
+        AgentProcess(
+            id="market-research-workspace",
+            title="Build a structured market research workspace",
+            outcome="A card-based decision workspace with assumptions, risks, sources, and next steps.",
+            starter_prompt="Guide me from a market question to a structured research workspace.",
+            steps=["Clarify the decision and horizon", "Map data, assumptions, and missing evidence", "Produce recommendation, risk, and next-step cards"],
+        )
+    ],
     "dashboard": [
         AgentProcess(
             id="executive-brief",
@@ -170,10 +179,45 @@ PROCESS_REGISTRY: Dict[str, List[AgentProcess]] = {
             steps=["Organize findings", "Write executive language", "Add caveats and next steps"],
         )
     ],
+    "econ-arcade": [
+        AgentProcess(
+            id="learning-path-selector",
+            title="Choose an economics learning path",
+            outcome="A recommended sequence of playable modules with concepts, difficulty, and reflection prompts.",
+            starter_prompt="Help me choose which Econ Arcade module to play based on what I want to learn.",
+            steps=["Identify the learning goal", "Match the goal to a playable module", "Create a short debrief and retry plan"],
+        )
+    ],
+    "econ-arcade/supply-demand-lab": [
+        AgentProcess(
+            id="market-lab-coach",
+            title="Coach a supply and demand experiment",
+            outcome="A clear experiment plan, expected market movement, caveats, and replay prompt.",
+            starter_prompt="Help me design a supply and demand experiment and interpret the result.",
+            steps=["Name the scenario and lever", "Predict price, quantity, surplus, and stability effects", "Debrief the outcome and suggest a counterfactual"],
+        )
+    ],
+    "econ-arcade/invisible-hands": [
+        AgentProcess(
+            id="systems-policy-coach",
+            title="Guide a systems-policy decision",
+            outcome="A structured policy brief with affected actors, transmission channels, risks, and next turn focus.",
+            starter_prompt="Help me reason through the next policy move in Invisible Hands.",
+            steps=["Read the pressure dashboard", "Trace who gains, who loses, and where stress moves", "Recommend a next-turn watch item"],
+        )
+    ],
+    "invisible-hands": [
+        AgentProcess(
+            id="systems-policy-coach",
+            title="Guide a systems-policy decision",
+            outcome="A structured policy brief with affected actors, transmission channels, risks, and next turn focus.",
+            starter_prompt="Help me reason through the next policy move in Invisible Hands.",
+            steps=["Read the pressure dashboard", "Trace who gains, who loses, and where stress moves", "Recommend a next-turn watch item"],
+        )
+    ],
 }
 
 _HISTORY: Dict[str, List[AgentMessage]] = {}
-_PAID_SESSIONS: set[str] = set()
 
 
 def _history_path() -> Path:
@@ -206,21 +250,13 @@ def default_process(page_id: str) -> AgentProcess:
     return PROCESS_REGISTRY[normalize_page_id(page_id)][0]
 
 
-def has_paid_access(access_token: Optional[str] = None) -> tuple[bool, str]:
-    # TODO: Add plan and entitlement checks after the core tools are strong enough to monetize.
-    return True, "payment not required while product workflow quality is being validated"
-
-
-def remember_paid_session(session_id: str) -> None:
-    _PAID_SESSIONS.add(session_id)
-
-
 def build_instructions(page_id: str, process: AgentProcess) -> str:
     steps = "\n".join(f"- {step}" for step in process.steps)
     return (
-        "You are MacroBoard Agent, a specialized macro/portfolio analytics copilot. "
-        "Help users accomplish the selected workflow on the current page. Be concise, practical, and financially cautious. "
-        "Never claim investment certainty; surface assumptions, risks, and next checks. "
+        "You are Ballzatram's AI workflow guide, a specialized assistant for the current tool page. "
+        "Help users accomplish the selected workflow without pretending unavailable data or capabilities exist. "
+        "Be concise, practical, and cautious where finance, research, or policy decisions are involved. "
+        "Never claim certainty; surface assumptions, risks, and next checks. "
         "Return output that can render as product UI cards, not unstructured prose. "
         f"Current page: {page_id}. Workflow: {process.title}. Desired end result: {process.outcome}. "
         f"Workflow steps:\n{steps}"
@@ -231,7 +267,7 @@ def _fallback_answer(page_id: str, process: AgentProcess, message: str) -> str:
     return (
         f"I can guide the **{process.title}** workflow for the {page_id} page. "
         f"End result: {process.outcome}\n\n"
-        f"Based on your request — {message!r} — start with: "
+        f"Based on your request - {message!r} - start with: "
         f"1) {process.steps[0]}, 2) {process.steps[1]}, 3) {process.steps[2]}. "
         "Configure OPENAI_API_KEY to replace this deterministic development response with a live OpenAI response."
     )
@@ -286,11 +322,8 @@ def _coerce_tool_output(raw: Any, page_id: str, process: AgentProcess, message: 
     return fallback
 
 
-def chat(page_id: str, process_id: Optional[str], message: str, conversation_id: Optional[str], access_token: Optional[str]) -> dict:
-    paid, reason = has_paid_access(access_token)
-    if not paid:
-        raise PermissionError(reason)
-
+def chat(page_id: str, process_id: Optional[str], message: str, conversation_id: Optional[str]) -> dict:
+    # TODO: Add plan and entitlement checks here after paid-tool packaging exists.
     _load_history()
     normalized_page = normalize_page_id(page_id)
     process = next((p for p in PROCESS_REGISTRY[normalized_page] if p.id == process_id), default_process(normalized_page))
@@ -336,20 +369,9 @@ def chat(page_id: str, process_id: Optional[str], message: str, conversation_id:
         "answer": answer,
         "structured_output": structured_output,
         "history": history,
-        "paid_access": paid,
     }
 
 
 def get_history(conversation_id: str) -> List[AgentMessage]:
     _load_history()
     return _HISTORY.get(conversation_id, [])
-
-
-def create_checkout_session(success_url: str, cancel_url: str, customer_email: Optional[str], page_id: str) -> dict:
-    # TODO: Reintroduce checkout only after entitlement design and paid-tool packaging are ready.
-    raise RuntimeError("Checkout is intentionally disabled during the product-quality pass.")
-
-
-def verify_checkout_session(session_id: Optional[str], access_token: Optional[str]) -> tuple[bool, str]:
-    # TODO: Replace this placeholder with real entitlement verification after monetization planning.
-    return has_paid_access(access_token)

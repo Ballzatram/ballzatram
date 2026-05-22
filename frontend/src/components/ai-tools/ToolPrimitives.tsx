@@ -67,7 +67,7 @@ export function AIIntakePanel({
     <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-lg shadow-black/20" aria-label="AI intake">
       <div>
         <p className="text-xs font-semibold uppercase tracking-[0.22em] text-emerald-300">Guided intake</p>
-        <h2 className="mt-2 text-2xl font-semibold text-white">Tell MacroBoard what decision this should support</h2>
+        <h2 className="mt-2 text-2xl font-semibold text-white">Tell the workflow agent what decision this should support</h2>
         <p className="mt-2 text-sm leading-6 text-slate-400">
           The workflow asks clarifying questions first, then turns the answers into structured research cards with caveats and next actions.
         </p>
@@ -133,7 +133,7 @@ export function AIIntakePanel({
 }
 
 export function ResultCards({ cards }: { cards: ToolCard[] }) {
-  if (!cards.length) return <EmptyState title="No result cards yet" message="Complete the guided intake to generate structured MacroBoard evidence cards." />;
+  if (!cards.length) return <EmptyState title="No result cards yet" message="Complete the guided intake to generate structured evidence cards." />;
 
   return (
     <div className="grid gap-4 xl:grid-cols-2">
@@ -321,4 +321,3 @@ function ListBlock({ title, items }: { title: string; items: string[] }) {
     </div>
   );
 }
-

@@ -50,15 +50,13 @@ NEXT_PUBLIC_API_BASE=http://localhost:8000/api npm run dev
 - `NEXT_PUBLIC_API_BASE` (frontend backend URL)
 - Future connectors (FRED/BLS) should add `FRED_API_KEY`, `BLS_API_KEY`.
 
-## AI agent and paid access
-MacroBoard includes a page-aware AI workflow agent in the Next.js layout. The backend exposes `/api/agent/processes`, `/api/agent/chat`, `/api/agent/history/{conversation_id}`, and Stripe billing endpoints under `/api/agent/billing/*`.
+## AI workflow agent
+MacroBoard and the Next.js tool pages include a page-aware Ballzatram AI workflow agent. The backend exposes `/api/agent/processes`, `/api/agent/chat`, and `/api/agent/history/{conversation_id}`. No billing routes are exposed during the product-quality pass; do not wire checkout or entitlement gates until the tools are consistently useful.
 
 Set these optional backend environment variables to enable production integrations:
 - `OPENAI_API_KEY`: when present, `/api/agent/chat` calls OpenAI's Responses API; without it the service returns a deterministic development response.
 - `OPENAI_AGENT_MODEL`: model override for the agent, defaulting to `gpt-4.1-mini`.
-- `AGENT_REQUIRE_PAYMENT`: set to `true` to require paid access before chat responses.
-- `AGENT_DEV_ACCESS_CODE`: optional access token for local/operator testing when payment is required.
-- `STRIPE_SECRET_KEY` and `STRIPE_AGENT_PRICE_ID`: required by `/api/agent/billing/checkout` to create a Stripe Checkout session.
+- Future entitlement checks should be added after the core workflows are production-ready. Keep secrets server-side only.
 
 ## Data sources
 - Demo public dataset: `demo_data/macro_timeseries.csv`
