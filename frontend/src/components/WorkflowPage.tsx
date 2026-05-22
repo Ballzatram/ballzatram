@@ -34,7 +34,7 @@ export function WorkflowPage({ workflow }: { workflow: Workflow }) {
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Guided intake</p>
           <h2 className="mt-2 text-xl font-semibold text-white">Start with a decision, not a blank prompt</h2>
           <p className="mt-2 text-sm leading-6 text-slate-400">
-            The AI workflow agent uses these intake points to ask sharper questions before producing structured output.
+            The workshop guide uses these intake points to ask sharper questions before producing structured output.
           </p>
           <div className="mt-4 grid gap-3">
             {intakeFields.map(([label, copy]) => (

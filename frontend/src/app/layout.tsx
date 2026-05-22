@@ -3,8 +3,9 @@ import { Layout } from "@/components/Layout";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MacroBoard | Ballzatram",
-  description: "Macro risk workflows for stock, portfolio, scenario, event-study, and report analysis.",
+  title: "Ballzatram | Playable Archive",
+  description:
+    "A strange playable archive of games, music, lore, inventions, artifacts, and mythological machinery.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
