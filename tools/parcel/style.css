@@ -4,6 +4,8 @@ button,input,select,textarea{font:inherit}.app{width:min(1200px,100%);margin:0 a
 .topbar{display:flex;justify-content:space-between;gap:1rem;padding:1rem;margin-bottom:.8rem}.kicker{margin:0;color:var(--muted);letter-spacing:.2em;text-transform:uppercase;font-size:.75rem}h1{margin:.35rem 0;font-size:clamp(2rem,7vw,3.3rem)}h2{margin:.2rem 0 1rem}.sub,.section-copy{color:#c4c0b2}
 .back-link,.ghost,.cta{min-height:42px;border:1px solid var(--line);padding:.6rem .9rem;color:var(--text);text-decoration:none;background:transparent;cursor:pointer}
 .stage{display:none;padding:1rem}.stage-active{display:block}.search-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem}.search-grid .full,.search-grid .cta{grid-column:1/-1}
+.tool-contract{display:grid;gap:.5rem;margin-bottom:.8rem}
+.tool-contract h2{margin:.2rem 0}
 label{display:grid;gap:.3rem;color:var(--muted);font-size:.86rem}input,select,textarea{width:100%;background:#0c0e13;color:var(--text);border:1px solid var(--line);padding:.65rem}.cta{background:#e7e1d6;color:#171514;font-weight:700}
 .spinner{width:56px;height:56px;border:4px solid #2e313a;border-top-color:#e7dfd0;border-radius:999px;animation:spin 1s linear infinite;margin:.5rem auto 1rem}@keyframes spin{to{transform:rotate(360deg)}}
 .dash-head{display:flex;justify-content:space-between;align-items:center;gap:.6rem}.thesis-block{border:1px solid #315850;padding:.8rem;background:rgba(8,51,43,.2)}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.6rem;margin:.7rem 0}.metric{border:1px solid var(--line);padding:.7rem;background:#13151b}.metric p{margin:0;color:var(--muted);font-size:.75rem;text-transform:uppercase}.metric strong{font-size:1.4rem}

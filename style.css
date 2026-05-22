@@ -189,7 +189,7 @@ body {
 }
 
 .headline-rule::after {
-  content: "★";
+  content: "*";
   position: absolute;
   left: 50%;
   top: 50%;
@@ -300,6 +300,33 @@ body {
   width: 100%;
 }
 
+.tool-category {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.category-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0 clamp(0.25rem, 1vw, 0.75rem);
+}
+
+.category-heading h2 {
+  color: #fff4d4;
+  font-family: Impact, "Anton", system-ui, sans-serif;
+  font-size: clamp(2.1rem, 3vw, 3.6rem);
+  letter-spacing: 0.04em;
+  line-height: 0.95;
+  text-transform: uppercase;
+  text-shadow: 0 4px 0 rgba(31, 13, 3, 0.55);
+}
+
+.tool-category .dock {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
 .dock-card {
   display: grid;
   grid-template-rows: auto 1fr;
@@ -315,6 +342,18 @@ body {
   box-shadow:
     0 7px 0 #4b1d06,
     0 14px 24px rgba(0, 0, 0, 0.24);
+}
+
+.tool-category .dock-card,
+.tool-category .dock-card:nth-last-child(2),
+.tool-category .dock-card:last-child {
+  grid-column: span 3;
+}
+
+#games .dock-card,
+#games .dock-card:nth-last-child(2),
+#games .dock-card:last-child {
+  grid-column: span 4;
 }
 
 .dock-card > div:last-child {
@@ -360,6 +399,30 @@ body {
   margin-bottom: 0.25rem;
   color: #7a310c;
   font-size: clamp(0.72rem, 0.8vw, 0.9rem);
+}
+
+.tool-status {
+  display: inline-flex;
+  width: fit-content;
+  margin-bottom: 0.55rem;
+  padding: 0.25rem 0.55rem;
+  border: 2px solid rgba(31, 13, 3, 0.45);
+  border-radius: 999px;
+  background: rgba(255, 245, 217, 0.64);
+  color: #4b1d06;
+  font-family: Impact, "Anton", system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.tool-status.live {
+  background: #d6ffba;
+}
+
+.tool-status.experimental {
+  background: #d9e4ff;
 }
 
 .dock-card h2 {
@@ -491,6 +554,15 @@ body {
   .dock-card:last-child {
     grid-column: 2 / span 4;
   }
+
+  .tool-category .dock-card,
+  .tool-category .dock-card:nth-last-child(2),
+  .tool-category .dock-card:last-child,
+  #games .dock-card,
+  #games .dock-card:nth-last-child(2),
+  #games .dock-card:last-child {
+    grid-column: span 6;
+  }
 }
 
 @media (max-width: 920px) {
@@ -525,6 +597,20 @@ body {
   .dock-card,
   .dock-card:nth-last-child(2),
   .dock-card:last-child {
+    grid-column: auto;
+  }
+
+  .tool-category .dock,
+  #games .dock {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .tool-category .dock-card,
+  .tool-category .dock-card:nth-last-child(2),
+  .tool-category .dock-card:last-child,
+  #games .dock-card,
+  #games .dock-card:nth-last-child(2),
+  #games .dock-card:last-child {
     grid-column: auto;
   }
 }
@@ -610,6 +696,11 @@ body {
   }
 
   .dock {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-category .dock,
+  #games .dock {
     grid-template-columns: 1fr;
   }
 
@@ -1032,6 +1123,10 @@ body {
   .console-row strong {
     text-align: left;
   }
+
+  .weather-result-metrics {
+    grid-template-columns: 1fr;
+  }
 }
 
 .weather-submit {
@@ -1064,6 +1159,43 @@ body {
   font-size: 1.45rem;
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.weather-result-card {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.weather-result-metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.weather-result-metrics div {
+  min-width: 0;
+  padding: 0.65rem;
+  border: 1px solid rgba(185, 251, 255, 0.28);
+  border-radius: 12px;
+  background: rgba(5, 34, 48, 0.62);
+}
+
+.weather-result-metrics span,
+.weather-result-metrics b {
+  display: block;
+}
+
+.weather-result-metrics span {
+  color: #a9f7ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.weather-result-metrics b {
+  margin-top: 0.2rem;
+  color: #fff6d8;
+  font-size: 1rem;
 }
 
 .status-positive {

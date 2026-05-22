@@ -41,7 +41,7 @@ h3 { margin: 0 0 .55rem; font-size: 1.18rem; }
 p { line-height: 1.45; }
 .lede { position: relative; z-index: 1; max-width: 720px; margin: 1rem 0 1.1rem; color: #cbd8ea; font-size: clamp(1rem, 1.6vw, 1.2rem); font-weight: 720; line-height: 1.5; }
 .heroStats, .buttonRow, .feedbackRow, .iconRow { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; }
-.statusPill, .planStats span, .metricGrid span, .statusBadge { display: inline-flex; align-items: center; min-height: 34px; border: 1px solid var(--line); border-radius: 999px; padding: .3rem .72rem; color: #dfe9f7; background: rgba(255,255,255,.06); font-weight: 900; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
+.statusPill, .planStats span, .metricGrid span, .statusBadge, .qualityPill { display: inline-flex; align-items: center; min-height: 34px; border: 1px solid var(--line); border-radius: 999px; padding: .3rem .72rem; color: #dfe9f7; background: rgba(255,255,255,.06); font-weight: 900; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
 .factoryBoard { display: grid; grid-template-columns: .86fr 1.18fr .96fr; gap: .85rem; align-items: stretch; margin: .9rem 0; }
 .card, .miniCard, .versionCard { border-radius: 24px; padding: clamp(.9rem, 1.8vw, 1.2rem); }
 .warning { border-color: rgba(255,209,102,.45); background: rgba(255,209,102,.09); }

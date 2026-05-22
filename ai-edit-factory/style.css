@@ -668,6 +668,21 @@ h3 {
   line-height: 1.4;
 }
 
+.plan-quality {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.plan-quality span {
+  padding: 0.65rem 0.75rem;
+  border: 1px solid rgba(143, 181, 255, 0.24);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.055);
+  color: #dbe8ff;
+  font-weight: 850;
+}
+
 .recipe-card details {
   margin-top: 1rem;
 }

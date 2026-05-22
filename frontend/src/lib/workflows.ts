@@ -68,7 +68,7 @@ export const workflows: Workflow[] = [
     metrics: [
       { label: "Rate beta", value: "-0.42", sub: "Demo coefficient versus real 10-year yield changes" },
       { label: "CPI sensitivity", value: "-0.18", sub: "Lower is better for inflation shock resilience" },
-      { label: "Model fit", value: "0.64 R²", sub: "Enough to inform questions, not enough to automate trades" },
+      { label: "Model fit", value: "0.64 R2", sub: "Enough to inform questions, not enough to automate trades" },
     ],
     chart: [
       { name: "Rates", value: -42 },
@@ -162,7 +162,7 @@ export const workflows: Workflow[] = [
       "Measure returns around CPI releases, Fed decisions, earnings, or custom dates while preserving clean pre/post windows and caveats.",
     badge: "Window controlled",
     metrics: [
-      { label: "Event window", value: "±5d", sub: "Default review horizon around each catalyst" },
+      { label: "Event window", value: "+/-5d", sub: "Default review horizon around each catalyst" },
       { label: "Avg reaction", value: "+1.8%", sub: "Demo cumulative abnormal return" },
       { label: "Hit rate", value: "62%", sub: "Share of events matching expected direction" },
     ],

@@ -327,7 +327,11 @@
           <div class="metric-row"><span>${escapeHtml(plan.clip_type || plan.mood)}</span><span>${escapeHtml(plan.platform)}</span><span>${plan.duration_seconds}s</span><span>${escapeHtml(plan.aspect_ratio)}</span></div>
           <h4>Cuts</h4><ol>${cuts}</ol>
           ${captions ? `<h4>Captions</h4><ol>${captions}</ol>` : ''}
-          <details><summary>View JSON plan</summary><pre>${escapeHtml(JSON.stringify(plan, null, 2))}</pre></details>
+          <div class="plan-quality">
+            <span>Assumption: uploaded clips are rights-approved.</span>
+            <span>Risk: weak source clips still need human review.</span>
+            <span>Next step: preview cuts, adjust captions, then render MP4.</span>
+          </div>
         </article>`;
     }
 

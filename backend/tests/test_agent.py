@@ -16,7 +16,6 @@ def test_agent_processes_cover_pages():
 
 def test_agent_chat_stores_history_without_openai_key(monkeypatch):
     monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.setenv("AGENT_REQUIRE_PAYMENT", "false")
     payload = {"page_id": "stock", "process_id": "stock-driver-analysis", "message": "What should I do first?"}
     r = client.post("/api/agent/chat", json=payload)
     assert r.status_code == 200

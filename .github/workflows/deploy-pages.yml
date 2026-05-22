@@ -2,7 +2,7 @@ name: Deploy site to GitHub Pages
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   workflow_dispatch:
 
 permissions:
@@ -30,7 +30,9 @@ jobs:
       - name: Prepare artifact
         run: |
           mkdir -p _site
-          cp -R index.html style.css script.js CNAME assets games tools _site/
+          cp -R index.html style.css script.js weather-bot.html weather-bot.js CNAME assets games tools econ-arcade docs _site/
+          mkdir -p _site/ai-edit-factory
+          cp ai-edit-factory/index.html ai-edit-factory/style.css _site/ai-edit-factory/
           touch _site/.nojekyll
 
       - name: Upload Pages artifact

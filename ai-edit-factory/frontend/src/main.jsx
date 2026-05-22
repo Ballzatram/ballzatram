@@ -164,7 +164,7 @@ function EditRecipe({ row, draft, setDraft, saveDraft, cancelEdit, busy, selecte
       <label>Start the tune at<input type="number" min="0" step="0.1" value={musicStart} onChange={(event) => setMusicStart(event.target.value)} placeholder={String(draft.music_settings?.source_start_s ?? draft.music_start_seconds ?? 0)} /></label>
       <button type="button" disabled={busy || !selectedMusic} onClick={() => saveMusic(row.id)}>Save music timing</button>
       <p><strong>Export notes:</strong> {draft.export_notes || 'Vertical MP4 export with uploaded clips and tune.'}</p>
-      <div className="buttonRow"><button type="button" disabled={busy || !segments.length} onClick={saveDraft}>Save recipe</button><details><summary>Show technical JSON</summary><pre className="jsonBlock">{JSON.stringify(draft, null, 2)}</pre></details></div>
+      <div className="buttonRow"><button type="button" disabled={busy || !segments.length} onClick={saveDraft}>Save recipe</button><span className="qualityPill">Structured recipe: cuts, captions, music timing, export notes</span></div>
     </article>
   );
 }

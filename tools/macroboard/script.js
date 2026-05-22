@@ -1,4 +1,5 @@
-const FRED_API_KEY = "c868297a3c31652721b0202a94764c2b";
+// Browser-delivered files must not include private provider keys. Use the FastAPI MacroBoard backend for live FRED data.
+const FRED_API_KEY = "";
 const YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart";
 
 const workflows = {
@@ -239,6 +240,16 @@ function splitCsvLine(line) {
   return values;
 }
 
+function escapeHtml(value) {
+  return String(value ?? "").replace(/[&<>"']/g, (character) => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  }[character]));
+}
+
 function normalizeHoldings(rows) {
   const prepared = rows
     .map((row) => ({
@@ -262,7 +273,7 @@ function normalizeHoldings(rows) {
 }
 
 function formatValue(key, value) {
-  if (!Number.isFinite(value)) return "—";
+  if (!Number.isFinite(value)) return "--";
   if (["asset_ret", "market_ret", "portfolio_vol", "max_drawdown", "top_weight"].includes(key) || key.includes("ret")) return `${(value * 100).toFixed(1)}%`;
   if (["cpi_yoy", "ffr", "unemployment", "credit_spread"].includes(key)) return `${value.toFixed(1)}%`;
   if (["portfolio_beta"].includes(key)) return value.toFixed(2);
@@ -302,46 +313,46 @@ function renderNav() {
 function renderMetrics(workflow) {
   document.querySelector("#metric-grid").innerHTML = workflow.metrics.map(([label, key, caption]) => `
     <article class="metric-card">
-      <div class="metric-label">${label}</div>
-      <div class="metric-value">${formatValue(key, metricValue(key))}</div>
-      <div class="metric-caption">${caption} · ${metricTrend(key)}</div>
+      <div class="metric-label">${escapeHtml(label)}</div>
+      <div class="metric-value">${escapeHtml(formatValue(key, metricValue(key)))}</div>
+      <div class="metric-caption">${escapeHtml(caption)} - ${escapeHtml(metricTrend(key))}</div>
     </article>
   `).join("");
 }
 
 function renderInsights(workflow) {
-  document.querySelector("#insight-list").innerHTML = workflow.insights.map((insight) => `<li>${insight}</li>`).join("");
+  document.querySelector("#insight-list").innerHTML = workflow.insights.map((insight) => `<li>${escapeHtml(insight)}</li>`).join("");
 }
 
 function renderLessons(workflow) {
   document.querySelector("#lesson-list").innerHTML = workflow.lessons.map((lessonKey) => {
     const [title, body] = learningDatabase[lessonKey];
-    return `<article class="lesson-card"><strong>${title}</strong><p>${body}</p></article>`;
+    return `<article class="lesson-card"><strong>${escapeHtml(title)}</strong><p>${escapeHtml(body)}</p></article>`;
   }).join("");
 }
 
 function renderTable() {
   const headers = ["date", "asset_ret", "market_ret", "cpi_yoy", "ffr", "unemployment", "dxy", "oil", "credit_spread", "ism_new_orders"];
-  document.querySelector("#table-head").innerHTML = headers.map((header) => `<th>${header.replaceAll("_", " ")}</th>`).join("");
+  document.querySelector("#table-head").innerHTML = headers.map((header) => `<th>${escapeHtml(header.replaceAll("_", " "))}</th>`).join("");
   document.querySelector("#table-body").innerHTML = state.rows.slice(-8).reverse().map((row) => `
-    <tr>${headers.map((header) => `<td>${header === "date" ? row[header] : formatValue(header, row[header])}</td>`).join("")}</tr>
+    <tr>${headers.map((header) => `<td>${escapeHtml(header === "date" ? row[header] : formatValue(header, row[header]))}</td>`).join("")}</tr>
   `).join("");
 }
 
 function renderPortfolioTable() {
   const headers = ["ticker", "weight", "price", "1m", "vol"];
-  document.querySelector("#portfolio-head").innerHTML = headers.map((header) => `<th>${header}</th>`).join("");
+  document.querySelector("#portfolio-head").innerHTML = headers.map((header) => `<th>${escapeHtml(header)}</th>`).join("");
   document.querySelector("#portfolio-body").innerHTML = state.holdings.map((holding) => {
     const data = state.marketData[holding.ticker] ?? {};
     return `<tr>
-      <td>${holding.ticker}</td>
-      <td>${formatValue("top_weight", holding.weight)}</td>
-      <td>${data.price ? `$${data.price.toFixed(2)}` : "—"}</td>
-      <td>${formatValue("asset_ret", data.monthReturn ?? 0)}</td>
-      <td>${formatValue("portfolio_vol", data.volatility ?? 0)}</td>
+      <td>${escapeHtml(holding.ticker)}</td>
+      <td>${escapeHtml(formatValue("top_weight", holding.weight))}</td>
+      <td>${escapeHtml(data.price ? `$${data.price.toFixed(2)}` : "--")}</td>
+      <td>${escapeHtml(formatValue("asset_ret", data.monthReturn ?? 0))}</td>
+      <td>${escapeHtml(formatValue("portfolio_vol", data.volatility ?? 0))}</td>
     </tr>`;
   }).join("");
-  document.querySelector("#portfolio-updated").textContent = `${state.sourceLabel} · ${state.holdings.length} holdings`;
+  document.querySelector("#portfolio-updated").textContent = `${state.sourceLabel} - ${state.holdings.length} holdings`;
 }
 
 function renderDecisionBrief() {
@@ -349,13 +360,13 @@ function renderDecisionBrief() {
   const topHolding = [...state.holdings].sort((a, b) => b.weight - a.weight)[0];
   const macro = state.rows.at(-1) ?? {};
   const items = [
-    `Data check: ${state.sourceLabel} portfolio with ${state.holdings.length} holdings; macro range ${state.rows[0]?.date ?? "—"} to ${state.rows.at(-1)?.date ?? "—"}.`,
+    `Data check: ${state.sourceLabel} portfolio with ${state.holdings.length} holdings; macro range ${state.rows[0]?.date ?? "--"} to ${state.rows.at(-1)?.date ?? "--"}.`,
     topHolding ? `Sizing question: ${topHolding.ticker} is the largest position at ${formatValue("top_weight", topHolding.weight)}.` : "Sizing question: upload holdings to identify concentration risk.",
     `Risk lens: estimated beta ${formatValue("portfolio_beta", stats.portfolio_beta ?? 0)} and max drawdown ${formatValue("max_drawdown", stats.max_drawdown ?? 0)} from available price history/demo proxy.`,
     `Macro lens: CPI ${formatValue("cpi_yoy", macro.cpi_yoy ?? 0)}, Fed funds ${formatValue("ffr", macro.ffr ?? 0)}, credit spread ${formatValue("credit_spread", macro.credit_spread ?? 0)}.`,
     "Next action: choose a workflow tab, read the teaching cards, and write one decision plus one disconfirming signal."
   ];
-  document.querySelector("#decision-brief").innerHTML = items.map((item) => `<li>${item}</li>`).join("");
+  document.querySelector("#decision-brief").innerHTML = items.map((item) => `<li>${escapeHtml(item)}</li>`).join("");
 }
 
 function scaleSeries(rows, key, height, padding) {
@@ -486,7 +497,7 @@ function render() {
   document.querySelector("#workflow-title").textContent = workflow.title;
   document.querySelector("#workflow-description").textContent = workflow.description;
   document.querySelector("#chart-title").textContent = workflow.chartTitle;
-  document.querySelector("#date-range").textContent = `${state.rows[0]?.date ?? ""} → ${state.rows.at(-1)?.date ?? ""}`;
+  document.querySelector("#date-range").textContent = `${state.rows[0]?.date ?? ""} -> ${state.rows.at(-1)?.date ?? ""}`;
   renderNav();
   renderMetrics(workflow);
   renderInsights(workflow);
@@ -566,7 +577,11 @@ async function refreshMarketData() {
 
 async function refreshFredData() {
   const status = document.querySelector("#data-status");
-  status.textContent = "Refreshing FRED macro series…";
+  if (!FRED_API_KEY) {
+    status.textContent = "FRED refresh requires a server-side key; keeping local macro data";
+    return;
+  }
+  status.textContent = "Refreshing FRED macro series...";
   const seriesMap = {
     cpi_yoy: ["CPIAUCSL", percentChangeYearOverYear],
     ffr: ["DFF", latestValue],
