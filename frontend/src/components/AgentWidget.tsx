@@ -20,7 +20,7 @@ export function AgentWidget() {
   const [latestOutput, setLatestOutput] = useState<ToolOutput | null>(null);
   const [conversationId, setConversationId] = useState<string>();
   const [input, setInput] = useState("");
-  const [status, setStatus] = useState("Ready to guide this page.");
+  const [status, setStatus] = useState("Ready to guide this instrument.");
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ export function AgentWidget() {
   async function send(message = input) {
     if (!message.trim() || !activeProcess) return;
     setBusy(true);
-    setStatus("Thinking through the workflow...");
+    setStatus("Reading the instrument...");
     setInput("");
     try {
       const res = await api.agentChat({
@@ -52,7 +52,7 @@ export function AgentWidget() {
       setConversationId(res.conversation_id);
       setMessages(res.history);
       setLatestOutput(res.structured_output ?? null);
-      setStatus("Structured guidance ready.");
+      setStatus("Guidance ready.");
     } catch (err) {
       setStatus(err instanceof Error ? err.message : "Agent request failed");
     } finally {
@@ -68,10 +68,10 @@ export function AgentWidget() {
   return (
     <div className="fixed bottom-4 right-4 z-30 w-[calc(100%-2rem)] max-w-md sm:bottom-6 sm:right-6">
       {open ? (
-        <section className="overflow-hidden rounded-2xl border border-emerald-300/40 bg-slate-950 shadow-2xl shadow-black/50" aria-label="Ballzatram AI workflow agent">
+        <section className="overflow-hidden rounded-2xl border border-emerald-300/40 bg-slate-950 shadow-2xl shadow-black/50" aria-label="Ballzatram workshop guide">
           <div className="flex items-start justify-between gap-3 border-b border-slate-800 bg-slate-900 p-4">
             <div>
-              <p className="text-xs uppercase tracking-[0.25em] text-emerald-300">AI workflow agent</p>
+              <p className="text-xs uppercase tracking-[0.25em] text-emerald-300">Workshop guide</p>
               <h2 className="mt-1 text-lg font-semibold text-white">{activeProcess?.title ?? "Ballzatram Guide"}</h2>
               <p className="mt-1 text-xs text-slate-400">Page: {pageId}</p>
             </div>
@@ -116,7 +116,7 @@ export function AgentWidget() {
             ) : null}
 
             <div className="max-h-56 space-y-3 overflow-y-auto pr-1">
-              {messages.length === 0 ? <p className="text-sm text-slate-400">Ask the agent to help complete this tool's process.</p> : null}
+              {messages.length === 0 ? <p className="text-sm text-slate-400">Ask the guide to help complete this instrument's process.</p> : null}
               {messages.map((message, index) => (
                 <div key={`${message.created_at}-${index}`} className={message.role === "assistant" ? "rounded-xl bg-emerald-400/10 p-3 text-sm text-emerald-50" : "rounded-xl bg-slate-800 p-3 text-sm text-slate-50"}>
                   <p className="mb-1 text-xs uppercase tracking-wider text-slate-400">{message.role}</p>
@@ -153,7 +153,7 @@ export function AgentWidget() {
           className="ml-auto flex rounded-full border border-emerald-300/60 bg-emerald-400 px-5 py-3 font-semibold text-slate-950 shadow-xl shadow-black/30 hover:bg-emerald-300"
           onClick={() => setOpen(true)}
         >
-          Ask AI to guide this tool
+          Ask the workshop guide
         </button>
       )}
     </div>

@@ -1,0 +1,246 @@
+:root{
+  /* Page fills more of the window (book on a table vibe) */
+  --stage-w: min(99vw, 1720px);
+  --stage-h: min(96vh, 1180px);
+
+  /* Narrower page-side margins for vines */
+  --margin-col: clamp(60px, 7vw, 100px);     /* vine columns */
+  --page-gutter: clamp(20px, 2vw, 36px);     /* inner page padding */
+
+  --ink: #2f1b12;
+  --frame: #a46b2d;
+
+  --parchment-tint-top: rgba(255,245,220,.55);
+  --parchment-tint-bot: rgba(210,180,140,.55);
+  --parchment-base: #e8d4ac;
+
+  --pane-border: #111;
+  --pane-radius: 12px;
+}
+
+*{ box-sizing:border-box }
+html,body{ height:100% }
+body{
+  margin:0;
+  background: radial-gradient(80% 60% at 50% 18%, #1a1410, #0b0908 70%);
+  color:var(--ink);
+  font-family: ui-serif, Georgia, "Times New Roman", serif;
+}
+
+#stage{
+  position:relative;
+  width:var(--stage-w);
+  height:var(--stage-h);
+  margin:1.2vh auto;
+  border-radius:12px;
+  overflow:hidden; /* keep the page clipped to rounded corners */
+  box-shadow:
+    0 28px 80px rgba(0,0,0,.32),
+    0 10px 28px rgba(0,0,0,.22),
+    inset 0 0 0 1px rgba(60,30,10,.25),
+    inset 0 0 40px rgba(0,0,0,.18);
+}
+
+/* ——— Floral margins (book borders) ——— */
+.margin{
+  position:absolute; top:0; height:100%;
+  width:var(--margin-col);
+  pointer-events:none;
+  z-index:2;
+  display:flex; align-items:stretch; justify-content:center;
+}
+.margin.left  { left:0; }
+.margin.right { right:0; }
+
+.margin > img{
+  width:100%; height:100%;
+  object-fit: cover;               /* show full height, crop horizontally */
+  filter:saturate(.98) contrast(.98);
+  object-position: left 50%;
+}
+.margin.right > img{ object-position: right 50%; }
+
+/* ——— Page surface (matches veil) ——— */
+#page{
+  position:absolute; inset:0; z-index:1;
+  background:
+    url("../assets/parchment.png") center / cover no-repeat,
+    linear-gradient(180deg, var(--parchment-tint-top), var(--parchment-tint-bot));
+  border:1px solid rgba(60,30,10,.22);
+  filter:saturate(.95) contrast(.98);
+}
+
+/* Page vignette + CENTER CREASE */
+#page::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    linear-gradient(90deg, transparent 49.2%, rgba(0,0,0,.18) 50%, transparent 50.8%),
+    linear-gradient(90deg, rgba(0,0,0,0) 47%, rgba(0,0,0,.08) 50%, rgba(0,0,0,0) 53%),
+    radial-gradient(60% 70% at 50% 52%, rgba(0,0,0,0) 35%, rgba(0,0,0,0.10) 100%);
+  mix-blend-mode:multiply;
+}
+
+/* worn corners */
+#page::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(240px 240px at 26px 26px, rgba(0,0,0,.12), transparent 65%),
+    radial-gradient(240px 240px at calc(100% - 26px) 26px, rgba(0,0,0,.12), transparent 65%),
+    radial-gradient(240px 240px at 26px calc(100% - 26px), rgba(0,0,0,.14), transparent 65%),
+    radial-gradient(240px 240px at calc(100% - 26px) calc(100% - 26px), rgba(0,0,0,.14), transparent 65%);
+  opacity:.55; mix-blend-mode:multiply;
+}
+
+/* ——— Grid (content lives between the margins) ——— */
+#layout{
+  position:absolute;
+
+  /* EXACTLY symmetrical top/bottom page margins */
+  top:    calc(var(--page-gutter) + 14px);
+  bottom: calc(var(--page-gutter) + 14px);
+
+  left:   calc(var(--margin-col) + var(--page-gutter));
+  right:  calc(var(--margin-col) + var(--page-gutter));
+  z-index:3;
+
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    "intro crusades"
+    "hymns relics";
+
+  gap: clamp(18px, 2.6vw, 32px);
+  align-items:start;
+}
+
+/* ——— Intro: left page (title + paragraph) ——— */
+.intro{
+  grid-area:intro;
+  position:relative;
+  display:grid; align-content:start; gap:.30rem;
+  background:none; border:none; backdrop-filter:none;
+
+  width: min(99%, 1000px);
+  justify-self:start;                 /* LEFT page */
+}
+
+.intro h1{
+  margin:.05em 0 0.25em 0;
+  font-size: clamp(30px, 4.2vw, 56px);
+  text-shadow: 0 1px 0 #f5e9cc, 0 2px 3px rgba(0,0,0,.12);
+}
+
+/* Paragraph under the title (no box) */
+.intro p{
+  position:relative;
+  margin: 0;
+  padding: 0;
+
+  max-width: min(82ch, 98%);
+  line-height: 1.16;
+  text-align: left;
+  word-spacing: normal;
+  letter-spacing: 0;
+  hyphens: auto;
+  color: transparent;
+}
+.intro p::before{
+  content: "Nos sumus paenitens duo. Paenitentiam ferimus pro vobis. Cantus nostros omnes audiant. Paenitentiam spargimus per orbem. Censa mala verba nostra. Commenda omnes ad paenitentiam.";
+  display:block;
+  white-space: normal;
+
+  font-family: "EB Garamond", "Cardo", "IM Fell English", Georgia, serif;
+  font-size: clamp(19px, 2.8vw, 27px);
+  font-weight: 700;
+
+  color: #1b120c;
+  text-shadow: 0 1px 0 #f7ecd0, 0 1px 2px rgba(0,0,0,.10);
+  -webkit-text-stroke: .16px rgba(245,233,204,.35);
+}
+
+/* ——— Panes (book-like alignment) ——— */
+.pane{
+  position:relative;
+  display:block;                /* because the pane itself is the <a> */
+  text-decoration:none;
+  color:inherit;
+
+  width: min(86%, 760px);
+  border: 6px solid var(--pane-border);
+  border-radius: var(--pane-radius);
+  overflow: hidden;
+  background: transparent;
+  box-shadow: 0 8px 24px rgba(0,0,0,.15);
+  transition: transform .15s ease, box-shadow .15s ease, filter .15s ease;
+}
+
+/* LEFT page: tiles hug the left edge */
+.pane--hymns, .intro{ justify-self: start; }
+
+/* RIGHT page: tiles hug the right edge */
+.pane--crusades, .pane--relics{ justify-self: end; }
+
+.pane:hover{ transform: translateY(-2px); box-shadow:0 12px 28px rgba(0,0,0,.22) }
+
+/* Image drives height (no cropping) */
+.pane img{
+  display:block;
+  width:100%;
+  height:auto;
+  object-fit: contain;
+  object-position:center;
+}
+
+.pane::after{ content:none; }
+.pane--hymns    { grid-area:hymns; }
+.pane--crusades { grid-area:crusades; }
+.pane--relics   { grid-area:relics; }
+
+/* ——— Click gating for panes (anchor-as-pane) ——— */
+.pane[data-locked="1"]{
+  pointer-events: none;
+  cursor: not-allowed;
+  filter: grayscale(.25) contrast(.95);
+}
+.pane[data-locked="0"]{
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+/* Locked global tint until revealed (applies to any element using data-locked) */
+[data-locked="1"]{ filter: grayscale(.18) contrast(.97) }
+
+/* ——— Veil ——— */
+#veil{
+  position:absolute; inset:0;
+  display:block; cursor:crosshair; z-index:10;
+}
+
+/* ——— Responsive (collapse margins on small screens) ——— */
+@media (max-width: 900px){
+  :root{ --margin-col: 0px; }
+  #layout{
+    top:    calc(var(--page-gutter) + 2px);
+    bottom: calc(var(--page-gutter) + 2px);
+    left:   var(--page-gutter);
+    right:  var(--page-gutter);
+    gap: 16px;
+  }
+  .pane{ width: 100%; border-width: 4px; border-radius: 10px; }
+  .intro{ justify-self: start; width: 100%; }
+  .intro p{
+    max-width: 100%;
+    line-height: 1.18;
+  }
+  .intro p::before{ font-size: clamp(18px, 4.2vw, 24px); }
+  .margin{ display:none; }
+}
+
+/* Retire the veil when reveal is complete */
+#veil.is-done{
+  opacity: 0;
+  pointer-events: none;
+  cursor: auto;
+  transition: opacity .35s ease;
+}

@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>The Penitent 2 &mdash; Home</title>
+
+  <!-- Preloads -->
+  <link rel="preload" as="image" href="assets/parchment.png" />
+  <link rel="preload" as="image" href="assets/floral_border.png" />
+  <link rel="preload" as="image" href="assets/pane_hymns.png" />
+  <link rel="preload" as="image" href="assets/pane_crusades.png" />
+  <link rel="preload" as="image" href="assets/pane_relics.png" />
+
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <main id="stage" aria-label="Illuminated parchment page">
+    <!-- Floral margins -->
+    <div class="margin left" aria-hidden="true">
+      <img src="assets/floral_border.png" alt="" />
+    </div>
+    <div class="margin right" aria-hidden="true">
+      <img src="assets/floral_border.png" alt="" />
+    </div>
+
+    <!-- Page surface -->
+    <div id="page">
+      <section id="layout">
+        <!-- Intro (veil covers visually; not locked) -->
+        <section class="intro">
+          <h1>
+            <span aria-hidden="true">&#10016;</span>
+            The Penitent 2
+            <span aria-hidden="true">&#10016;</span>
+          </h1>
+          <p>
+            Nos sumus paenitens duo. Paenitentiam ferimus pro vobis.
+            Cantus nostros omnes audiant. Paenitentiam spargimus per orbem.
+            Censa mala verba nostra. Commenda omnes ad paenitentiam.
+          </p>
+        </section>
+
+        <!-- Panes (Hymns/Crusades/Relics) are injected by js/panes.js -->
+      </section>
+    </div>
+
+    <!-- Erase-to-reveal veil -->
+    <canvas id="veil" aria-hidden="true"></canvas>
+  </main>
+
+  <noscript>
+    This page uses a small amount of JavaScript to reveal the content.
+  </noscript>
+
+  <!-- App scripts -->
+  <script type="module" src="js/panes.js"></script>
+  <script type="module" src="js/veil.js"></script>
+</body>
+</html>

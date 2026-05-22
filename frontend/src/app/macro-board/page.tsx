@@ -192,8 +192,8 @@ export default function MacroBoardPage() {
       <div className="rounded-2xl border border-emerald-300/20 bg-slate-900 p-6 shadow-2xl shadow-black/30">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="max-w-4xl">
-            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-300">Premium workflow prototype</p>
-            <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-5xl">AI-guided MacroBoard</h1>
+            <p className="text-xs font-semibold uppercase tracking-[0.28em] text-emerald-300">Workshop instrument</p>
+            <h1 className="mt-3 text-3xl font-bold tracking-tight text-white sm:text-5xl">MacroBoard</h1>
             <p className="mt-4 text-base leading-7 text-slate-300">
               Turn a market question into a decision workspace with clarifying questions, evidence cards, assumptions, source quality, risk controls, and next actions.
             </p>

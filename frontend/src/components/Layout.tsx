@@ -8,68 +8,72 @@ import { workflows } from "@/lib/workflows";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const isInvisibleHands = pathname === "/econ-arcade/invisible-hands";
-  const isEconArcade = pathname.startsWith("/econ-arcade") && !isInvisibleHands;
+  const currentPath = pathname ?? "/";
+  const macroRoutes = new Set(["/macro-board", ...workflows.map((workflow) => `/${workflow.slug}`)]);
+  const isMacroRoute = macroRoutes.has(currentPath);
+  const isPenitent = currentPath.startsWith("/penitent");
+
+  if (isPenitent) {
+    return <>{children}</>;
+  }
 
   return (
-    <div className="min-h-dvh bg-slate-950 text-slate-100">
-      <header className="sticky top-0 z-20 border-b border-slate-800/90 bg-slate-950/95 px-4 py-3 backdrop-blur sm:px-6">
-        <div className="mx-auto flex max-w-7xl flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <Link href="/dashboard" className="text-2xl font-bold text-emerald-300 sm:text-3xl">
-              MacroBoard
+    <div className="ballzatram-site-shell min-h-dvh text-[#f8ead1]">
+      <header className="ballzatram-site-header">
+        <div className="ballzatram-site-header__inner">
+          <div className="ballzatram-site-header__brand">
+            <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
+              <img src="/assets/title.png" alt="Ballzatram" />
             </Link>
-            <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Macro risk intelligence</p>
+            <p>Playable archive of games, music, lore, and strange machinery</p>
           </div>
           <nav
-            className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:justify-end sm:px-0"
-            aria-label="MacroBoard sections"
+            className="ballzatram-main-nav"
+            aria-label="Ballzatram sections"
           >
             <Link
-              href={"/econ-arcade" as Route}
-              aria-current={isEconArcade ? "page" : undefined}
-              className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
-                isEconArcade
-                  ? "border-emerald-200 bg-emerald-300 text-slate-950"
-                  : "border-emerald-300/50 text-emerald-100 hover:border-emerald-200 hover:text-white"
-              }`}
+              href={"/" as Route}
+              aria-current={currentPath === "/" ? "page" : undefined}
             >
-              Econ Arcade
+              Home
             </Link>
+            <Link href={"/#arcade" as Route}>Arcade</Link>
             <Link
-              href={"/econ-arcade/invisible-hands" as Route}
-              aria-current={isInvisibleHands ? "page" : undefined}
-              className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
-                isInvisibleHands
-                  ? "border-cyan-200 bg-cyan-300 text-slate-950"
-                  : "border-cyan-300/50 text-cyan-100 hover:border-cyan-200 hover:text-white"
-              }`}
+              href={"/penitent" as Route}
+              aria-current={currentPath.startsWith("/penitent") ? "page" : undefined}
             >
-              Invisible Hands
+              Archive
             </Link>
-            {workflows.map((workflow) => {
-              const href = `/${workflow.slug}` as Route;
-              const active = pathname === href;
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  className={`min-h-11 shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition focus:outline-none focus:ring-2 focus:ring-emerald-300 focus:ring-offset-2 focus:ring-offset-slate-950 ${
-                    active
-                      ? "border-emerald-300 bg-emerald-300 text-slate-950"
-                      : "border-slate-700 text-slate-100 hover:border-emerald-300 hover:text-emerald-200"
-                  }`}
-                >
-                  {workflow.navLabel}
-                </Link>
-              );
-            })}
+            <Link href={"/#music" as Route}>Music</Link>
+            <Link href={"/#workshop" as Route}>Workshop</Link>
+            <Link href={"/#lore" as Route}>Lore</Link>
+            <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>
+              Games
+            </Link>
           </nav>
         </div>
+        {isMacroRoute ? (
+          <nav className="ballzatram-workflow-nav" aria-label="MacroBoard instruments">
+            <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>
+              Macro Board
+            </Link>
+            {workflows
+              .filter((workflow) => workflow.slug !== "dashboard")
+              .map((workflow) => {
+                const href = `/${workflow.slug}` as Route;
+                return (
+                  <Link key={href} href={href} aria-current={currentPath === href ? "page" : undefined}>
+                    {workflow.navLabel}
+                  </Link>
+                );
+              })}
+          </nav>
+        ) : null}
       </header>
-      <main className="mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 lg:px-8">{children}</main>
-      <AgentWidget />
+      <main className={isMacroRoute || currentPath.startsWith("/econ-arcade") ? "mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 lg:px-8" : ""}>
+        {children}
+      </main>
+      {isMacroRoute ? <AgentWidget /> : null}
     </div>
   );
 }
