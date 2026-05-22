@@ -2,7 +2,7 @@
 set -euo pipefail
 
 SITE_URL="${SITE_URL:-http://127.0.0.1}"
-COMPOSE_FILE="${COMPOSE_FILE:-ai-edit-factory/docker-compose.prod.yml}"
+COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
 
 echo "== Git =="
 git rev-parse --show-toplevel
@@ -11,14 +11,14 @@ git rev-parse --short HEAD
 git status --short
 
 echo
-echo "== Static assets =="
-test -f index.html
-test -f weather-bot.html
-test -f tools/parcel/index.html
-test -f tools/macroboard/index.html
-test -f econ-arcade/index.html
-test -f ai-edit-factory/index.html
-echo "Static entrypoints present"
+echo "== Production files =="
+test -f Dockerfile.frontend
+test -f Dockerfile.backend
+test -f docker-compose.prod.yml
+test -f deploy/caddy/Caddyfile
+test -f frontend/package.json
+test -f backend/requirements.txt
+echo "Production stack files present"
 
 echo
 echo "== Compose =="
@@ -40,18 +40,26 @@ if [ "${VERIFY_BUILD:-0}" = "1" ]; then
   echo "== Optional local builds =="
   (cd frontend && npm run lint && npm run build)
   (cd weather-trader && npm run build)
-  (cd ai-edit-factory/frontend && npm run build)
 fi
 
 echo
 echo "== HTTP checks =="
 if command -v curl >/dev/null 2>&1; then
   curl -fsS "$SITE_URL/" >/dev/null && echo "Home responds: $SITE_URL/"
-  curl -fsS "$SITE_URL/weather-bot.html" >/dev/null && echo "Weather Desk responds"
-  curl -fsS "$SITE_URL/api/health" >/dev/null && echo "AI Edit health responds" || echo "AI Edit health did not respond at $SITE_URL/api/health"
+  curl -fsS "$SITE_URL/macro-board" >/dev/null && echo "MacroBoard responds"
+  curl -fsS "$SITE_URL/api/health" >/dev/null && echo "API health responds"
+  curl -fsS "$SITE_URL/api/version" >/dev/null && echo "API version responds"
+  for path in /backend/app/main.py /frontend/package.json /ai-edit-factory/docker-compose.prod.yml; do
+    status="$(curl -s -o /dev/null -w "%{http_code}" "$SITE_URL$path")"
+    if [ "$status" = "200" ]; then
+      echo "Source path is publicly reachable: $path"
+      exit 1
+    fi
+    echo "Source path blocked: $path -> $status"
+  done
 else
-  echo "curl is not installed; open the site and /api/health manually."
+  echo "curl is not installed; open the site and /api/version manually."
 fi
 
 echo
-echo "Verification complete. Confirm the live page footer/header reflects the current commit after deployment."
+echo "Verification complete. Confirm /api/version reflects the current commit after deployment."

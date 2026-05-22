@@ -1,13 +1,16 @@
 # Ballzatram Deployment
 
-Ballzatram currently has two deploy targets:
+Ballzatram production is the AI process platform, not the retired AI Edit Factory stack.
 
-- DigitalOcean production for `ballzatram.com`
-- GitHub Pages static fallback/demo deploy
+Production should serve:
 
-Do not put secrets in browser files, static docs, or committed build artifacts. Provider keys belong in server environment variables only.
+- `https://ballzatram.com/` through the Next.js frontend
+- `https://ballzatram.com/macro-board` through the AI-guided MacroBoard route
+- `https://ballzatram.com/api/*` through the FastAPI AI/process backend
 
-## DigitalOcean Production
+Do not put secrets in browser files, static docs, or committed build artifacts. Provider keys belong in `/root/ballzatram/.env.production` on the server or in GitHub deployment secrets.
+
+## DigitalOcean Droplet
 
 The production workflow is `.github/workflows/deploy.yml`. It runs on pushes to `master` and connects over SSH using these GitHub Actions secrets:
 
@@ -16,64 +19,112 @@ The production workflow is `.github/workflows/deploy.yml`. It runs on pushes to 
 - `DO_PORT`
 - `DO_SSH_KEY`
 
-Expected server repo path:
+Expected checkout path:
 
 ```bash
 /root/ballzatram
 ```
 
-The live containerized stack is not at the repo root. The production Compose file is:
+Expected server env file:
 
 ```bash
-ai-edit-factory/docker-compose.prod.yml
+/root/ballzatram/.env.production
 ```
 
-That Compose stack runs:
+Minimum contents:
 
-- `caddy`: public HTTP/HTTPS entrypoint
-- `api`: FastAPI AI Edit Factory backend and `/api/health`
-- `worker`: render worker
-- `redis`: job queue/cache
+```env
+OPENAI_API_KEY=sk-...
+OPENAI_AGENT_MODEL=gpt-5.1
+APP_ENV=production
+GIT_BRANCH=master
+```
 
-Caddy serves the repo root static site from `/srv/ballzatram` and proxies API/media paths to the API container.
+Lock it down:
 
-The separate Next.js MacroBoard app and shared agent backend under `frontend/` and `backend/` are not currently part of this DigitalOcean Compose stack. Static pages and AI Edit deploy through this stack; production `/macro-board` and `/api/agent/*` require either adding those services to Compose/Caddy or deploying them separately.
+```bash
+chmod 600 /root/ballzatram/.env.production
+```
 
-## Fixed Deployment Issue
+## Production Stack
 
-The old DigitalOcean workflow only checked for `docker-compose.prod.yml` or `docker-compose.yml` at the repo root. Because the real production Compose file lives under `ai-edit-factory/`, the workflow could update the git checkout but then fall through to "static site deploy" and skip the Docker rebuild/restart.
+Root Compose file:
 
-The workflow now checks `ai-edit-factory/docker-compose.prod.yml` first and runs:
+```bash
+docker-compose.prod.yml
+```
+
+Services:
+
+- `frontend`: Next.js Ballzatram app on port `3000`
+- `backend`: FastAPI AI/process API on port `8000`
+- `caddy`: HTTPS reverse proxy on ports `80` and `443`
+
+Routing:
+
+- `/api/*` -> `backend:8000`
+- everything else -> `frontend:3000`
+
+Caddy no longer serves the repository root as static files. Source-tree paths such as `/backend/*`, `/frontend/*`, `/ai-edit-factory/*`, and `/.git/*` return `404`.
+
+## Deploy Flow
+
+The GitHub Action does this on the droplet:
 
 ```bash
 cd /root/ballzatram
 git fetch origin master
 git reset --hard origin/master
-cd ai-edit-factory
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml ps
+export GIT_COMMIT="$(git rev-parse --short HEAD)"
+export GIT_BRANCH="master"
+export DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+docker compose --env-file .env.production -f docker-compose.prod.yml build
+cd ai-edit-factory && docker compose -f docker-compose.prod.yml down --remove-orphans
+cd /root/ballzatram
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
+curl -fsS https://ballzatram.com/api/version
 ```
 
-## Manual DigitalOcean Deploy
+It builds the new Ballzatram stack before stopping the legacy AI Edit stack, then verifies that `/api/version` reports the deployed commit.
 
-Run on the server:
+## Manual Cutover
+
+Run this on the droplet after the deployment overhaul is merged to `master`:
 
 ```bash
 cd /root/ballzatram
 git fetch origin master
 git reset --hard origin/master
-cd ai-edit-factory
-docker compose -f docker-compose.prod.yml up -d --build
-docker compose -f docker-compose.prod.yml ps
-cd ..
-./scripts/verify_deployment.sh
+export GIT_COMMIT="$(git rev-parse --short HEAD)"
+export GIT_BRANCH="master"
+export DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+docker compose --env-file .env.production -f docker-compose.prod.yml build
+cd /root/ballzatram/ai-edit-factory
+docker compose -f docker-compose.prod.yml down --remove-orphans
+cd /root/ballzatram
+docker compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
+docker compose --env-file .env.production -f docker-compose.prod.yml ps
 ```
-
-If production uses a different checkout path, update the workflow `cd /root/ballzatram` line or create that path on the server.
 
 ## Verification
 
-Local/server checklist:
+Run:
+
+```bash
+curl -fsS https://ballzatram.com/api/version
+curl -I https://ballzatram.com/macro-board
+curl -I https://ballzatram.com/backend/app/main.py
+curl -I https://ballzatram.com/frontend/package.json
+curl -I https://ballzatram.com/ai-edit-factory/docker-compose.prod.yml
+```
+
+Expected:
+
+- `/api/version` returns the current commit
+- `/macro-board` returns the Next.js app
+- source-tree paths return `404`, not `200`
+
+Local/server helper:
 
 ```bash
 ./scripts/verify_deployment.sh
@@ -85,45 +136,6 @@ Windows/local equivalent:
 powershell -ExecutionPolicy Bypass -File scripts\verify_deployment.ps1
 ```
 
-Optional full local build checks:
+## Legacy AI Edit
 
-```bash
-VERIFY_BUILD=1 ./scripts/verify_deployment.sh
-```
-
-```powershell
-$env:VERIFY_BUILD = "1"
-powershell -ExecutionPolicy Bypass -File scripts\verify_deployment.ps1
-```
-
-The script checks:
-
-- current git root, branch, commit hash, and dirty status
-- static entrypoints
-- production Compose config
-- running Compose services when Docker is available
-- home page response
-- Weather Desk response
-- `/api/health` response when the AI Edit Factory stack is running
-
-For a remote/live site:
-
-```bash
-SITE_URL=https://ballzatram.com ./scripts/verify_deployment.sh
-```
-
-## GitHub Pages
-
-`.github/workflows/deploy-pages.yml` now runs on `main` and `master`. It publishes the static launchpad, games, tools, docs, and the public AI Edit Factory static shell. It intentionally does not publish backend source folders as static files.
-
-## Server-Side Action Still Required
-
-From the repo alone, we cannot verify:
-
-- whether the GitHub Actions secrets are present and valid
-- whether `/root/ballzatram` exists on the DigitalOcean host
-- whether the server has Docker Compose v2 installed
-- whether DNS/TLS for `ballzatram.com` points to the Caddy container
-- whether the separate Next.js/MacroBoard agent services should be added to the production stack for live `/macro-board` and `/api/agent/*`
-
-If deploys still do not update production after this workflow change, SSH into the server and run the manual deploy and verification commands above.
+AI Edit Factory is retired from production. Keep the old stack running only until the root Ballzatram stack has built successfully and is ready to bind ports `80` and `443`.

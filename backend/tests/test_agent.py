@@ -5,6 +5,18 @@ from app.main import app
 client = TestClient(app)
 
 
+def test_api_version_reports_deploy_metadata(monkeypatch):
+    monkeypatch.setenv("GIT_COMMIT", "abc123")
+    monkeypatch.setenv("GIT_BRANCH", "master")
+    monkeypatch.setenv("DEPLOYED_AT", "2026-05-22T00:00:00Z")
+    r = client.get("/api/version")
+    assert r.status_code == 200
+    body = r.json()
+    assert body["commit"] == "abc123"
+    assert body["branch"] == "master"
+    assert body["deployedAt"] == "2026-05-22T00:00:00Z"
+
+
 def test_agent_processes_cover_pages():
     r = client.get("/api/agent/processes")
     assert r.status_code == 200
