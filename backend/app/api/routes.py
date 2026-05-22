@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import os
+
 from fastapi import APIRouter, HTTPException
 
 from app.api.agent_routes import router as agent_router
@@ -14,6 +16,23 @@ from app.services.reporting import render_markdown
 router = APIRouter()
 
 router.include_router(agent_router)
+
+
+@router.get("/health")
+def api_health() -> dict:
+    return {"status": "ok", "service": "ballzatram-api"}
+
+
+@router.get("/version")
+def api_version() -> dict:
+    return {
+        "status": "ok",
+        "service": "ballzatram-api",
+        "environment": os.getenv("APP_ENV", "development"),
+        "branch": os.getenv("GIT_BRANCH", "unknown"),
+        "commit": os.getenv("GIT_COMMIT", "unknown"),
+        "deployedAt": os.getenv("DEPLOYED_AT", "unknown"),
+    }
 
 
 @router.get("/data/demo")

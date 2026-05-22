@@ -1,0 +1,33 @@
+ballzatram.com, www.ballzatram.com {
+  encode zstd gzip
+
+  @www host www.ballzatram.com
+  redir @www https://ballzatram.com{uri} permanent
+
+  header {
+    Strict-Transport-Security "max-age=2592000"
+    X-Content-Type-Options "nosniff"
+    Referrer-Policy "strict-origin-when-cross-origin"
+  }
+
+  @source_tree path /.git/* /.github/* /backend/* /frontend/* /ai-edit-factory/* /deploy/* /packages/* /prisma/* /scripts/* /Dockerfile* /docker-compose* /.env*
+  handle @source_tree {
+    respond "Not found" 404
+  }
+
+  @api path /api/*
+  handle @api {
+    reverse_proxy backend:8000 {
+      transport http {
+        dial_timeout 30s
+        response_header_timeout 300s
+        read_timeout 1h
+        write_timeout 1h
+      }
+    }
+  }
+
+  handle {
+    reverse_proxy frontend:3000
+  }
+}

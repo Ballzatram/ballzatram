@@ -22,21 +22,47 @@ jobs:
             cd /root/ballzatram
             git fetch origin master
             git reset --hard origin/master
-            if [ -f ai-edit-factory/docker-compose.prod.yml ]; then
-              cd ai-edit-factory
-              docker compose -f docker-compose.prod.yml up -d --build
-              docker compose -f docker-compose.prod.yml ps
-              cd ..
-            elif [ -f docker-compose.prod.yml ]; then
-              docker compose -f docker-compose.prod.yml up -d --build
-              docker compose -f docker-compose.prod.yml ps
-            elif [ -f docker-compose.yml ]; then
-              docker compose up -d --build
-              docker compose ps
-            else
-              echo "No Docker Compose file found; assuming static site deploy."
-              systemctl reload caddy || systemctl reload nginx || true
+
+            if [ ! -f .env.production ]; then
+              echo "Missing /root/ballzatram/.env.production"
+              exit 1
             fi
+
+            export GIT_COMMIT="$(git rev-parse --short HEAD)"
+            export GIT_BRANCH="master"
+            export DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+
+            docker compose --env-file .env.production -f docker-compose.prod.yml build
+
+            if [ -f ai-edit-factory/docker-compose.prod.yml ]; then
+              echo "Stopping legacy AI Edit production stack before binding ports 80/443."
+              (cd ai-edit-factory && docker compose -f docker-compose.prod.yml down --remove-orphans)
+            fi
+
+            docker compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
+            docker compose --env-file .env.production -f docker-compose.prod.yml ps
+
+            echo "Waiting for production version endpoint..."
+            for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
+              VERSION="$(curl -fsS https://ballzatram.com/api/version || true)"
+              if echo "$VERSION" | grep -q "$GIT_COMMIT"; then
+                echo "$VERSION"
+                break
+              fi
+              sleep 5
+            done
+
+            VERSION="$(curl -fsS https://ballzatram.com/api/version)"
+            echo "$VERSION" | grep "$GIT_COMMIT"
+
+            for path in /backend/app/main.py /frontend/package.json /ai-edit-factory/docker-compose.prod.yml; do
+              status="$(curl -s -o /dev/null -w "%{http_code}" "https://ballzatram.com$path")"
+              if [ "$status" = "200" ]; then
+                echo "Source path is publicly reachable: $path"
+                exit 1
+              fi
+            done
+
             pwd
             git rev-parse --short HEAD
             git status --short

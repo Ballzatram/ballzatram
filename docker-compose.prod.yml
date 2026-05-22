@@ -1,0 +1,65 @@
+name: ballzatram
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    image: ballzatram-backend:prod
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    environment:
+      APP_ENV: ${APP_ENV:-production}
+      GIT_BRANCH: ${GIT_BRANCH:-master}
+      GIT_COMMIT: ${GIT_COMMIT:-unknown}
+      DEPLOYED_AT: ${DEPLOYED_AT:-unknown}
+      AGENT_HISTORY_PATH: /app/backend/data/agent_history.json
+    volumes:
+      - backend_data:/app/backend/data
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=5).read()"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+      args:
+        NEXT_PUBLIC_API_BASE: /api
+        GIT_COMMIT: ${GIT_COMMIT:-unknown}
+    image: ballzatram-frontend:prod
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    expose:
+      - "3000"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      - frontend
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./deploy/caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  backend_data:
+  caddy_data:
+  caddy_config:
