@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { AgentWidget } from "@/components/AgentWidget";
+import { SkyLayer } from "@/components/SkyLayer";
 import { workflows } from "@/lib/workflows";
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -12,14 +13,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const macroRoutes = new Set(["/macro-board", ...workflows.map((workflow) => `/${workflow.slug}`)]);
   const isMacroRoute = macroRoutes.has(currentPath);
   const isPenitent = currentPath.startsWith("/penitent");
+  const isHome = currentPath === "/";
 
   if (isPenitent) {
     return <>{children}</>;
   }
 
   return (
-    <div className="ballzatram-site-shell min-h-dvh text-[#f8ead1]">
-      <header className="ballzatram-site-header">
+    <div className={`ballzatram-site-shell min-h-dvh ${isHome ? "ballzatram-site-shell--sky" : "text-[#f8ead1]"}`}>
+      {isHome ? <SkyLayer /> : null}
+      <a className="skip-link" href="#site-content">Skip to content</a>
+      <header className={`ballzatram-site-header ${isHome ? "ballzatram-site-header--sky" : ""}`}>
         <div className="ballzatram-site-header__inner">
           <div className="ballzatram-site-header__brand">
             <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
@@ -70,7 +74,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           </nav>
         ) : null}
       </header>
-      <main className={isMacroRoute || currentPath.startsWith("/econ-arcade") ? "mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 lg:px-8" : ""}>
+      <main id="site-content" className={isMacroRoute || currentPath.startsWith("/econ-arcade") ? "mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 lg:px-8" : ""}>
         {children}
       </main>
       {isMacroRoute ? <AgentWidget /> : null}

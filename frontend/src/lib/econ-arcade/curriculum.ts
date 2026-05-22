@@ -118,7 +118,7 @@ export const arcadeModules: ArcadeModule[] = [
     phaseId: "micro-foundations",
     status: "playable",
     difficulty: "Beginner",
-    href: "/econ-arcade/invisible-hands.html",
+    href: "/legacy-econ-arcade/invisible-hands.html",
     hrefLabel: "Play market game",
     format: "Static game",
     learningGoal:
@@ -146,7 +146,7 @@ export const arcadeModules: ArcadeModule[] = [
     phaseId: "game-theory",
     status: "playable",
     difficulty: "Intermediate",
-    href: "/econ-arcade/prisoners-dilemma.html",
+    href: "/legacy-econ-arcade/prisoners-dilemma.html",
     hrefLabel: "Enter arena",
     format: "Static game",
     learningGoal:
@@ -160,7 +160,7 @@ export const arcadeModules: ArcadeModule[] = [
     phaseId: "game-theory",
     status: "playable",
     difficulty: "Advanced",
-    href: "/econ-arcade/platform.html",
+    href: "/legacy-econ-arcade/platform.html",
     hrefLabel: "Open studio",
     format: "Strategy studio",
     learningGoal:
