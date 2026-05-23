@@ -316,6 +316,12 @@ export function PenitentGate() {
           className={`penitent-veil ${revealed ? "is-done" : ""}`}
           aria-hidden="true"
         />
+        {!revealed ? (
+          <div className={`penitent-veil-sigil ${touched ? "is-touched" : ""}`} aria-hidden="true">
+            <span>The Penitent</span>
+            <i />
+          </div>
+        ) : null}
         <div ref={dustRef} className="penitent-dust" aria-hidden="true" />
         {!revealed ? (
           <div className={`penitent-veil-hint ${touched ? "is-touched" : ""}`}>
