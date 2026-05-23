@@ -29,7 +29,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
               <img src="/assets/title.png" alt="Ballzatram" />
             </Link>
-            <p>Playable archive of games, music, lore, and strange machinery</p>
+            <p>Toolbox of games, relics, lore, and strange machinery</p>
           </div>
           <nav
             className="ballzatram-main-nav"
@@ -41,19 +41,18 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               Home
             </Link>
-            <Link href={"/#arcade" as Route}>Arcade</Link>
+            <Link href={"/#toolbox" as Route}>Toolbox</Link>
+            <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>
+              Econ Arcade
+            </Link>
             <Link
               href={"/penitent" as Route}
               aria-current={currentPath.startsWith("/penitent") ? "page" : undefined}
             >
-              Archive
+              Manuscript
             </Link>
-            <Link href={"/#music" as Route}>Music</Link>
             <Link href={"/#workshop" as Route}>Workshop</Link>
             <Link href={"/#lore" as Route}>Lore</Link>
-            <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>
-              Games
-            </Link>
           </nav>
         </div>
         {isMacroRoute ? (

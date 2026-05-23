@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Weather Prop Bot | Ballzatram</title>
+  <meta name="description" content="Paper-trading weather market scanner with explicit risk controls and local-runner safety boundaries." />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="sky weather-bot-sky" id="sky">
+    <header class="site-header">
+      <a class="brand-logo" href="/" aria-label="Ballzatram home">
+        <img src="assets/title.png" alt="Ballzatram" />
+      </a>
+
+      <nav class="nav-panel" aria-label="Main navigation">
+        <a href="/#toolbox">Toolbox</a>
+        <span></span>
+        <a href="weather-bot.html" aria-current="page">Weather Bot</a>
+        <span></span>
+        <a href="/#workshop">Workshop</a>
+      </nav>
+    </header>
+
+    <main class="weather-page-shell">
+      <section class="weather-hero terminal-card">
+        <div class="weather-hero-copy">
+          <p class="eyebrow">☁ Polymarket weather desk // paper-trading scanner ☁</p>
+          <h1>Weather Prop Bot</h1>
+          <p class="weather-subtitle">
+            A professional risk-first worksheet for weather props, settlement rules, probability estimates, and paper-trade alerts.
+          </p>
+          <p class="research-disclaimer">
+            Research / paper-trading tool only. Not financial advice. The website never asks for private keys and never places live orders.
+          </p>
+        </div>
+        <div class="weather-console" aria-label="Weather bot status console">
+          <div class="console-row"><span>Exchange</span><strong>Public market review</strong></div>
+          <div class="console-row"><span>Weather sources</span><strong>NWS / Open-Meteo</strong></div>
+          <div class="console-row"><span>Execution</span><strong>Paper alerts only</strong></div>
+          <div class="console-row"><span>Backend</span><strong id="backend-console-status">Offline calculator</strong></div>
+          <div class="console-row warning"><span>Live trading</span><strong id="live-lock-status">Locked</strong></div>
+        </div>
+      </section>
+
+      <section class="warning-strip" aria-label="Safety warnings">
+        <p>⚠ This tool does not guarantee profit.</p>
+        <p>⚠ Settlement depends on each market’s exact source, station, and timestamp rules.</p>
+        <p>⚠ Credentials belong only in a user-controlled local runner.</p>
+        <p>⚠ Treat every output as a review queue, not an order instruction.</p>
+      </section>
+
+
+      <section class="backend-grid" aria-label="Local weather-trader backend monitor">
+        <article class="dashboard-card backend-status-card">
+          <span class="card-kicker">Local backend</span>
+          <h2>Runner Link</h2>
+          <div class="metric-stack">
+            <div><span>Connection</span><strong id="backend-connection">Offline calculator</strong></div>
+            <div><span>Bot mode</span><strong id="backend-mode">Paper worksheet</strong></div>
+            <div><span>Latest scan</span><strong id="latest-scan-time">Not run this session</strong></div>
+            <div><span>Live mode</span><strong id="live-mode-locked">Locked in browser</strong></div>
+          </div>
+          <div class="backend-actions">
+            <button class="primary-button weather-submit" id="backend-refresh" type="button">Check Local Backend</button>
+            <button class="primary-button weather-submit" id="backend-run-once" type="button">Run Paper Scan</button>
+          </div>
+          <p class="backend-note" id="backend-note">Optional: start <code>weather-trader</code> locally. This hosted page keeps working offline and never asks for credentials.</p>
+        </article>
+
+        <article class="dashboard-card backend-status-card">
+          <span class="card-kicker">Paper portfolio</span>
+          <h2>Backend Snapshot</h2>
+          <div class="metric-stack">
+            <div><span>Candidate trades</span><strong id="candidate-trades-count">0</strong></div>
+            <div><span>Blocked trades</span><strong id="blocked-trades-count">0</strong></div>
+            <div><span>Paper exposure</span><strong id="paper-exposure-label">$0.00</strong></div>
+            <div><span>Open paper trades</span><strong id="open-paper-trades-label">0</strong></div>
+          </div>
+        </article>
+      </section>
+
+      <section class="content-grid backend-output-grid" aria-label="Local backend paper decisions">
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Candidate trades</span>
+          <h2>Review Queue</h2>
+          <div class="decision-list" id="candidate-trades-list" aria-live="polite">No backend candidate trades loaded.</div>
+        </article>
+
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Blocked trades</span>
+          <h2>Risk Blocks</h2>
+          <div class="decision-list" id="blocked-trades-list" aria-live="polite">No backend blocked trades loaded.</div>
+        </article>
+      </section>
+
+      <section class="content-grid backend-output-grid" aria-label="Recent local backend decisions">
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Recent decisions</span>
+          <h2>Paper Log</h2>
+          <div class="decision-list" id="recent-decisions-list" aria-live="polite">Run a local paper scan to populate recent decisions.</div>
+        </article>
+
+        <article class="terminal-card architecture-card">
+          <span class="card-kicker">Safety lock</span>
+          <h2>Live Mode Locked</h2>
+          <p class="backend-lock-copy">The browser dashboard can read local paper-mode status and decision logs only. It contains no private-key fields, no signing flow, and no live order code.</p>
+          <div class="code-panel" aria-label="Browser safety lock">
+            <code>LOCAL_BACKEND_OPTIONAL=true</code>
+            <code>BROWSER_LIVE_TRADING=false</code>
+            <code>PRIVATE_KEY_INPUTS=false</code>
+            <code>ORDERS_ALLOWED=false</code>
+          </div>
+        </article>
+      </section>
+
+      <section class="dashboard-grid" aria-label="Weather bot paper-trading configuration">
+        <article class="dashboard-card config-card">
+          <span class="card-kicker">Config bay</span>
+          <h2>Market Scanner Setup</h2>
+          <form class="config-list" id="weather-form">
+            <label>
+              <span>Market name</span>
+              <input id="market-name" type="text" value="NYC high temperature above 85°F" maxlength="90" required />
+            </label>
+            <label>
+              <span>Market YES price (¢)</span>
+              <input id="market-price" type="number" min="1" max="99" step="0.5" value="42" required />
+            </label>
+            <label>
+              <span>Estimated fair probability (%)</span>
+              <input id="fair-probability" type="number" min="1" max="99" step="0.5" value="51" required />
+            </label>
+            <label>
+              <span>Confidence haircut (pts)</span>
+              <input id="confidence-haircut" type="number" min="0" max="30" step="0.5" value="4" required />
+            </label>
+            <button class="primary-button weather-submit" type="submit">Evaluate Paper Alert</button>
+          </form>
+        </article>
+
+        <article class="dashboard-card risk-card">
+          <span class="card-kicker">Risk rails</span>
+          <h2>Limits</h2>
+          <div class="metric-stack">
+            <div><span>Paper bankroll</span><strong id="bankroll-label">$500</strong></div>
+            <div><span>Max paper position</span><strong id="position-label">$12.50</strong></div>
+            <div><span>Minimum edge</span><strong id="threshold-label">6.0 pts</strong></div>
+            <div><span>Decision status</span><strong id="decision-status">Ready to evaluate</strong></div>
+          </div>
+        </article>
+
+        <article class="dashboard-card markets-card">
+          <span class="card-kicker">Target markets</span>
+          <h2>Weather Props</h2>
+          <div class="chip-cloud" aria-label="Target market categories">
+            <span>Temperature</span>
+            <span>Rainfall</span>
+            <span>Snow</span>
+            <span>Storm risk</span>
+            <span>Settlement audits</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="content-grid">
+        <article class="terminal-card strategy-card">
+          <span class="card-kicker">Paper alert</span>
+          <h2>Evaluation Output</h2>
+          <div class="alert-output" id="alert-output" aria-live="polite">
+            Submit the scanner form to calculate risk-adjusted edge, capped paper size, and review notes.
+          </div>
+          <ol class="flow-list" id="review-list"></ol>
+        </article>
+
+        <article class="terminal-card architecture-card">
+          <span class="card-kicker">Architecture</span>
+          <h2>Local-first pipeline</h2>
+          <div class="pipeline" aria-label="Weather bot architecture flow">
+            <span>Public market data review</span>
+            <span>Settlement-rule parser</span>
+            <span>Weather source resolver</span>
+            <span>Probability and uncertainty model</span>
+            <span>Risk manager</span>
+            <span>Paper alert / local-runner handoff</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="runner-backtest-grid">
+        <article class="terminal-card runner-card">
+          <span class="card-kicker">Local runner boundary</span>
+          <h2>Credentials stay on your machine</h2>
+          <p>
+            The hosted Ballzatram page is intentionally limited to configuration, monitoring, and paper-trade math. Authenticated exchange actions must live in a separate local process with explicit user approval, audit logging, and kill switches.
+          </p>
+          <div class="code-panel" aria-label="Local runner safety contract">
+            <code>WEBSITE_MODE=paper_only</code>
+            <code>PRIVATE_KEYS_IN_BROWSER=false</code>
+            <code>REQUIRE_LOCAL_CONFIRMATION=true</code>
+            <code>MAX_POSITION_PCT=2.5</code>
+          </div>
+        </article>
+
+        <article class="terminal-card backtest-card">
+          <span class="card-kicker">Backtesting first</span>
+          <h2>Prove the log before the trade</h2>
+          <p>
+            Version one should collect market snapshots, weather observations, model predictions, and final settlement results before any real order placement is considered.
+          </p>
+          <ul class="backtest-list">
+            <li>Snapshot bid/ask prices, spread, liquidity, and timestamp.</li>
+            <li>Store observation station/source IDs and settlement-rule citations.</li>
+            <li>Compare risk-adjusted edge to final settlement and mark calibration error.</li>
+            <li>Keep live-trading controls outside the hosted browser surface.</li>
+          </ul>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>★</span>
+      <p>Built in the hangar. Fueled by curiosity. Launched for everyone.</p>
+      <span>★</span>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="weather-bot.js"></script>
+</body>
+
+</html>
