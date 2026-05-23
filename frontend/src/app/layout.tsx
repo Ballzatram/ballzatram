@@ -3,9 +3,9 @@ import { Layout } from "@/components/Layout";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Ballzatram | Playable Archive",
+  title: "Ballzatram | Toolbox of Playable Worlds",
   description:
-    "A strange playable archive of games, music, lore, inventions, artifacts, and mythological machinery.",
+    "A strange toolbox of games, relics, inventions, artifacts, lore, and mythological machinery.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

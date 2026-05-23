@@ -13,6 +13,7 @@ Reviewed the public visitor surfaces that are reachable from the Ballzatram fron
 - `/econ-arcade/invisible-hands`
 - `/penitent?veil=reset`
 - `/penitent/rhythm`
+- `/weather-bot.html`
 - `/legacy-econ-arcade/index.html`
 - `/legacy-econ-arcade/platform.html`
 - `/games/central-bank.html`
@@ -35,6 +36,9 @@ Review methods:
 - Updated old static artifact links so they return to the Next homepage, Econ Arcade hub, MacroBoard route, and archive docs correctly.
 - Fixed mobile horizontal overflow in the shared non-home header.
 - Fixed Penitent stage overflow caused by combining shell padding with `vw` sizing.
+- Tightened the follow-up blue-sky homepage polish: larger wordmark, smaller old-style nav, clearer Toolbox links, removed the homepage music section, and quieted the Lore placeholder.
+- Restyled the Penitent Toolbox card as a manuscript-like folio and added a sealed-page mark to the Penitent reveal state so the scratch interaction reads as intentional.
+- Added the Weather Desk static artifact to `frontend/public` so the homepage Toolbox card resolves inside the deployed Next app.
 
 ## Priority Findings
 
@@ -71,8 +75,8 @@ No route-blocking UI issues remained after this pass. The root route loads the B
 
 ### Polish And Worldbuilding
 
-- Add a small "world map" or artifact index that makes Home, Penitent, Econ Arcade, Music, Workshop, and Lore feel interconnected.
-- Give each major route a stronger local identity: sky hangar, manuscript, arcade cabinet, workshop bench, music folio.
+- Add a small "world map" or artifact index that makes Home, Penitent, Econ Arcade, Workshop, and Lore feel interconnected.
+- Give each major route a stronger local identity: sky hangar, manuscript, arcade cabinet, workshop bench, and field-note folio.
 - Add audio affordances carefully: hover tones, manuscript scratch sounds, rhythm metronome, and optional ambient loops.
 - Add route-level metadata and social preview assets for the major worlds.
 - Decide whether static legacy pages should stay visibly preserved as external relics or be progressively rebuilt as first-class Next experiences.
@@ -85,6 +89,7 @@ Current pass verified:
 - `/macro-board` renders with its workflow navigation.
 - `/econ-arcade` renders after removing the public route conflict.
 - `/penitent` and `/penitent/rhythm` remain visually separate from the sky shell.
+- `/weather-bot.html` loads from the Toolbox card and returns to the homepage/workshop anchors.
 - `/legacy-econ-arcade/index.html`, `/legacy-econ-arcade/platform.html`, and `/games/central-bank.html` load as preserved static artifacts.
 - `/docs/game-theory-platform.md` returns `200`.
 - Desktop and mobile horizontal overflow checks pass for the primary Next routes after the layout fixes.
