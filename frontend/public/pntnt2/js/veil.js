@@ -3,6 +3,7 @@
   const stage = document.getElementById('stage');
   const page  = document.getElementById('page');
   const veil  = document.getElementById('veil');
+  const veilHint = document.getElementById('veil-hint');
   if (!stage || !page || !veil) return;
 
   const ctx = veil.getContext('2d', { willReadFrequently: true });
@@ -19,7 +20,7 @@
 
   // Brush
   const isTouch = matchMedia('(pointer: coarse)').matches;
-  const BRUSH_RADIUS = isTouch ? 60 : 45;
+  const BRUSH_RADIUS = isTouch ? 70 : 45;
   const STAMP_STEP   = BRUSH_RADIUS * 0.6;
 
   // Optional dev helper
@@ -129,6 +130,7 @@
   }
 
   function retireVeil() {
+    if (veilHint) veilHint.textContent = 'The path is open.';
     setLockedAll(false);
     veil.classList.add('is-done');
     veil.style.cursor = 'auto';
@@ -164,6 +166,7 @@
     setLockedAll(false);
     veil.classList.add('is-done');
     veil.style.cursor = 'auto';
+    if (veilHint) veilHint.textContent = 'The manuscript remembers.';
     return;
   }
 
