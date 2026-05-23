@@ -712,7 +712,7 @@ main, section { max-width: 100%; }
   z-index: 10;
   display: block;
   cursor: grab;
-  touch-action: none;
+  touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
 }
@@ -1496,8 +1496,8 @@ main, section { max-width: 100%; }
   }
 
   .penitent-stage {
-    min-height: 0;
-    height: clamp(690px, 90dvh, 920px);
+    min-height: 1200px;
+    height: auto;
   }
 
   .penitent-veil-hint,
