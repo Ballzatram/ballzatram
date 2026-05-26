@@ -5,7 +5,7 @@ import type { Route } from "next";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 
 const ASSET_ROOT = "/pntnt2/assets";
-const STORAGE_KEY = "penitent:manuscript-cleared";
+const REVEAL_DONE_RATIO = 0.12;
 
 const panes = [
   {
@@ -55,18 +55,9 @@ export function PenitentGate() {
     const context = ctx;
 
     const params = new URLSearchParams(window.location.search);
-    const forceReset = params.get("veil") === "reset";
-    const forceShow = params.get("veil") === "show";
-    try {
-      if (forceReset) window.localStorage.removeItem(STORAGE_KEY);
-    } catch {}
+    const forceOpen = params.get("veil") === "open";
 
-    let alreadyCleared = false;
-    try {
-      alreadyCleared = window.localStorage.getItem(STORAGE_KEY) === "1";
-    } catch {}
-
-    if (alreadyCleared && !forceShow) {
+    if (forceOpen) {
       setRevealed(true);
       setProgress(1);
       setHint("The manuscript remembers.");
@@ -78,8 +69,8 @@ export function PenitentGate() {
     let checkFrame = 0;
     let finished = false;
     const coarse = window.matchMedia("(pointer: coarse)").matches;
-    const brushRadius = coarse ? 96 : 88;
-    const doneRatio = 0.055;
+    const brushRadius = coarse ? 58 : 46;
+    const doneRatio = REVEAL_DONE_RATIO;
     const parchment = new window.Image();
     parchment.src = `${ASSET_ROOT}/parchment.png`;
 
@@ -177,9 +168,6 @@ export function PenitentGate() {
       setRevealed(true);
       setProgress(1);
       setHint("The manuscript remembers.");
-      try {
-        window.localStorage.setItem(STORAGE_KEY, "1");
-      } catch {}
     }
 
     function queueCheck() {
@@ -187,10 +175,10 @@ export function PenitentGate() {
       checkFrame = window.requestAnimationFrame(() => {
         checkFrame = 0;
         const ratio = revealedRatio();
-        setProgress(ratio);
-        if (ratio > 0.015) setTouched(true);
-        if (ratio > 0.02) setHint("Uncover what was buried.");
-        if (ratio > 0.04) setHint("Reveal the scripture.");
+        setProgress(Math.min(1, ratio / doneRatio));
+        if (ratio > doneRatio * 0.08) setTouched(true);
+        if (ratio > doneRatio * 0.28) setHint("Uncover what was buried.");
+        if (ratio > doneRatio * 0.62) setHint("Reveal the scripture.");
         if (ratio >= doneRatio) finishReveal();
       });
     }
@@ -231,8 +219,8 @@ export function PenitentGate() {
     }
 
     fitCanvas();
-    if (parchment.complete) paintVeil();
-    else parchment.addEventListener("load", paintVeil, { once: true });
+    paintVeil();
+    if (!parchment.complete) parchment.addEventListener("load", paintVeil, { once: true });
 
     function onResize() {
       if (finished) return;
@@ -261,9 +249,6 @@ export function PenitentGate() {
   }
 
   function reseal() {
-    try {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } catch {}
     window.location.href = "/penitent?veil=reset";
   }
 
@@ -284,8 +269,7 @@ export function PenitentGate() {
         <div ref={pageRef} className="penitent-page">
           <section className="penitent-layout">
             <div className="penitent-intro">
-              <p className="penitent-kicker">Forgotten era / external relic</p>
-              <h1>The Penitent Manuscript</h1>
+              <h1>The Penitent 2</h1>
               <p>
                 Nos sumus paenitens duo. Paenitentiam ferimus pro vobis. Cantus nostros omnes audiant.
                 A buried page from one of Ballzatram's stranger lifetimes now opens into playable scripture.
@@ -318,7 +302,7 @@ export function PenitentGate() {
         />
         {!revealed ? (
           <div className={`penitent-veil-sigil ${touched ? "is-touched" : ""}`} aria-hidden="true">
-            <span>The Penitent</span>
+            <span>The Penitent 2</span>
             <i />
           </div>
         ) : null}
@@ -333,28 +317,6 @@ export function PenitentGate() {
             Seal the page again
           </button>
         )}
-      </section>
-
-      <section className="penitent-hub" aria-labelledby="penitent-hub-title">
-        <p className="penitent-kicker">Playable folios</p>
-        <h2 id="penitent-hub-title">The manuscript is becoming a world</h2>
-        <div className="penitent-hub__grid">
-          <Link href={"/penitent/rhythm" as Route}>
-            <span>Prototype</span>
-            <h3>Rhythm Crusade</h3>
-            <p>Four lanes, sacred timing, demon health, player health, combo, special meter, and an ultimate attack.</p>
-          </Link>
-          <a href="/pntnt2/index.html?veil=reset">
-            <span>Archive</span>
-            <h3>Original PNTNT2 Relic</h3>
-            <p>The preserved static manuscript remains intact as an external artifact inside Ballzatram.</p>
-          </a>
-          <Link href={"/penitent/relics" as Route}>
-            <span>Future pages</span>
-            <h3>Relics and Encounters</h3>
-            <p>Hidden objects, demon marginalia, playable scripture, songs, and lore fragments can branch from here.</p>
-          </Link>
-        </div>
       </section>
     </main>
   );

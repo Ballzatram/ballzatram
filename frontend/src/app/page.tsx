@@ -4,7 +4,7 @@ import type { Route } from "next";
 export default function Home() {
   const worldDoors = [
     {
-      title: "The Penitent Manuscript",
+      title: "The Penitent 2",
       kicker: "Discovered relic",
       copy:
         "A sealed medieval page that remembers an older lifetime. Brush away the ash and enter the cursed playable text.",
@@ -19,7 +19,7 @@ export default function Home() {
         "Economics survives here as games, pressure chambers, strange markets, and simulations with teeth.",
       href: "/econ-arcade",
       cta: "Open Econ Arcade",
-      tone: "lapis",
+      tone: "arcade",
     },
     {
       title: "Macro Board",
@@ -28,7 +28,7 @@ export default function Home() {
         "A brass-and-chalk machine for market questions. Useful, but no longer the front door to the universe.",
       href: "/macro-board",
       cta: "Open Macro Board",
-      tone: "verdigris",
+      tone: "instrument",
     },
     {
       title: "Weather Desk",
@@ -37,15 +37,8 @@ export default function Home() {
         "Forecasts, market weather, and paper-mode rituals for watching pressure systems move through the world.",
       href: "/weather-bot.html",
       cta: "Open Weather Desk",
-      tone: "sky",
+      tone: "weather",
     },
-  ];
-
-  const archiveItems = [
-    "Playable systems and cabinet experiments",
-    "Manuscript relics and hidden pages",
-    "Workshop machines that think quietly behind the walls",
-    "Field notes from Ballzatram's other lives",
   ];
 
   return (
@@ -67,8 +60,8 @@ export default function Home() {
             <Link href={"/penitent" as Route} className="ballzatram-button ballzatram-button--gold">
               Discover the manuscript
             </Link>
-            <a href="#toolbox" className="ballzatram-button ballzatram-button--ink">
-              Open the toolbox
+            <a href="#work-shop" className="ballzatram-button ballzatram-button--ink">
+              Open the Work Shop
             </a>
           </div>
         </div>
@@ -77,10 +70,10 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="toolbox" className="ballzatram-section" aria-labelledby="toolbox-title">
+      <section id="work-shop" className="ballzatram-section" aria-labelledby="work-shop-title">
         <div className="ballzatram-section__heading">
-          <p className="ballzatram-kicker">Toolbox</p>
-          <h2 id="toolbox-title">Games, relics, and machines</h2>
+          <p className="ballzatram-kicker">Work Shop</p>
+          <h2 id="work-shop-title">Games, relics, and other oddities</h2>
         </div>
         <div className="ballzatram-door-grid">
           {worldDoors.map((door) => (
@@ -99,32 +92,6 @@ export default function Home() {
             </Link>
           ))}
         </div>
-      </section>
-
-      <section id="workshop" className="ballzatram-section ballzatram-workshop" aria-labelledby="workshop-title">
-        <div className="ballzatram-section__heading">
-          <p className="ballzatram-kicker">Workshop</p>
-          <h2 id="workshop-title">The machinery stays behind the magic</h2>
-        </div>
-        <div className="ballzatram-workshop__grid">
-          {archiveItems.map((item) => (
-            <article key={item}>
-              <span aria-hidden="true">*</span>
-              <p>{item}</p>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section id="lore" className="ballzatram-lore-teaser" aria-labelledby="lore-title">
-        <div>
-          <p className="ballzatram-kicker">Lore</p>
-          <h2 id="lore-title">Field notes, not canon yet</h2>
-        </div>
-        <p>
-          Ballzatram has lived in several shapes. The lore needs its own treatment, so this marker stays quiet
-          until the map, eras, and mythology are ready to hold weight.
-        </p>
       </section>
     </div>
   );
