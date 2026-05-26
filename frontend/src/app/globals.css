@@ -1352,9 +1352,9 @@ main, section { max-width: 100%; }
   border: clamp(4px, 0.45vw, 8px) solid #171008;
   border-radius: 8px;
   background:
-    linear-gradient(180deg, rgba(88, 84, 39, 0.64), rgba(18, 10, 5, 0.72)),
-    radial-gradient(circle at 50% 12%, rgba(255, 205, 86, 0.2), transparent 25%),
-    url("/pntnt2/assets/crusader_battle.png") center 48% / cover no-repeat;
+    linear-gradient(180deg, rgba(92, 76, 25, 0.18), rgba(19, 10, 5, 0.34)),
+    radial-gradient(circle at 50% 13%, rgba(255, 213, 92, 0.12), transparent 24%),
+    url("/pntnt2/assets/pntnt2_reference_battle.png") center / cover no-repeat;
   box-shadow:
     0 28px 90px rgba(0, 0, 0, 0.68),
     inset 0 0 0 2px rgba(255, 222, 142, 0.3),
@@ -1371,7 +1371,7 @@ main, section { max-width: 100%; }
 }
 
 .rhythm-crusade-stage::before {
-  opacity: 0.58;
+  opacity: 0.34;
   mix-blend-mode: multiply;
   background:
     repeating-linear-gradient(0deg, rgba(255, 236, 174, 0.08) 0 1px, transparent 1px 4px),
@@ -1382,8 +1382,8 @@ main, section { max-width: 100%; }
 .rhythm-crusade-stage::after {
   z-index: 2;
   background:
-    radial-gradient(circle at 50% 12%, transparent 0 22%, rgba(8, 7, 4, 0.18) 42%, rgba(7, 5, 4, 0.62) 100%),
-    linear-gradient(90deg, rgba(3, 6, 7, 0.34), transparent 28%, transparent 72%, rgba(39, 9, 5, 0.38));
+    radial-gradient(circle at 50% 12%, transparent 0 26%, rgba(8, 7, 4, 0.08) 42%, rgba(7, 5, 4, 0.34) 100%),
+    linear-gradient(90deg, rgba(3, 6, 7, 0.16), transparent 28%, transparent 72%, rgba(39, 9, 5, 0.2));
 }
 
 .rhythm-crusade-stage > * {
@@ -1405,9 +1405,9 @@ main, section { max-width: 100%; }
 
 .rhythm-crusade-shell.is-resurrection .rhythm-crusade-stage {
   background:
-    linear-gradient(180deg, rgba(104, 88, 34, 0.7), rgba(19, 11, 6, 0.78)),
-    radial-gradient(circle at 50% 14%, rgba(255, 218, 108, 0.26), transparent 28%),
-    url("/pntnt2/assets/crusader_battle.png") center 48% / cover no-repeat;
+    linear-gradient(180deg, rgba(115, 84, 21, 0.2), rgba(18, 9, 5, 0.32)),
+    radial-gradient(circle at 50% 14%, rgba(255, 218, 108, 0.16), transparent 28%),
+    url("/pntnt2/assets/pntnt2_reference_resurrection.png") center / cover no-repeat;
 }
 
 .rhythm-battle-hud {
@@ -1478,7 +1478,7 @@ main, section { max-width: 100%; }
   bottom: 17%;
   left: 18%;
   height: 29%;
-  opacity: 0.55;
+  opacity: 0.26;
   background:
     radial-gradient(circle at 9% 86%, #271005 0 3px, transparent 4px),
     radial-gradient(circle at 18% 68%, #361407 0 3px, transparent 4px),
@@ -1490,6 +1490,226 @@ main, section { max-width: 100%; }
     radial-gradient(circle at 94% 72%, #3d1808 0 3px, transparent 4px);
   background-size: 92px 48px;
   filter: drop-shadow(0 2px 0 rgba(222, 93, 24, 0.22));
+}
+
+.rhythm-demon-horde {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.rhythm-demon {
+  position: absolute;
+  top: var(--actor-y);
+  left: var(--actor-x);
+  display: block;
+  width: clamp(24px, 2.9vw, 54px);
+  aspect-ratio: 0.82;
+  color: #2b0b05;
+  opacity: 0.86;
+  transform: translate(-50%, -50%) scale(var(--actor-scale));
+  transform-origin: 50% 100%;
+  filter: drop-shadow(0 2px 0 rgba(228, 95, 28, 0.55)) drop-shadow(0 0 12px rgba(226, 80, 21, 0.25));
+  animation: rhythm-demon-advance 1.55s ease-in-out infinite;
+  animation-delay: var(--actor-delay);
+}
+
+.rhythm-demon i,
+.rhythm-demon b,
+.rhythm-demon em {
+  position: absolute;
+  display: block;
+}
+
+.rhythm-demon i {
+  inset: 22% 16% 9%;
+  border: 2px solid #1b0905;
+  border-radius: 48% 48% 18% 18%;
+  background:
+    radial-gradient(circle at 35% 38%, #f2a13b 0 6%, transparent 7%),
+    radial-gradient(circle at 64% 38%, #f2a13b 0 6%, transparent 7%),
+    linear-gradient(180deg, #922410, #4b1007 58%, #170705);
+}
+
+.rhythm-demon b {
+  top: 5%;
+  left: 50%;
+  width: 78%;
+  height: 36%;
+  border-top: 4px solid #1b0905;
+  border-radius: 50%;
+  transform: translateX(-50%);
+}
+
+.rhythm-demon b::before,
+.rhythm-demon b::after {
+  content: "";
+  position: absolute;
+  top: -5px;
+  width: 28%;
+  height: 70%;
+  border-top: 4px solid #1b0905;
+}
+
+.rhythm-demon b::before {
+  left: 2%;
+  transform: rotate(-42deg);
+}
+
+.rhythm-demon b::after {
+  right: 2%;
+  transform: rotate(42deg);
+}
+
+.rhythm-demon em {
+  right: 5%;
+  bottom: 10%;
+  width: 46%;
+  height: 16%;
+  border-top: 3px solid #1b0905;
+  border-radius: 50%;
+  transform: rotate(-16deg);
+}
+
+.rhythm-demon--brute {
+  width: clamp(34px, 3.8vw, 68px);
+}
+
+.rhythm-demon--brute i {
+  background:
+    radial-gradient(circle at 36% 39%, #ffd46b 0 5%, transparent 6%),
+    radial-gradient(circle at 63% 39%, #ffd46b 0 5%, transparent 6%),
+    linear-gradient(180deg, #bc3a17, #631609 58%, #180705);
+}
+
+.rhythm-demon--skull {
+  filter: drop-shadow(0 2px 0 rgba(255, 210, 109, 0.32)) drop-shadow(0 0 14px rgba(255, 196, 71, 0.18));
+}
+
+.rhythm-demon--skull i {
+  background:
+    radial-gradient(circle at 35% 39%, #130704 0 7%, transparent 8%),
+    radial-gradient(circle at 63% 39%, #130704 0 7%, transparent 8%),
+    linear-gradient(180deg, #c8a462, #5f3a16 62%, #160806);
+}
+
+.rhythm-battle-dragon {
+  position: absolute;
+  z-index: 1;
+  width: clamp(68px, 7vw, 130px);
+  color: #ac3e16;
+  opacity: 0.46;
+  filter: drop-shadow(0 2px 0 #1a0a04) drop-shadow(0 0 12px rgba(238, 104, 26, 0.2));
+  animation: rhythm-dragon-hover 2.2s ease-in-out infinite;
+}
+
+.rhythm-battle-dragon svg {
+  width: 100%;
+  overflow: visible;
+}
+
+.rhythm-battle-dragon path {
+  fill: none;
+  stroke: #1c0904;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 6;
+}
+
+.rhythm-battle-dragon--left {
+  top: 11%;
+  left: 16%;
+}
+
+.rhythm-battle-dragon--right {
+  top: 13%;
+  right: 15%;
+  transform: scaleX(-1);
+  animation-delay: -0.8s;
+}
+
+.rhythm-battle-meteor {
+  position: absolute;
+  z-index: 1;
+  width: clamp(12px, 1.4vw, 24px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #ffe3a2, #e05b1c 52%, #561107 72%);
+  box-shadow: -22px -10px 0 -6px rgba(240, 109, 30, 0.5), -40px -18px 0 -10px rgba(255, 201, 73, 0.3);
+  opacity: 0.85;
+  animation: rhythm-meteor-fall 2.5s linear infinite;
+}
+
+.rhythm-battle-meteor--one {
+  top: 28%;
+  left: 42%;
+  animation-delay: -1.1s;
+}
+
+.rhythm-battle-meteor--two {
+  top: 22%;
+  left: 58%;
+  animation-delay: -0.35s;
+}
+
+.rhythm-music-wave {
+  position: absolute;
+  top: 30%;
+  z-index: 4;
+  display: grid;
+  width: clamp(115px, 13vw, 240px);
+  gap: clamp(8px, 0.8vw, 14px);
+  pointer-events: none;
+}
+
+.rhythm-music-wave--left {
+  left: 16%;
+  justify-items: start;
+  transform: rotate(-13deg);
+}
+
+.rhythm-music-wave--right {
+  right: 16%;
+  justify-items: end;
+  transform: rotate(13deg);
+}
+
+.rhythm-music-wave span {
+  display: block;
+  width: 58%;
+  height: clamp(3px, 0.45vw, 8px);
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--crusade-blue), rgba(255, 228, 133, 0.82), var(--crusade-orange), transparent);
+  opacity: 0;
+  filter: drop-shadow(0 0 10px rgba(74, 209, 237, 0.44));
+  transform: scaleX(0.3);
+}
+
+.rhythm-music-wave span:nth-child(2) {
+  width: 74%;
+  animation-delay: 0.12s;
+}
+
+.rhythm-music-wave span:nth-child(3) {
+  width: 46%;
+  animation-delay: 0.24s;
+}
+
+.rhythm-battlefield-figures.is-playing .rhythm-music-wave span {
+  animation: rhythm-music-wave 0.62s ease-out infinite;
+}
+
+.rhythm-crusade-shell.is-impact-perfect .rhythm-demon {
+  animation: rhythm-demon-pulverize 0.5s ease-out both;
+}
+
+.rhythm-crusade-shell.is-impact-good .rhythm-demon {
+  animation: rhythm-demon-stagger 0.34s ease-out both;
+}
+
+.rhythm-crusade-shell.is-impact-miss .rhythm-demon {
+  animation: rhythm-demon-surge 0.34s ease-out both;
 }
 
 .rhythm-mountain {
@@ -1513,6 +1733,7 @@ main, section { max-width: 100%; }
   bottom: 0;
   left: 0;
   height: 92%;
+  opacity: 0.18;
   background:
     linear-gradient(110deg, transparent 0 18%, rgba(239, 151, 55, 0.34) 18% 20%, transparent 20% 32%, rgba(8, 6, 4, 0.5) 33% 36%, transparent 36%),
     linear-gradient(250deg, transparent 0 22%, rgba(3, 3, 2, 0.66) 22% 24%, transparent 24% 42%, rgba(216, 124, 42, 0.28) 42% 44%, transparent 44%),
@@ -1546,9 +1767,11 @@ main, section { max-width: 100%; }
   position: absolute;
   top: 0;
   z-index: 3;
-  width: clamp(116px, 12vw, 230px);
+  width: clamp(86px, 8.8vw, 166px);
   color: #0a0806;
-  filter: drop-shadow(0 4px 0 rgba(224, 173, 73, 0.34)) drop-shadow(0 18px 20px rgba(0, 0, 0, 0.45));
+  opacity: 0.82;
+  filter: drop-shadow(0 3px 0 rgba(224, 173, 73, 0.34)) drop-shadow(0 12px 15px rgba(0, 0, 0, 0.38));
+  transform-origin: 50% 100%;
 }
 
 .rhythm-crusader--left {
@@ -1563,6 +1786,10 @@ main, section { max-width: 100%; }
   opacity: 0.52;
   transform: translateY(6%) rotate(-6deg);
   filter: drop-shadow(0 0 24px rgba(196, 232, 224, 0.35));
+}
+
+.rhythm-crusader.is-playing {
+  animation: rhythm-crusader-bob 0.46s ease-in-out infinite;
 }
 
 .rhythm-crusader path {
@@ -1587,9 +1814,19 @@ main, section { max-width: 100%; }
 .rhythm-crusader .crusader-visor,
 .rhythm-crusader .crusader-cross,
 .rhythm-crusader .crusader-arm,
-.rhythm-crusader .crusader-keys {
+.rhythm-crusader .crusader-keys,
+.rhythm-crusader .crusader-sound {
   stroke: #c18832;
   stroke-width: 5;
+}
+
+.rhythm-crusader .crusader-arm--play {
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.rhythm-crusader.is-playing .crusader-arm--play {
+  animation: rhythm-crusader-play 0.23s steps(2, end) infinite;
 }
 
 .rhythm-crusader .crusader-instrument {
@@ -1599,13 +1836,36 @@ main, section { max-width: 100%; }
 }
 
 .rhythm-crusader--left .crusader-keys,
-.rhythm-crusader--left .crusader-cross {
+.rhythm-crusader--left .crusader-cross,
+.rhythm-crusader--left .crusader-sound {
   stroke: var(--crusade-blue);
 }
 
 .rhythm-crusader--right .crusader-keys,
-.rhythm-crusader--right .crusader-cross {
+.rhythm-crusader--right .crusader-cross,
+.rhythm-crusader--right .crusader-sound {
   stroke: var(--crusade-orange);
+}
+
+.rhythm-crusader .crusader-sound {
+  opacity: 0;
+  stroke-width: 4;
+  filter: drop-shadow(0 0 8px currentColor);
+  transform-box: fill-box;
+  transform-origin: 50% 50%;
+}
+
+.rhythm-crusader.is-playing .crusader-sound {
+  animation: rhythm-crusader-sound 0.46s ease-out infinite;
+}
+
+.rhythm-crusader.is-playing .crusader-sound--small {
+  animation-delay: 0.18s;
+}
+
+.rhythm-crusader.is-fallen .crusader-sound,
+.rhythm-crusader.is-fallen .crusader-arm--play {
+  animation: none;
 }
 
 .rhythm-sacred-heart {
@@ -1641,6 +1901,7 @@ main, section { max-width: 100%; }
   z-index: 2;
   width: 62%;
   overflow: visible;
+  opacity: 0;
 }
 
 .rhythm-heartbeat-wave {
@@ -2145,6 +2406,7 @@ main, section { max-width: 100%; }
 }
 
 .rhythm-stat-panel__seal {
+  position: relative;
   aspect-ratio: 1;
   border: 3px solid rgba(224, 173, 73, 0.74);
   border-radius: 50%;
@@ -2171,6 +2433,30 @@ main, section { max-width: 100%; }
 .rhythm-stat-panel--enemy .rhythm-stat-panel__seal {
   order: 2;
   color: var(--crusade-orange);
+}
+
+.rhythm-stat-panel--enemy .rhythm-stat-panel__seal::before {
+  width: 58%;
+  height: 52%;
+  margin: 24% 21%;
+  border-radius: 48% 48% 20% 20%;
+  background:
+    radial-gradient(circle at 34% 42%, #1a0704 0 10%, transparent 11%),
+    radial-gradient(circle at 66% 42%, #1a0704 0 10%, transparent 11%),
+    currentColor;
+  clip-path: none;
+}
+
+.rhythm-stat-panel--enemy .rhythm-stat-panel__seal::after {
+  content: "";
+  position: absolute;
+  top: 21%;
+  left: 50%;
+  width: 64%;
+  height: 28%;
+  border-top: 5px solid currentColor;
+  border-radius: 50%;
+  transform: translateX(-50%);
 }
 
 .rhythm-stat-panel__copy {
@@ -2522,6 +2808,130 @@ main, section { max-width: 100%; }
   100% {
     opacity: 0;
     transform: translate(-50%, -18px) scale(1.04);
+  }
+}
+
+@keyframes rhythm-demon-advance {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(var(--actor-scale)) translateY(0);
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(calc(var(--actor-scale) * 1.03)) translateY(-7%);
+  }
+}
+
+@keyframes rhythm-demon-pulverize {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(var(--actor-scale)) rotate(0);
+    filter: drop-shadow(0 0 12px rgba(255, 215, 102, 0.42));
+  }
+  55% {
+    opacity: 1;
+    transform: translate(-50%, -92%) scale(calc(var(--actor-scale) * 1.35)) rotate(-10deg);
+    filter: drop-shadow(0 0 28px rgba(255, 218, 105, 0.82));
+  }
+  100% {
+    opacity: 0.18;
+    transform: translate(-50%, -132%) scale(calc(var(--actor-scale) * 0.42)) rotate(22deg);
+    filter: blur(2px) drop-shadow(0 0 24px rgba(255, 218, 105, 0.45));
+  }
+}
+
+@keyframes rhythm-demon-stagger {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(var(--actor-scale));
+  }
+  38% {
+    transform: translate(-64%, -58%) scale(var(--actor-scale)) rotate(-8deg);
+  }
+  68% {
+    transform: translate(-42%, -47%) scale(var(--actor-scale)) rotate(6deg);
+  }
+}
+
+@keyframes rhythm-demon-surge {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(var(--actor-scale));
+  }
+  50% {
+    transform: translate(-50%, -34%) scale(calc(var(--actor-scale) * 1.1));
+  }
+}
+
+@keyframes rhythm-dragon-hover {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -8px;
+  }
+}
+
+@keyframes rhythm-meteor-fall {
+  0% {
+    opacity: 0;
+    transform: translate(-90px, -52px) rotate(-22deg);
+  }
+  18%,
+  66% {
+    opacity: 0.85;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(85px, 82px) rotate(18deg);
+  }
+}
+
+@keyframes rhythm-music-wave {
+  0% {
+    opacity: 0;
+    transform: scaleX(0.24) translateX(0);
+  }
+  24% {
+    opacity: 0.96;
+  }
+  100% {
+    opacity: 0;
+    transform: scaleX(1.18) translateX(26%);
+  }
+}
+
+@keyframes rhythm-crusader-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+@keyframes rhythm-crusader-play {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0);
+  }
+  50% {
+    transform: translateY(5px) rotate(-7deg);
+  }
+}
+
+@keyframes rhythm-crusader-sound {
+  0% {
+    opacity: 0;
+    transform: translateX(0) scale(0.8);
+  }
+  18% {
+    opacity: 0.95;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(16px) scale(1.18);
   }
 }
 

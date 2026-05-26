@@ -16,10 +16,19 @@ type Judgment = "perfect" | "good" | "early" | "late" | "miss";
 type NoteState = PenitentNote & { state: "pending" | "hit" | "miss"; judgment?: Judgment };
 type HitEffect = { id: number; lane: number; judgment: Judgment };
 type ImpactKind = "perfect" | "good" | "miss" | null;
+type HordeActor = { id: string; x: number; y: number; scale: number; delay: number; kind: "imp" | "brute" | "skull" };
 
 const IS_DEVELOPMENT = process.env.NODE_ENV !== "production";
 const ACTIVE_STATES: GameState[] = ["playing", "allyDown", "resurrection"];
 const laneRows = [17, 30, 43, 57, 70, 83];
+const hordeActors: HordeActor[] = [
+  { id: "imp-1", x: 39, y: 52, scale: 0.82, delay: -0.1, kind: "imp" },
+  { id: "imp-2", x: 44, y: 59, scale: 0.94, delay: -0.9, kind: "skull" },
+  { id: "brute-1", x: 50, y: 55, scale: 1.15, delay: -0.35, kind: "brute" },
+  { id: "imp-3", x: 56, y: 58, scale: 0.9, delay: -0.7, kind: "imp" },
+  { id: "brute-2", x: 61, y: 52, scale: 1.04, delay: -0.2, kind: "brute" },
+  { id: "skull-2", x: 66, y: 61, scale: 0.84, delay: -1.1, kind: "skull" },
+];
 
 function isActiveState(state: GameState) {
   return ACTIVE_STATES.includes(state);
@@ -102,7 +111,7 @@ export function RhythmCrusadeGame() {
   const [playerEnergy, setPlayerEnergy] = useState<number>(0);
   const [enemyEnergy, setEnemyEnergy] = useState<number>(72);
   const [reviveProgress, setReviveProgress] = useState<number>(0);
-  const [message, setMessage] = useState("Strike A S D and J K L as the notes cross the sacred line.");
+  const [message, setMessage] = useState("Strike A S D and J K L to drive the demon horde back.");
   const [judgmentText, setJudgmentText] = useState("READY");
   const [laneFlash, setLaneFlash] = useState<number | null>(null);
   const [hitEffects, setHitEffects] = useState<HitEffect[]>([]);
@@ -141,6 +150,7 @@ export function RhythmCrusadeGame() {
 
   const progressPercent = clamp((time / firstCanticle.durationMs) * 100, 0, 100);
   const resurrectionActive = status === "allyDown" || status === "resurrection";
+  const gameActive = isActiveState(status) && !isPaused;
   const activeForInput = status === "playing" || status === "resurrection";
   const modeLabel = resurrectionActive ? "RESURRECTION" : firstCanticle.encounter;
   const beatMs = 60000 / firstCanticle.bpm;
@@ -190,7 +200,7 @@ export function RhythmCrusadeGame() {
     setPlayerEnergy(0);
     setEnemyEnergy(72);
     setReviveProgress(0);
-    setMessage("The infernal march begins.");
+    setMessage("The allied crusaders begin the infernal march.");
     setJudgmentText("PLAY");
     setIsPaused(false);
     setStatus("playing");
@@ -201,7 +211,7 @@ export function RhythmCrusadeGame() {
     setStatus("allyDown");
     setReviveProgress(0);
     setJudgmentText("ALLY FALLEN");
-    setMessage("Your ally falls. Keep the rhythm alive.");
+    setMessage("P1 falls. P2 keeps the rhythm alive.");
     triggerImpact("miss");
   }, [triggerImpact]);
 
@@ -243,9 +253,9 @@ export function RhythmCrusadeGame() {
     setJudgmentText(judgmentLabel(judgment));
     setMessage(
       judgment === "perfect"
-        ? "Sacred lightning tears the margin."
+        ? "Sacred lightning pulverizes the front line."
         : judgment === "good"
-          ? "The hymn lands."
+          ? "The hymn drives the horde back."
           : "The note survives by a thread.",
     );
     flashLane(lane);
@@ -273,6 +283,22 @@ export function RhythmCrusadeGame() {
     );
     applySuccessfulHit(judgment, lane);
   }, [activeForInput, applyMiss, applySuccessfulHit, flashLane, isPaused, notes, time]);
+
+  const simulatePerfectHit = useCallback(() => {
+    if (!isActiveState(statusRef.current) || pausedRef.current) return;
+    const target = notes
+      .filter((note) => note.state === "pending")
+      .sort((a, b) => Math.abs(a.time - time) - Math.abs(b.time - time))[0];
+    const lane = target?.lane ?? 0;
+    if (target) {
+      setNotes((current) =>
+        current.map((note) =>
+          note.id === target.id && note.state === "pending" ? { ...note, state: "hit", judgment: "perfect" } : note,
+        ),
+      );
+    }
+    applySuccessfulHit("perfect", lane);
+  }, [applySuccessfulHit, notes, time]);
 
   const togglePause = useCallback(() => {
     if (!isActiveState(statusRef.current)) return;
@@ -344,7 +370,7 @@ export function RhythmCrusadeGame() {
           return note;
         });
         if (missed > 0) {
-          applyMiss(missed > 1 ? "The choir fractures." : "A note falls into ash.", missed);
+          applyMiss(missed > 1 ? "The horde surges through the broken rhythm." : "A note falls into ash.", missed);
         }
         return missed > 0 ? next : current;
       });
@@ -382,7 +408,7 @@ export function RhythmCrusadeGame() {
         }
         if (event.code === "KeyH") {
           event.preventDefault();
-          applySuccessfulHit("perfect", 0);
+          simulatePerfectHit();
           return;
         }
       }
@@ -396,7 +422,7 @@ export function RhythmCrusadeGame() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [applyMiss, applySuccessfulHit, hitLane, start, togglePause, triggerAllyDown]);
+  }, [applyMiss, hitLane, simulatePerfectHit, start, togglePause, triggerAllyDown]);
 
   useEffect(() => {
     if (!isActiveState(status)) return;
@@ -407,7 +433,7 @@ export function RhythmCrusadeGame() {
     } else if (enemyHealth <= 0) {
       setStatus("victory");
       setJudgmentText("VICTORY");
-      setMessage("The demon is annotated out of existence.");
+      setMessage("The demon horde is annotated out of existence.");
     } else if (time >= firstCanticle.durationMs) {
       setStatus("victory");
       setJudgmentText("VICTORY");
@@ -432,7 +458,7 @@ export function RhythmCrusadeGame() {
 
       <section className="rhythm-crusade-stage" aria-label="Penitent 2 Rhythm Crusade battlefield">
         <BattleHud resurrectionActive={resurrectionActive} />
-        <BattlefieldFigures resurrectionActive={resurrectionActive} />
+        <BattlefieldFigures active={gameActive} resurrectionActive={resurrectionActive} />
         <SacredHeart resurrectionActive={resurrectionActive} pulse={heartPulse} />
         {resurrectionActive ? <div className="rhythm-fallen-ally" aria-hidden="true"><span /><b>+ DOWN +</b></div> : null}
 
@@ -462,8 +488,8 @@ export function RhythmCrusadeGame() {
         <div className="rhythm-crusade-bottom">
           <HealthEnergyPanel
             side="player"
-            title={resurrectionActive ? "Ally Status" : "Player"}
-            status={resurrectionActive ? "Down" : "Crusader"}
+            title={resurrectionActive ? "Ally Status" : "P1 Ally"}
+            status={resurrectionActive ? "Down" : "Keys Crusader"}
             health={playerHealth}
             energy={playerEnergy}
           />
@@ -481,10 +507,12 @@ export function RhythmCrusadeGame() {
 
           <HealthEnergyPanel
             side="enemy"
-            title={resurrectionActive ? "You Active" : "Enemy"}
-            status="Crusader"
+            title="Demon Horde"
+            status={enemyHealth < 34 ? "Pulverized" : resurrectionActive ? "Swarming" : "Advancing"}
             health={enemyHealth}
             energy={enemyEnergy}
+            healthLabel="Horde"
+            energyLabel="Pressure"
           />
         </div>
 
@@ -506,10 +534,10 @@ export function RhythmCrusadeGame() {
           <div className="rhythm-crusade-state">
             <p>
               {status === "ready"
-                ? "The demon waits in the margin."
+                ? "The horde waits in the margin."
                 : status === "victory"
                   ? "Victory inscribed."
-                  : "The page goes dark."}
+                  : "The horde overruns the page."}
             </p>
             <button type="button" onClick={start}>
               {status === "ready" ? "Begin Rhythm Crusade" : "Play again"}
@@ -530,38 +558,86 @@ function BattleHud({ resurrectionActive }: { resurrectionActive: boolean }) {
   return (
     <div className="rhythm-battle-hud" aria-label="Battle status">
       <div className="rhythm-battle-hud__side rhythm-battle-hud__side--player">
-        <strong>{resurrectionActive ? "ALLY FALLEN" : "PLAYER"}</strong>
-        <span>{resurrectionActive ? "ALLY STATUS: DOWN" : "CRUSADER"}</span>
+        <strong>{resurrectionActive ? "ALLY FALLEN" : "P1"}</strong>
+        <span>{resurrectionActive ? "ALLY STATUS: DOWN" : "KEYS CRUSADER"}</span>
         <i aria-hidden="true" />
       </div>
       <div className="rhythm-battle-hud__side rhythm-battle-hud__side--enemy">
-        <strong>{resurrectionActive ? "YOU ACTIVE" : "ENEMY"}</strong>
-        <span>CRUSADER</span>
+        <strong>{resurrectionActive ? "YOU ACTIVE" : "P2"}</strong>
+        <span>{resurrectionActive ? "GUITAR CRUSADER" : "ALLY CRUSADER"}</span>
         <i aria-hidden="true" />
       </div>
     </div>
   );
 }
 
-function BattlefieldFigures({ resurrectionActive }: { resurrectionActive: boolean }) {
+function BattlefieldFigures({ active, resurrectionActive }: { active: boolean; resurrectionActive: boolean }) {
   return (
-    <div className="rhythm-battlefield-figures" aria-hidden="true">
+    <div className={`rhythm-battlefield-figures ${active ? "is-playing" : ""} ${resurrectionActive ? "is-resurrection" : ""}`} aria-hidden="true">
       <div className="rhythm-battlefield-crowd" />
+      <BattlefieldHorde />
+      <div className="rhythm-music-wave rhythm-music-wave--left">
+        <span />
+        <span />
+        <span />
+      </div>
+      <div className="rhythm-music-wave rhythm-music-wave--right">
+        <span />
+        <span />
+        <span />
+      </div>
       <div className="rhythm-mountain rhythm-mountain--left">
         <div className="rhythm-mountain__slope" />
-        <CrusaderFigure side="left" fallen={resurrectionActive} />
+        <CrusaderFigure side="left" active={active && !resurrectionActive} fallen={resurrectionActive} />
       </div>
       <div className="rhythm-mountain rhythm-mountain--right">
         <div className="rhythm-mountain__slope" />
-        <CrusaderFigure side="right" fallen={false} />
+        <CrusaderFigure side="right" active={active} fallen={false} />
       </div>
     </div>
   );
 }
 
-function CrusaderFigure({ side, fallen }: { side: "left" | "right"; fallen: boolean }) {
+function BattlefieldHorde() {
   return (
-    <svg className={`rhythm-crusader rhythm-crusader--${side} ${fallen ? "is-fallen" : ""}`} viewBox="0 0 170 220">
+    <div className="rhythm-demon-horde">
+      <span className="rhythm-battle-dragon rhythm-battle-dragon--left">
+        <svg viewBox="0 0 180 110">
+          <path d="M18 54c29-26 56-30 82-9 20-26 42-34 66-28-16 10-22 24-20 42 14 5 21 16 21 32-22-12-44-14-66-5-25 10-51 3-79-22" />
+          <path d="M76 51c-17-5-31 0-43 15M108 52l27 16M133 38l17-11" />
+        </svg>
+      </span>
+      <span className="rhythm-battle-dragon rhythm-battle-dragon--right">
+        <svg viewBox="0 0 180 110">
+          <path d="M18 54c29-26 56-30 82-9 20-26 42-34 66-28-16 10-22 24-20 42 14 5 21 16 21 32-22-12-44-14-66-5-25 10-51 3-79-22" />
+          <path d="M76 51c-17-5-31 0-43 15M108 52l27 16M133 38l17-11" />
+        </svg>
+      </span>
+      {hordeActors.map((actor) => (
+        <span
+          key={actor.id}
+          className={`rhythm-demon rhythm-demon--${actor.kind}`}
+          style={{
+            "--actor-x": `${actor.x}%`,
+            "--actor-y": `${actor.y}%`,
+            "--actor-scale": actor.scale,
+            "--actor-delay": `${actor.delay}s`,
+          } as CSSProperties}
+        >
+          <i />
+          <b />
+          <em />
+        </span>
+      ))}
+      <span className="rhythm-battle-meteor rhythm-battle-meteor--one" />
+      <span className="rhythm-battle-meteor rhythm-battle-meteor--two" />
+    </div>
+  );
+}
+
+function CrusaderFigure({ side, active, fallen }: { side: "left" | "right"; active: boolean; fallen: boolean }) {
+  return (
+    <svg className={`rhythm-crusader rhythm-crusader--${side} ${active ? "is-playing" : ""} ${fallen ? "is-fallen" : ""}`} viewBox="0 0 170 220">
       <path className="crusader-halo" d="M48 22c21-12 58-10 76 3" />
       <path className="crusader-cloak" d="M83 34c36 0 55 31 50 76l22 92H22l21-91C38 65 52 34 83 34Z" />
       <path className="crusader-hood" d="M83 15c22 0 40 17 40 42 0 28-15 48-40 48S43 85 43 57c0-25 18-42 40-42Z" />
@@ -569,15 +645,21 @@ function CrusaderFigure({ side, fallen }: { side: "left" | "right"; fallen: bool
       <path className="crusader-cross" d="M83 117v42M66 137h34" />
       {side === "left" ? (
         <>
-          <path className="crusader-arm" d="M35 109c20 14 38 21 57 21M131 109c-20 14-38 21-57 21" />
+          <path className="crusader-arm crusader-arm--anchor" d="M35 109c20 14 38 21 57 21" />
+          <path className="crusader-arm crusader-arm--play" d="M131 109c-20 14-38 21-57 21" />
           <path className="crusader-instrument" d="M28 136h110l-9 31H21l7-31Z" />
           <path className="crusader-keys" d="M38 146h78M45 146v16M58 146v16M71 146v16M84 146v16M97 146v16M110 146v16" />
+          <path className="crusader-sound crusader-sound--blue" d="M130 112l18-24-5 25 18-8-28 33 8-22" />
+          <path className="crusader-sound crusader-sound--blue crusader-sound--small" d="M145 137l14-12-5 15 13-3-20 19" />
         </>
       ) : (
         <>
-          <path className="crusader-arm" d="M39 104c18 18 35 30 51 36M133 98c-14 20-28 35-43 44" />
+          <path className="crusader-arm crusader-arm--anchor" d="M39 104c18 18 35 30 51 36" />
+          <path className="crusader-arm crusader-arm--play" d="M133 98c-14 20-28 35-43 44" />
           <path className="crusader-instrument" d="M92 78 122 164M102 154c-14 8-32 5-41-7-8-11-5-24 8-31 14-8 32-5 41 7 8 11 5 24-8 31Z" />
           <path className="crusader-keys" d="M86 118 126 96M92 129l38-20M101 139l34-18" />
+          <path className="crusader-sound crusader-sound--orange" d="M35 118 16 90l6 29-19-10 30 38-10-25" />
+          <path className="crusader-sound crusader-sound--orange crusader-sound--small" d="M25 147 10 132l5 18-13-4 21 24" />
         </>
       )}
     </svg>
@@ -694,12 +776,16 @@ function HealthEnergyPanel({
   status,
   health,
   energy,
+  healthLabel = "Health",
+  energyLabel = "Energy",
 }: {
   side: "player" | "enemy";
   title: string;
   status: string;
   health: number;
   energy: number;
+  healthLabel?: string;
+  energyLabel?: string;
 }) {
   return (
     <aside className={`rhythm-stat-panel rhythm-stat-panel--${side}`}>
@@ -707,8 +793,8 @@ function HealthEnergyPanel({
       <div className="rhythm-stat-panel__copy">
         <span>{title}</span>
         <strong>{status}</strong>
-        <Meter label="Health" value={health} tone={side} />
-        <Meter label="Energy" value={energy} tone={side === "player" ? "player-energy" : "enemy-energy"} />
+        <Meter label={healthLabel} value={health} tone={side} />
+        <Meter label={energyLabel} value={energy} tone={side === "player" ? "player-energy" : "enemy-energy"} />
       </div>
     </aside>
   );
