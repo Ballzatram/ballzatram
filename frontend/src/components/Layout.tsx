@@ -35,7 +35,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
               <img src="/assets/title.png" alt="Ballzatram" />
             </Link>
-            <p>Toolbox of games, relics, lore, and strange machinery</p>
+            <p>Work Shop of games, relics, and strange machinery</p>
           </div>
           <button
             type="button"
