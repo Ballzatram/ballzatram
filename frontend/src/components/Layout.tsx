@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import { AgentWidget } from "@/components/AgentWidget";
 import { SkyLayer } from "@/components/SkyLayer";
 import { workflows } from "@/lib/workflows";
@@ -10,10 +11,15 @@ import { workflows } from "@/lib/workflows";
 export function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const currentPath = pathname ?? "/";
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const macroRoutes = new Set(["/macro-board", ...workflows.map((workflow) => `/${workflow.slug}`)]);
   const isMacroRoute = macroRoutes.has(currentPath);
   const isPenitent = currentPath.startsWith("/penitent");
   const isHome = currentPath === "/";
+
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [currentPath]);
 
   if (isPenitent) {
     return <>{children}</>;
@@ -31,30 +37,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
             <p>Work Shop of games, relics, and strange machinery</p>
           </div>
+          <button
+            type="button"
+            className="ballzatram-mobile-nav-toggle"
+            aria-expanded={mobileNavOpen}
+            aria-controls="ballzatram-main-nav"
+            onClick={() => setMobileNavOpen((open) => !open)}
+          >
+            <span>{mobileNavOpen ? "Close menu" : "Open menu"}</span>
+          </button>
           <nav
-            className="ballzatram-main-nav"
+            id="ballzatram-main-nav"
+            className={`ballzatram-main-nav ${mobileNavOpen ? "is-open" : ""}`}
             aria-label="Ballzatram sections"
           >
-            <Link
-              href={"/" as Route}
-              aria-current={currentPath === "/" ? "page" : undefined}
-            >
-              Home
-            </Link>
-            <Link href={"/#work-shop" as Route}>Work Shop</Link>
-            <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>
-              Econ Arcade
-            </Link>
-            <Link
-              href={"/penitent" as Route}
-              aria-current={currentPath.startsWith("/penitent") ? "page" : undefined}
-            >
-              Penitent 2
-            </Link>
-            <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>
-              Macro Board
-            </Link>
+            <Link href={"/" as Route} aria-current={currentPath === "/" ? "page" : undefined}>Home</Link>
+            <Link href={"/#toolbox" as Route}>Toolbox</Link>
+            <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Econ Arcade</Link>
+            <Link href={"/penitent" as Route} aria-current={currentPath.startsWith("/penitent") ? "page" : undefined}>Manuscript</Link>
+            <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>Macro Board</Link>
             <Link href={"/weather-bot.html" as Route}>Weather Desk</Link>
+            <Link href={"/#workshop" as Route}>Workshop</Link>
+            <Link href={"/#lore" as Route}>Lore</Link>
           </nav>
         </div>
         {isMacroRoute ? (
@@ -62,16 +66,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>
               Macro Board
             </Link>
-            {workflows
-              .filter((workflow) => workflow.slug !== "dashboard")
-              .map((workflow) => {
-                const href = `/${workflow.slug}` as Route;
-                return (
-                  <Link key={href} href={href} aria-current={currentPath === href ? "page" : undefined}>
-                    {workflow.navLabel}
-                  </Link>
-                );
-              })}
+            {workflows.filter((workflow) => workflow.slug !== "dashboard").map((workflow) => {
+              const href = `/${workflow.slug}` as Route;
+              return <Link key={href} href={href} aria-current={currentPath === href ? "page" : undefined}>{workflow.navLabel}</Link>;
+            })}
           </nav>
         ) : null}
       </header>

@@ -39,7 +39,7 @@ export function PenitentGate() {
   const [revealed, setRevealed] = useState(false);
   const [touched, setTouched] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [hint, setHint] = useState("Brush aside the ash.");
+  const [hint, setHint] = useState("Tap and drag to scratch the ash away.");
 
   useEffect(() => {
     const stage = stageRef.current;
@@ -175,10 +175,10 @@ export function PenitentGate() {
       checkFrame = window.requestAnimationFrame(() => {
         checkFrame = 0;
         const ratio = revealedRatio();
-        setProgress(Math.min(1, ratio / doneRatio));
-        if (ratio > doneRatio * 0.08) setTouched(true);
-        if (ratio > doneRatio * 0.28) setHint("Uncover what was buried.");
-        if (ratio > doneRatio * 0.62) setHint("Reveal the scripture.");
+        setProgress(ratio);
+        if (ratio > 0.015) setTouched(true);
+        if (ratio > 0.02) setHint("Keep scratching — reveal what was buried.");
+        if (ratio > 0.04) setHint("Almost there. Open the hidden folios.");
         if (ratio >= doneRatio) finishReveal();
       });
     }
@@ -269,10 +269,11 @@ export function PenitentGate() {
         <div ref={pageRef} className="penitent-page">
           <section className="penitent-layout">
             <div className="penitent-intro">
-              <h1>The Penitent 2</h1>
+              <p className="penitent-kicker">Forgotten era / scratch-to-reveal relic</p>
+              <h1>The Penitent Manuscript</h1>
               <p>
                 Nos sumus paenitens duo. Paenitentiam ferimus pro vobis. Cantus nostros omnes audiant.
-                A buried page from one of Ballzatram's stranger lifetimes now opens into playable scripture.
+                Tap, click, or drag to scratch off the ash. A buried page from one of Ballzatram's stranger lifetimes now opens into playable scripture.
               </p>
             </div>
 

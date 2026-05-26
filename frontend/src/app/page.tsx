@@ -9,7 +9,7 @@ export default function Home() {
       copy:
         "A sealed medieval page that remembers an older lifetime. Brush away the ash and enter the cursed playable text.",
       href: "/penitent",
-      cta: "Unseal the page",
+      cta: "Unseal the page (scratch to reveal)",
       tone: "manuscript",
     },
     {
