@@ -1309,6 +1309,1323 @@ main, section { max-width: 100%; }
   }
 }
 
+.rhythm-crusade-shell {
+  --crusade-ink: #160b06;
+  --crusade-black: #070604;
+  --crusade-gold: #e0ad49;
+  --crusade-gold-bright: #ffd982;
+  --crusade-parchment: #dac28a;
+  --crusade-blue: #47c7e8;
+  --crusade-blue-deep: #10586b;
+  --crusade-orange: #e66f25;
+  --crusade-red: #9b2417;
+  --crusade-olive: #4b4d24;
+  display: grid;
+  min-height: 100dvh;
+  place-items: center;
+  overflow: hidden;
+  padding: clamp(0.45rem, 1vw, 0.85rem);
+  background:
+    radial-gradient(circle at 50% 12%, rgba(255, 207, 99, 0.3), transparent 24rem),
+    linear-gradient(115deg, rgba(14, 62, 70, 0.34), transparent 38%),
+    linear-gradient(245deg, rgba(117, 36, 14, 0.42), transparent 40%),
+    #0c0906;
+  color: #f8ead1;
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+.rhythm-crusade-return {
+  position: fixed;
+  top: clamp(0.65rem, 1.2vw, 1rem);
+  left: clamp(0.65rem, 1.2vw, 1rem);
+  z-index: 40;
+  margin: 0;
+}
+
+.rhythm-crusade-stage {
+  position: relative;
+  isolation: isolate;
+  width: min(100%, calc((100dvh - 2rem) * 16 / 9), 1800px);
+  aspect-ratio: 16 / 9;
+  max-height: calc(100dvh - 2rem);
+  overflow: hidden;
+  border: clamp(4px, 0.45vw, 8px) solid #171008;
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(88, 84, 39, 0.64), rgba(18, 10, 5, 0.72)),
+    radial-gradient(circle at 50% 12%, rgba(255, 205, 86, 0.2), transparent 25%),
+    url("/pntnt2/assets/crusader_battle.png") center 48% / cover no-repeat;
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.68),
+    inset 0 0 0 2px rgba(255, 222, 142, 0.3),
+    inset 0 0 80px rgba(7, 6, 4, 0.7);
+}
+
+.rhythm-crusade-stage::before,
+.rhythm-crusade-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.rhythm-crusade-stage::before {
+  opacity: 0.58;
+  mix-blend-mode: multiply;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 236, 174, 0.08) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(90deg, rgba(21, 12, 6, 0.18) 0 1px, transparent 1px 11px),
+    url("/pntnt2/assets/parchment.png") center / cover no-repeat;
+}
+
+.rhythm-crusade-stage::after {
+  z-index: 2;
+  background:
+    radial-gradient(circle at 50% 12%, transparent 0 22%, rgba(8, 7, 4, 0.18) 42%, rgba(7, 5, 4, 0.62) 100%),
+    linear-gradient(90deg, rgba(3, 6, 7, 0.34), transparent 28%, transparent 72%, rgba(39, 9, 5, 0.38));
+}
+
+.rhythm-crusade-stage > * {
+  position: relative;
+  z-index: 5;
+}
+
+.rhythm-crusade-shell.is-shaking .rhythm-crusade-stage {
+  animation: rhythm-crusade-shake 0.18s steps(2, end);
+}
+
+.rhythm-crusade-shell.is-impact-perfect .rhythm-crusade-stage {
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.68),
+    0 0 54px rgba(255, 216, 117, 0.28),
+    inset 0 0 0 2px rgba(255, 222, 142, 0.46),
+    inset 0 0 88px rgba(255, 188, 60, 0.15);
+}
+
+.rhythm-crusade-shell.is-resurrection .rhythm-crusade-stage {
+  background:
+    linear-gradient(180deg, rgba(104, 88, 34, 0.7), rgba(19, 11, 6, 0.78)),
+    radial-gradient(circle at 50% 14%, rgba(255, 218, 108, 0.26), transparent 28%),
+    url("/pntnt2/assets/crusader_battle.png") center 48% / cover no-repeat;
+}
+
+.rhythm-battle-hud {
+  position: absolute;
+  inset: clamp(0.8rem, 1.5vw, 1.5rem) clamp(1rem, 1.7vw, 1.8rem) auto;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.rhythm-battle-hud__side {
+  display: grid;
+  gap: 0.12rem;
+  min-width: clamp(115px, 12vw, 190px);
+  color: var(--crusade-gold-bright);
+  text-shadow: 0 2px 0 rgba(12, 8, 4, 0.78), 0 0 20px rgba(255, 196, 77, 0.25);
+}
+
+.rhythm-battle-hud__side--enemy {
+  justify-items: end;
+  text-align: right;
+}
+
+.rhythm-battle-hud__side strong {
+  font-size: clamp(1.35rem, 3.15vw, 3.4rem);
+  font-weight: 950;
+  line-height: 0.86;
+  text-transform: uppercase;
+}
+
+.rhythm-battle-hud__side span {
+  font-size: clamp(0.65rem, 1vw, 1rem);
+  font-weight: 950;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.rhythm-battle-hud__side i {
+  display: block;
+  width: clamp(54px, 6vw, 96px);
+  height: clamp(8px, 0.9vw, 13px);
+  color: currentColor;
+  background: repeating-linear-gradient(90deg, currentColor 0 11px, transparent 11px 23px);
+  clip-path: polygon(7% 50%, 18% 0, 29% 50%, 18% 100%, 7% 50%, 42% 50%, 53% 0, 64% 50%, 53% 100%, 42% 50%, 76% 50%, 87% 0, 98% 50%, 87% 100%, 76% 50%);
+  opacity: 0.88;
+}
+
+.rhythm-battle-hud__side--player {
+  color: #e8bd58;
+}
+
+.rhythm-battle-hud__side--enemy {
+  color: #f1a041;
+}
+
+.rhythm-battlefield-figures {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rhythm-battlefield-crowd {
+  position: absolute;
+  right: 18%;
+  bottom: 17%;
+  left: 18%;
+  height: 29%;
+  opacity: 0.55;
+  background:
+    radial-gradient(circle at 9% 86%, #271005 0 3px, transparent 4px),
+    radial-gradient(circle at 18% 68%, #361407 0 3px, transparent 4px),
+    radial-gradient(circle at 28% 88%, #2a1005 0 3px, transparent 4px),
+    radial-gradient(circle at 42% 70%, #381708 0 3px, transparent 4px),
+    radial-gradient(circle at 55% 86%, #271005 0 3px, transparent 4px),
+    radial-gradient(circle at 69% 66%, #3c1708 0 3px, transparent 4px),
+    radial-gradient(circle at 82% 86%, #2c1106 0 3px, transparent 4px),
+    radial-gradient(circle at 94% 72%, #3d1808 0 3px, transparent 4px);
+  background-size: 92px 48px;
+  filter: drop-shadow(0 2px 0 rgba(222, 93, 24, 0.22));
+}
+
+.rhythm-mountain {
+  position: absolute;
+  bottom: 0;
+  width: 42%;
+  height: 72%;
+}
+
+.rhythm-mountain--left {
+  left: -5.5%;
+}
+
+.rhythm-mountain--right {
+  right: -5.5%;
+}
+
+.rhythm-mountain__slope {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 92%;
+  background:
+    linear-gradient(110deg, transparent 0 18%, rgba(239, 151, 55, 0.34) 18% 20%, transparent 20% 32%, rgba(8, 6, 4, 0.5) 33% 36%, transparent 36%),
+    linear-gradient(250deg, transparent 0 22%, rgba(3, 3, 2, 0.66) 22% 24%, transparent 24% 42%, rgba(216, 124, 42, 0.28) 42% 44%, transparent 44%),
+    repeating-linear-gradient(104deg, #0d0904 0 4px, #663b14 4px 8px, #1d1207 8px 14px);
+  clip-path: polygon(0 100%, 51% 2%, 100% 100%);
+  box-shadow: inset 0 -34px 30px rgba(0, 0, 0, 0.42);
+}
+
+.rhythm-mountain__slope::before,
+.rhythm-mountain__slope::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  clip-path: inherit;
+  pointer-events: none;
+}
+
+.rhythm-mountain__slope::before {
+  background:
+    linear-gradient(102deg, transparent 0 44%, rgba(232, 154, 61, 0.24) 45% 47%, transparent 47%),
+    linear-gradient(76deg, transparent 0 53%, rgba(6, 4, 3, 0.48) 54% 56%, transparent 56%);
+}
+
+.rhythm-mountain__slope::after {
+  opacity: 0.4;
+  background: repeating-linear-gradient(180deg, rgba(0, 0, 0, 0.2) 0 1px, transparent 1px 8px);
+  mix-blend-mode: multiply;
+}
+
+.rhythm-crusader {
+  position: absolute;
+  top: 0;
+  z-index: 3;
+  width: clamp(116px, 12vw, 230px);
+  color: #0a0806;
+  filter: drop-shadow(0 4px 0 rgba(224, 173, 73, 0.34)) drop-shadow(0 18px 20px rgba(0, 0, 0, 0.45));
+}
+
+.rhythm-crusader--left {
+  left: 28%;
+}
+
+.rhythm-crusader--right {
+  right: 28%;
+}
+
+.rhythm-crusader.is-fallen {
+  opacity: 0.52;
+  transform: translateY(6%) rotate(-6deg);
+  filter: drop-shadow(0 0 24px rgba(196, 232, 224, 0.35));
+}
+
+.rhythm-crusader path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rhythm-crusader .crusader-cloak,
+.rhythm-crusader .crusader-hood {
+  fill: #11100c;
+  stroke: #c18832;
+  stroke-width: 4;
+}
+
+.rhythm-crusader .crusader-halo {
+  stroke: rgba(224, 173, 73, 0.55);
+  stroke-width: 3;
+}
+
+.rhythm-crusader .crusader-visor,
+.rhythm-crusader .crusader-cross,
+.rhythm-crusader .crusader-arm,
+.rhythm-crusader .crusader-keys {
+  stroke: #c18832;
+  stroke-width: 5;
+}
+
+.rhythm-crusader .crusader-instrument {
+  fill: #2a1707;
+  stroke: #c18832;
+  stroke-width: 5;
+}
+
+.rhythm-crusader--left .crusader-keys,
+.rhythm-crusader--left .crusader-cross {
+  stroke: var(--crusade-blue);
+}
+
+.rhythm-crusader--right .crusader-keys,
+.rhythm-crusader--right .crusader-cross {
+  stroke: var(--crusade-orange);
+}
+
+.rhythm-sacred-heart {
+  position: absolute;
+  top: clamp(0.65rem, 1.5vw, 1.25rem);
+  left: 50%;
+  z-index: 12;
+  display: grid;
+  width: clamp(140px, 16.5vw, 300px);
+  aspect-ratio: 1;
+  place-items: center;
+  transform: translateX(-50%) scale(var(--heart-scale, 1));
+  transform-origin: 50% 46%;
+  filter: drop-shadow(0 0 24px rgba(255, 191, 65, 0.62));
+  pointer-events: none;
+  transition: transform 0.055s linear, filter 0.055s linear;
+}
+
+.rhythm-sacred-heart::before {
+  content: "";
+  position: absolute;
+  inset: -20%;
+  border-radius: 50%;
+  background:
+    repeating-conic-gradient(from 0deg, rgba(255, 202, 81, 0.26) 0 3deg, transparent 3deg 10deg),
+    radial-gradient(circle, rgba(255, 218, 121, 0.34), transparent 58%);
+  opacity: var(--heart-glow, 0.72);
+  transform: scale(calc(0.92 + (var(--heart-glow, 0.72) * 0.16)));
+}
+
+.rhythm-heart-svg {
+  position: relative;
+  z-index: 2;
+  width: 62%;
+  overflow: visible;
+}
+
+.rhythm-heartbeat-wave {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  z-index: 1;
+  width: min(52vw, 720px);
+  height: clamp(38px, 5vw, 82px);
+  overflow: visible;
+  transform: translate(-50%, -50%);
+}
+
+.rhythm-heartbeat-wave path {
+  fill: none;
+  stroke: rgba(255, 214, 105, 0.76);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 5;
+  filter: drop-shadow(0 0 12px rgba(255, 204, 82, 0.72));
+  stroke-dasharray: 760;
+  stroke-dashoffset: calc(130px - (var(--heart-glow, 0.7) * 130px));
+}
+
+.rhythm-heart-svg path {
+  fill: none;
+  stroke: #2a1207;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rhythm-heart-svg .heart-body {
+  fill: #c8511d;
+  stroke-width: 5;
+}
+
+.rhythm-heart-svg .heart-vessels {
+  fill: #c8511d;
+  stroke-width: 5;
+}
+
+.rhythm-heart-svg .heart-lobe,
+.rhythm-heart-svg .heart-lines {
+  stroke-width: 4;
+}
+
+.rhythm-heart-svg .heart-rays {
+  stroke: rgba(255, 218, 116, 0.64);
+  stroke-width: 3;
+}
+
+.rhythm-sacred-heart span {
+  position: absolute;
+  top: 78%;
+  left: 50%;
+  width: clamp(18px, 2vw, 34px);
+  height: clamp(170px, 22vw, 350px);
+  background: linear-gradient(180deg, rgba(255, 236, 156, 0.95), rgba(255, 179, 46, 0.68), transparent);
+  clip-path: polygon(44% 0, 66% 24%, 51% 24%, 75% 55%, 54% 52%, 67% 100%, 28% 47%, 47% 50%, 23% 18%, 42% 20%);
+  transform: translateX(-50%);
+  filter: blur(0.2px) drop-shadow(0 0 18px rgba(255, 216, 97, 0.85));
+}
+
+.rhythm-fallen-ally {
+  position: absolute;
+  top: 26%;
+  left: 7%;
+  z-index: 7;
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  width: clamp(96px, 12vw, 180px);
+  color: rgba(255, 229, 170, 0.82);
+  opacity: 0.72;
+  pointer-events: none;
+}
+
+.rhythm-fallen-ally span {
+  width: 72%;
+  aspect-ratio: 0.72;
+  border: 2px solid rgba(255, 230, 168, 0.24);
+  border-radius: 50% 50% 12% 12%;
+  background:
+    radial-gradient(circle at 50% 16%, rgba(255, 239, 190, 0.24), transparent 0 18%, transparent 19%),
+    linear-gradient(180deg, rgba(4, 10, 12, 0.12), rgba(2, 4, 4, 0.72));
+  box-shadow: 0 0 26px rgba(255, 224, 137, 0.25), inset 0 0 28px rgba(91, 224, 231, 0.14);
+}
+
+.rhythm-fallen-ally b {
+  border: 1px solid rgba(226, 174, 74, 0.5);
+  padding: 0.18rem 0.5rem;
+  background: rgba(12, 8, 4, 0.72);
+  font-size: clamp(0.58rem, 0.82vw, 0.82rem);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rhythm-note-highway {
+  position: absolute;
+  right: 25.5%;
+  bottom: 25.2%;
+  left: 25.5%;
+  z-index: 11;
+  height: 20%;
+  border: 3px solid rgba(224, 173, 73, 0.72);
+  border-radius: 8px;
+  background:
+    linear-gradient(180deg, rgba(241, 204, 121, 0.08), transparent 35%),
+    radial-gradient(circle at 50% 50%, rgba(255, 213, 92, 0.16), transparent 32%),
+    rgba(8, 7, 5, 0.88);
+  box-shadow:
+    0 18px 38px rgba(0, 0, 0, 0.46),
+    inset 0 0 0 1px rgba(255, 237, 184, 0.12),
+    inset 0 0 40px rgba(0, 0, 0, 0.68);
+}
+
+.rhythm-note-highway::before,
+.rhythm-note-highway::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  width: 44%;
+  height: 16px;
+  border-top: 2px solid rgba(224, 173, 73, 0.54);
+  pointer-events: none;
+}
+
+.rhythm-note-highway::before {
+  left: -3px;
+  border-left: 2px solid rgba(224, 173, 73, 0.54);
+  border-radius: 8px 0 0 0;
+}
+
+.rhythm-note-highway::after {
+  right: -3px;
+  border-right: 2px solid rgba(224, 173, 73, 0.54);
+  border-radius: 0 8px 0 0;
+}
+
+.rhythm-note-highway__label {
+  position: absolute;
+  top: clamp(-34px, -2.3vw, -22px);
+  left: 50%;
+  z-index: 5;
+  min-width: clamp(130px, 16vw, 240px);
+  border: 2px solid rgba(224, 173, 73, 0.68);
+  border-radius: 8px 8px 0 0;
+  padding: clamp(0.18rem, 0.42vw, 0.36rem) 0.7rem;
+  background: rgba(13, 10, 6, 0.95);
+  color: var(--crusade-gold-bright);
+  font-size: clamp(0.78rem, 1.22vw, 1.42rem);
+  font-weight: 950;
+  letter-spacing: 0.1em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  box-shadow: 0 0 18px rgba(0, 0, 0, 0.45);
+}
+
+.rhythm-note-highway__pulse {
+  position: absolute;
+  inset: 49% 4% auto;
+  height: 2px;
+  background:
+    linear-gradient(90deg, transparent, var(--crusade-blue), rgba(255, 222, 123, 0.8), var(--crusade-orange), transparent);
+  box-shadow: 0 0 20px rgba(255, 209, 97, 0.58);
+}
+
+.rhythm-note-highway__judgment {
+  position: absolute;
+  top: -12%;
+  bottom: -16%;
+  left: 50%;
+  width: 3px;
+  background: linear-gradient(180deg, transparent, var(--crusade-gold-bright) 22%, var(--crusade-gold-bright) 78%, transparent);
+  box-shadow: 0 0 22px rgba(255, 211, 91, 0.94);
+  transform: translateX(-50%);
+}
+
+.rhythm-note-highway__judgment::before,
+.rhythm-note-highway__judgment::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: clamp(20px, 2.2vw, 36px);
+  aspect-ratio: 1;
+  border: 3px solid var(--crusade-gold-bright);
+  background: rgba(14, 10, 6, 0.9);
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow: 0 0 18px rgba(255, 211, 91, 0.7);
+}
+
+.rhythm-note-highway__judgment::before {
+  top: 50%;
+}
+
+.rhythm-note-highway__judgment::after {
+  top: -2%;
+  width: clamp(10px, 1vw, 18px);
+  border-width: 2px;
+}
+
+.rhythm-lane-track {
+  position: absolute;
+  right: 4%;
+  left: 4%;
+  top: var(--lane-y);
+  height: clamp(18px, 2vw, 34px);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: rgba(255, 238, 187, 0.88);
+  transform: translateY(-50%);
+  cursor: pointer;
+}
+
+.rhythm-lane-track::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.7;
+  transform: translateY(-50%);
+  box-shadow: 0 0 12px currentColor;
+}
+
+.rhythm-lane-track--player {
+  color: var(--crusade-blue);
+}
+
+.rhythm-lane-track--enemy {
+  color: var(--crusade-orange);
+}
+
+.rhythm-lane-track--player::before {
+  right: 50%;
+  left: 0;
+}
+
+.rhythm-lane-track--enemy::before {
+  right: 0;
+  left: 50%;
+}
+
+.rhythm-lane-track span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  width: clamp(18px, 1.8vw, 30px);
+  aspect-ratio: 1;
+  place-items: center;
+  border: 2px solid currentColor;
+  border-radius: 50%;
+  background: rgba(10, 7, 5, 0.92);
+  color: #fff1c4;
+  font-size: clamp(0.55rem, 0.72vw, 0.8rem);
+  font-weight: 950;
+  line-height: 1;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px currentColor;
+}
+
+.rhythm-lane-track.is-hit {
+  filter: brightness(1.7);
+}
+
+.rhythm-lane-track.is-hit span {
+  background: var(--crusade-gold-bright);
+  color: #201006;
+}
+
+.rhythm-crusade-note {
+  position: absolute;
+  top: var(--note-y);
+  left: var(--note-x);
+  z-index: 8;
+  width: clamp(20px, 2.15vw, 40px);
+  aspect-ratio: 1;
+  border: 3px solid #1b0b04;
+  background: #f8ead1;
+  transform: translate(-50%, -50%) rotate(45deg);
+  box-shadow:
+    0 0 0 2px rgba(255, 236, 173, 0.24),
+    0 0 18px currentColor,
+    0 8px 18px rgba(0, 0, 0, 0.4);
+}
+
+.rhythm-crusade-note::before {
+  content: "";
+  position: absolute;
+  inset: 26%;
+  border: 2px solid rgba(21, 9, 4, 0.74);
+}
+
+.rhythm-crusade-note--player {
+  color: var(--crusade-blue);
+  background: linear-gradient(135deg, #dff8ff, #3eb7d4 48%, #154b5c);
+}
+
+.rhythm-crusade-note--enemy {
+  color: var(--crusade-orange);
+  background: linear-gradient(135deg, #ffe1a4, #e66f25 48%, #7d1f12);
+}
+
+.rhythm-crusade-note--revive,
+.rhythm-crusade-note--coda {
+  color: var(--crusade-gold-bright);
+  background: linear-gradient(135deg, #fff6c9, #ffc548 52%, #7e4a11);
+}
+
+.rhythm-hit-effect {
+  position: absolute;
+  top: var(--effect-y);
+  left: 50%;
+  z-index: 14;
+  color: var(--crusade-gold-bright);
+  font-size: clamp(0.58rem, 0.9vw, 1rem);
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-shadow: 0 2px 0 #1c0e05, 0 0 16px rgba(255, 211, 91, 0.72);
+  transform: translate(-50%, -50%);
+  animation: rhythm-hit-float 0.52s ease-out forwards;
+  pointer-events: none;
+}
+
+.rhythm-hit-effect--early,
+.rhythm-hit-effect--late {
+  color: #f7c36c;
+}
+
+.rhythm-hit-effect--miss {
+  color: #ff7c4f;
+}
+
+.rhythm-resurrection-panel {
+  position: absolute;
+  right: 28.4%;
+  bottom: 25.6%;
+  left: 28.4%;
+  z-index: 14;
+  display: grid;
+  gap: clamp(0.14rem, 0.34vw, 0.34rem);
+  border: 2px solid rgba(255, 213, 95, 0.7);
+  border-radius: 8px;
+  padding: clamp(0.38rem, 0.75vw, 0.72rem) clamp(0.55rem, 1vw, 1rem);
+  background:
+    linear-gradient(180deg, rgba(255, 217, 117, 0.12), transparent),
+    rgba(11, 8, 5, 0.9);
+  color: #ffe8a7;
+  text-align: center;
+  box-shadow: 0 0 28px rgba(255, 202, 77, 0.38), inset 0 0 22px rgba(255, 204, 74, 0.12);
+}
+
+.rhythm-resurrection-panel span,
+.rhythm-resurrection-panel strong {
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rhythm-resurrection-panel span {
+  color: #fff4c4;
+  font-size: clamp(0.6rem, 0.82vw, 0.85rem);
+}
+
+.rhythm-resurrection-panel strong {
+  color: var(--crusade-gold-bright);
+  font-size: clamp(0.7rem, 1vw, 1.08rem);
+}
+
+.rhythm-resurrection-panel div {
+  height: clamp(9px, 1vw, 15px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 236, 180, 0.42);
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.56);
+}
+
+.rhythm-resurrection-panel i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #fff7bd, #ffc347, #fff7bd);
+  box-shadow: 0 0 16px rgba(255, 212, 88, 0.8);
+  transition: width 0.16s ease;
+}
+
+.rhythm-resurrection-panel p {
+  margin: 0;
+  color: #f8ead1;
+  font-size: clamp(0.62rem, 0.86vw, 0.94rem);
+  font-weight: 850;
+  line-height: 1.2;
+}
+
+.rhythm-revive-complete {
+  position: absolute;
+  top: 35.5%;
+  left: 50%;
+  z-index: 22;
+  border: 2px solid rgba(255, 232, 139, 0.82);
+  border-radius: 8px;
+  padding: clamp(0.5rem, 0.8vw, 0.8rem) clamp(0.9rem, 1.5vw, 1.5rem);
+  background:
+    radial-gradient(circle at 50% 50%, rgba(255, 225, 122, 0.28), transparent 65%),
+    rgba(12, 8, 5, 0.92);
+  color: #fff3bd;
+  font-size: clamp(1rem, 1.8vw, 2rem);
+  font-weight: 950;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+  transform: translateX(-50%);
+  box-shadow: 0 0 34px rgba(255, 208, 82, 0.5), inset 0 0 24px rgba(255, 223, 120, 0.14);
+  animation: rhythm-revive-banner 1.8s ease-out forwards;
+}
+
+.rhythm-crusade-verdict {
+  position: absolute;
+  bottom: 8.5%;
+  left: 50%;
+  z-index: 17;
+  display: grid;
+  width: clamp(118px, 11.5vw, 190px);
+  min-height: clamp(88px, 10vw, 150px);
+  place-items: center;
+  border: 2px solid rgba(224, 173, 73, 0.66);
+  border-radius: 8px;
+  padding: clamp(0.35rem, 0.8vw, 0.72rem);
+  background:
+    radial-gradient(circle at 50% 24%, rgba(255, 219, 122, 0.16), transparent 46%),
+    rgba(10, 7, 5, 0.9);
+  color: var(--crusade-gold-bright);
+  text-align: center;
+  transform: translateX(-50%);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.42), inset 0 0 18px rgba(255, 232, 169, 0.08);
+}
+
+.rhythm-crusade-verdict span,
+.rhythm-crusade-verdict small {
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rhythm-crusade-verdict span {
+  color: #fff1bd;
+  font-size: clamp(0.64rem, 1vw, 1.08rem);
+}
+
+.rhythm-crusade-verdict strong {
+  color: var(--crusade-gold-bright);
+  font-size: clamp(2rem, 4vw, 4.8rem);
+  line-height: 0.86;
+  text-shadow: 0 3px 0 rgba(70, 28, 8, 0.8), 0 0 20px rgba(255, 204, 82, 0.35);
+}
+
+.rhythm-crusade-verdict small {
+  color: #e8c26e;
+  font-size: clamp(0.54rem, 0.72vw, 0.78rem);
+}
+
+.rhythm-crusade-shell.is-resurrection .rhythm-crusade-verdict {
+  bottom: 5.6%;
+}
+
+.rhythm-crusade-bottom {
+  position: absolute;
+  right: 1.6%;
+  bottom: 2.2%;
+  left: 1.6%;
+  z-index: 15;
+  display: grid;
+  grid-template-columns: minmax(220px, 24%) minmax(520px, 1fr) minmax(220px, 24%);
+  gap: clamp(0.45rem, 0.9vw, 0.9rem);
+  align-items: end;
+  height: 19.2%;
+}
+
+.rhythm-stat-panel {
+  display: grid;
+  grid-template-columns: clamp(58px, 6vw, 110px) minmax(0, 1fr);
+  gap: clamp(0.4rem, 0.7vw, 0.75rem);
+  align-items: end;
+  min-height: 100%;
+  border: 2px solid rgba(224, 173, 73, 0.62);
+  border-radius: 8px;
+  padding: clamp(0.42rem, 0.8vw, 0.8rem);
+  background:
+    linear-gradient(180deg, rgba(255, 225, 145, 0.08), transparent 44%),
+    rgba(9, 7, 5, 0.86);
+  box-shadow: inset 0 0 0 1px rgba(255, 237, 184, 0.08), 0 12px 30px rgba(0, 0, 0, 0.4);
+}
+
+.rhythm-stat-panel--enemy {
+  grid-template-columns: minmax(0, 1fr) clamp(58px, 6vw, 110px);
+}
+
+.rhythm-stat-panel__seal {
+  aspect-ratio: 1;
+  border: 3px solid rgba(224, 173, 73, 0.74);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, rgba(255, 216, 104, 0.12), transparent 55%),
+    rgba(5, 5, 4, 0.84);
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.42), inset 0 0 20px rgba(255, 217, 96, 0.12);
+}
+
+.rhythm-stat-panel__seal::before {
+  content: "";
+  display: block;
+  width: 62%;
+  height: 62%;
+  margin: 19%;
+  background: currentColor;
+  clip-path: polygon(42% 0, 58% 0, 59% 38%, 100% 31%, 100% 48%, 60% 52%, 70% 100%, 30% 100%, 40% 52%, 0 48%, 0 31%, 41% 38%);
+}
+
+.rhythm-stat-panel--player .rhythm-stat-panel__seal {
+  color: var(--crusade-blue);
+}
+
+.rhythm-stat-panel--enemy .rhythm-stat-panel__seal {
+  order: 2;
+  color: var(--crusade-orange);
+}
+
+.rhythm-stat-panel__copy {
+  display: grid;
+  gap: clamp(0.18rem, 0.34vw, 0.36rem);
+}
+
+.rhythm-stat-panel--enemy .rhythm-stat-panel__copy {
+  text-align: right;
+}
+
+.rhythm-stat-panel__copy > span,
+.rhythm-stat-panel__copy > strong {
+  color: var(--crusade-gold-bright);
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rhythm-stat-panel__copy > span {
+  font-size: clamp(0.58rem, 0.82vw, 0.86rem);
+}
+
+.rhythm-stat-panel__copy > strong {
+  color: #fff0bd;
+  font-size: clamp(0.92rem, 1.5vw, 1.55rem);
+}
+
+.rhythm-meter {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.rhythm-meter div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+  color: #e7c26c;
+  font-size: clamp(0.48rem, 0.66vw, 0.68rem);
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rhythm-meter span {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+  gap: 2px;
+  min-height: clamp(8px, 0.88vw, 14px);
+}
+
+.rhythm-meter i {
+  border: 1px solid rgba(255, 238, 182, 0.18);
+  background: rgba(0, 0, 0, 0.48);
+}
+
+.rhythm-meter i.is-filled {
+  background: var(--crusade-blue);
+  box-shadow: 0 0 8px rgba(71, 199, 232, 0.46);
+}
+
+.rhythm-meter--enemy i.is-filled {
+  background: var(--crusade-orange);
+  box-shadow: 0 0 8px rgba(230, 111, 37, 0.46);
+}
+
+.rhythm-meter--player-energy i.is-filled,
+.rhythm-meter--enemy-energy i.is-filled {
+  background: var(--crusade-gold);
+  box-shadow: 0 0 8px rgba(224, 173, 73, 0.48);
+}
+
+.rhythm-crusade-command {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  gap: clamp(0.25rem, 0.5vw, 0.48rem);
+  min-height: 100%;
+}
+
+.rhythm-ability-bar {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(84px, 0.74fr) repeat(3, minmax(0, 1fr));
+  gap: clamp(0.28rem, 0.55vw, 0.62rem);
+  min-height: 0;
+}
+
+.rhythm-ability-bar__gap {
+  min-width: 0;
+}
+
+.rhythm-ability-card {
+  display: grid;
+  grid-template-rows: minmax(24px, 1fr) auto auto;
+  place-items: center;
+  min-height: 0;
+  border: 2px solid currentColor;
+  border-radius: 7px;
+  padding: clamp(0.25rem, 0.48vw, 0.48rem) clamp(0.18rem, 0.36vw, 0.36rem);
+  background:
+    linear-gradient(180deg, rgba(255, 238, 176, 0.08), transparent),
+    rgba(8, 7, 5, 0.88);
+  color: var(--crusade-blue);
+  font-family: inherit;
+  box-shadow: inset 0 0 0 1px rgba(255, 237, 184, 0.06), 0 8px 18px rgba(0, 0, 0, 0.28);
+}
+
+.rhythm-ability-card--enemy {
+  color: var(--crusade-orange);
+}
+
+.rhythm-ability-card:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.rhythm-ability-card:not(:disabled):hover,
+.rhythm-ability-card:not(:disabled):focus-visible {
+  outline: 2px solid rgba(255, 224, 139, 0.72);
+  outline-offset: 2px;
+  filter: brightness(1.18);
+}
+
+.rhythm-ability-card svg {
+  width: clamp(24px, 2.8vw, 54px);
+  max-height: clamp(24px, 2.8vw, 54px);
+  fill: currentColor;
+  filter: drop-shadow(0 0 9px currentColor);
+}
+
+.rhythm-ability-card strong {
+  color: #fff1c7;
+  font-size: clamp(0.62rem, 0.95vw, 1rem);
+  line-height: 1;
+}
+
+.rhythm-ability-card span,
+.rhythm-ability-card small {
+  max-width: 100%;
+  color: #e6c777;
+  font-weight: 950;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.rhythm-ability-card span {
+  max-height: 2.1em;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  font-size: clamp(0.45rem, 0.6vw, 0.66rem);
+}
+
+.rhythm-ability-card small {
+  font-size: clamp(0.45rem, 0.62vw, 0.7rem);
+  white-space: nowrap;
+}
+
+.rhythm-crusade-progress {
+  display: grid;
+  grid-template-columns: auto minmax(120px, 1fr) auto;
+  gap: clamp(0.35rem, 0.75vw, 0.75rem);
+  align-items: center;
+  border: 2px solid rgba(224, 173, 73, 0.56);
+  border-radius: 8px;
+  padding: clamp(0.22rem, 0.42vw, 0.4rem) clamp(0.5rem, 0.9vw, 0.9rem);
+  background: rgba(10, 7, 5, 0.88);
+  color: var(--crusade-gold-bright);
+}
+
+.rhythm-crusade-progress b,
+.rhythm-crusade-progress small {
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.rhythm-crusade-progress b {
+  font-size: clamp(0.58rem, 0.95vw, 1.08rem);
+}
+
+.rhythm-crusade-progress small {
+  color: #d8bd72;
+  font-size: clamp(0.52rem, 0.72vw, 0.82rem);
+}
+
+.rhythm-crusade-progress span {
+  height: clamp(7px, 0.72vw, 12px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 236, 180, 0.26);
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(71, 199, 232, 0.18), rgba(230, 111, 37, 0.18));
+}
+
+.rhythm-crusade-progress i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--crusade-blue), var(--crusade-gold), var(--crusade-orange));
+  transition: width 0.16s linear;
+}
+
+.rhythm-crusade-score {
+  position: absolute;
+  top: 30%;
+  left: 50%;
+  z-index: 8;
+  display: flex;
+  gap: clamp(0.3rem, 0.7vw, 0.75rem);
+  transform: translateX(-50%);
+}
+
+.rhythm-crusade-score span,
+.rhythm-crusade-debug {
+  border: 1px solid rgba(224, 173, 73, 0.42);
+  border-radius: 999px;
+  padding: 0.24rem 0.56rem;
+  background: rgba(10, 7, 5, 0.72);
+  color: #ffe4a0;
+  font-size: clamp(0.5rem, 0.72vw, 0.78rem);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rhythm-crusade-message {
+  position: absolute;
+  right: 31%;
+  bottom: auto;
+  left: 31%;
+  top: 34%;
+  z-index: 16;
+  min-height: 1.4em;
+  margin: 0;
+  color: #fff1bd;
+  font-size: clamp(0.66rem, 1vw, 1.08rem);
+  font-weight: 900;
+  line-height: 1.25;
+  text-align: center;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.7), 0 0 18px rgba(255, 203, 83, 0.32);
+}
+
+.rhythm-crusade-debug {
+  position: absolute;
+  right: 1.2rem;
+  bottom: 22.4%;
+  z-index: 16;
+  max-width: 23ch;
+  border-radius: 7px;
+  color: #c5b17e;
+  text-align: right;
+  opacity: 0.72;
+}
+
+.rhythm-crusade-state {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  z-index: 30;
+  display: grid;
+  width: min(90%, 430px);
+  gap: 0.8rem;
+  border: 2px solid rgba(224, 173, 73, 0.72);
+  border-radius: 8px;
+  padding: 1.25rem;
+  background:
+    linear-gradient(180deg, rgba(255, 219, 126, 0.1), transparent),
+    rgba(12, 8, 5, 0.95);
+  color: #f8ead1;
+  text-align: center;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.6), inset 0 0 0 1px rgba(255, 237, 184, 0.1);
+}
+
+.rhythm-crusade-state p {
+  margin: 0;
+  color: #fff0bd;
+  font-size: clamp(1.2rem, 2vw, 1.7rem);
+  font-weight: 950;
+}
+
+.rhythm-crusade-state button {
+  min-height: 2.8rem;
+  border: 2px solid #1b0d05;
+  border-radius: 7px;
+  background: linear-gradient(#ffe39c, #b7661b);
+  color: #1b0d05;
+  font-family: inherit;
+  font-size: 0.78rem;
+  font-weight: 950;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.rhythm-crusade-state small {
+  color: #dcc481;
+  font-weight: 850;
+}
+
+@keyframes rhythm-crusade-shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(3px, -2px); }
+  50% { transform: translate(-3px, 2px); }
+  75% { transform: translate(2px, 1px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes rhythm-heart-glow {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes rhythm-hit-float {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -20%) scale(0.8);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -145%) scale(1.12);
+  }
+}
+
+@keyframes rhythm-revive-banner {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 18px) scale(0.92);
+  }
+  18%,
+  72% {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -18px) scale(1.04);
+  }
+}
+
+@media (max-width: 1180px), (max-height: 760px) {
+  .rhythm-crusade-stage {
+    width: min(100%, calc((100dvh - 1rem) * 16 / 9));
+  }
+
+  .rhythm-note-highway {
+    right: 20%;
+    left: 20%;
+  }
+
+  .rhythm-resurrection-panel {
+    right: 23%;
+    left: 23%;
+  }
+
+  .rhythm-crusade-bottom {
+    grid-template-columns: minmax(180px, 22%) minmax(430px, 1fr) minmax(180px, 22%);
+  }
+
+  .rhythm-ability-card span {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  .rhythm-crusade-shell {
+    align-items: start;
+    overflow: auto;
+  }
+
+  .rhythm-crusade-stage {
+    width: 100%;
+    min-height: 760px;
+    max-height: none;
+    aspect-ratio: auto;
+  }
+
+  .rhythm-battle-hud {
+    inset-inline: 0.8rem;
+  }
+
+  .rhythm-sacred-heart {
+    top: 3rem;
+    width: 150px;
+  }
+
+  .rhythm-note-highway {
+    right: 5%;
+    bottom: 34%;
+    left: 5%;
+    height: 24%;
+  }
+
+  .rhythm-resurrection-panel {
+    right: 7%;
+    bottom: 27%;
+    left: 7%;
+  }
+
+  .rhythm-crusade-bottom {
+    right: 3%;
+    bottom: 2%;
+    left: 3%;
+    grid-template-columns: 1fr;
+    height: 31%;
+  }
+
+  .rhythm-stat-panel {
+    min-height: 0;
+  }
+
+  .rhythm-stat-panel__seal {
+    display: none;
+  }
+
+  .rhythm-stat-panel,
+  .rhythm-stat-panel--enemy {
+    grid-template-columns: 1fr;
+  }
+
+  .rhythm-crusade-command {
+    order: -1;
+  }
+
+  .rhythm-crusade-verdict {
+    bottom: 24%;
+  }
+
+  .rhythm-crusade-message {
+    right: 8%;
+    bottom: 30%;
+    left: 8%;
+    top: auto;
+  }
+
+  .rhythm-crusade-score,
+  .rhythm-crusade-debug {
+    display: none;
+  }
+}
+
 @media (max-width: 1120px) {
   .ballzatram-site-header__inner,
   .ballzatram-site-header__brand {

@@ -17,7 +17,7 @@ const panes = [
   },
   {
     title: "Crusades",
-    label: "Ritual combat prototype",
+    label: "Penitent 2: Rhythm Crusade",
     href: "/penitent/rhythm",
     image: `${ASSET_ROOT}/pane_crusades.png`,
     className: "penitent-pane--crusades",
