@@ -1,0 +1,786 @@
+[
+  {
+    "index": 1,
+    "file": "01_crusader_keyboard_left_large.png",
+    "name": "crusader_keyboard_left_large",
+    "description": "Large left-side keyboard crusader, isolated pose",
+    "source_box": [
+      28,
+      43,
+      170,
+      230
+    ],
+    "size": [
+      142,
+      187
+    ]
+  },
+  {
+    "index": 2,
+    "file": "02_crusader_guitar_left_large.png",
+    "name": "crusader_guitar_left_large",
+    "description": "Large left-side guitar crusader, isolated pose",
+    "source_box": [
+      171,
+      43,
+      318,
+      230
+    ],
+    "size": [
+      147,
+      187
+    ]
+  },
+  {
+    "index": 3,
+    "file": "03_crusader_keyboard_right_large.png",
+    "name": "crusader_keyboard_right_large",
+    "description": "Large right-side keyboard crusader, isolated pose",
+    "source_box": [
+      338,
+      43,
+      468,
+      232
+    ],
+    "size": [
+      130,
+      189
+    ]
+  },
+  {
+    "index": 4,
+    "file": "04_crusader_keyboard_right_alt_large.png",
+    "name": "crusader_keyboard_right_alt_large",
+    "description": "Alternate large right-side keyboard crusader pose",
+    "source_box": [
+      492,
+      43,
+      614,
+      233
+    ],
+    "size": [
+      122,
+      190
+    ]
+  },
+  {
+    "index": 5,
+    "file": "05_heart_large_with_waveform.png",
+    "name": "heart_large_with_waveform",
+    "description": "Large beating heart with waveform and golden pulse ring",
+    "source_box": [
+      640,
+      38,
+      984,
+      258
+    ],
+    "size": [
+      344,
+      220
+    ]
+  },
+  {
+    "index": 6,
+    "file": "06_heart_small_frame_01.png",
+    "name": "heart_small_frame_01",
+    "description": "Small beat heart frame 1",
+    "source_box": [
+      665,
+      263,
+      727,
+      340
+    ],
+    "size": [
+      62,
+      77
+    ]
+  },
+  {
+    "index": 7,
+    "file": "07_heart_small_frame_02.png",
+    "name": "heart_small_frame_02",
+    "description": "Small beat heart frame 2",
+    "source_box": [
+      732,
+      263,
+      794,
+      340
+    ],
+    "size": [
+      62,
+      77
+    ]
+  },
+  {
+    "index": 8,
+    "file": "08_heart_small_frame_03.png",
+    "name": "heart_small_frame_03",
+    "description": "Small beat heart frame 3",
+    "source_box": [
+      800,
+      263,
+      862,
+      340
+    ],
+    "size": [
+      62,
+      77
+    ]
+  },
+  {
+    "index": 9,
+    "file": "09_heart_small_frame_04.png",
+    "name": "heart_small_frame_04",
+    "description": "Small beat heart frame 4",
+    "source_box": [
+      868,
+      263,
+      931,
+      340
+    ],
+    "size": [
+      63,
+      77
+    ]
+  },
+  {
+    "index": 10,
+    "file": "10_heart_small_frame_05.png",
+    "name": "heart_small_frame_05",
+    "description": "Small beat heart frame 5",
+    "source_box": [
+      936,
+      263,
+      1000,
+      340
+    ],
+    "size": [
+      64,
+      77
+    ]
+  },
+  {
+    "index": 11,
+    "file": "11_dragon_large_left_fire.png",
+    "name": "dragon_large_left_fire",
+    "description": "Large orange dragon with teal wing breathing fire",
+    "source_box": [
+      1019,
+      41,
+      1230,
+      199
+    ],
+    "size": [
+      211,
+      158
+    ]
+  },
+  {
+    "index": 12,
+    "file": "12_dragon_large_right_fire.png",
+    "name": "dragon_large_right_fire",
+    "description": "Large right-side dragon breathing fire; label area removed",
+    "source_box": [
+      1232,
+      41,
+      1488,
+      199
+    ],
+    "size": [
+      256,
+      158
+    ]
+  },
+  {
+    "index": 13,
+    "file": "13_dragon_small_hover_left.png",
+    "name": "dragon_small_hover_left",
+    "description": "Small hovering dragon sprite",
+    "source_box": [
+      1017,
+      202,
+      1093,
+      269
+    ],
+    "size": [
+      71,
+      60
+    ]
+  },
+  {
+    "index": 14,
+    "file": "14_dragon_small_hover_mid.png",
+    "name": "dragon_small_hover_mid",
+    "description": "Small hovering dragon sprite with larger wing",
+    "source_box": [
+      1091,
+      205,
+      1200,
+      270
+    ],
+    "size": [
+      106,
+      65
+    ]
+  },
+  {
+    "index": 15,
+    "file": "15_dragon_medium_fire.png",
+    "name": "dragon_medium_fire",
+    "description": "Medium dragon breathing fire",
+    "source_box": [
+      1184,
+      201,
+      1365,
+      285
+    ],
+    "size": [
+      181,
+      84
+    ]
+  },
+  {
+    "index": 16,
+    "file": "16_dragon_low_flame_left.png",
+    "name": "dragon_low_flame_left",
+    "description": "Low flying dragon with long flame trail",
+    "source_box": [
+      1060,
+      279,
+      1179,
+      350
+    ],
+    "size": [
+      119,
+      71
+    ]
+  },
+  {
+    "index": 17,
+    "file": "17_dragon_low_flame_right.png",
+    "name": "dragon_low_flame_right",
+    "description": "Low flying dragon with flame trail",
+    "source_box": [
+      1204,
+      318,
+      1298,
+      355
+    ],
+    "size": [
+      94,
+      37
+    ]
+  },
+  {
+    "index": 18,
+    "file": "18_projectile_fireballs_three.png",
+    "name": "projectile_fireballs_three",
+    "description": "Three fiery projectile sprites",
+    "source_box": [
+      1365,
+      193,
+      1520,
+      272
+    ],
+    "size": [
+      155,
+      79
+    ]
+  },
+  {
+    "index": 19,
+    "file": "19_lightning_bolts_blue_four.png",
+    "name": "lightning_bolts_blue_four",
+    "description": "Four blue lightning bolt effect sprites",
+    "source_box": [
+      1282,
+      306,
+      1494,
+      375
+    ],
+    "size": [
+      207,
+      69
+    ]
+  },
+  {
+    "index": 20,
+    "file": "20_mountain_small_flag.png",
+    "name": "mountain_small_flag",
+    "description": "Small mountain/volcano base with red flag",
+    "source_box": [
+      13,
+      380,
+      174,
+      514
+    ],
+    "size": [
+      161,
+      134
+    ]
+  },
+  {
+    "index": 21,
+    "file": "21_volcano_small_smoking.png",
+    "name": "volcano_small_smoking",
+    "description": "Small smoking volcano background element",
+    "source_box": [
+      184,
+      380,
+      334,
+      512
+    ],
+    "size": [
+      150,
+      132
+    ]
+  },
+  {
+    "index": 22,
+    "file": "22_battlefield_demon_army_wide_strip.png",
+    "name": "battlefield_demon_army_wide_strip",
+    "description": "Wide demon army battlefield strip with explosions and distant volcano",
+    "source_box": [
+      343,
+      396,
+      1064,
+      571
+    ],
+    "size": [
+      721,
+      175
+    ]
+  },
+  {
+    "index": 23,
+    "file": "23_logo_pntn2_center_plaque.png",
+    "name": "logo_pntn2_center_plaque",
+    "description": "Ornate center pntn2 logo plaque",
+    "source_box": [
+      624,
+      548,
+      838,
+      608
+    ],
+    "size": [
+      214,
+      60
+    ]
+  },
+  {
+    "index": 24,
+    "file": "24_cloud_cluster_wide.png",
+    "name": "cloud_cluster_wide",
+    "description": "Wide tan cloud cluster",
+    "source_box": [
+      13,
+      553,
+      188,
+      614
+    ],
+    "size": [
+      175,
+      61
+    ]
+  },
+  {
+    "index": 25,
+    "file": "25_cloud_cluster_small.png",
+    "name": "cloud_cluster_small",
+    "description": "Small tan cloud cluster",
+    "source_box": [
+      189,
+      552,
+      253,
+      581
+    ],
+    "size": [
+      64,
+      29
+    ]
+  },
+  {
+    "index": 26,
+    "file": "26_cloud_cluster_right.png",
+    "name": "cloud_cluster_right",
+    "description": "Right tan cloud cluster",
+    "source_box": [
+      255,
+      561,
+      346,
+      612
+    ],
+    "size": [
+      91,
+      47
+    ]
+  },
+  {
+    "index": 27,
+    "file": "27_demon_trident_soldier.png",
+    "name": "demon_trident_soldier",
+    "description": "Standing demon soldier with trident",
+    "source_box": [
+      1075,
+      424,
+      1176,
+      556
+    ],
+    "size": [
+      101,
+      132
+    ]
+  },
+  {
+    "index": 28,
+    "file": "28_demon_axe_soldier.png",
+    "name": "demon_axe_soldier",
+    "description": "Standing demon soldier with axe",
+    "source_box": [
+      1190,
+      424,
+      1292,
+      557
+    ],
+    "size": [
+      102,
+      126
+    ]
+  },
+  {
+    "index": 29,
+    "file": "29_demon_head_icon.png",
+    "name": "demon_head_icon",
+    "description": "Demon head icon",
+    "source_box": [
+      1303,
+      424,
+      1370,
+      493
+    ],
+    "size": [
+      49,
+      69
+    ]
+  },
+  {
+    "index": 30,
+    "file": "30_demon_beast_fireball.png",
+    "name": "demon_beast_fireball",
+    "description": "Small demon beast throwing a fireball",
+    "source_box": [
+      1350,
+      452,
+      1458,
+      555
+    ],
+    "size": [
+      108,
+      103
+    ]
+  },
+  {
+    "index": 31,
+    "file": "31_demon_raised_hand.png",
+    "name": "demon_raised_hand",
+    "description": "Raised demon hand/claw sprite",
+    "source_box": [
+      1479,
+      420,
+      1530,
+      507
+    ],
+    "size": [
+      43,
+      72
+    ]
+  },
+  {
+    "index": 32,
+    "file": "32_hud_p1_health_meter.png",
+    "name": "hud_p1_health_meter",
+    "description": "P1 ornate blue health meter with cross medallion",
+    "source_box": [
+      4,
+      628,
+      327,
+      721
+    ],
+    "size": [
+      323,
+      93
+    ]
+  },
+  {
+    "index": 33,
+    "file": "33_hud_p1_energy_meter.png",
+    "name": "hud_p1_energy_meter",
+    "description": "P1 blue energy meter strip",
+    "source_box": [
+      47,
+      782,
+      309,
+      825
+    ],
+    "size": [
+      262,
+      43
+    ]
+  },
+  {
+    "index": 34,
+    "file": "34_hud_p2_health_meter.png",
+    "name": "hud_p2_health_meter",
+    "description": "P2 ornate orange health meter with cross medallion",
+    "source_box": [
+      1137,
+      628,
+      1520,
+      725
+    ],
+    "size": [
+      383,
+      97
+    ]
+  },
+  {
+    "index": 35,
+    "file": "35_hud_p2_energy_meter.png",
+    "name": "hud_p2_energy_meter",
+    "description": "P2 yellow/orange energy meter strip",
+    "source_box": [
+      1156,
+      784,
+      1411,
+      826
+    ],
+    "size": [
+      255,
+      42
+    ]
+  },
+  {
+    "index": 36,
+    "file": "36_ornate_frame_p1_blue_cross.png",
+    "name": "ornate_frame_p1_blue_cross",
+    "description": "Standalone ornate P1 circular cross frame",
+    "source_box": [
+      65,
+      856,
+      199,
+      1006
+    ],
+    "size": [
+      134,
+      150
+    ]
+  },
+  {
+    "index": 37,
+    "file": "37_ornate_frame_p2_orange_cross.png",
+    "name": "ornate_frame_p2_orange_cross",
+    "description": "Standalone ornate P2 circular cross frame",
+    "source_box": [
+      1260,
+      857,
+      1406,
+      1006
+    ],
+    "size": [
+      140,
+      149
+    ]
+  },
+  {
+    "index": 38,
+    "file": "38_rhythm_note_track_panel.png",
+    "name": "rhythm_note_track_panel",
+    "description": "Main rhythm note track HUD panel",
+    "source_box": [
+      377,
+      598,
+      1085,
+      725
+    ],
+    "size": [
+      708,
+      127
+    ]
+  },
+  {
+    "index": 39,
+    "file": "39_ability_panel_p1_three_cards.png",
+    "name": "ability_panel_p1_three_cards",
+    "description": "P1 three-card ability panel",
+    "source_box": [
+      370,
+      754,
+      641,
+      873
+    ],
+    "size": [
+      271,
+      119
+    ]
+  },
+  {
+    "index": 40,
+    "file": "40_ability_card_p1_lightning.png",
+    "name": "ability_card_p1_lightning",
+    "description": "P1 ability card 1: lightning",
+    "source_box": [
+      381,
+      759,
+      478,
+      870
+    ],
+    "size": [
+      97,
+      111
+    ]
+  },
+  {
+    "index": 41,
+    "file": "41_ability_card_p1_burst.png",
+    "name": "ability_card_p1_burst",
+    "description": "P1 ability card 2: burst",
+    "source_box": [
+      477,
+      759,
+      574,
+      870
+    ],
+    "size": [
+      97,
+      111
+    ]
+  },
+  {
+    "index": 42,
+    "file": "42_ability_card_p1_shield.png",
+    "name": "ability_card_p1_shield",
+    "description": "P1 ability card 3: shield",
+    "source_box": [
+      571,
+      759,
+      643,
+      870
+    ],
+    "size": [
+      72,
+      111
+    ]
+  },
+  {
+    "index": 43,
+    "file": "43_combo_panel_124.png",
+    "name": "combo_panel_124",
+    "description": "Central combo panel with PERFECT and combo 124",
+    "source_box": [
+      666,
+      727,
+      817,
+      867
+    ],
+    "size": [
+      151,
+      140
+    ]
+  },
+  {
+    "index": 44,
+    "file": "44_ability_panel_p2_three_cards.png",
+    "name": "ability_panel_p2_three_cards",
+    "description": "P2 three-card ability panel",
+    "source_box": [
+      827,
+      754,
+      1099,
+      873
+    ],
+    "size": [
+      272,
+      119
+    ]
+  },
+  {
+    "index": 45,
+    "file": "45_ability_card_p2_fire.png",
+    "name": "ability_card_p2_fire",
+    "description": "P2 ability card 4: flame",
+    "source_box": [
+      834,
+      759,
+      930,
+      870
+    ],
+    "size": [
+      96,
+      111
+    ]
+  },
+  {
+    "index": 46,
+    "file": "46_ability_card_p2_demon.png",
+    "name": "ability_card_p2_demon",
+    "description": "P2 ability card 5: demon skull",
+    "source_box": [
+      929,
+      759,
+      1025,
+      870
+    ],
+    "size": [
+      96,
+      111
+    ]
+  },
+  {
+    "index": 47,
+    "file": "47_ability_card_p2_meteor.png",
+    "name": "ability_card_p2_meteor",
+    "description": "P2 ability card 6: meteor",
+    "source_box": [
+      1024,
+      759,
+      1100,
+      870
+    ],
+    "size": [
+      76,
+      111
+    ]
+  },
+  {
+    "index": 48,
+    "file": "48_song_title_plate_infernal_march.png",
+    "name": "song_title_plate_infernal_march",
+    "description": "Song title plate: Infernal March",
+    "source_box": [
+      509,
+      888,
+      967,
+      951
+    ],
+    "size": [
+      458,
+      63
+    ]
+  },
+  {
+    "index": 49,
+    "file": "49_song_progress_bar.png",
+    "name": "song_progress_bar",
+    "description": "Bottom song progress bar with time readout",
+    "source_box": [
+      379,
+      943,
+      1103,
+      1008
+    ],
+    "size": [
+      724,
+      65
+    ]
+  }
+]
