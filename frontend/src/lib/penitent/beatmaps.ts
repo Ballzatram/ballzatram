@@ -1,11 +1,21 @@
+import type { PenitentAbilityAssetId } from "./assets";
+
+export type GameDifficulty = "easy" | "medium" | "penitent";
+
+export type TimingWindows = {
+  perfect: number;
+  good: number;
+  earlyLate: number;
+};
+
 export type PenitentLane = {
-  id: string;
+  id: PenitentAbilityAssetId;
   key: string;
   numberKey: string;
   codes: string[];
   label: string;
   ability: string;
-  side: "player" | "enemy";
+  side: "p1" | "p2";
 };
 
 export type PenitentNote = {
@@ -13,6 +23,7 @@ export type PenitentNote = {
   lane: number;
   time: number;
   phrase: "march" | "wrath" | "revive" | "coda";
+  chordId?: string;
 };
 
 export type PenitentBeatmap = {
@@ -22,26 +33,136 @@ export type PenitentBeatmap = {
   bpm: number;
   durationMs: number;
   travelMs: number;
+  difficulty: GameDifficulty;
+  seed: string;
   notes: PenitentNote[];
 };
 
-export const RHYTHM_CRUSADE_CONFIG = {
-  bpm: 132,
-  noteTravelMs: 2300,
-  songDurationMs: 78000,
-  allyDownAtMs: 26000,
-  timingWindows: {
-    perfect: 60,
-    good: 110,
-    earlyLate: 160,
+export type PenitentSongDefinition = {
+  id: string;
+  title: string;
+  encounter: string;
+  bpm: number;
+  durationMs: number;
+  hordeTheme: "infernal" | "dragon" | "ash";
+  motifs: number[][];
+};
+
+export const penitentLanes: PenitentLane[] = [
+  { id: "lightning", key: "A", numberKey: "1", codes: ["KeyA", "Digit1"], label: "Lightning", ability: "Lightning", side: "p1" },
+  { id: "burst", key: "S", numberKey: "2", codes: ["KeyS", "Digit2"], label: "Burst", ability: "Burst Shockwave", side: "p1" },
+  { id: "shield", key: "D", numberKey: "3", codes: ["KeyD", "Digit3"], label: "Shield", ability: "Shield", side: "p1" },
+  { id: "flame", key: "J", numberKey: "4", codes: ["KeyJ", "Digit4"], label: "Flame", ability: "Flame", side: "p2" },
+  { id: "skull", key: "K", numberKey: "5", codes: ["KeyK", "Digit5"], label: "Skull", ability: "Demon Skull", side: "p2" },
+  { id: "meteor", key: "L", numberKey: "6", codes: ["KeyL", "Digit6"], label: "Meteor", ability: "Meteor", side: "p2" },
+];
+
+export const PENITENT_SONGS: PenitentSongDefinition[] = [
+  {
+    id: "infernal-march",
+    title: "Infernal March",
+    encounter: "Infernal March",
+    bpm: 132,
+    durationMs: 78000,
+    hordeTheme: "infernal",
+    motifs: [
+      [0, 1, 2, 0, 3, 4, 5, 3],
+      [0, 2, 1, 3, 5, 4, 2, 3],
+      [1, 2, 4, 5, 0, 3, 1, 4],
+      [0, 1, 4, 5, 2, 0, 3, 5],
+    ],
   },
+  {
+    id: "dragon-litany",
+    title: "Dragon Litany",
+    encounter: "Dragon Litany",
+    bpm: 146,
+    durationMs: 82000,
+    hordeTheme: "dragon",
+    motifs: [
+      [0, 3, 1, 4, 2, 5, 1, 4],
+      [2, 1, 0, 5, 4, 3, 2, 5],
+      [0, 0, 3, 4, 1, 2, 5, 5],
+      [1, 4, 2, 5, 0, 3, 2, 4],
+    ],
+  },
+  {
+    id: "siege-of-ash",
+    title: "Siege of Ash",
+    encounter: "Siege of Ash",
+    bpm: 118,
+    durationMs: 90000,
+    hordeTheme: "ash",
+    motifs: [
+      [2, 0, 1, 2, 4, 3, 5, 4],
+      [0, 2, 0, 5, 3, 5, 1, 4],
+      [1, 1, 2, 0, 3, 4, 5, 3],
+      [0, 3, 2, 5, 1, 4, 0, 5],
+    ],
+  },
+];
+
+export const DIFFICULTY_CONFIG = {
+  easy: {
+    label: "Easy",
+    noteTravelMs: 2700,
+    timingWindows: { perfect: 85, good: 145, earlyLate: 210 },
+    density: 0.72,
+    eighthChance: 0.16,
+    chordChance: 0,
+    missDamage: 2,
+    allyDownAtMs: 33000,
+    hordePressureGain: 1,
+    reviveGainMultiplier: 1.18,
+    damageMultiplier: 0.85,
+  },
+  medium: {
+    label: "Medium",
+    noteTravelMs: 2300,
+    timingWindows: { perfect: 60, good: 110, earlyLate: 160 },
+    density: 0.9,
+    eighthChance: 0.34,
+    chordChance: 0.04,
+    missDamage: 3,
+    allyDownAtMs: 26000,
+    hordePressureGain: 2,
+    reviveGainMultiplier: 1,
+    damageMultiplier: 1,
+  },
+  penitent: {
+    label: "Penitent",
+    noteTravelMs: 1900,
+    timingWindows: { perfect: 45, good: 85, earlyLate: 125 },
+    density: 1,
+    eighthChance: 0.58,
+    chordChance: 0.18,
+    missDamage: 5,
+    allyDownAtMs: 21000,
+    hordePressureGain: 3,
+    reviveGainMultiplier: 0.88,
+    damageMultiplier: 1.15,
+  },
+} as const satisfies Record<GameDifficulty, {
+  label: string;
+  noteTravelMs: number;
+  timingWindows: TimingWindows;
+  density: number;
+  eighthChance: number;
+  chordChance: number;
+  missDamage: number;
+  allyDownAtMs: number;
+  hordePressureGain: number;
+  reviveGainMultiplier: number;
+  damageMultiplier: number;
+}>;
+
+export const RHYTHM_CRUSADE_CONFIG = {
   health: {
     playerMax: 100,
     enemyMax: 100,
     perfectDamage: 3.8,
     goodDamage: 2.2,
     earlyLateDamage: 1.1,
-    missDamage: 7,
   },
   energy: {
     max: 100,
@@ -64,53 +185,103 @@ export const RHYTHM_CRUSADE_CONFIG = {
   },
 } as const;
 
-export const penitentLanes: PenitentLane[] = [
-  { id: "lightning", key: "A", numberKey: "1", codes: ["KeyA", "Digit1"], label: "Lightning", ability: "Lightning", side: "player" },
-  { id: "burst", key: "S", numberKey: "2", codes: ["KeyS", "Digit2"], label: "Burst", ability: "Burst Shockwave", side: "player" },
-  { id: "shield", key: "D", numberKey: "3", codes: ["KeyD", "Digit3"], label: "Shield", ability: "Shield", side: "player" },
-  { id: "flame", key: "J", numberKey: "4", codes: ["KeyJ", "Digit4"], label: "Flame", ability: "Flame", side: "enemy" },
-  { id: "skull", key: "K", numberKey: "5", codes: ["KeyK", "Digit5"], label: "Skull", ability: "Demon Skull", side: "enemy" },
-  { id: "meteor", key: "L", numberKey: "6", codes: ["KeyL", "Digit6"], label: "Meteor", ability: "Meteor", side: "enemy" },
-];
-
-const beatMs = 60000 / RHYTHM_CRUSADE_CONFIG.bpm;
-
-const rhythmCrusadePattern: Array<[lane: number, beat: number, phrase?: PenitentNote["phrase"]]> = [
-  [0, 0], [1, 1], [2, 2], [0, 3],
-  [3, 4], [4, 5], [5, 6], [3, 7],
-  [0, 8], [2, 8.5], [1, 9], [3, 10], [5, 10.5], [4, 11],
-  [0, 12], [1, 13], [4, 14], [5, 15],
-  [2, 16], [0, 17], [3, 18], [5, 19],
-  [1, 20], [2, 20.5], [4, 21], [3, 22], [5, 22.5], [0, 23],
-  [0, 24, "revive"], [1, 25, "revive"], [2, 26, "revive"], [3, 27, "revive"],
-  [4, 28, "revive"], [5, 29, "revive"], [2, 30, "revive"], [3, 31, "revive"],
-  [0, 32, "revive"], [4, 32.5, "revive"], [1, 33, "revive"], [5, 33.5, "revive"],
-  [2, 34, "revive"], [3, 35, "revive"], [0, 36], [5, 37],
-  [1, 38], [4, 39], [2, 40], [3, 41],
-  [0, 42, "wrath"], [3, 42.5, "wrath"], [1, 43, "wrath"], [4, 43.5, "wrath"],
-  [2, 44, "wrath"], [5, 44.5, "wrath"], [0, 46], [1, 47], [2, 48],
-  [3, 49], [4, 50], [5, 51], [0, 52, "coda"], [2, 52.5, "coda"],
-  [3, 53, "coda"], [5, 53.5, "coda"], [1, 55, "coda"], [4, 56, "coda"],
-  [0, 58, "coda"], [5, 59, "coda"], [2, 60, "coda"], [3, 61, "coda"],
-  [1, 62, "coda"], [4, 62.5, "coda"], [0, 64, "coda"], [5, 64, "coda"],
-];
-
-function buildNotes(): PenitentNote[] {
-  const startMs = 1800;
-  return rhythmCrusadePattern.map(([lane, beat, phrase = beat < 24 ? "march" : "wrath"], index) => ({
-    id: `rhythm-crusade-${index}`,
-    lane,
-    time: Math.round(startMs + beat * beatMs),
-    phrase,
-  }));
+function hashSeed(seed: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
 }
 
-export const firstCanticle: PenitentBeatmap = {
-  id: "rhythm-crusade",
-  title: "Penitent 2: Rhythm Crusade",
-  encounter: "Infernal March",
-  bpm: RHYTHM_CRUSADE_CONFIG.bpm,
-  durationMs: RHYTHM_CRUSADE_CONFIG.songDurationMs,
-  travelMs: RHYTHM_CRUSADE_CONFIG.noteTravelMs,
-  notes: buildNotes(),
-};
+function seededRandom(seed: string) {
+  let state = hashSeed(seed) || 1;
+  return () => {
+    state = Math.imul(1664525, state) + 1013904223;
+    return (state >>> 0) / 4294967296;
+  };
+}
+
+function pickPhrase(beat: number, totalBeats: number): PenitentNote["phrase"] {
+  if (beat > totalBeats - 16) return "coda";
+  if (beat >= 24 && beat <= 38) return "revive";
+  return beat > totalBeats * 0.55 ? "wrath" : "march";
+}
+
+function mirrorLane(lane: number) {
+  if (lane < 3) return lane + 3;
+  return lane - 3;
+}
+
+export function getPenitentSong(songId: string) {
+  return PENITENT_SONGS.find((song) => song.id === songId) ?? PENITENT_SONGS[0];
+}
+
+export function generatePenitentBeatmap({
+  songId,
+  difficulty,
+  seed,
+}: {
+  songId: string;
+  difficulty: GameDifficulty;
+  seed: string;
+}): PenitentBeatmap {
+  const song = getPenitentSong(songId);
+  const config = DIFFICULTY_CONFIG[difficulty];
+  const random = seededRandom(`${song.id}:${difficulty}:${seed}`);
+  const beatMs = 60000 / song.bpm;
+  const startMs = 1800;
+  const endBeat = Math.floor((song.durationMs - 3600) / beatMs);
+  const notes: PenitentNote[] = [];
+  let noteIndex = 0;
+
+  for (let beat = 0; beat < endBeat; beat += 4) {
+    const motif = song.motifs[Math.floor(random() * song.motifs.length)] ?? song.motifs[0];
+    motif.forEach((lane, step) => {
+      const beatOffset = step * 0.5;
+      const absoluteBeat = beat + beatOffset;
+      const isDownbeat = step % 2 === 0;
+      if (!isDownbeat && random() > config.eighthChance) return;
+      if (random() > config.density) return;
+
+      const time = Math.round(startMs + absoluteBeat * beatMs);
+      const phrase = pickPhrase(absoluteBeat, endBeat);
+      notes.push({
+        id: `${song.id}-${difficulty}-${seed}-${noteIndex}`,
+        lane,
+        time,
+        phrase,
+      });
+      noteIndex += 1;
+
+      if (config.chordChance > 0 && isDownbeat && random() < config.chordChance) {
+        notes.push({
+          id: `${song.id}-${difficulty}-${seed}-${noteIndex}`,
+          lane: mirrorLane(lane),
+          time,
+          phrase,
+          chordId: `${song.id}-${difficulty}-${seed}-chord-${noteIndex}`,
+        });
+        noteIndex += 1;
+      }
+    });
+  }
+
+  return {
+    id: song.id,
+    title: song.title,
+    encounter: song.encounter,
+    bpm: song.bpm,
+    durationMs: song.durationMs,
+    travelMs: config.noteTravelMs,
+    difficulty,
+    seed,
+    notes: notes.sort((a, b) => a.time - b.time || a.lane - b.lane),
+  };
+}
+
+export const firstCanticle = generatePenitentBeatmap({
+  songId: PENITENT_SONGS[0].id,
+  difficulty: "medium",
+  seed: "default",
+});

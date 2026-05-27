@@ -1,0 +1,430 @@
+{
+  "source": "/mnt/data/image.png",
+  "source_dimensions": {
+    "width": 1672,
+    "height": 941
+  },
+  "note": "First-pass rectangular crops extracted from the flat mockup image. They preserve original artwork/background within each crop; these are not clean vector layers.",
+  "assets": [
+    {
+      "file": "01_top_left_p1_label.png",
+      "description": "Top-left P1 / crusader label and status diamonds",
+      "crop_box_xyxy": [
+        0,
+        0,
+        190,
+        150
+      ],
+      "size": {
+        "width": 190,
+        "height": 150
+      }
+    },
+    {
+      "file": "02_top_right_p2_label.png",
+      "description": "Top-right P2 / crusader label and status diamonds",
+      "crop_box_xyxy": [
+        1475,
+        0,
+        1672,
+        150
+      ],
+      "size": {
+        "width": 197,
+        "height": 150
+      }
+    },
+    {
+      "file": "03_left_crusader_keyboard.png",
+      "description": "Left crusader performer with keyboard/synth and blue lightning",
+      "crop_box_xyxy": [
+        20,
+        145,
+        390,
+        500
+      ],
+      "size": {
+        "width": 370,
+        "height": 355
+      }
+    },
+    {
+      "file": "04_right_crusader_guitar.png",
+      "description": "Right crusader performer with guitar/bass and blue lightning",
+      "crop_box_xyxy": [
+        1270,
+        145,
+        1605,
+        500
+      ],
+      "size": {
+        "width": 335,
+        "height": 355
+      }
+    },
+    {
+      "file": "05_left_mountain_with_crusader.png",
+      "description": "Left mountain peak with crusader and instrument",
+      "crop_box_xyxy": [
+        0,
+        245,
+        580,
+        870
+      ],
+      "size": {
+        "width": 580,
+        "height": 625
+      }
+    },
+    {
+      "file": "06_right_mountain_with_crusader.png",
+      "description": "Right mountain peak with crusader and instrument",
+      "crop_box_xyxy": [
+        1100,
+        245,
+        1672,
+        870
+      ],
+      "size": {
+        "width": 572,
+        "height": 625
+      }
+    },
+    {
+      "file": "07_left_mountain_base.png",
+      "description": "Left rocky mountain/base area",
+      "crop_box_xyxy": [
+        0,
+        390,
+        565,
+        865
+      ],
+      "size": {
+        "width": 565,
+        "height": 475
+      }
+    },
+    {
+      "file": "08_right_mountain_base.png",
+      "description": "Right rocky mountain/base area",
+      "crop_box_xyxy": [
+        1110,
+        380,
+        1672,
+        865
+      ],
+      "size": {
+        "width": 562,
+        "height": 485
+      }
+    },
+    {
+      "file": "09_glowing_heart.png",
+      "description": "Central beating heart with halo and heartbeat waveform",
+      "crop_box_xyxy": [
+        590,
+        0,
+        1090,
+        330
+      ],
+      "size": {
+        "width": 500,
+        "height": 330
+      }
+    },
+    {
+      "file": "10_battlefield_demon_army.png",
+      "description": "Middle battlefield valley with demon horde, flames, and volcano",
+      "crop_box_xyxy": [
+        280,
+        300,
+        1390,
+        640
+      ],
+      "size": {
+        "width": 1110,
+        "height": 340
+      }
+    },
+    {
+      "file": "11_center_volcano_and_horde.png",
+      "description": "Volcano, central demon horde, tridents, flames",
+      "crop_box_xyxy": [
+        820,
+        310,
+        1210,
+        610
+      ],
+      "size": {
+        "width": 390,
+        "height": 300
+      }
+    },
+    {
+      "file": "12_large_left_dragon.png",
+      "description": "Large flying dragon at upper left",
+      "crop_box_xyxy": [
+        110,
+        20,
+        430,
+        220
+      ],
+      "size": {
+        "width": 320,
+        "height": 200
+      }
+    },
+    {
+      "file": "13_large_right_dragon.png",
+      "description": "Large flying dragon at upper right",
+      "crop_box_xyxy": [
+        1160,
+        10,
+        1455,
+        225
+      ],
+      "size": {
+        "width": 295,
+        "height": 215
+      }
+    },
+    {
+      "file": "14_small_left_dragon.png",
+      "description": "Small flying demon/dragon at left side",
+      "crop_box_xyxy": [
+        0,
+        225,
+        150,
+        360
+      ],
+      "size": {
+        "width": 150,
+        "height": 135
+      }
+    },
+    {
+      "file": "15_small_midleft_dragon.png",
+      "description": "Small flying dragon above the battlefield",
+      "crop_box_xyxy": [
+        465,
+        240,
+        615,
+        355
+      ],
+      "size": {
+        "width": 150,
+        "height": 115
+      }
+    },
+    {
+      "file": "16_small_topright_dragon.png",
+      "description": "Small flying dragon at upper right",
+      "crop_box_xyxy": [
+        1360,
+        70,
+        1545,
+        190
+      ],
+      "size": {
+        "width": 185,
+        "height": 120
+      }
+    },
+    {
+      "file": "17_small_right_dragon.png",
+      "description": "Small flying demon/dragon at right side",
+      "crop_box_xyxy": [
+        1510,
+        225,
+        1665,
+        350
+      ],
+      "size": {
+        "width": 155,
+        "height": 125
+      }
+    },
+    {
+      "file": "18_full_bottom_hud.png",
+      "description": "Complete bottom HUD: rhythm lane, abilities, status bars, song timer",
+      "crop_box_xyxy": [
+        0,
+        525,
+        1672,
+        941
+      ],
+      "size": {
+        "width": 1672,
+        "height": 416
+      }
+    },
+    {
+      "file": "19_central_rhythm_panel.png",
+      "description": "Central rhythm panel with timeline, hit marker, combo, ability row",
+      "crop_box_xyxy": [
+        410,
+        535,
+        1260,
+        875
+      ],
+      "size": {
+        "width": 850,
+        "height": 340
+      }
+    },
+    {
+      "file": "20_rhythm_note_lane.png",
+      "description": "Rhythm note lane and timing marker",
+      "crop_box_xyxy": [
+        455,
+        575,
+        1225,
+        690
+      ],
+      "size": {
+        "width": 770,
+        "height": 115
+      }
+    },
+    {
+      "file": "21_combo_feedback.png",
+      "description": "Perfect / combo counter area",
+      "crop_box_xyxy": [
+        715,
+        680,
+        950,
+        840
+      ],
+      "size": {
+        "width": 235,
+        "height": 160
+      }
+    },
+    {
+      "file": "22_left_player_status_hud.png",
+      "description": "Left player crest plus health and energy bars",
+      "crop_box_xyxy": [
+        0,
+        690,
+        420,
+        930
+      ],
+      "size": {
+        "width": 420,
+        "height": 240
+      }
+    },
+    {
+      "file": "23_right_player_status_hud.png",
+      "description": "Right player crest plus health and energy bars",
+      "crop_box_xyxy": [
+        1235,
+        690,
+        1672,
+        930
+      ],
+      "size": {
+        "width": 437,
+        "height": 240
+      }
+    },
+    {
+      "file": "24_song_progress_bar.png",
+      "description": "Infernal March title and song progress/timer",
+      "crop_box_xyxy": [
+        455,
+        825,
+        1230,
+        940
+      ],
+      "size": {
+        "width": 775,
+        "height": 115
+      }
+    },
+    {
+      "file": "25_ability_1_lightning.png",
+      "description": "Ability 1: blue lightning icon",
+      "crop_box_xyxy": [
+        425,
+        705,
+        535,
+        850
+      ],
+      "size": {
+        "width": 110,
+        "height": 145
+      }
+    },
+    {
+      "file": "26_ability_2_burst.png",
+      "description": "Ability 2: blue burst/explosion icon",
+      "crop_box_xyxy": [
+        540,
+        705,
+        650,
+        850
+      ],
+      "size": {
+        "width": 110,
+        "height": 145
+      }
+    },
+    {
+      "file": "27_ability_3_shield.png",
+      "description": "Ability 3: blue shield icon",
+      "crop_box_xyxy": [
+        655,
+        705,
+        770,
+        850
+      ],
+      "size": {
+        "width": 115,
+        "height": 145
+      }
+    },
+    {
+      "file": "28_ability_4_fire.png",
+      "description": "Ability 4: orange fire icon",
+      "crop_box_xyxy": [
+        910,
+        705,
+        1020,
+        850
+      ],
+      "size": {
+        "width": 110,
+        "height": 145
+      }
+    },
+    {
+      "file": "29_ability_5_demon.png",
+      "description": "Ability 5: orange demon/skull icon",
+      "crop_box_xyxy": [
+        1025,
+        705,
+        1135,
+        850
+      ],
+      "size": {
+        "width": 110,
+        "height": 145
+      }
+    },
+    {
+      "file": "30_ability_6_meteor.png",
+      "description": "Ability 6: orange meteor/fireball icon",
+      "crop_box_xyxy": [
+        1140,
+        705,
+        1250,
+        850
+      ],
+      "size": {
+        "width": 110,
+        "height": 145
+      }
+    }
+  ]
+}

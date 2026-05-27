@@ -1410,6 +1410,621 @@ main, section { max-width: 100%; }
     url("/pntnt2/assets/pntnt2_reference_resurrection.png") center / cover no-repeat;
 }
 
+/* Penitent 2 asset-driven rhythm battle rebuild */
+
+.rhythm-crusade-shell--asset {
+  --asset-blue: #4edcff;
+  --asset-orange: #ff792f;
+  --asset-gold: #f2bd54;
+  --asset-gold-bright: #ffe08c;
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 211, 97, 0.28), transparent 25rem),
+    linear-gradient(115deg, rgba(12, 73, 82, 0.34), transparent 42%),
+    linear-gradient(245deg, rgba(112, 31, 12, 0.42), transparent 43%),
+    #090704;
+}
+
+.rhythm-crusade-shell--asset .rhythm-crusade-stage {
+  background:
+    radial-gradient(circle at 50% 14%, rgba(255, 218, 111, 0.22), transparent 18%),
+    linear-gradient(180deg, rgba(94, 91, 44, 0.86), rgba(38, 22, 8, 0.95)),
+    url("/pntnt2/assets/parchment.png") center / cover no-repeat;
+}
+
+.rhythm-crusade-shell--asset .rhythm-crusade-stage::before {
+  opacity: 0.42;
+  mix-blend-mode: multiply;
+}
+
+.rhythm-crusade-shell--asset .rhythm-crusade-stage::after {
+  background:
+    radial-gradient(circle at 50% 13%, transparent 0 27%, rgba(8, 7, 4, 0.14) 46%, rgba(7, 5, 4, 0.44) 100%),
+    linear-gradient(90deg, rgba(3, 6, 7, 0.22), transparent 31%, transparent 69%, rgba(42, 9, 4, 0.24));
+}
+
+.rhythm-asset-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.rhythm-asset {
+  position: absolute;
+  display: block;
+  max-width: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.rhythm-asset-cloud {
+  z-index: 1;
+  opacity: 0.84;
+  filter: drop-shadow(0 3px 0 rgba(46, 25, 8, 0.22));
+  animation: rhythm-asset-drift 8s ease-in-out infinite;
+}
+
+.rhythm-asset-cloud--wide {
+  top: 9%;
+  left: 7%;
+  width: 18%;
+}
+
+.rhythm-asset-cloud--small {
+  top: 25%;
+  left: 35%;
+  width: 8%;
+  animation-delay: -2s;
+}
+
+.rhythm-asset-cloud--right {
+  top: 16%;
+  right: 8%;
+  width: 11%;
+  animation-delay: -4s;
+}
+
+.rhythm-asset-battlefield {
+  right: 19%;
+  bottom: 31%;
+  left: 19%;
+  z-index: 2;
+  width: 62%;
+  height: 24%;
+  object-fit: fill;
+  opacity: 0.92;
+  filter: saturate(1.04) contrast(1.03) drop-shadow(0 5px 0 rgba(21, 8, 3, 0.32));
+}
+
+.rhythm-asset-volcano {
+  bottom: 47%;
+  left: 55%;
+  z-index: 3;
+  width: 8.5%;
+  opacity: 0.94;
+  transform: translateX(-50%);
+  animation: rhythm-volcano-smoke 2.8s ease-in-out infinite;
+}
+
+.rhythm-asset-mountain {
+  bottom: -7%;
+  z-index: 3;
+  width: 42%;
+  opacity: 0.94;
+  filter: saturate(0.94) contrast(1.08) drop-shadow(0 8px 0 rgba(11, 7, 3, 0.38));
+}
+
+.rhythm-asset-mountain--left {
+  left: -6%;
+}
+
+.rhythm-asset-mountain--right {
+  right: -6%;
+}
+
+.rhythm-asset-dragon {
+  top: var(--actor-y);
+  left: var(--actor-x);
+  z-index: 4;
+  width: clamp(70px, 10vw, 190px);
+  opacity: 0.94;
+  transform: translate(-50%, -50%) scale(var(--actor-scale));
+  filter: drop-shadow(0 3px 0 rgba(31, 11, 3, 0.58)) drop-shadow(0 0 18px rgba(223, 90, 24, 0.22));
+  animation: rhythm-dragon-hover 2.5s ease-in-out infinite;
+  animation-delay: var(--actor-delay);
+}
+
+.rhythm-asset-dragon--small-left,
+.rhythm-asset-dragon--small-mid,
+.rhythm-asset-dragon--low-right {
+  width: clamp(42px, 5vw, 96px);
+}
+
+.rhythm-asset-demon {
+  top: var(--actor-y);
+  left: var(--actor-x);
+  z-index: 5;
+  width: clamp(35px, 4.2vw, 82px);
+  opacity: 0.95;
+  transform: translate(-50%, -50%) scale(var(--actor-scale));
+  filter: drop-shadow(0 3px 0 rgba(34, 10, 3, 0.6)) drop-shadow(0 0 18px rgba(229, 77, 21, 0.2));
+  animation: rhythm-demon-advance 1.45s ease-in-out infinite;
+  animation-delay: var(--actor-delay);
+}
+
+.rhythm-asset-demon--hand {
+  width: clamp(22px, 2.6vw, 52px);
+}
+
+.rhythm-crusade-shell.is-impact-perfect .rhythm-asset-demon {
+  animation: rhythm-demon-pulverize 0.5s ease-out both;
+}
+
+.rhythm-crusade-shell.is-impact-good .rhythm-asset-demon {
+  animation: rhythm-demon-stagger 0.34s ease-out both;
+}
+
+.rhythm-crusade-shell.is-impact-miss .rhythm-asset-demon {
+  animation: rhythm-demon-surge 0.34s ease-out both;
+}
+
+.rhythm-performer {
+  position: absolute;
+  z-index: 7;
+  width: clamp(120px, 14vw, 255px);
+  aspect-ratio: 0.74;
+  filter: drop-shadow(0 7px 0 rgba(18, 9, 2, 0.5)) drop-shadow(0 0 22px rgba(238, 186, 80, 0.15));
+  transform-origin: 50% 100%;
+}
+
+.rhythm-performer--left {
+  top: 23%;
+  left: 10%;
+}
+
+.rhythm-performer--right {
+  top: 23%;
+  right: 8%;
+}
+
+.rhythm-performer__body,
+.rhythm-performer__instrument {
+  position: absolute;
+  display: block;
+  max-width: none;
+  pointer-events: none;
+}
+
+.rhythm-performer__body {
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.rhythm-performer__instrument {
+  z-index: 2;
+  transform-origin: 50% 55%;
+}
+
+.rhythm-performer--left .rhythm-performer__instrument {
+  right: 4%;
+  bottom: 14%;
+  width: 86%;
+}
+
+.rhythm-performer--right .rhythm-performer__instrument {
+  right: -4%;
+  bottom: 18%;
+  width: 88%;
+}
+
+.rhythm-performer.is-playing {
+  animation: rhythm-performer-bob 0.46s ease-in-out infinite;
+}
+
+.rhythm-performer.is-playing .rhythm-performer__instrument {
+  animation: rhythm-instrument-strum 0.23s steps(2, end) infinite;
+}
+
+.rhythm-performer.is-fallen {
+  opacity: 0.45;
+  filter: drop-shadow(0 0 26px rgba(164, 225, 232, 0.34));
+  transform: translateY(5%) rotate(-5deg);
+}
+
+.rhythm-asset-lightning {
+  z-index: 8;
+  width: clamp(70px, 11vw, 210px);
+  opacity: 0;
+  filter: drop-shadow(0 0 15px rgba(73, 215, 255, 0.65));
+}
+
+.rhythm-asset-lightning--left {
+  top: 31%;
+  left: 20%;
+  transform: rotate(-13deg);
+}
+
+.rhythm-asset-lightning--right {
+  top: 31%;
+  right: 20%;
+  transform: scaleX(-1) rotate(-13deg);
+}
+
+.rhythm-asset-scene.is-playing .rhythm-asset-lightning {
+  animation: rhythm-lightning-pulse 0.62s ease-out infinite;
+}
+
+.rhythm-asset-fireballs {
+  z-index: 4;
+  width: clamp(56px, 7vw, 135px);
+  opacity: 0.84;
+  filter: drop-shadow(0 0 12px rgba(239, 91, 22, 0.48));
+  animation: rhythm-fireball-cross 2.4s linear infinite;
+}
+
+.rhythm-asset-fireballs--one {
+  top: 28%;
+  left: 42%;
+}
+
+.rhythm-asset-fireballs--two {
+  top: 22%;
+  right: 34%;
+  animation-delay: -1.2s;
+}
+
+.rhythm-asset-heart-aura {
+  position: absolute;
+  top: 7%;
+  left: 50%;
+  z-index: 3;
+  width: clamp(170px, 22vw, 410px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: repeating-conic-gradient(from 0deg, rgba(248, 192, 68, 0.2) 0 3deg, transparent 3deg 10deg);
+  opacity: 0.5;
+  transform: translateX(-50%);
+  filter: blur(0.2px);
+}
+
+.rhythm-sacred-heart--asset {
+  top: clamp(0.72rem, 1.4vw, 1.1rem);
+  width: clamp(160px, 18vw, 330px);
+}
+
+.rhythm-sacred-heart--asset::before {
+  opacity: calc(var(--heart-glow, 0.72) * 0.52);
+}
+
+.rhythm-sacred-heart__waveform {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 1;
+  width: 132%;
+  max-width: none;
+  opacity: 0.9;
+  transform: translate(-50%, -50%);
+  filter: drop-shadow(0 0 14px rgba(255, 211, 91, 0.55));
+}
+
+.rhythm-sacred-heart__frame {
+  position: relative;
+  z-index: 2;
+  width: 42%;
+  max-width: none;
+  image-rendering: auto;
+  filter: drop-shadow(0 0 16px rgba(255, 194, 66, 0.6));
+}
+
+.rhythm-note-highway--asset {
+  right: 25%;
+  left: 25%;
+  background: rgba(8, 7, 5, 0.76);
+}
+
+.rhythm-note-highway--asset > img {
+  position: absolute;
+  inset: -9% -3%;
+  z-index: 0;
+  width: 106%;
+  height: 118%;
+  max-width: none;
+  object-fit: fill;
+  opacity: 0.78;
+  pointer-events: none;
+}
+
+.rhythm-note-highway--asset > *:not(img) {
+  position: relative;
+  z-index: 2;
+}
+
+.rhythm-lane-track--p1 {
+  color: var(--asset-blue);
+}
+
+.rhythm-lane-track--p2 {
+  color: var(--asset-orange);
+}
+
+.rhythm-lane-track--p1::before {
+  right: 50%;
+  left: 0;
+}
+
+.rhythm-lane-track--p2::before {
+  right: 0;
+  left: 50%;
+}
+
+.rhythm-crusade-note--p1 {
+  color: var(--asset-blue);
+  background: linear-gradient(135deg, #dff8ff, #3eb7d4 48%, #154b5c);
+}
+
+.rhythm-crusade-note--p2 {
+  color: var(--asset-orange);
+  background: linear-gradient(135deg, #ffe1a4, #e66f25 48%, #7d1f12);
+}
+
+.rhythm-crusade-note.is-chord {
+  box-shadow:
+    0 0 0 4px rgba(255, 236, 173, 0.3),
+    0 0 26px currentColor,
+    0 8px 18px rgba(0, 0, 0, 0.42);
+}
+
+.rhythm-stat-panel--p1,
+.rhythm-stat-panel--horde {
+  position: relative;
+  grid-template-columns: clamp(58px, 6vw, 110px) minmax(0, 1fr);
+  overflow: hidden;
+}
+
+.rhythm-stat-panel--horde {
+  grid-template-columns: minmax(0, 1fr) clamp(58px, 6vw, 110px);
+}
+
+.rhythm-stat-panel__art {
+  position: absolute;
+  inset: 4% 3%;
+  z-index: 0;
+  width: 94%;
+  height: 92%;
+  max-width: none;
+  object-fit: fill;
+  opacity: 0.26;
+  pointer-events: none;
+}
+
+.rhythm-stat-panel__seal-art {
+  z-index: 2;
+  width: clamp(58px, 6vw, 110px);
+  max-width: 100%;
+  align-self: end;
+  filter: drop-shadow(0 0 18px rgba(0, 0, 0, 0.42));
+}
+
+.rhythm-stat-panel--horde .rhythm-stat-panel__seal-art {
+  order: 2;
+  width: clamp(48px, 5vw, 92px);
+  justify-self: end;
+}
+
+.rhythm-stat-panel--p1 .rhythm-stat-panel__copy,
+.rhythm-stat-panel--horde .rhythm-stat-panel__copy {
+  position: relative;
+  z-index: 2;
+}
+
+.rhythm-stat-panel--horde .rhythm-stat-panel__copy {
+  text-align: right;
+}
+
+.rhythm-meter--p1 i.is-filled {
+  background: var(--asset-blue);
+  box-shadow: 0 0 8px rgba(78, 220, 255, 0.46);
+}
+
+.rhythm-meter--horde i.is-filled {
+  background: var(--asset-orange);
+  box-shadow: 0 0 8px rgba(255, 121, 47, 0.46);
+}
+
+.rhythm-meter--p1-energy i.is-filled,
+.rhythm-meter--horde-energy i.is-filled {
+  background: var(--asset-gold);
+  box-shadow: 0 0 8px rgba(242, 189, 84, 0.48);
+}
+
+.rhythm-ability-card--p1,
+.rhythm-ability-card--p2 {
+  overflow: hidden;
+  background: rgba(8, 7, 5, 0.9);
+}
+
+.rhythm-ability-card--p1 {
+  color: var(--asset-blue);
+}
+
+.rhythm-ability-card--p2 {
+  color: var(--asset-orange);
+}
+
+.rhythm-ability-card img {
+  grid-row: 1 / -1;
+  grid-column: 1;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: fill;
+  opacity: 0.82;
+}
+
+.rhythm-ability-card strong,
+.rhythm-ability-card span,
+.rhythm-ability-card small {
+  position: relative;
+  z-index: 2;
+  grid-column: 1;
+  text-shadow: 0 2px 0 #120804, 0 0 10px rgba(0, 0, 0, 0.55);
+}
+
+.rhythm-crusade-progress {
+  position: relative;
+  overflow: hidden;
+}
+
+.rhythm-crusade-progress > img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  opacity: 0.32;
+  pointer-events: none;
+}
+
+.rhythm-crusade-progress > *:not(img) {
+  position: relative;
+  z-index: 1;
+}
+
+.rhythm-crusade-state--setup {
+  width: min(92%, 540px);
+}
+
+.rhythm-setup-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.42rem;
+}
+
+.rhythm-setup-row button,
+.rhythm-setup-seed button {
+  min-height: 2.25rem;
+  border: 1px solid rgba(242, 189, 84, 0.58);
+  border-radius: 6px;
+  background: rgba(13, 9, 5, 0.92);
+  color: #f8ead1;
+  font-family: inherit;
+  font-size: clamp(0.58rem, 0.78vw, 0.78rem);
+  font-weight: 950;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.rhythm-setup-row button.is-selected,
+.rhythm-setup-seed button:not(:disabled):hover {
+  background: linear-gradient(#ffe39c, #b7661b);
+  color: #1b0d05;
+}
+
+.rhythm-setup-row button:disabled {
+  cursor: default;
+  opacity: 0.78;
+}
+
+.rhythm-setup-seed {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  color: #dcc481;
+  font-size: clamp(0.58rem, 0.74vw, 0.78rem);
+  font-weight: 850;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@keyframes rhythm-asset-drift {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 1.5% -3%;
+  }
+}
+
+@keyframes rhythm-volcano-smoke {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px rgba(93, 48, 16, 0.2));
+  }
+  50% {
+    filter: drop-shadow(0 -9px 12px rgba(118, 105, 77, 0.36));
+  }
+}
+
+@keyframes rhythm-performer-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -3px;
+  }
+}
+
+@keyframes rhythm-instrument-strum {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-5deg);
+  }
+}
+
+@keyframes rhythm-lightning-pulse {
+  0% {
+    opacity: 0;
+    scale: 0.92;
+  }
+  20% {
+    opacity: 0.88;
+  }
+  100% {
+    opacity: 0;
+    scale: 1.1;
+  }
+}
+
+@keyframes rhythm-fireball-cross {
+  0% {
+    opacity: 0;
+    transform: translate(-70px, -35px) rotate(-12deg);
+  }
+  20%,
+  70% {
+    opacity: 0.88;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(85px, 70px) rotate(16deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rhythm-asset,
+  .rhythm-performer,
+  .rhythm-performer__instrument {
+    animation: none !important;
+  }
+
+  .rhythm-asset-lightning,
+  .rhythm-asset-fireballs {
+    opacity: 0 !important;
+  }
+}
+
 .rhythm-battle-hud {
   position: absolute;
   inset: clamp(0.8rem, 1.5vw, 1.5rem) clamp(1rem, 1.7vw, 1.8rem) auto;
@@ -4562,5 +5177,387 @@ main, section { max-width: 100%; }
     min-height: 2.25rem;
     padding: 0.48rem 0.58rem;
     font-size: 0.62rem;
+  }
+}
+
+/* Final Penitent 2 asset overrides: keep the imported art dominant over older prototype HUD rules. */
+.rhythm-crusade-shell--asset .rhythm-performer__body--combined {
+  mix-blend-mode: multiply;
+  filter: saturate(1.08) contrast(1.08) drop-shadow(0 18px 20px rgba(0, 0, 0, 0.55));
+}
+
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+  overflow: hidden;
+  aspect-ratio: 0.78;
+  padding: 0;
+  background: rgba(6, 5, 3, 0.94);
+}
+
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset img,
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset strong,
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset span,
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset small {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset img {
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  opacity: 0.92;
+}
+
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset strong {
+  align-self: end;
+  justify-self: center;
+  margin-bottom: 0.45rem;
+}
+
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset span {
+  align-self: end;
+  justify-self: center;
+  max-width: 82%;
+  margin-bottom: 1.24rem;
+}
+
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset small {
+  align-self: end;
+  justify-self: center;
+  margin-bottom: 0.1rem;
+}
+
+.rhythm-crusade-shell--asset .rhythm-crusade-stage {
+  contain: layout paint style;
+}
+
+.rhythm-crusade-shell--asset .rhythm-ability-card--asset {
+  min-width: 44px;
+  min-height: 44px;
+  touch-action: manipulation;
+  user-select: none;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .rhythm-crusade-shell--asset .rhythm-ability-card--asset:not(:disabled):active {
+    filter: brightness(1.25);
+    transform: translateY(1px) scale(0.98);
+  }
+}
+
+@media (max-width: 900px) {
+  .rhythm-crusade-shell--asset {
+    align-items: start;
+    min-height: 100svh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding:
+      max(0.35rem, env(safe-area-inset-top))
+      max(0.35rem, env(safe-area-inset-right))
+      max(0.65rem, env(safe-area-inset-bottom))
+      max(0.35rem, env(safe-area-inset-left));
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-return {
+    top: max(0.45rem, env(safe-area-inset-top));
+    left: max(0.45rem, env(safe-area-inset-left));
+    max-width: calc(100vw - 1rem);
+    min-height: 2.35rem;
+    padding: 0.52rem 0.72rem;
+    font-size: 0.66rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-stage {
+    width: 100%;
+    min-height: max(760px, calc(100svh - 0.7rem));
+    border-width: 4px;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-battle-hud {
+    top: 3.1rem;
+    right: 0.7rem;
+    left: 0.7rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-battle-hud__side {
+    min-width: 7.1rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-battle-hud__side strong {
+    font-size: clamp(1.12rem, 8vw, 1.65rem);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-battle-hud__side span {
+    max-width: 8.5rem;
+    font-size: clamp(0.54rem, 3.4vw, 0.72rem);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-sacred-heart--asset {
+    top: 4.4rem;
+    width: clamp(132px, 35vw, 170px);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-heart-aura {
+    top: 5.2rem;
+    width: min(62vw, 270px);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-cloud--wide {
+    top: 10%;
+    left: 2%;
+    width: 28%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-cloud--small {
+    top: 22%;
+    left: 38%;
+    width: 13%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-cloud--right {
+    top: 15%;
+    right: 2%;
+    width: 19%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-battlefield {
+    right: 2%;
+    bottom: 42%;
+    left: 2%;
+    width: 96%;
+    height: 16%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-volcano {
+    bottom: 51%;
+    width: 15%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-mountain {
+    bottom: 23%;
+    width: 58%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-mountain--left {
+    left: -17%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-mountain--right {
+    right: -17%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-performer {
+    top: 23%;
+    width: clamp(110px, 29vw, 165px);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-performer--left {
+    left: 3%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-performer--right {
+    right: 3%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-dragon {
+    width: clamp(48px, 16vw, 105px);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-dragon--small-left,
+  .rhythm-crusade-shell--asset .rhythm-asset-dragon--small-mid,
+  .rhythm-crusade-shell--asset .rhythm-asset-dragon--low-right {
+    width: clamp(28px, 10vw, 58px);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-demon {
+    width: clamp(24px, 8vw, 48px);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-note-highway--asset {
+    right: 4%;
+    bottom: 38%;
+    left: 4%;
+    height: 18%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-resurrection-panel {
+    right: 5%;
+    bottom: 30%;
+    left: 5%;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-verdict {
+    right: 4%;
+    bottom: 32.5%;
+    left: auto;
+    width: clamp(76px, 22vw, 104px);
+    min-height: clamp(62px, 16vw, 80px);
+    padding: 0.32rem;
+    transform: none;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-verdict strong {
+    font-size: clamp(1.55rem, 8vw, 2.4rem);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-bottom {
+    right: 2%;
+    bottom: 1.2%;
+    left: 2%;
+    display: grid;
+    grid-template-areas:
+      "command command"
+      "p1 horde";
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
+    height: 31%;
+    gap: 0.36rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-stat-panel--p1 {
+    grid-area: p1;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-command {
+    grid-area: command;
+    min-height: 0;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-stat-panel--horde {
+    grid-area: horde;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-stat-panel--p1,
+  .rhythm-crusade-shell--asset .rhythm-stat-panel--horde {
+    grid-template-columns: minmax(0, 1fr);
+    min-height: 5.5rem;
+    padding: 0.46rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-stat-panel__seal-art {
+    display: none;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-stat-panel--horde .rhythm-stat-panel__copy,
+  .rhythm-crusade-shell--asset .rhythm-stat-panel--p1 .rhythm-stat-panel__copy {
+    text-align: left;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-ability-bar {
+    grid-template-columns: repeat(6, minmax(44px, 1fr));
+    gap: 0.28rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-ability-bar__gap {
+    display: none;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-ability-card--asset {
+    min-height: 4.45rem;
+    aspect-ratio: auto;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-ability-card--asset span {
+    display: none;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-progress {
+    min-height: 2.2rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-message {
+    right: 5%;
+    bottom: 58%;
+    left: 5%;
+    font-size: clamp(0.72rem, 3.4vw, 0.95rem);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-state--setup {
+    width: min(calc(100% - 1rem), 540px);
+    max-height: min(78svh, 600px);
+    overflow: auto;
+    padding: clamp(0.85rem, 3.6vw, 1.3rem);
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+@media (max-width: 560px) {
+  .rhythm-crusade-shell--asset .rhythm-crusade-stage {
+    min-height: max(820px, calc(100svh - 0.7rem));
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-setup-row {
+    grid-template-columns: 1fr;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-setup-row[aria-label="Difficulty selection"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-setup-row button,
+  .rhythm-crusade-shell--asset .rhythm-setup-seed button,
+  .rhythm-crusade-shell--asset .rhythm-crusade-state > button {
+    min-height: 44px;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-ability-bar {
+    gap: 0.22rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-ability-card--asset {
+    min-height: 3.9rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-ability-card--asset small {
+    display: none;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-stat-panel__copy > strong {
+    font-size: clamp(0.78rem, 4.5vw, 1rem);
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-meter div {
+    font-size: 0.46rem;
+  }
+}
+
+@media (max-height: 620px) and (orientation: landscape) {
+  .rhythm-crusade-shell--asset {
+    padding: 0.25rem;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-stage {
+    width: min(100%, calc((100svh - 0.5rem) * 16 / 9), 1200px);
+    min-height: 0;
+    max-height: calc(100svh - 0.5rem);
+    aspect-ratio: 16 / 9;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-crusade-return {
+    transform: scale(0.86);
+    transform-origin: top left;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-sacred-heart--asset {
+    top: 0.7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rhythm-crusade-shell--asset *,
+  .rhythm-crusade-shell--asset *::before,
+  .rhythm-crusade-shell--asset *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .rhythm-crusade-shell--asset .rhythm-asset-dragon,
+  .rhythm-crusade-shell--asset .rhythm-asset-demon {
+    transform: translate(-50%, -50%) scale(var(--actor-scale, 1));
   }
 }
