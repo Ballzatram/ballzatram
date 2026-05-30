@@ -23,19 +23,28 @@ type NoteState = PenitentNote & { state: "pending" | "hit" | "miss"; judgment?: 
 type HitEffect = { id: number; lane: number; judgment: Judgment };
 type ImpactKind = "perfect" | "good" | "miss" | null;
 type ActorLayer = { id: string; src: string; className: string; x: number; y: number; scale: number; delay: number };
+type HordeVisualState = "advancing" | "attacking" | "staggered" | "pulverized" | "retreating" | "resurrectionSurge";
+type HordeActor = ActorLayer & { row: "rear" | "middle" | "front"; mirror?: boolean };
 
 const IS_DEVELOPMENT = process.env.NODE_ENV !== "production";
 const ACTIVE_STATES: GameState[] = ["playing", "allyDown", "resurrection"];
 const laneRows = [17, 30, 43, 57, 70, 83];
 const difficultyOrder: GameDifficulty[] = ["easy", "medium", "penitent"];
 
-const demonActors: ActorLayer[] = [
-  { id: "trident-1", src: penitentAssetPaths.demons.trident, className: "trident", x: 41, y: 54, scale: 0.86, delay: -0.1 },
-  { id: "axe-1", src: penitentAssetPaths.demons.axe, className: "axe", x: 47, y: 58, scale: 0.96, delay: -0.65 },
-  { id: "beast-1", src: penitentAssetPaths.demons.beast, className: "beast", x: 53, y: 56, scale: 1.12, delay: -0.35 },
-  { id: "trident-2", src: penitentAssetPaths.demons.trident, className: "trident", x: 59, y: 58, scale: 0.94, delay: -0.9 },
-  { id: "axe-2", src: penitentAssetPaths.demons.axe, className: "axe", x: 65, y: 55, scale: 0.9, delay: -0.25 },
-  { id: "hand-1", src: penitentAssetPaths.demons.hand, className: "hand", x: 69, y: 62, scale: 0.78, delay: -1.2 },
+const hordeActors: HordeActor[] = [
+  { id: "rear-trident-1", src: penitentAssetPaths.demons.trident, className: "trident", row: "rear", x: 35, y: 42, scale: 0.62, delay: -0.1 },
+  { id: "rear-axe-1", src: penitentAssetPaths.demons.axe, className: "axe", row: "rear", x: 44, y: 44, scale: 0.66, delay: -0.7, mirror: true },
+  { id: "rear-hand-1", src: penitentAssetPaths.demons.hand, className: "hand", row: "rear", x: 52, y: 43, scale: 0.56, delay: -1.1 },
+  { id: "rear-trident-2", src: penitentAssetPaths.demons.trident, className: "trident", row: "rear", x: 61, y: 44, scale: 0.64, delay: -0.35, mirror: true },
+  { id: "rear-beast-1", src: penitentAssetPaths.demons.beast, className: "beast", row: "rear", x: 69, y: 43, scale: 0.7, delay: -1.35 },
+  { id: "mid-axe-1", src: penitentAssetPaths.demons.axe, className: "axe", row: "middle", x: 38, y: 57, scale: 0.8, delay: -0.5 },
+  { id: "mid-trident-1", src: penitentAssetPaths.demons.trident, className: "trident", row: "middle", x: 47, y: 59, scale: 0.84, delay: -0.2, mirror: true },
+  { id: "mid-beast-1", src: penitentAssetPaths.demons.beast, className: "beast", row: "middle", x: 56, y: 58, scale: 0.94, delay: -0.9 },
+  { id: "mid-axe-2", src: penitentAssetPaths.demons.axe, className: "axe", row: "middle", x: 65, y: 59, scale: 0.82, delay: -1.25, mirror: true },
+  { id: "front-trident-1", src: penitentAssetPaths.demons.trident, className: "trident", row: "front", x: 41, y: 73, scale: 1.02, delay: -0.1 },
+  { id: "front-beast-1", src: penitentAssetPaths.demons.beast, className: "beast", row: "front", x: 50, y: 75, scale: 1.18, delay: -0.55 },
+  { id: "front-axe-1", src: penitentAssetPaths.demons.axe, className: "axe", row: "front", x: 59, y: 74, scale: 1.02, delay: -0.85, mirror: true },
+  { id: "front-hand-1", src: penitentAssetPaths.demons.hand, className: "hand", row: "front", x: 68, y: 73, scale: 0.72, delay: -1.2 },
 ];
 
 const dragonActors: ActorLayer[] = [
@@ -66,6 +75,18 @@ function formatTime(ms: number) {
   return `${minutes}:${seconds}`;
 }
 
+function densityLabel(density: number) {
+  if (density >= 0.98) return "Relentless";
+  if (density >= 0.85) return "Marching";
+  return "Merciful";
+}
+
+function difficultySummary(difficulty: GameDifficulty) {
+  if (difficulty === "easy") return "Wide timing, slower notes";
+  if (difficulty === "penitent") return "Tight timing, denser chords";
+  return "Balanced battle tempo";
+}
+
 function makeRunSeed() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
@@ -85,6 +106,50 @@ function judgmentLabel(judgment: Judgment) {
   if (judgment === "early") return "EARLY";
   if (judgment === "late") return "LATE";
   return "MISS";
+}
+
+function hordeStateLabel(state: HordeVisualState) {
+  if (state === "attacking") return "Attacking";
+  if (state === "staggered") return "Staggered";
+  if (state === "pulverized") return "Pulverized";
+  if (state === "retreating") return "Retreating";
+  if (state === "resurrectionSurge") return "Swarming";
+  return "Advancing";
+}
+
+function hordePressureClass(enemyEnergy: number) {
+  if (enemyEnergy >= 84) return "is-pressure-critical";
+  if (enemyEnergy >= 62) return "is-pressure-high";
+  if (enemyEnergy <= 24) return "is-pressure-low";
+  return "is-pressure-mid";
+}
+
+function getHordeVisualState({
+  combo,
+  enemyEnergy,
+  enemyHealth,
+  impactKind,
+  resurrectionActive,
+}: {
+  combo: number;
+  enemyEnergy: number;
+  enemyHealth: number;
+  impactKind: ImpactKind;
+  resurrectionActive: boolean;
+}): HordeVisualState {
+  if (impactKind === "miss") return "attacking";
+  if (impactKind === "perfect" || (combo >= 8 && combo % 8 === 0)) return "pulverized";
+  if (impactKind === "good") return "staggered";
+  if (resurrectionActive) return "resurrectionSurge";
+  if (enemyHealth <= 28 || enemyEnergy <= 18) return "retreating";
+  return "advancing";
+}
+
+function impactHoldMs(kind: ImpactKind) {
+  if (kind === "perfect") return 620;
+  if (kind === "good") return 380;
+  if (kind === "miss") return 520;
+  return 240;
 }
 
 function scoreFor(judgment: Exclude<Judgment, "miss">) {
@@ -213,12 +278,15 @@ export function RhythmCrusadeGame() {
   const afterbeatPulse = beatPhase > 0.23 && beatPhase < 0.4 ? Math.max(0, 1 - Math.abs(beatPhase - 0.3) / 0.08) * 0.62 : 0;
   const heartPulse = isActiveState(status) && !isPaused ? clamp(downbeatPulse + afterbeatPulse, 0, 1) : 0.22;
   const heartFrame = clamp(Math.round(heartPulse * (penitentAssetPaths.heart.frames.length - 1)), 0, penitentAssetPaths.heart.frames.length - 1);
+  const hordeVisualState = getHordeVisualState({ combo, enemyEnergy, enemyHealth, impactKind, resurrectionActive });
 
   const clearImpact = useCallback((kind: ImpactKind) => {
     window.setTimeout(() => {
       setImpactKind((current) => (current === kind ? null : current));
+    }, impactHoldMs(kind));
+    window.setTimeout(() => {
       setScreenShake(false);
-    }, kind === "perfect" ? 220 : 160);
+    }, 170);
   }, []);
 
   const triggerImpact = useCallback((kind: ImpactKind) => {
@@ -533,7 +601,14 @@ export function RhythmCrusadeGame() {
 
       <section className="rhythm-crusade-stage" aria-label="Penitent 2 Rhythm Crusade battlefield">
         <BattleHud resurrectionActive={resurrectionActive} />
-        <AssetBattlefield active={gameActive} heartFrame={heartFrame} resurrectionActive={resurrectionActive} />
+        <AssetBattlefield
+          active={gameActive}
+          combo={combo}
+          enemyEnergy={enemyEnergy}
+          heartFrame={heartFrame}
+          hordeState={hordeVisualState}
+          resurrectionActive={resurrectionActive}
+        />
         <SacredHeartAsset frame={heartFrame} pulse={heartPulse} resurrectionActive={resurrectionActive} />
         {resurrectionActive ? <div className="rhythm-fallen-ally" aria-hidden="true"><span /><b>+ DOWN +</b></div> : null}
 
@@ -585,7 +660,7 @@ export function RhythmCrusadeGame() {
           <HealthEnergyPanel
             side="horde"
             title="Demon Horde"
-            status={enemyHealth < 34 ? "Pulverized" : resurrectionActive ? "Swarming" : "Advancing"}
+            status={hordeStateLabel(hordeVisualState)}
             health={enemyHealth}
             energy={enemyEnergy}
             healthLabel="Horde"
@@ -651,40 +726,33 @@ function BattleHud({ resurrectionActive }: { resurrectionActive: boolean }) {
 
 function AssetBattlefield({
   active,
+  combo,
+  enemyEnergy,
   heartFrame,
+  hordeState,
   resurrectionActive,
 }: {
   active: boolean;
+  combo: number;
+  enemyEnergy: number;
   heartFrame: number;
+  hordeState: HordeVisualState;
   resurrectionActive: boolean;
 }) {
+  const pressure = clamp(enemyEnergy, 0, 100);
   return (
     <div className={`rhythm-asset-scene ${active ? "is-playing" : ""} ${resurrectionActive ? "is-resurrection" : ""}`} aria-hidden="true">
       <img className="rhythm-asset rhythm-asset-cloud rhythm-asset-cloud--wide" src={penitentAssetPaths.scene.cloudWide} alt="" />
       <img className="rhythm-asset rhythm-asset-cloud rhythm-asset-cloud--small" src={penitentAssetPaths.scene.cloudSmall} alt="" />
       <img className="rhythm-asset rhythm-asset-cloud rhythm-asset-cloud--right" src={penitentAssetPaths.scene.cloudRight} alt="" />
-      <img className="rhythm-asset rhythm-asset-battlefield" src={penitentAssetPaths.scene.battlefield} alt="" />
       <img className="rhythm-asset rhythm-asset-volcano" src={penitentAssetPaths.scene.volcano} alt="" />
       <img className="rhythm-asset rhythm-asset-mountain rhythm-asset-mountain--left" src={penitentAssetPaths.scene.mountainLeft} alt="" />
       <img className="rhythm-asset rhythm-asset-mountain rhythm-asset-mountain--right" src={penitentAssetPaths.scene.mountainRight} alt="" />
+      <HordeLayer combo={combo} pressure={pressure} state={hordeState} />
       {dragonActors.map((actor) => (
         <img
           key={actor.id}
           className={`rhythm-asset rhythm-asset-dragon rhythm-asset-dragon--${actor.className}`}
-          src={actor.src}
-          alt=""
-          style={{
-            "--actor-x": `${actor.x}%`,
-            "--actor-y": `${actor.y}%`,
-            "--actor-scale": actor.scale,
-            "--actor-delay": `${actor.delay}s`,
-          } as CSSProperties}
-        />
-      ))}
-      {demonActors.map((actor) => (
-        <img
-          key={actor.id}
-          className={`rhythm-asset rhythm-asset-demon rhythm-asset-demon--${actor.className}`}
           src={actor.src}
           alt=""
           style={{
@@ -702,6 +770,48 @@ function AssetBattlefield({
       <img className="rhythm-asset rhythm-asset-fireballs rhythm-asset-fireballs--one" src={penitentAssetPaths.scene.fireballs} alt="" />
       <img className="rhythm-asset rhythm-asset-fireballs rhythm-asset-fireballs--two" src={penitentAssetPaths.scene.fireballs} alt="" />
       <span className="rhythm-asset-heart-aura" data-frame={heartFrame} />
+    </div>
+  );
+}
+
+function HordeLayer({ combo, pressure, state }: { combo: number; pressure: number; state: HordeVisualState }) {
+  const comboTier = clamp(Math.floor(combo / 8), 0, 5);
+  return (
+    <div
+      className={`rhythm-horde-layer rhythm-horde-layer--${state} ${hordePressureClass(pressure)}`}
+      style={{
+        "--horde-pressure": pressure,
+        "--horde-advance": `${pressure * -0.12}%`,
+        "--combo-tier": comboTier,
+      } as CSSProperties}
+    >
+      <img className="rhythm-asset rhythm-asset-battlefield" src={penitentAssetPaths.scene.battlefield} alt="" />
+      <span className="rhythm-horde-dust rhythm-horde-dust--rear" />
+      <span className="rhythm-horde-dust rhythm-horde-dust--front" />
+      <span className="rhythm-horde-blast rhythm-horde-blast--left" />
+      <span className="rhythm-horde-blast rhythm-horde-blast--right" />
+      <span className="rhythm-horde-lightning rhythm-horde-lightning--left" />
+      <span className="rhythm-horde-lightning rhythm-horde-lightning--right" />
+      {hordeActors.map((actor) => (
+        <img
+          key={actor.id}
+          className={[
+            "rhythm-asset",
+            "rhythm-horde-demon",
+            `rhythm-horde-demon--${actor.className}`,
+            `rhythm-horde-demon--${actor.row}`,
+            actor.mirror ? "is-mirrored" : "",
+          ].filter(Boolean).join(" ")}
+          src={actor.src}
+          alt=""
+          style={{
+            "--actor-x": `${actor.x}%`,
+            "--actor-y": `${actor.y}%`,
+            "--actor-scale": actor.scale,
+            "--actor-delay": `${actor.delay}s`,
+          } as CSSProperties}
+        />
+      ))}
     </div>
   );
 }
@@ -800,12 +910,20 @@ function RhythmLane({
   onLaneHit: (lane: number) => void;
 }) {
   const y = laneRows[index] ?? 50;
+  const hit = useCallback(() => onLaneHit(index), [index, onLaneHit]);
+  const hitTouch = useCallback((event: PointerEvent<HTMLButtonElement>) => {
+    if (event.pointerType === "mouse") return;
+    event.preventDefault();
+    onLaneHit(index);
+  }, [index, onLaneHit]);
+
   return (
     <button
       type="button"
       className={`rhythm-lane-track rhythm-lane-track--${lane.side} ${active ? "is-hit" : ""}`}
       style={{ "--lane-y": `${y}%` } as CSSProperties}
-      onClick={() => onLaneHit(index)}
+      onClick={hit}
+      onPointerDown={hitTouch}
       aria-label={`${lane.ability} lane ${lane.key} or ${lane.numberKey}`}
     >
       <span>{lane.key}</span>
@@ -957,49 +1075,76 @@ function SetupOverlay({
   onStart: () => void;
 }) {
   const settingsLocked = isPaused;
+  const selectedSong = getPenitentSong(songId);
+  const selectedConfig = DIFFICULTY_CONFIG[difficulty];
+  const heroText = isPaused
+    ? "The page holds."
+    : status === "ready"
+      ? "The horde waits in the margin."
+      : status === "victory"
+        ? "Victory inscribed."
+        : "The horde overruns the page.";
+
   return (
     <div className={`rhythm-crusade-state rhythm-crusade-state--setup ${isPaused ? "is-pause" : ""}`}>
-      <p>
-        {isPaused
-          ? "The page holds."
-          : status === "ready"
-            ? "The horde waits in the margin."
-            : status === "victory"
-              ? "Victory inscribed."
-              : "The horde overruns the page."}
-      </p>
-      <div className="rhythm-setup-row" aria-label="Song selection">
-        {PENITENT_SONGS.map((song) => (
-          <button
-            key={song.id}
-            type="button"
-            className={song.id === songId ? "is-selected" : ""}
-            disabled={settingsLocked}
-            onClick={() => onSongChange(song.id)}
-          >
-            {song.title}
-          </button>
-        ))}
+      <div className="rhythm-setup-header">
+        <span>Penitent 2</span>
+        <p>{heroText}</p>
+        <small>{isPaused ? "Resume the rite when ready." : "Choose the canticle, difficulty, and seed."}</small>
       </div>
-      <div className="rhythm-setup-row" aria-label="Difficulty selection">
-        {difficultyOrder.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className={option === difficulty ? "is-selected" : ""}
-            disabled={settingsLocked}
-            onClick={() => onDifficultyChange(option)}
-          >
-            {DIFFICULTY_CONFIG[option].label}
-          </button>
-        ))}
+
+      <div className="rhythm-setup-section rhythm-setup-section--songs">
+        <span className="rhythm-setup-kicker">Song</span>
+        <div className="rhythm-setup-row" aria-label="Song selection">
+          {PENITENT_SONGS.map((song) => (
+            <button
+              key={song.id}
+              type="button"
+              className={song.id === songId ? "is-selected" : ""}
+              aria-pressed={song.id === songId}
+              disabled={settingsLocked}
+              onClick={() => onSongChange(song.id)}
+            >
+              <strong>{song.title}</strong>
+              <small>{song.bpm} BPM</small>
+            </button>
+          ))}
+        </div>
       </div>
+
+      <div className="rhythm-setup-section rhythm-setup-section--difficulty">
+        <span className="rhythm-setup-kicker">Difficulty</span>
+        <div className="rhythm-setup-row" aria-label="Difficulty selection">
+          {difficultyOrder.map((option) => (
+            <button
+              key={option}
+              type="button"
+              className={option === difficulty ? "is-selected" : ""}
+              aria-pressed={option === difficulty}
+              disabled={settingsLocked}
+              onClick={() => onDifficultyChange(option)}
+            >
+              <strong>{DIFFICULTY_CONFIG[option].label}</strong>
+              <small>{difficultySummary(option)}</small>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="rhythm-setup-ledger" aria-label="Current run details">
+        <span><b>{beatmap.notes.length}</b> notes</span>
+        <span><b>{selectedSong.bpm}</b> BPM</span>
+        <span><b>{formatTime(selectedSong.durationMs)}</b> duration</span>
+        <span><b>{selectedConfig.timingWindows.perfect}ms</b> perfect</span>
+        <span><b>{densityLabel(selectedConfig.density)}</b> density</span>
+      </div>
+
       <div className="rhythm-setup-seed">
-        <span>{beatmap.notes.length} notes</span>
-        <span>Seed {runSeed}</span>
+        <span>Seed <b>{runSeed}</b></span>
         <button type="button" disabled={settingsLocked} onClick={onRerollSeed}>Reroll</button>
       </div>
-      <button type="button" onClick={isPaused ? onResume : onStart}>
+
+      <button className="rhythm-setup-start" type="button" onClick={isPaused ? onResume : onStart}>
         {isPaused ? "Resume" : status === "ready" ? "Begin Rhythm Crusade" : "Play again"}
       </button>
       <small>Enter begins the rite. P pauses.</small>
