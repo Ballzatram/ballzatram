@@ -58,6 +58,31 @@ Set these optional backend environment variables to enable production integratio
 - `OPENAI_AGENT_MODEL`: model override for the agent, defaulting to `gpt-4.1-mini`.
 - Future entitlement checks should be added after the core workflows are production-ready. Keep secrets server-side only.
 
+## Lab Pass / monetization readiness
+
+Ballzatram is being prepared as an early-access lab membership called **Ballzatram Lab Pass**. Checkout is not live yet, and this repo still avoids billing routes, provider secrets, hard paywalls, and real entitlement gates.
+
+The current monetizable promise is membership/support around early access, the experimental archive, votes, suggestions, favorites, monthly drops, behind-the-scenes notes, and helping decide what gets polished next.
+
+Not currently promised:
+- Professional investment advice.
+- Live trading.
+- Verified land acquisition.
+- Guaranteed AI Edit uptime.
+- Unlimited rendering.
+- Durable paid workspaces.
+
+Readiness docs:
+- [`docs/MONETIZATION_READINESS.md`](docs/MONETIZATION_READINESS.md)
+- [`docs/SCALE_TO_10K.md`](docs/SCALE_TO_10K.md)
+- [`docs/PROPOSED_LAB_PASS_SCHEMA.md`](docs/PROPOSED_LAB_PASS_SCHEMA.md)
+
+Validation command:
+
+```bash
+python scripts/validate_lab_readiness.py
+```
+
 ## Data sources
 - Demo public dataset: `demo_data/macro_timeseries.csv`
 - Custom upload endpoint: `/api/data/upload-csv`
