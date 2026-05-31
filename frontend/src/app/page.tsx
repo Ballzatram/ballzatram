@@ -5,7 +5,6 @@ export default function Home() {
   const worldDoors = [
     {
       title: "The Penitent 2",
-      kicker: "Discovered relic",
       copy:
         "A sealed medieval page that remembers an older lifetime. Brush away the ash and enter the cursed playable text.",
       href: "/penitent",
@@ -14,7 +13,6 @@ export default function Home() {
     },
     {
       title: "Econ Arcade",
-      kicker: "Game cabinet",
       copy:
         "Economics survives here as games, pressure chambers, strange markets, and simulations with teeth.",
       href: "/econ-arcade",
@@ -23,7 +21,6 @@ export default function Home() {
     },
     {
       title: "Macro Board",
-      kicker: "Workshop instrument",
       copy:
         "A brass-and-chalk machine for market questions. Useful, but no longer the front door to the universe.",
       href: "/macro-board",
@@ -32,12 +29,27 @@ export default function Home() {
     },
     {
       title: "Weather Desk",
-      kicker: "Storm glass",
       copy:
         "Forecasts, market weather, and paper-mode rituals for watching pressure systems move through the world.",
       href: "/weather-bot.html",
       cta: "Open Weather Desk",
       tone: "weather",
+    },
+    {
+      title: "Parcel",
+      copy:
+        "A land-search contraption for turning a rough thesis into source-aware leads, caveats, and diligence questions.",
+      href: "/tools/parcel/index.html",
+      cta: "Launch Parcel",
+      tone: "parcel",
+    },
+    {
+      title: "AI Edit",
+      copy:
+        "A rights-approved media toy for shaping short-form edit recipes and rendering clips when the backend is awake.",
+      href: "/ai-edit-factory/",
+      cta: "Open AI Edit",
+      tone: "edit",
     },
   ];
 
@@ -45,25 +57,13 @@ export default function Home() {
     <div className="ballzatram-home">
       <section className="ballzatram-hero" aria-labelledby="home-title">
         <div className="ballzatram-hero__copy">
-          <p className="ballzatram-kicker">Wandering inventor - outlaw bard - keeper of playable artifacts</p>
-          <h1 id="home-title">Ballzatram</h1>
+          <h1 id="home-title" className="ballzatram-visually-hidden">Ballzatram</h1>
+          <p className="ballzatram-kicker">Wandering Inventor - Outlaw Bard - Keeper of Jenky Artifacts</p>
           <p className="ballzatram-hero__text">
-            A retro-futurist traveler moves through eras with a sack of impossible machinery,
-            strange games, buried manuscripts, simulations, and worlds that behave like artifacts.
+            I am just drifting around through the eras, sharing my personal bag of gimmicks, games,
+            and tools I think are cool. Some are useful, some are strange, and some are mostly here
+            because I could not stop thinking about them.
           </p>
-          <div className="ballzatram-trust-row" aria-label="Ballzatram world markers">
-            <span>Games first</span>
-            <span>Strange tools</span>
-            <span>Hidden manuscripts</span>
-          </div>
-          <div className="ballzatram-actions" aria-label="Primary paths">
-            <Link href={"/penitent" as Route} className="ballzatram-button ballzatram-button--gold">
-              Discover the manuscript
-            </Link>
-            <a href="#work-shop" className="ballzatram-button ballzatram-button--ink">
-              Open the Work Shop
-            </a>
-          </div>
         </div>
         <div className="ballzatram-hero__figure" aria-hidden="true">
           <img src="/assets/ballzatram.png" alt="" />
@@ -73,7 +73,7 @@ export default function Home() {
       <section id="work-shop" className="ballzatram-section" aria-labelledby="work-shop-title">
         <div className="ballzatram-section__heading">
           <p className="ballzatram-kicker">Work Shop</p>
-          <h2 id="work-shop-title">Games, relics, and other oddities</h2>
+          <h2 id="work-shop-title">Games, Gimmicks, and Weird Little Tools</h2>
         </div>
         <div className="ballzatram-door-grid">
           {worldDoors.map((door) => (
@@ -82,7 +82,6 @@ export default function Home() {
               href={door.href as Route}
               className={`ballzatram-door ballzatram-door--${door.tone}`}
             >
-              <span>{door.kicker}</span>
               <h3>{door.title}</h3>
               <p>{door.copy}</p>
               <b>

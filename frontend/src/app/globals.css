@@ -5031,6 +5031,160 @@ main, section { max-width: 100%; }
   text-shadow: 1px 2px 0 rgba(31, 13, 3, 0.34);
 }
 
+/* Homepage voice and desktop presence pass */
+
+.ballzatram-visually-hidden,
+.ballzatram-hero h1.ballzatram-visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+.ballzatram-hero h1.ballzatram-visually-hidden::after {
+  display: none !important;
+}
+
+.ballzatram-site-header--sky .ballzatram-site-header__inner {
+  justify-content: center;
+  padding-top: clamp(0.9rem, 1.6vw, 1.55rem);
+  padding-bottom: clamp(0.45rem, 0.8vw, 0.8rem);
+}
+
+.ballzatram-site-header--sky .ballzatram-site-header__brand {
+  width: 100%;
+  justify-content: center;
+}
+
+.ballzatram-site-header--sky .ballzatram-logo-link {
+  width: clamp(360px, 35vw, 620px);
+  max-width: min(78vw, 620px);
+}
+
+.ballzatram-site-shell--sky .ballzatram-hero {
+  grid-template-columns: minmax(0, 0.78fr) minmax(420px, 0.92fr);
+  gap: clamp(1rem, 3vw, 4rem);
+  align-items: center;
+  padding-top: clamp(0.4rem, 1vw, 1rem);
+}
+
+.ballzatram-site-shell--sky .ballzatram-hero__copy {
+  width: min(100%, 710px);
+  padding: clamp(1.45rem, 2.5vw, 2.2rem);
+}
+
+.ballzatram-site-shell--sky .ballzatram-kicker {
+  margin-bottom: clamp(0.65rem, 1vw, 0.9rem);
+  font-size: clamp(0.78rem, 0.9vw, 1rem);
+}
+
+.ballzatram-site-shell--sky .ballzatram-hero__text {
+  max-width: 58rem;
+  font-size: clamp(1.05rem, 1.18vw, 1.28rem);
+  line-height: 1.5;
+}
+
+.ballzatram-site-shell--sky .ballzatram-hero__figure {
+  width: clamp(440px, 37vw, 690px);
+  margin-top: 0;
+  transform: translateX(clamp(0rem, 1.6vw, 1.4rem));
+}
+
+.ballzatram-site-shell--sky .ballzatram-section h2 {
+  max-width: 1120px;
+  font-size: clamp(2.6rem, 5vw, 5.4rem);
+}
+
+.ballzatram-site-shell--sky .ballzatram-door-grid {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(300px, 1fr);
+  grid-template-columns: none;
+  overflow-x: auto;
+  padding: 0 0.2rem 0.85rem;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: rgba(31, 13, 3, 0.5) transparent;
+}
+
+.ballzatram-site-shell--sky .ballzatram-door {
+  min-height: 305px;
+  scroll-snap-align: start;
+}
+
+.ballzatram-site-shell--sky .ballzatram-door h3 {
+  margin-top: 0;
+}
+
+.ballzatram-site-shell--sky .ballzatram-door--parcel {
+  border-color: #203812;
+  background:
+    radial-gradient(circle at 82% 14%, rgba(255, 229, 151, 0.4), transparent 24%),
+    linear-gradient(145deg, #d8f2b6 0%, #8cbf61 48%, #34542a 100%);
+}
+
+.ballzatram-site-shell--sky .ballzatram-door--parcel h3,
+.ballzatram-site-shell--sky .ballzatram-door--parcel p,
+.ballzatram-site-shell--sky .ballzatram-door--parcel b {
+  color: #1d260f;
+}
+
+.ballzatram-site-shell--sky .ballzatram-door--parcel b {
+  border-color: #203812;
+  background: linear-gradient(#fff0b8, #94c65d);
+}
+
+.ballzatram-site-shell--sky .ballzatram-door--edit {
+  border-color: #24143a;
+  background:
+    radial-gradient(circle at 78% 18%, rgba(255, 237, 180, 0.38), transparent 22%),
+    linear-gradient(145deg, #51256f 0%, #7c3f9d 46%, #1b1026 100%);
+}
+
+.ballzatram-site-shell--sky .ballzatram-door--edit h3 {
+  color: #fff2c7;
+  text-shadow: 0 3px 0 rgba(0, 0, 0, 0.46);
+}
+
+.ballzatram-site-shell--sky .ballzatram-door--edit p {
+  color: #f4d7ff;
+}
+
+.ballzatram-site-shell--sky .ballzatram-door--edit b {
+  border-color: #24143a;
+  background: linear-gradient(#f4c66e, #b85ed1);
+  color: #1f0d03;
+}
+
+@media (max-width: 1180px) {
+  .ballzatram-site-header--sky .ballzatram-logo-link {
+    width: clamp(300px, 46vw, 520px);
+  }
+
+  .ballzatram-site-shell--sky .ballzatram-hero {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 430px);
+  }
+
+  .ballzatram-site-shell--sky .ballzatram-hero__figure {
+    width: clamp(340px, 36vw, 500px);
+  }
+}
+
+@media (max-width: 980px) {
+  .ballzatram-site-shell--sky .ballzatram-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .ballzatram-site-shell--sky .ballzatram-hero__figure {
+    width: min(82vw, 430px);
+    transform: none;
+  }
+}
+
 .penitent-shell,
 .penitent-folio-shell,
 .rhythm-shell {
