@@ -1,0 +1,85 @@
+export type LabStatusLabel =
+  | "Toy"
+  | "Prototype"
+  | "Playable"
+  | "Alpha"
+  | "Beta"
+  | "Stable"
+  | "Paper Mode"
+  | "Backend Required"
+  | "Roadmap"
+  | "Retired";
+
+export type LabStatusDefinition = {
+  label: LabStatusLabel;
+  shortDescription: string;
+  userExpectation: string;
+  paidEligible: boolean;
+};
+
+export const statusTaxonomy: LabStatusDefinition[] = [
+  {
+    label: "Toy",
+    shortDescription: "A small playful object or idea sketch.",
+    userExpectation: "Try it for curiosity, not dependability.",
+    paidEligible: true,
+  },
+  {
+    label: "Prototype",
+    shortDescription: "The core idea works, but rough edges are expected.",
+    userExpectation: "Try it for the concept; do not rely on it as a finished product.",
+    paidEligible: true,
+  },
+  {
+    label: "Playable",
+    shortDescription: "The experience can be opened and used end to end.",
+    userExpectation: "Expect a usable game or lab with some unfinished edges.",
+    paidEligible: true,
+  },
+  {
+    label: "Alpha",
+    shortDescription: "A working early version with meaningful gaps.",
+    userExpectation: "Useful for early feedback, but not professional-grade reliability.",
+    paidEligible: true,
+  },
+  {
+    label: "Beta",
+    shortDescription: "A more complete version that still needs production hardening.",
+    userExpectation: "Expect a mostly coherent workflow with occasional changes and bugs.",
+    paidEligible: true,
+  },
+  {
+    label: "Stable",
+    shortDescription: "A mature public surface with clear expectations and support boundaries.",
+    userExpectation: "Expect predictable behavior inside the stated scope.",
+    paidEligible: true,
+  },
+  {
+    label: "Paper Mode",
+    shortDescription: "Education and simulation only; no real execution.",
+    userExpectation: "Use it to learn, model, or rehearse decisions, never as automation.",
+    paidEligible: true,
+  },
+  {
+    label: "Backend Required",
+    shortDescription: "The public page needs a server or worker to perform the real heavy work.",
+    userExpectation: "Static preview may work, but production output requires a deployed backend.",
+    paidEligible: true,
+  },
+  {
+    label: "Roadmap",
+    shortDescription: "A planned idea that is not yet a working product.",
+    userExpectation: "Vote, suggest, or follow progress; do not expect a finished experience.",
+    paidEligible: false,
+  },
+  {
+    label: "Retired",
+    shortDescription: "An old artifact kept for archive or reference.",
+    userExpectation: "Treat it as history, not an active product surface.",
+    paidEligible: false,
+  },
+];
+
+export const statusTaxonomyByLabel = Object.fromEntries(
+  statusTaxonomy.map((status) => [status.label, status]),
+) as Record<LabStatusLabel, LabStatusDefinition>;

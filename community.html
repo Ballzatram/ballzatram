@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Suggest and locally upvote future Ballzatram tools, games, simulations, AI toys, and oddities." />
+  <meta name="theme-color" content="#0589d1" />
+  <title>Ballzatram Community Roadmap</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <div class="sky lab-page-sky" id="sky">
+    <header class="site-header">
+      <a class="brand-logo" href="./index.html" aria-label="Ballzatram home">
+        <img src="assets/title.png" alt="Ballzatram" />
+      </a>
+
+      <nav class="nav-panel" aria-label="Main navigation">
+        <a href="index.html#tools">Workshop</a>
+        <span></span>
+        <a href="lab-pass.html">Lab Pass</a>
+        <span></span>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+    </header>
+
+    <main class="lab-page-shell community-page">
+      <section class="lab-hero terminal-card" aria-labelledby="communityTitle">
+        <p class="eyebrow">Local roadmap prototype</p>
+        <h1 id="communityTitle">Suggest an Experiment</h1>
+        <p class="lab-page-copy">
+          Help shape the workshop. Add ideas for tools, games, simulations, AI toys, strange experiments, writing/story artifacts, and utilities.
+        </p>
+        <div class="local-prototype-note">
+          Local prototype: suggestions and votes are saved in this browser for now.
+        </div>
+      </section>
+
+      <section class="community-grid" aria-label="Community suggestions">
+        <article class="dashboard-card suggestion-form-card">
+          <span class="card-kicker">New idea</span>
+          <h2>Add a suggestion</h2>
+          <form class="community-form" data-suggestion-form>
+            <label>
+              <span>Suggestion title</span>
+              <input type="text" name="title" maxlength="90" required placeholder="Tiny machine, weird lab, useful toy..." />
+            </label>
+            <label>
+              <span>Category</span>
+              <select name="category" required>
+                <option>Tool</option>
+                <option>Game</option>
+                <option>Simulation</option>
+                <option>AI Toy</option>
+                <option>Weird Experiment</option>
+                <option>Writing/Story</option>
+                <option>Utility</option>
+              </select>
+            </label>
+            <label>
+              <span>Why should it exist?</span>
+              <textarea name="description" rows="4" maxlength="320" placeholder="Optional context for future Ballzatram."></textarea>
+            </label>
+            <button class="primary-button" type="submit">Submit suggestion</button>
+          </form>
+        </article>
+
+        <article class="dashboard-card roadmap-card" id="roadmap">
+          <span class="card-kicker">Roadmap shelf</span>
+          <h2>Vote on the roadmap</h2>
+          <p class="lab-page-copy">
+            Vote counts are local to this browser. They do not represent global demand yet.
+          </p>
+          <div class="roadmap-list" data-roadmap-list aria-live="polite"></div>
+        </article>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="lab-pass.html">Lab Pass</a>
+        <a href="community.html">Community</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+      </nav>
+      <p>Local votes today. Real member voice later.</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+  <script src="lab.js"></script>
+</body>
+
+</html>

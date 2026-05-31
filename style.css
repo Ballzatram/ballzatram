@@ -1341,3 +1341,334 @@ body {
   }
 }
 
+/* Lab Pass, community, and trust pages */
+
+.lab-page-sky {
+  background:
+    radial-gradient(circle at 22% 12%, rgba(255, 244, 220, 0.32), transparent 20%),
+    radial-gradient(circle at 82% 18%, rgba(255, 205, 91, 0.24), transparent 22%),
+    linear-gradient(180deg, #056c9f 0%, #0b91d0 46%, #45b8d9 100%);
+}
+
+.lab-page-shell {
+  position: relative;
+  z-index: 35;
+  display: grid;
+  gap: clamp(1rem, 2vw, 1.5rem);
+  width: min(100%, 1300px);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 3vw, 2.6rem) 1.6rem;
+}
+
+.lab-hero {
+  display: grid;
+  gap: 0.9rem;
+  padding: clamp(1.25rem, 3vw, 2.6rem);
+}
+
+.lab-hero h1,
+.lab-info-card h2,
+.suggestion-form-card h2,
+.roadmap-card h2,
+.legal-stack h2,
+.lab-section-heading h2 {
+  font-family: Impact, "Anton", system-ui, sans-serif;
+  letter-spacing: 0.035em;
+  line-height: 0.98;
+  text-transform: uppercase;
+}
+
+.lab-hero h1 {
+  max-width: 900px;
+  color: #fff4d0;
+  font-size: clamp(3.4rem, 7vw, 7.8rem);
+  text-shadow: 4px 4px 0 #1f0d03;
+}
+
+.lab-price,
+.checkout-note,
+.lab-page-copy,
+.local-prototype-note,
+.legal-stack p {
+  max-width: 68rem;
+  color: #fff5d9;
+  font-weight: 900;
+  line-height: 1.48;
+}
+
+.lab-price {
+  font-size: clamp(1.15rem, 2vw, 1.7rem);
+}
+
+.lab-price strong,
+.checkout-note {
+  color: #ffec99;
+}
+
+.checkout-note,
+.local-prototype-note {
+  width: fit-content;
+  padding: 0.75rem 0.9rem;
+  border: 3px solid #ffbd42;
+  border-radius: 14px;
+  background: rgba(120, 52, 7, 0.72);
+}
+
+.lab-info-grid,
+.community-grid {
+  display: grid;
+  gap: clamp(0.9rem, 1.6vw, 1.25rem);
+}
+
+.lab-info-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.community-grid {
+  grid-template-columns: minmax(280px, 0.8fr) minmax(0, 1.2fr);
+}
+
+.lab-info-card,
+.suggestion-form-card,
+.roadmap-card,
+.legal-stack .dashboard-card {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+}
+
+.lab-info-card h2,
+.suggestion-form-card h2,
+.roadmap-card h2,
+.legal-stack h2 {
+  color: #1b0a02;
+  font-size: clamp(1.8rem, 2.4vw, 2.8rem);
+}
+
+.lab-list,
+.legal-stack {
+  display: grid;
+  gap: 0.7rem;
+}
+
+.lab-list {
+  padding-left: 1.2rem;
+  color: #1f0d03;
+  font-weight: 900;
+  line-height: 1.38;
+}
+
+.lab-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.lab-section-heading h2 {
+  color: #fff3cf;
+  font-size: clamp(2.2rem, 4vw, 4.4rem);
+  text-shadow: 4px 4px 0 rgba(31, 13, 3, 0.72);
+}
+
+.spin-results,
+.favorites-list,
+.roadmap-list {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.spin-results,
+.favorites-list {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.lab-result-card,
+.roadmap-item {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: 1rem;
+  border: 4px solid #1f0d03;
+  border-radius: 18px;
+  background: linear-gradient(#fff1c9, #ffd88a);
+  box-shadow: 0 5px 0 #4b1d06;
+}
+
+.lab-result-card h3,
+.roadmap-item h3 {
+  color: #1b0a02;
+  font-family: Impact, "Anton", system-ui, sans-serif;
+  font-size: clamp(1.45rem, 1.8vw, 2.05rem);
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.lab-result-card p,
+.roadmap-item p,
+.empty-note {
+  color: #1f0d03;
+  font-weight: 900;
+  line-height: 1.38;
+}
+
+.lab-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+.status-pill,
+.category-pill,
+.roadmap-label {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  min-height: 1.75rem;
+  padding: 0.32rem 0.55rem;
+  border: 2px solid rgba(31, 13, 3, 0.45);
+  border-radius: 999px;
+  color: #4b1d06;
+  background: rgba(255, 245, 217, 0.72);
+  font-family: Impact, "Anton", system-ui, sans-serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.category-pill {
+  background: #d6fbff;
+}
+
+.why-line {
+  border-left: 4px solid #9d3210;
+  padding-left: 0.7rem;
+}
+
+.lab-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: auto;
+}
+
+.lab-card-actions .primary-button,
+.lab-card-actions .secondary-button,
+.roadmap-item .primary-button,
+.lab-section-heading .primary-button,
+.lab-section-heading .secondary-button {
+  min-height: 2.45rem;
+  padding: 0.55rem 0.8rem;
+  cursor: pointer;
+}
+
+.community-form {
+  display: grid;
+  gap: 0.8rem;
+}
+
+.community-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: #1f0d03;
+  font-weight: 900;
+}
+
+.community-form input,
+.community-form select,
+.community-form textarea {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: 3px solid #1f0d03;
+  border-radius: 12px;
+  background: #fffaf0;
+  color: #1f0d03;
+  font: 900 0.95rem "Trebuchet MS", system-ui, sans-serif;
+}
+
+.roadmap-item {
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+}
+
+.roadmap-item-body {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.legal-page .lab-hero {
+  max-width: 980px;
+}
+
+.legal-stack .dashboard-card {
+  max-width: 980px;
+}
+
+.legal-stack p {
+  color: #1f0d03;
+}
+
+.footer-links {
+  display: inline-flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.footer-links a {
+  color: #fff1c9;
+  text-decoration: none;
+}
+
+.footer-links a:hover,
+.footer-links a:focus-visible {
+  color: #ffbd42;
+  outline: 2px solid #ffbd42;
+  outline-offset: 3px;
+}
+
+@media (max-width: 1180px) {
+  .lab-info-grid,
+  .community-grid,
+  .spin-results,
+  .favorites-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 720px) {
+  .lab-page-shell {
+    padding-inline: 0.75rem;
+  }
+
+  .lab-hero h1 {
+    font-size: clamp(3rem, 15vw, 4.7rem);
+  }
+
+  .lab-info-grid,
+  .community-grid,
+  .spin-results,
+  .favorites-list {
+    grid-template-columns: 1fr;
+  }
+
+  .lab-section-heading,
+  .roadmap-item {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+    flex-direction: column;
+  }
+
+  .lab-section-heading .primary-button,
+  .lab-section-heading .secondary-button,
+  .roadmap-item .primary-button {
+    width: 100%;
+  }
+
+  .footer-links {
+    width: 100%;
+  }
+}
+
