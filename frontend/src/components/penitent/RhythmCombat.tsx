@@ -17,7 +17,7 @@ import {
   type PenitentNote,
 } from "@/lib/penitent/beatmaps";
 
-type GameState = "ready" | "playing" | "allyDown" | "resurrection" | "victory" | "defeat";
+type GameState = "ready" | "tutorial" | "playing" | "allyDown" | "resurrection" | "victory" | "defeat";
 type Judgment = "perfect" | "good" | "early" | "late" | "miss";
 type NoteState = PenitentNote & { state: "pending" | "hit" | "miss"; judgment?: Judgment };
 type HitEffect = { id: number; lane: number; judgment: Judgment };
@@ -30,6 +30,7 @@ const IS_DEVELOPMENT = process.env.NODE_ENV !== "production";
 const ACTIVE_STATES: GameState[] = ["playing", "allyDown", "resurrection"];
 const laneRows = [17, 30, 43, 57, 70, 83];
 const difficultyOrder: GameDifficulty[] = ["easy", "medium", "penitent"];
+const tutorialTargets = [0, 3, 1];
 
 const hordeActors: HordeActor[] = [
   { id: "rear-trident-1", src: penitentAssetPaths.demons.trident, className: "trident", row: "rear", x: 35, y: 42, scale: 0.62, delay: -0.1 },
@@ -219,6 +220,8 @@ export function RhythmCrusadeGame() {
   const [impactKind, setImpactKind] = useState<ImpactKind>(null);
   const [screenShake, setScreenShake] = useState(false);
   const [reviveCompleteNotice, setReviveCompleteNotice] = useState(false);
+  const [tutorialHits, setTutorialHits] = useState(0);
+  const [tutorialPrompt, setTutorialPrompt] = useState("Strike the glowing lane when the note reaches the sacred line.");
 
   const startTimeRef = useRef(0);
   const pauseStartedRef = useRef(0);
@@ -269,14 +272,17 @@ export function RhythmCrusadeGame() {
 
   const progressPercent = clamp((time / beatmap.durationMs) * 100, 0, 100);
   const resurrectionActive = status === "allyDown" || status === "resurrection";
-  const gameActive = isActiveState(status) && !isPaused;
+  const tutorialActive = status === "tutorial";
+  const tutorialTargetLane = tutorialTargets[Math.min(tutorialHits, tutorialTargets.length - 1)] ?? 0;
+  const gameActive = (isActiveState(status) || tutorialActive || status === "ready") && !isPaused;
   const activeForInput = status === "playing" || status === "resurrection";
-  const modeLabel = resurrectionActive ? "RESURRECTION" : beatmap.encounter;
+  const laneInputEnabled = activeForInput || tutorialActive;
+  const modeLabel = resurrectionActive ? "RESURRECTION" : tutorialActive ? "LEARN THE RITE" : beatmap.encounter;
   const beatMs = 60000 / beatmap.bpm;
   const beatPhase = (time % beatMs) / beatMs;
   const downbeatPulse = Math.max(0, 1 - beatPhase / 0.16);
   const afterbeatPulse = beatPhase > 0.23 && beatPhase < 0.4 ? Math.max(0, 1 - Math.abs(beatPhase - 0.3) / 0.08) * 0.62 : 0;
-  const heartPulse = isActiveState(status) && !isPaused ? clamp(downbeatPulse + afterbeatPulse, 0, 1) : 0.22;
+  const heartPulse = gameActive ? clamp(downbeatPulse + afterbeatPulse, 0, 1) : 0.22;
   const heartFrame = clamp(Math.round(heartPulse * (penitentAssetPaths.heart.frames.length - 1)), 0, penitentAssetPaths.heart.frames.length - 1);
   const hordeVisualState = getHordeVisualState({ combo, enemyEnergy, enemyHealth, impactKind, resurrectionActive });
 
@@ -323,11 +329,28 @@ export function RhythmCrusadeGame() {
     setPlayerEnergy(0);
     setEnemyEnergy(72);
     setReviveProgress(0);
+    setTutorialHits(0);
+    setTutorialPrompt("Strike the glowing lane when the note reaches the sacred line.");
     setMessage(`${beatmap.title} begins.`);
     setJudgmentText("PLAY");
     setIsPaused(false);
     setStatus("playing");
   }, [beatmap]);
+
+  const startTutorial = useCallback(() => {
+    setNotes(freshNotes(beatmap));
+    setTime(0);
+    setCombo(0);
+    setScore(0);
+    setBestCombo(0);
+    setTutorialHits(0);
+    setTutorialPrompt("Strike the glowing A lane. Notes are judged on the sacred center line.");
+    setJudgmentText("LEARN");
+    setMessage("Practice three hits, then the real battle begins.");
+    setIsPaused(false);
+    setStatus("tutorial");
+    flashLane(tutorialTargets[0]);
+  }, [beatmap, flashLane]);
 
   const rerollSeed = useCallback(() => {
     if (isActiveState(statusRef.current)) return;
@@ -350,7 +373,7 @@ export function RhythmCrusadeGame() {
       state === "allyDown"
         ? 0
         : state === "resurrection"
-          ? Math.ceil(missCount * 2)
+          ? 0
           : difficultyConfig.missDamage * missCount;
     setJudgmentText("MISS");
     setMessage(reason);
@@ -391,7 +414,42 @@ export function RhythmCrusadeGame() {
     triggerImpact(judgment === "perfect" ? "perfect" : "good");
   }, [addHitEffect, difficulty, flashLane, triggerImpact]);
 
+  const hitTutorialLane = useCallback((lane: number) => {
+    if (statusRef.current !== "tutorial") return;
+    const target = tutorialTargets[Math.min(tutorialHits, tutorialTargets.length - 1)] ?? 0;
+    flashLane(lane);
+
+    if (lane !== target) {
+      setJudgmentText("TRY AGAIN");
+      setTutorialPrompt(`Watch the glowing ${penitentLanes[target].key} lane and strike it on the center line.`);
+      triggerImpact("miss");
+      return;
+    }
+
+    const nextHits = tutorialHits + 1;
+    addHitEffect(lane, "perfect");
+    triggerImpact("perfect");
+    setTutorialHits(nextHits);
+    setCombo(nextHits);
+    setJudgmentText("PERFECT");
+
+    if (nextHits >= tutorialTargets.length) {
+      setTutorialPrompt("Good. The hymn is yours.");
+      setMessage("Tutorial complete. Enter the real battle.");
+      window.setTimeout(() => start(), 650);
+      return;
+    }
+
+    const nextLane = tutorialTargets[nextHits];
+    setTutorialPrompt(`Now strike ${penitentLanes[nextLane].key} or ${penitentLanes[nextLane].numberKey} as the note crosses the sacred line.`);
+    window.setTimeout(() => flashLane(nextLane), 90);
+  }, [addHitEffect, flashLane, start, triggerImpact, tutorialHits]);
+
   const hitLane = useCallback((lane: number) => {
+    if (statusRef.current === "tutorial") {
+      hitTutorialLane(lane);
+      return;
+    }
     if (!activeForInput || isPaused) return;
     const target = notes
       .filter((note) => note.state === "pending" && note.lane === lane)
@@ -410,7 +468,7 @@ export function RhythmCrusadeGame() {
       ),
     );
     applySuccessfulHit(judgment, lane);
-  }, [activeForInput, applyMiss, applySuccessfulHit, difficulty, flashLane, isPaused, notes, time]);
+  }, [activeForInput, applyMiss, applySuccessfulHit, difficulty, flashLane, hitTutorialLane, isPaused, notes, time]);
 
   const simulatePerfectHit = useCallback(() => {
     if (!isActiveState(statusRef.current) || pausedRef.current) return;
@@ -512,8 +570,12 @@ export function RhythmCrusadeGame() {
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.repeat) return;
-      if (event.code === "Enter" && !isActiveState(statusRef.current)) {
+      if (event.code === "Enter" && statusRef.current === "tutorial") {
         start();
+        return;
+      }
+      if (event.code === "Enter" && !isActiveState(statusRef.current)) {
+        startTutorial();
         return;
       }
 
@@ -549,7 +611,7 @@ export function RhythmCrusadeGame() {
 
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [applyMiss, hitLane, simulatePerfectHit, start, togglePause, triggerAllyDown]);
+  }, [applyMiss, hitLane, simulatePerfectHit, start, startTutorial, togglePause, triggerAllyDown]);
 
   useEffect(() => {
     function onVisibilityChange() {
@@ -589,6 +651,7 @@ export function RhythmCrusadeGame() {
         "rhythm-crusade-shell--asset",
         `is-difficulty-${difficulty}`,
         `is-song-${song.hordeTheme}`,
+        tutorialActive ? "is-tutorial" : "",
         resurrectionActive ? "is-resurrection" : "",
         isPaused ? "is-paused" : "",
         impactKind ? `is-impact-${impactKind}` : "",
@@ -619,8 +682,19 @@ export function RhythmCrusadeGame() {
           time={time}
           laneFlash={laneFlash}
           hitEffects={hitEffects}
+          tutorialActive={tutorialActive}
+          tutorialTargetLane={tutorialTargetLane}
           onLaneHit={hitLane}
         />
+
+        {tutorialActive ? (
+          <TutorialGate
+            hits={tutorialHits}
+            prompt={tutorialPrompt}
+            targetLane={tutorialTargetLane}
+            onSkip={start}
+          />
+        ) : null}
 
         {resurrectionActive ? (
           <ResurrectionPanel status={status} progress={reviveProgress} />
@@ -646,7 +720,7 @@ export function RhythmCrusadeGame() {
           />
 
           <div className="rhythm-crusade-command">
-            <AbilityBar disabled={!activeForInput || isPaused} onLaneHit={hitLane} />
+            <AbilityBar disabled={!laneInputEnabled || isPaused} onLaneHit={hitLane} />
             <div className="rhythm-crusade-progress" aria-label="Song progress">
               <img src={penitentAssetPaths.hud.songProgress} alt="" aria-hidden="true" />
               <b>+ {beatmap.title} +</b>
@@ -683,7 +757,7 @@ export function RhythmCrusadeGame() {
           </div>
         ) : null}
 
-        {(!isActiveState(status) || isPaused) ? (
+        {((!isActiveState(status) && !tutorialActive) || isPaused) ? (
           <SetupOverlay
             beatmap={beatmap}
             difficulty={difficulty}
@@ -695,7 +769,8 @@ export function RhythmCrusadeGame() {
             onRerollSeed={rerollSeed}
             onResume={togglePause}
             onSongChange={setSongId}
-            onStart={start}
+            onSkipTutorial={start}
+            onStart={startTutorial}
           />
         ) : null}
       </section>
@@ -858,6 +933,8 @@ function NoteHighway({
   time,
   laneFlash,
   hitEffects,
+  tutorialActive,
+  tutorialTargetLane,
   onLaneHit,
 }: {
   beatmap: PenitentBeatmap;
@@ -866,8 +943,11 @@ function NoteHighway({
   time: number;
   laneFlash: number | null;
   hitEffects: HitEffect[];
+  tutorialActive: boolean;
+  tutorialTargetLane: number;
   onLaneHit: (lane: number) => void;
 }) {
+  const tutorialLane = penitentLanes[tutorialTargetLane] ?? penitentLanes[0];
   return (
     <div className="rhythm-note-highway rhythm-note-highway--asset" aria-label="Rhythm note highway">
       <img src={penitentAssetPaths.hud.noteTrack} alt="" aria-hidden="true" />
@@ -879,6 +959,13 @@ function NoteHighway({
         ))}
       </div>
       <div className="rhythm-note-highway__judgment" aria-hidden="true" />
+      {tutorialActive ? (
+        <span
+          className={`rhythm-crusade-note rhythm-crusade-note--tutorial rhythm-crusade-note--${tutorialLane.side}`}
+          style={{ "--note-y": `${laneRows[tutorialTargetLane] ?? 50}%` } as CSSProperties}
+          aria-hidden="true"
+        />
+      ) : null}
       {notes.map((note) => (
         <Note key={note.id} beatmap={beatmap} note={note} time={time} />
       ))}
@@ -1049,6 +1136,48 @@ function AbilityCard({
   );
 }
 
+function TutorialGate({
+  hits,
+  prompt,
+  targetLane,
+  onSkip,
+}: {
+  hits: number;
+  prompt: string;
+  targetLane: number;
+  onSkip: () => void;
+}) {
+  const target = penitentLanes[targetLane] ?? penitentLanes[0];
+  return (
+    <aside className="rhythm-tutorial-gate" aria-live="polite">
+      <span>How to Play</span>
+      <strong>Hit notes on the sacred center line</strong>
+      <p>{prompt}</p>
+      <div className="rhythm-tutorial-keys" aria-label="Controls">
+        <b>Blue</b>
+        <i>A</i>
+        <i>S</i>
+        <i>D</i>
+        <b>Orange</b>
+        <i>J</i>
+        <i>K</i>
+        <i>L</i>
+      </div>
+      <div className="rhythm-tutorial-target">
+        <small>Now strike</small>
+        <b>{target.key}</b>
+        <span>or {target.numberKey}</span>
+      </div>
+      <div className="rhythm-tutorial-progress" aria-label={`${hits} of ${tutorialTargets.length} practice hits complete`}>
+        {tutorialTargets.map((_, index) => (
+          <i key={index} className={index < hits ? "is-complete" : ""} />
+        ))}
+      </div>
+      <button type="button" onClick={onSkip}>Skip Rite</button>
+    </aside>
+  );
+}
+
 function SetupOverlay({
   beatmap,
   difficulty,
@@ -1060,6 +1189,7 @@ function SetupOverlay({
   onRerollSeed,
   onResume,
   onSongChange,
+  onSkipTutorial,
   onStart,
 }: {
   beatmap: PenitentBeatmap;
@@ -1072,6 +1202,7 @@ function SetupOverlay({
   onRerollSeed: () => void;
   onResume: () => void;
   onSongChange: (songId: string) => void;
+  onSkipTutorial: () => void;
   onStart: () => void;
 }) {
   const settingsLocked = isPaused;
@@ -1086,12 +1217,20 @@ function SetupOverlay({
         : "The horde overruns the page.";
 
   return (
-    <div className={`rhythm-crusade-state rhythm-crusade-state--setup ${isPaused ? "is-pause" : ""}`}>
+    <div className={`rhythm-crusade-state rhythm-crusade-state--setup is-${status} ${isPaused ? "is-pause" : ""}`}>
       <div className="rhythm-setup-header">
         <span>Penitent 2</span>
         <p>{heroText}</p>
         <small>{isPaused ? "Resume the rite when ready." : "Choose the canticle, difficulty, and seed."}</small>
       </div>
+
+      {!isPaused ? (
+        <div className="rhythm-setup-quickstart" aria-label="How to play">
+          <b>Play the center line</b>
+          <span>Strike <i>A S D</i> and <i>J K L</i> as diamonds cross the sacred gold line.</span>
+          <small>Touch the six cards or use 1-6 as alternates.</small>
+        </div>
+      ) : null}
 
       <div className="rhythm-setup-section rhythm-setup-section--songs">
         <span className="rhythm-setup-kicker">Song</span>
@@ -1145,9 +1284,14 @@ function SetupOverlay({
       </div>
 
       <button className="rhythm-setup-start" type="button" onClick={isPaused ? onResume : onStart}>
-        {isPaused ? "Resume" : status === "ready" ? "Begin Rhythm Crusade" : "Play again"}
+        {isPaused ? "Resume" : status === "ready" ? "Learn Controls" : "Play again"}
       </button>
-      <small>Enter begins the rite. P pauses.</small>
+      {!isPaused ? (
+        <button className="rhythm-setup-skip" type="button" onClick={onSkipTutorial}>
+          Skip Tutorial / Begin Battle
+        </button>
+      ) : null}
+      <small>Enter opens the tutorial. The battle begins after three practice hits.</small>
     </div>
   );
 }
