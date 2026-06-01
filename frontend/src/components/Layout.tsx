@@ -12,7 +12,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const currentPath = pathname ?? "/";
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const macroRoutes = new Set(["/macro-board", ...workflows.map((workflow) => `/${workflow.slug}`)]);
+  const macroRoutes = new Set(["/quant-library", "/macro-board", ...workflows.map((workflow) => `/${workflow.slug}`)]);
   const isMacroRoute = macroRoutes.has(currentPath);
   const isPenitent = currentPath.startsWith("/penitent");
   const isHome = currentPath === "/";
@@ -56,14 +56,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href={"/#back-issues" as Route}>Back Issues</Link>
             <Link href={"/games/stoney-bologna/index.html" as Route}>Blotter</Link>
             <Link href={"/tools/parcel/index.html" as Route}>Parcel</Link>
-            <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>MacroBoard</Link>
+            <Link href={"/quant-library" as Route} aria-current={currentPath === "/quant-library" ? "page" : undefined}>Quant Library</Link>
             <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Archive</Link>
           </nav>
         </div>
         {isMacroRoute ? (
-          <nav className="ballzatram-workflow-nav" aria-label="MacroBoard instruments">
-            <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>
-              Macro Board
+          <nav className="ballzatram-workflow-nav" aria-label="Quant Library instruments">
+            <Link href={"/quant-library" as Route} aria-current={currentPath === "/quant-library" ? "page" : undefined}>
+              Quant Library
             </Link>
             {workflows.filter((workflow) => workflow.slug !== "dashboard").map((workflow) => {
               const href = `/${workflow.slug}` as Route;

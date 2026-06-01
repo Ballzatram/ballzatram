@@ -1,4 +1,4 @@
-// Browser-delivered files must not include private provider keys. Use the FastAPI MacroBoard backend for live FRED data.
+// Browser-delivered files must not include private provider keys. Use the FastAPI Quant Library backend for live FRED data.
 const FRED_API_KEY = "";
 const YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart";
 
@@ -18,7 +18,7 @@ const workflows = {
     insights: [
       "Start with the data source badge: uploaded holdings and live macro data are more decision-useful than demo data.",
       "Use the concentration, volatility, drawdown, and beta cards as a triage checklist before reviewing single positions.",
-      "MacroBoard is an education-first decision assistant: it highlights risks and questions, not personalized investment advice."
+      "Quant Library is an education-first research assistant: it highlights risks and questions, not personalized investment advice."
     ],
     lessons: ["macro", "risk", "workflow"]
   },
@@ -160,7 +160,7 @@ const workflows = {
 const learningDatabase = {
   macro: ["Macro pulse", "Inflation, policy rates, labor, credit, dollar, and oil are state variables that influence discount rates, earnings, and risk appetite."],
   risk: ["Risk budget", "Volatility shows typical movement, drawdown shows pain already experienced, and concentration shows how much one name can dominate outcomes."],
-  workflow: ["AI workflow", "A durable process is ingest → validate → analyze → question → decide → monitor. MacroBoard mirrors that loop on one screen."],
+  workflow: ["Research workflow", "A durable process is ingest -> validate -> analyze -> question -> decide -> monitor. Quant Library mirrors that loop on one screen."],
   beta: ["Beta", "Beta estimates how sensitive a portfolio is to benchmark moves. A beta above 1 usually amplifies market direction."],
   dollar: ["Dollar exposure", "A stronger dollar can pressure foreign earnings translations and global liquidity while helping importers."],
   oil: ["Oil as signal", "Oil can be an inflation input, a growth signal, or a sector-specific revenue driver depending on the holding."],

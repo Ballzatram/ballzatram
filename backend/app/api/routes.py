@@ -73,62 +73,73 @@ def create_markdown_report(req: ReportRequest):
     return {"markdown": render_markdown(req.title, req.findings, req.scenario_outcomes)}
 
 
-@router.post("/macro-board/intake")
+@router.post("/quant-library/intake")
+@router.post("/macro-board/intake", include_in_schema=False)
 def macro_intake(payload: dict):
     return build_intake(payload.get("prompt", ""))
 
 
-@router.post("/macro-board/research")
+@router.post("/quant-library/research")
+@router.post("/macro-board/research", include_in_schema=False)
 def macro_research(payload: dict):
     return build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
 
 
-@router.post("/macro-board/stress-test")
+@router.post("/quant-library/stress-test")
+@router.post("/macro-board/stress-test", include_in_schema=False)
 def macro_stress(payload: dict):
     return run_macro_stress(payload.get("scenario", {}), payload.get("holdings", {"SPY": 1.0}))
 
 
-@router.post("/macro-board/regime")
+@router.post("/quant-library/regime")
+@router.post("/macro-board/regime", include_in_schema=False)
 def macro_regime(payload: dict):
     return {"regime": "Transitional", "methodology": "Placeholder deterministic regime label from current macro factor z-scores."}
 
 
-@router.post("/macro-board/compare-tabs")
+@router.post("/quant-library/compare-tabs")
+@router.post("/macro-board/compare-tabs", include_in_schema=False)
 def macro_compare_tabs(payload: dict):
     tabs = payload.get("tabs", [])
     return {"comparison": [{"title": t.get("title", "Untitled"), "cards": len(t.get("cards", []))} for t in tabs]}
 
 
-@router.get("/macro-board/series")
+@router.get("/quant-library/series")
+@router.get("/macro-board/series", include_in_schema=False)
 def macro_series():
     return get_series()
 
 
-@router.get("/macro-board/market-data")
+@router.get("/quant-library/market-data")
+@router.get("/macro-board/market-data", include_in_schema=False)
 def macro_market_data():
     return get_market_data()
 
 
 store = WorkspaceStore()
 
-@router.get("/macro-board/workspaces")
+@router.get("/quant-library/workspaces")
+@router.get("/macro-board/workspaces", include_in_schema=False)
 def list_workspaces():
     return {"workspaces": store.list_workspaces()}
 
-@router.get("/macro-board/workspaces/{workspace_id}")
+@router.get("/quant-library/workspaces/{workspace_id}")
+@router.get("/macro-board/workspaces/{workspace_id}", include_in_schema=False)
 def get_workspace(workspace_id: str):
     ws = store.get_workspace(workspace_id)
     if not ws:
         raise HTTPException(status_code=404, detail="workspace not found")
     return ws
 
-@router.post("/macro-board/workspaces")
+@router.post("/quant-library/workspaces")
+@router.post("/macro-board/workspaces", include_in_schema=False)
 def create_workspace(payload: dict):
     result = build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
     title = payload.get("title") or payload.get("prompt", "Untitled")[:48]
     return store.create_workspace(title, payload.get("prompt", ""), payload.get("assumptions", {}), result)
 
-@router.post("/macro-board/workspaces/{workspace_id}/rerun")
+@router.post("/quant-library/workspaces/{workspace_id}/rerun")
+@router.post("/macro-board/workspaces/{workspace_id}/rerun", include_in_schema=False)
 def rerun_workspace(workspace_id: str, payload: dict):
     result = build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
     try:
@@ -136,7 +147,8 @@ def rerun_workspace(workspace_id: str, payload: dict):
     except KeyError:
         raise HTTPException(status_code=404, detail="workspace not found")
 
-@router.post("/macro-board/workspaces/{workspace_id}/duplicate")
+@router.post("/quant-library/workspaces/{workspace_id}/duplicate")
+@router.post("/macro-board/workspaces/{workspace_id}/duplicate", include_in_schema=False)
 def duplicate_workspace(workspace_id: str):
     ws = store.get_workspace(workspace_id)
     if not ws:
@@ -145,7 +157,8 @@ def duplicate_workspace(workspace_id: str):
     result = {"cards": latest.get("cards", []), "analystTeam": latest.get("analyst_outputs", []), "recommendations": latest.get("recommendations", []), "warnings": latest.get("warnings", [])}
     return store.create_workspace(ws["title"] + " (copy)", ws["original_prompt"], ws.get("assumptions", {}), result)
 
-@router.post("/macro-board/compare-versions")
+@router.post("/quant-library/compare-versions")
+@router.post("/macro-board/compare-versions", include_in_schema=False)
 def compare_versions(payload: dict):
     ws = store.get_workspace(payload.get("workspaceId", ""))
     if not ws:

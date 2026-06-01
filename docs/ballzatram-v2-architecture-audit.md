@@ -346,3 +346,44 @@ Validation run for this implementation:
 - `npm.cmd run build` in `frontend/` passed and generated the new `/internal/product-architecture` route. The build emitted existing webpack cache snapshot warnings but exited successfully.
 - `python scripts\validate_lab_readiness.py` still fails on the existing status taxonomy mismatch in `data/tool-inventory.json`: `Under Review`, `Playable Oddity`, `Playable Archive`, `Prototype Relic`, and `Back Issue` are not accepted by the validator.
 - `python -m pytest -q` in `backend/` could not run in this local environment because `pytest` is not installed for `C:\Python314\python.exe`.
+
+### 2026-06-01 - Quant Library rename and route repositioning
+
+Repositioned the former Macro Board surface as Quant Library without deleting the existing analysis logic.
+
+Files changed in this phase include:
+
+- `frontend/src/app/quant-library/page.tsx`
+- `frontend/src/app/quant-library/layout.tsx`
+- `frontend/src/app/macro-board/page.tsx`
+- `frontend/next.config.mjs`
+- `frontend/src/components/Layout.tsx`
+- `frontend/src/app/dashboard/page.tsx`
+- `frontend/src/app/page.tsx`
+- `frontend/src/config/departments.ts`
+- `frontend/src/data/stories.ts`
+- `frontend/src/lib/workflows.ts`
+- `frontend/src/lib/econ-arcade/curriculum.ts`
+- `backend/app/main.py`
+- `backend/app/services/agent.py`
+- `backend/app/services/macro_board.py`
+- static/docs inventory files that linked to or described the market analysis surface
+
+Scope notes:
+
+- `/quant-library` is now the primary frontend route and has metadata for the Quant Library product name and positioning.
+- `/macro-board` remains available as a backwards-compatible redirect to `/quant-library`.
+- `/tools/macroboard/:path*` also redirects to `/quant-library` in the Next app.
+- The Quant Library page now has a landing structure for Overview, Rates Desk, Index & ETF Explorer, Stock Analyzer, Risk Scanner, Technical Analysis Lab, Portfolio Sandbox, and Research Notes.
+- Plain-English explanation blocks were added for each section, plus a Data & Method Notes area covering data freshness, research orientation, financial-advice boundaries, and descriptive metrics.
+- Backend `/api/quant-library/*` routes now alias the existing market-analysis handlers, while `/api/macro-board/*` routes and `backend/app/services/macro_board.py` remain in place for compatibility. Backend-generated user-facing copy was updated to Quant Library.
+- Remaining `MacroBoard`/`macro-board` references are historical audit text, compatibility redirects/routes, API plumbing, or retained legacy filesystem names such as `tools/macroboard`.
+
+Validation run for this implementation:
+
+- `npm.cmd run lint` in `frontend/` passed. This runs `tsc --noEmit`.
+- `npm.cmd run build` in `frontend/` passed and generated `/quant-library` plus the `/macro-board` redirect route. The build emitted existing webpack cache snapshot warnings but exited successfully.
+- `python scripts\validate_lab_readiness.py` still fails on the existing status taxonomy mismatch in `data/tool-inventory.json`: `Under Review`, `Playable Oddity`, `Playable Archive`, `Prototype Relic`, and `Back Issue` are not accepted by the validator.
+- `python -m pytest -q` in `backend/` still cannot run in this local environment because `pytest` is not installed for `C:\Python314\python.exe`.
+- `python -m py_compile app\api\routes.py app\main.py app\services\agent.py app\services\macro_board.py` in `backend/` passed as a lightweight syntax check for the touched backend modules.
+- There is no `npm test` script in `frontend/package.json`.

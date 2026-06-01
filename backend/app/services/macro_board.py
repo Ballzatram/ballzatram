@@ -125,9 +125,9 @@ def build_intake(prompt: str) -> dict[str, Any]:
             "inferred": inferred,
             "clarifyingQuestions": clarifying,
             "status": "empty",
-            "summary": "Start with a research prompt so MacroBoard can infer the workflow and ask sharper questions.",
+            "summary": "Start with a research prompt so Quant Library can infer the workflow and ask sharper questions.",
             "missingData": ["Research prompt"],
-            "recommendedNextSteps": ["Describe the market question or decision you want MacroBoard to support."],
+            "recommendedNextSteps": ["Describe the market question or decision you want Quant Library to support."],
         }
 
     return {
@@ -135,7 +135,7 @@ def build_intake(prompt: str) -> dict[str, Any]:
         "inferred": inferred,
         "clarifyingQuestions": clarifying,
         "status": "complete",
-        "summary": "MacroBoard inferred an initial workflow and has three clarifying questions before generating the research workspace.",
+        "summary": "Quant Library inferred an initial workflow and has three clarifying questions before generating the research workspace.",
         "missingData": [],
         "recommendedNextSteps": ["Answer the clarifying questions, then generate the research workspace."],
     }
@@ -201,7 +201,7 @@ def build_research(prompt: str, assumptions: dict[str, Any]) -> dict[str, Any]:
             _card(
                 "risk",
                 "Macro series fallback",
-                "Requested macro series were not found in the active dataset, so MacroBoard used the closest demo factors.",
+                "Requested macro series were not found in the active dataset, so Quant Library used the closest demo factors.",
                 confidence="high",
                 assumptions=["Demo factor aliases can stand in for production provider names during local workflow testing."],
                 caveats=["Review factor mapping before using this output in a paid workflow."],
@@ -216,7 +216,7 @@ def build_research(prompt: str, assumptions: dict[str, Any]) -> dict[str, Any]:
             _card(
                 "risk",
                 "Asset return fallback",
-                "The selected ticker did not overlap enough with the macro sample, so MacroBoard used the bundled asset return series.",
+                "The selected ticker did not overlap enough with the macro sample, so Quant Library used the bundled asset return series.",
                 confidence="high",
                 assumptions=["Bundled asset_ret can stand in for local workflow testing."],
                 caveats=["Use live aligned asset history before relying on the result."],
@@ -256,7 +256,7 @@ def build_research(prompt: str, assumptions: dict[str, Any]) -> dict[str, Any]:
         _card(
             "opportunity",
             "Institutional research command center",
-            "MacroBoard translated the prompt into an evidence workspace with returns, volatility, drawdown, beta, alpha, and factor diagnostics.",
+            "Quant Library translated the prompt into an evidence workspace with returns, volatility, drawdown, beta, alpha, and factor diagnostics.",
             thesis=prompt,
             metrics={"annualizedReturn": annualized_return(returns), "annualizedVolatility": annualized_volatility(returns), "sharpe": sharpe_ratio(returns), "sortino": sortino_ratio(returns), "maxDrawdown": max_drawdown(returns), "calmar": calmar_ratio(returns), "beta": ba["beta"], "alpha": ba["alpha"], "informationRatio": information_ratio(returns, bench)},
             methodology="Deterministic monthly return analytics using aligned demo/live series.",
@@ -346,7 +346,7 @@ def build_research(prompt: str, assumptions: dict[str, Any]) -> dict[str, Any]:
     ]
     status = "partial_success" if warnings or missing_data else "complete"
     summary = (
-        f"MacroBoard built a {y_col} research workspace with {len(cards)} evidence cards, "
+        f"Quant Library built a {y_col} research workspace with {len(cards)} evidence cards, "
         f"{len(risks)} risk controls, and {len(missing_data)} missing-data warnings."
     )
     return {

@@ -98,6 +98,15 @@ TOOL_OUTPUT_JSON_SCHEMA: dict[str, Any] = {
 }
 
 PROCESS_REGISTRY: Dict[str, List[AgentProcess]] = {
+    "quant-library": [
+        AgentProcess(
+            id="market-research-workspace",
+            title="Build a Quant Library research workspace",
+            outcome="A card-based market research workspace with assumptions, risks, sources, and next steps.",
+            starter_prompt="Guide me from a market question to an explainable Quant Library workspace.",
+            steps=["Clarify the decision and horizon", "Map data, assumptions, and missing evidence", "Produce recommendation, risk, and next-step cards"],
+        )
+    ],
     "macro-board": [
         AgentProcess(
             id="market-research-workspace",
@@ -345,7 +354,7 @@ def chat(page_id: str, process_id: Optional[str], message: str, conversation_id:
                 text={
                     "format": {
                         "type": "json_schema",
-                        "name": "macroboard_tool_output",
+                        "name": "quant_library_tool_output",
                         "strict": True,
                         "schema": TOOL_OUTPUT_JSON_SCHEMA,
                     }

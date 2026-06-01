@@ -151,7 +151,7 @@ export function EconArcadePage() {
               Econ Arcade turns economics into focused games, simulations, and
               strategic decision-making drills. Every playable module is
               surfaced here, including Invisible Hands, Central Banker,
-              Prisoner’s Dilemma, Strategy Studio, and MacroBoard.
+              Prisoner’s Dilemma, Strategy Studio, and Quant Library.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link

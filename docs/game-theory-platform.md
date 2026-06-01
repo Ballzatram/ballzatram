@@ -214,7 +214,7 @@ model StrategyNote {
 
 ### Phase 1 — MVP
 - Econ Arcade menu and one polished single-player lab.
-- Prisoner’s Dilemma, Central Banker, and MacroBoard as homepage-accessible modules.
+- Prisoner's Dilemma, Central Banker, and Quant Library as homepage-accessible modules.
 - Local replay trace, deterministic AI policies, payoff visualization, and educational feedback.
 - Content blueprint and reusable simulation contract.
 

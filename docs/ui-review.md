@@ -7,7 +7,8 @@ Date: 2026-05-22
 Reviewed the public visitor surfaces that are reachable from the Ballzatram frontend:
 
 - `/`
-- `/macro-board`
+- `/quant-library`
+- `/macro-board` redirect compatibility
 - `/econ-arcade`
 - `/econ-arcade/supply-demand-lab`
 - `/econ-arcade/invisible-hands`
@@ -30,10 +31,10 @@ Review methods:
 
 - Restored the homepage to the old blue-sky Ballzatram visual language while keeping the newer creative-universe positioning.
 - Added a dedicated animated sky layer with distant, middle, and foreground clouds, subtle parallax, sun glow, horizon shimmer, and reduced-motion fallback.
-- Scoped the blue/cloud shell to the homepage so Penitent, MacroBoard, and Econ Arcade keep their own route identities.
+- Scoped the blue/cloud shell to the homepage so Penitent, Quant Library, and Econ Arcade keep their own route identities.
 - Fixed the `/econ-arcade` route conflict by moving the preserved static arcade artifact to `/legacy-econ-arcade`.
 - Replaced fragile public symlink paths for linked static arcade/game/docs artifacts with real `frontend/public` copies for the visitor-facing pages.
-- Updated old static artifact links so they return to the Next homepage, Econ Arcade hub, MacroBoard route, and archive docs correctly.
+- Updated old static artifact links so they return to the Next homepage, Econ Arcade hub, Quant Library route, and archive docs correctly.
 - Fixed mobile horizontal overflow in the shared non-home header.
 - Fixed Penitent stage overflow caused by combining shell padding with `vw` sizing.
 - Tightened the follow-up blue-sky homepage polish: larger wordmark, smaller old-style nav, clearer Toolbox links, removed the homepage music section, and quieted the Lore placeholder.
@@ -44,7 +45,7 @@ Review methods:
 
 ### Must Fix
 
-No route-blocking UI issues remained after this pass. The root route loads the Ballzatram homepage, MacroBoard stays on `/macro-board`, `/econ-arcade` loads the App Router hub, and the preserved static arcade/game artifacts are reachable.
+No route-blocking UI issues remained after this pass. The root route loads the Ballzatram homepage, Quant Library now lives on `/quant-library`, `/macro-board` redirects for old bookmarks, `/econ-arcade` loads the App Router hub, and the preserved static arcade/game artifacts are reachable.
 
 ### Should Fix
 
@@ -52,7 +53,7 @@ No route-blocking UI issues remained after this pass. The root route loads the B
    - The route renders visually, but the browser audit did not find a page-level `h1`.
    - Add a semantic title, landmark structure, and screen-reader-friendly state summary.
 
-2. MacroBoard still reads more like a dashboard than a world artifact.
+2. Quant Library still reads more like a dashboard than a world artifact.
    - The route is functional and correctly separated from `/`.
    - Future visual work should frame it as a workshop instrument rather than a general productivity interface.
 
@@ -85,8 +86,9 @@ No route-blocking UI issues remained after this pass. The root route loads the B
 
 Current pass verified:
 
-- `/` renders the blue/cloud homepage and does not redirect to MacroBoard.
-- `/macro-board` renders with its workflow navigation.
+- `/` renders the blue/cloud homepage and does not redirect to Quant Library.
+- `/quant-library` renders with its workflow navigation.
+- `/macro-board` redirects to `/quant-library`.
 - `/econ-arcade` renders after removing the public route conflict.
 - `/penitent` and `/penitent/rhythm` remain visually separate from the sky shell.
 - `/weather-bot.html` loads from the Toolbox card and returns to the homepage/workshop anchors.

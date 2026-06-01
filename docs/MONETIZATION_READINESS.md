@@ -77,8 +77,8 @@ Status labels should tell users what to expect before they click.
 | Parcel | Prototype land research workflow with explicit source quality. | Good Lab Pass candidate as research/diligence workflow. Do not sell verified acquisition decisions. |
 | AI Edit | Backend-required render workflow with rights-approved media guardrails. | Good candidate with quotas and clear render limits. Do not sell unlimited rendering. |
 | Weather Desk | Paper-mode weather market worksheet. | Can be included as education/simulation. Do not add live order placement. |
-| MacroBoard static | Prototype education-first macro dashboard. | Can be included as a learning and analysis artifact. Do not frame as personalized recommendations. |
-| Next MacroBoard | Alpha AI workflow with prototype persistence. | Promising, but durable paid workspaces need auth, Postgres, and user-scoped storage. |
+| Quant Library static archive | Prototype education-first market analysis dashboard. | Can be included as a learning and analysis artifact. Do not frame as personalized recommendations. |
+| Quant Library | Alpha AI workflow with prototype persistence. | Promising, but durable paid workspaces need auth, Postgres, and user-scoped storage. |
 | Econ Arcade | Playable economics game hub. | Strong Lab Pass value through archive, drops, saves, and future scenarios. |
 | Strategy Studio | Playable game theory curriculum. | Good member archive/drop candidate. |
 | Central Banker | Playable macro policy game. | Good public preview and member scenario expansion candidate. |
@@ -94,7 +94,7 @@ Status labels should tell users what to expect before they click.
 - Weather Desk remains research and paper mode only.
 - Parcel must keep source, truth, verification, and diligence language visible.
 - AI Edit must require rights-approved or permissioned media and backend rendering for real exports.
-- MacroBoard must avoid personalized recommendation language.
+- Quant Library must avoid personalized recommendation language.
 - Provider keys, payment secrets, auth secrets, and entitlement logic stay server-side only.
 - Static public pages must not imply checkout, membership activation, or paid entitlements exist today.
 
