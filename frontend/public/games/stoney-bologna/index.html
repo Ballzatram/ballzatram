@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="A static Ballzatram police-blotter text adventure starring Stoney Bologna at South Gate Mall." />
+  <meta name="theme-color" content="#0589d1" />
+  <title>Stoney Bologna&rsquo;s Bullshit Simulator 7: Siege of South Gate Mall</title>
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="stoney-bologna.css" />
+</head>
+
+<body>
+  <a class="skip-link" href="#dispatch-game">Skip to game</a>
+  <div class="sky stoney-sky" id="sky">
+    <header class="site-header">
+      <a class="brand-logo" href="/" aria-label="Ballzatram home">
+        <img src="/assets/title.png" alt="Ballzatram" />
+      </a>
+
+      <nav class="nav-panel" aria-label="Main navigation">
+        <a href="/#front-page">Front Page</a>
+        <span></span>
+        <a href="/#back-issues">Back Issues</a>
+        <span></span>
+        <a href="/tools/parcel/index.html">Parcel</a>
+        <span></span>
+        <a href="/macro-board">MacroBoard</a>
+      </nav>
+    </header>
+
+    <main class="stoney-page-shell">
+      <section class="stoney-hero terminal-card" aria-labelledby="stoneyTitle">
+        <div>
+          <p class="eyebrow">Police Blotter Serial // Ballzatram dispatch</p>
+          <h1 id="stoneyTitle">Stoney Bologna&rsquo;s Bullshit Simulator 7: Siege of South Gate Mall</h1>
+          <p class="stoney-subtitle">
+            A static, no-backend text adventure about bluffing, cameras, mall management, and the terrible gravity of a press conference.
+          </p>
+          <div class="stoney-notice">Comedic civic nonsense. No graphic violence. Every useful outcome is probably somebody else doing real work.</div>
+        </div>
+        <aside class="blotter-teaser" aria-label="Dispatch metadata">
+          <span>Yuma blotter</span>
+          <strong>Case 7-SGM</strong>
+          <p>Filed under: hostage safety, media heat, tactical pretzels, suspicious confidence.</p>
+        </aside>
+      </section>
+
+      <section class="blotter-game" id="dispatch-game" aria-label="Interactive police blotter game">
+        <article class="case-file">
+          <div class="case-file__meta">
+            <span data-scene-count>Opening Scene</span>
+            <span>Interactive clipping</span>
+          </div>
+          <h2 data-scene-title>Opening Scene</h2>
+          <p data-scene-body></p>
+          <div class="action-stack" data-actions aria-label="Available actions"></div>
+          <div class="dispatch-log" aria-live="polite" data-dispatch-log></div>
+        </article>
+
+        <aside class="meter-board" aria-label="State meters">
+          <div class="meter-board__heading">
+            <span>Public safety dashboard</span>
+            <button type="button" data-reset-game>Reset case</button>
+          </div>
+          <div class="meter-list" data-meter-list></div>
+        </aside>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="/#front-page">Front Page</a>
+        <a href="/#back-issues">Back Issues</a>
+        <a href="/community.html">Community</a>
+      </nav>
+      <p>Filed from the hangar. Cross-checked by nobody named Stoney.</p>
+    </footer>
+  </div>
+
+  <script src="/script.js"></script>
+  <script src="stoney-bologna.js"></script>
+</body>
+
+</html>

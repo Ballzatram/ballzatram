@@ -4,14 +4,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Ballzatram is a strange workshop of playable tools, games, prototypes, simulations, oddities, AI toys, and useful little machines." />
+  <meta name="description" content="Ballzatram is a strange workshop newspaper of useful machines, playable reports, public nonsense, and honestly labeled prototypes." />
   <meta name="theme-color" content="#0589d1" />
-  <title>Ballzatram | Strange Workshop of Tools, Games, and Oddities</title>
+  <title>Ballzatram | A Strange Workshop Paper</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <a class="skip-link" href="#tools">Skip to tools</a>
+  <a class="skip-link" href="#front-page">Skip to front page</a>
   <div class="sky" id="sky">
     <header class="site-header">
       <a class="brand-logo" href="./index.html" aria-label="Ballzatram home">
@@ -19,9 +19,11 @@
       </a>
 
       <nav class="nav-panel" aria-label="Main navigation">
-        <a href="#tools">Workshop</a>
+        <a href="#front-page">Front Page</a>
         <span></span>
-        <a href="#spin-lab">Spin</a>
+        <a href="#back-issues">Back Issues</a>
+        <span></span>
+        <a href="games/stoney-bologna/index.html">Blotter</a>
         <span></span>
         <a href="lab-pass.html">Lab Pass</a>
         <span></span>
@@ -29,141 +31,178 @@
       </nav>
     </header>
 
-    <main class="homepage-main">
-      <section class="hero-shell" aria-labelledby="homeHeroTitle">
-        <div class="hero-copy">
-          <p class="eyebrow">Strange workshop // playable artifacts // useful little machines</p>
+    <main class="homepage-main newspaper-home">
+      <section class="paper-masthead" aria-labelledby="homeHeroTitle">
+        <div class="paper-masthead__copy">
+          <p class="eyebrow">Hangar edition // useful machines // playable reports</p>
 
-          <h1 id="homeHeroTitle">Welcome to the living lab.</h1>
+          <h1 id="homeHeroTitle" class="paper-nameplate">
+            <img src="assets/title.png" alt="Ballzatram" />
+          </h1>
+
+          <p class="paper-subtitle">
+            A strange workshop paper of useful machines, playable reports, and public nonsense.
+          </p>
+
+          <div class="issue-strip" aria-label="Issue metadata">
+            <span>Vol. 1</span>
+            <span>Issue 7</span>
+            <span>Filed from the hangar</span>
+            <span>Early access edition</span>
+          </div>
 
           <div class="headline-rule"></div>
 
           <p class="hero-text">
-            Ballzatram is a strange workshop of playable tools, games, prototypes, simulations, oddities, AI toys, relics, artifacts, and useful little machines.
+            Ballzatram is still the same blue-sky workshop: part living lab, part tool bench, part rocketeer incident report. The front page is narrower now, so the active machines get room to breathe and the archive can stay weird without pretending everything is equally done.
           </p>
           <p class="hero-text">
-            Some things are polished. Some are prototypes. Some may break. Everything is labeled honestly.
+            Some dispatches are useful. Some are playable. Some are only safe if you read the label. The paper prints the label.
           </p>
 
           <div class="trust-row" aria-label="Site quality markers">
-            <span>Early access</span>
-            <span>Honest status labels</span>
-            <span>No fake checkout</span>
+            <span>Active prototypes marked plainly</span>
+            <span>No fake polish</span>
+            <span>Archive intact</span>
           </div>
 
           <div class="hero-actions">
-            <a class="primary-button" href="lab-pass.html">Preview Lab Pass</a>
-            <a class="secondary-button" href="#spin-lab">Spin the Lab</a>
-            <a class="secondary-button weather-action" href="community.html">Suggest an Experiment</a>
+            <a class="primary-button" href="#front-page">Read the Front Page</a>
+            <a class="secondary-button" href="games/stoney-bologna/index.html">Open Police Blotter</a>
+            <a class="secondary-button weather-action" href="#back-issues">Visit the Morgue</a>
           </div>
         </div>
 
-        <div class="ballzatram">
+        <div class="ballzatram paper-rocketeer">
           <img src="assets/ballzatram.png" alt="Ballzatram rocketeer flying with guitar" />
         </div>
       </section>
 
-      <section class="mission-panel platform-thesis" aria-labelledby="missionTitle">
-        <p class="eyebrow">Lab contract</p>
-        <h2 id="missionTitle">A workshop can be rough and still be trustworthy.</h2>
+      <section class="mission-panel editorial-standards" aria-labelledby="missionTitle">
+        <p class="eyebrow">Editorial standards</p>
+        <h2 id="missionTitle">A workshop can be rough and still print corrections.</h2>
         <div class="mission-grid">
-          <article><strong>Status</strong><span>Every artifact should say whether it is a toy, prototype, playable lab, paper-mode tool, or backend-required machine.</span></article>
-          <article><strong>Safety</strong><span>Weather stays paper mode. Parcel keeps source caveats. AI Edit keeps rights-approved media boundaries.</span></article>
-          <article><strong>Membership</strong><span>Lab Pass can support early access, archive, drops, favorites, suggestions, votes, and dev notes before checkout goes live.</span></article>
+          <article><strong>Status</strong><span>Every machine gets a readable label: active prototype, playable oddity, back issue, backend-required, or under review.</span></article>
+          <article><strong>Caveats</strong><span>Parcel keeps diligence caveats. MacroBoard keeps market uncertainty visible. The games remain games, even when they wear a badge.</span></article>
+          <article><strong>Morgue</strong><span>Older experiments are not erased. They move to clippings, back issues, and relic drawers when they are not leading the paper.</span></article>
         </div>
       </section>
 
-      <section class="tool-category" id="tools" aria-labelledby="toolsTitle">
+      <section class="front-page-section" id="front-page" aria-labelledby="frontPageTitle">
         <div class="category-heading">
-          <p class="eyebrow">Tools, machines, and experiments</p>
-          <h2 id="toolsTitle">Workshop floor</h2>
+          <p class="eyebrow">Today's columns</p>
+          <h2 id="frontPageTitle">Front Page Desk</h2>
         </div>
-        <div class="dock" aria-label="Ballzatram tools and artifacts">
-          <article class="dock-card featured">
-            <div class="card-icon">P</div>
-            <div>
-              <span class="tool-status experimental">Prototype</span>
-              <span class="card-kicker">Tool 001 - land research</span>
-              <h2>Parcel</h2>
-              <p>
-                A land-acquisition research machine that turns a thesis into source-aware opportunities, caveats, confidence notes, and diligence questions.
-              </p>
-              <a href="/tools/parcel/index.html">Launch Parcel</a>
-            </div>
+
+        <div class="front-page-grid" aria-label="Active Ballzatram columns">
+          <article class="lead-dispatch">
+            <span class="dispatch-stamp">Filed 07:13 from Hangar B</span>
+            <h2>The living lab narrows the front page.</h2>
+            <p>
+              Three columns are currently above the fold: land diligence, macro risk, and one mall-police fiasco preserved as a playable report. Everything else is still in the building, just not shouting from the masthead.
+            </p>
           </article>
 
-          <article class="dock-card">
-            <div class="card-icon purple">E</div>
-            <div>
-              <span class="tool-status experimental">Backend Required</span>
-              <span class="card-kicker">AI toy - creative production</span>
-              <h2>AI Edit</h2>
-              <p>Upload rights-approved media, draft edit recipes, and render MP4s only when the backend worker path is available.</p>
-              <a href="/ai-edit-factory/">Open AI Edit</a>
-            </div>
+          <article class="classified-note">
+            <span class="dispatch-stamp">Classified</span>
+            <h3>Wanted: better questions.</h3>
+            <p>Bring zoning mysteries, portfolio anxieties, broker riddles, and public nonsense. Ballzatram will not promise certainty, but it will assemble a machine and label the loose bolts.</p>
           </article>
 
-          <article class="dock-card weather-feature">
-            <div class="card-icon teal">W</div>
-            <div>
-              <span class="tool-status live">Paper Mode</span>
-              <span class="card-kicker">Tool 003 - weather markets</span>
-              <h2>Weather Desk</h2>
-              <p>Evaluate weather-market props with risk-adjusted edge, capped paper sizing, settlement reminders, and no browser live-trading path.</p>
-              <a href="/weather-bot.html">Open Weather Desk</a>
+          <article class="dispatch-card dispatch-card--parcel">
+            <div class="dispatch-card__topline">
+              <span class="dispatch-label">The Land Desk</span>
+              <span class="tool-status experimental">Active Prototype</span>
             </div>
+            <h2>Parcel</h2>
+            <p class="byline">By the Zoning Caveat Department</p>
+            <p>
+              A due-diligence report machine for parcels, zoning mysteries, development hunches, caveats, and broker questions.
+            </p>
+            <a href="tools/parcel/index.html">Launch Parcel</a>
           </article>
 
-          <article class="dock-card" id="projects">
-            <div class="card-icon">M</div>
-            <div>
-              <span class="tool-status experimental">Prototype</span>
-              <span class="card-kicker">Tool 004 - macro intelligence</span>
-              <h2>MacroBoard</h2>
-              <p>Turn market questions into a decision workspace with evidence cards, risks, missing-data warnings, source handling, and report-ready next steps.</p>
-              <a href="/tools/macroboard/index.html">Open MacroBoard</a>
+          <article class="dispatch-card dispatch-card--macro">
+            <div class="dispatch-card__topline">
+              <span class="dispatch-label">The Markets Page</span>
+              <span class="tool-status experimental">Active Prototype</span>
             </div>
+            <h2>MacroBoard</h2>
+            <p class="byline">By the Scenario Desk</p>
+            <p>
+              A plain-English portfolio and macro scenario desk for understanding what you own, what can hurt you, and what the market is yelling about.
+            </p>
+            <a href="tools/macroboard/index.html">Open MacroBoard</a>
+          </article>
+
+          <article class="dispatch-card dispatch-card--stoney">
+            <div class="dispatch-card__topline">
+              <span class="dispatch-label">Police Blotter Serial</span>
+              <span class="tool-status live">Playable Oddity</span>
+            </div>
+            <h2>Stoney Bologna&rsquo;s Bullshit Simulator 7</h2>
+            <p class="byline">Yuma dispatch, mall desk</p>
+            <p>
+              Yuma&rsquo;s least-qualified police chief attempts to bluff through a hostage crisis at South Gate Mall without letting the cameras realize he has no idea what he is doing.
+            </p>
+            <a href="games/stoney-bologna/index.html">Read the Blotter</a>
           </article>
         </div>
       </section>
 
-      <section class="tool-category" id="games" aria-labelledby="gamesTitle">
+      <section class="archive-section" id="back-issues" aria-labelledby="archiveTitle">
         <div class="category-heading">
-          <p class="eyebrow">Games, simulations, and relics</p>
-          <h2 id="gamesTitle">Playable shelf</h2>
+          <p class="eyebrow">Back Issues / The Morgue</p>
+          <h2 id="archiveTitle">Clippings Still Breathing</h2>
         </div>
-        <div class="dock" aria-label="Ballzatram games and simulations">
-          <article class="dock-card">
-            <div class="card-icon blue">A</div>
-            <div>
-              <span class="tool-status live">Playable</span>
-              <span class="card-kicker">Economics learning cabinet</span>
-              <h2>Econ Arcade</h2>
-              <p>A strategy-learning bay for supply and demand, repeated games, macro policy, global systems pressure, and debrief-driven economic intuition.</p>
-              <a href="/econ-arcade/index.html">Open Econ Arcade</a>
-            </div>
+
+        <div class="archive-grid" aria-label="Archived Ballzatram experiments">
+          <article class="archive-card archive-card--manuscript">
+            <span class="archive-stamp">Back Issue</span>
+            <h3>The Penitent 2</h3>
+            <p>A playable manuscript relic with hymns, crusades, and suspiciously dramatic marginalia. Off the front page, not buried.</p>
+            <div class="archive-labels"><span>Playable Archive</span><span>Prototype Relic</span></div>
+            <a href="/penitent">Open clipping</a>
           </article>
 
-          <article class="dock-card">
-            <div class="card-icon blue">S</div>
-            <div>
-              <span class="tool-status live">Playable</span>
-              <span class="card-kicker">Game theory suite</span>
-              <h2>Strategy Studio</h2>
-              <p>Explore a curriculum map with playable concept engines, decision analysis, formal concepts, and replay prompts.</p>
-              <a href="/econ-arcade/platform.html">Open Strategy Studio</a>
-            </div>
+          <article class="archive-card archive-card--arcade">
+            <span class="archive-stamp">Back Issue</span>
+            <h3>Econ Arcade</h3>
+            <p>Economics games, simulations, and learning cabinets filed together for readers who like curves with buttons on them.</p>
+            <div class="archive-labels"><span>Playable Archive</span></div>
+            <a href="econ-arcade/index.html">Open clipping</a>
           </article>
 
-          <article class="dock-card">
-            <div class="card-icon blue">C</div>
-            <div>
-              <span class="tool-status live">Playable</span>
-              <span class="card-kicker">Macro policy game</span>
-              <h2>Central Banker</h2>
-              <p>Run a fictional central bank through policy shocks, advisor modes, dashboards, and end-of-term concept debriefs.</p>
-              <a href="/games/central-bank.html">Play Central Banker</a>
-            </div>
+          <article class="archive-card archive-card--strategy">
+            <span class="archive-stamp">Back Issue</span>
+            <h3>Strategy Studio</h3>
+            <p>A game-theory curriculum map of bargaining, auctions, repeated games, and rational-choice machinery.</p>
+            <div class="archive-labels"><span>Playable Archive</span></div>
+            <a href="econ-arcade/platform.html">Open clipping</a>
+          </article>
+
+          <article class="archive-card archive-card--policy">
+            <span class="archive-stamp">Playable Archive</span>
+            <h3>Central Banker</h3>
+            <p>A fictional policy desk for shocks, inflation pressure, credibility, dashboards, and end-of-term debriefs.</p>
+            <div class="archive-labels"><span>Prototype Relic</span></div>
+            <a href="games/central-bank.html">Open clipping</a>
+          </article>
+
+          <article class="archive-card archive-card--weather">
+            <span class="archive-stamp">Under Review</span>
+            <h3>Weather Desk</h3>
+            <p>Paper-mode weather-market worksheets with settlement reminders and no live-trading wire hidden behind the curtain.</p>
+            <div class="archive-labels"><span>Back Issue</span><span>Under Review</span></div>
+            <a href="weather-bot.html">Open clipping</a>
+          </article>
+
+          <article class="archive-card archive-card--edit">
+            <span class="archive-stamp">Requires Backend</span>
+            <h3>AI Edit</h3>
+            <p>A rights-approved edit factory that still needs its worker path awake before it can behave like a production machine.</p>
+            <div class="archive-labels"><span>Requires Backend</span><span>Prototype Relic</span></div>
+            <a href="ai-edit-factory/">Open clipping</a>
           </article>
         </div>
       </section>
@@ -172,12 +211,12 @@
         <div class="lab-section-heading">
           <div>
             <p class="eyebrow">Discovery machine</p>
-            <h2 id="spinLabTitle">Spin the Lab</h2>
+            <h2 id="spinLabTitle">Spin the Morgue</h2>
           </div>
-          <button class="primary-button" type="button" data-spin-button>Spin the Lab</button>
+          <button class="primary-button" type="button" data-spin-button>Spin the Morgue</button>
         </div>
         <p class="lab-page-copy">
-          Pull a small medley from the workshop: one tool, one game or simulation, one prototype or oddity, and sometimes a roadmap ghost. Discovery only, just a guided shuffle through the archive.
+          Pull a small medley from the paper: one active desk, one playable oddity, one back issue, and sometimes a roadmap ghost. Discovery only, just a guided shuffle through the archive drawers.
         </p>
         <div class="local-prototype-note">
           Favorites are saved in this browser only for now. No account, backend, or member entitlement exists yet.
@@ -188,13 +227,13 @@
       <section class="mission-panel favorites-panel" aria-labelledby="favoritesTitle" data-favorites-panel>
         <div class="lab-section-heading">
           <div>
-            <p class="eyebrow">Local shelf</p>
-            <h2 id="favoritesTitle">Saved favorites</h2>
+            <p class="eyebrow">Reader shelf</p>
+            <h2 id="favoritesTitle">Saved clippings</h2>
           </div>
-          <button class="secondary-button" type="button" data-clear-favorites>Clear favorites</button>
+          <button class="secondary-button" type="button" data-clear-favorites>Clear clippings</button>
         </div>
         <p class="lab-page-copy">
-          Local/browser-only prototype: saved favorites stay on this device until real member accounts exist.
+          Local/browser-only prototype: saved clippings stay on this device until real member accounts exist.
         </p>
         <div class="favorites-list" data-favorites-list aria-live="polite"></div>
       </section>
@@ -202,12 +241,14 @@
 
     <footer class="site-footer">
       <nav class="footer-links" aria-label="Footer navigation">
+        <a href="#front-page">Front Page</a>
+        <a href="#back-issues">Back Issues</a>
         <a href="lab-pass.html">Lab Pass</a>
         <a href="community.html">Community</a>
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
       </nav>
-      <p>Built in the hangar. Fueled by curiosity. Labeled honestly.</p>
+      <p>Built in the hangar. Filed with caveats. Labeled honestly.</p>
     </footer>
   </div>
 

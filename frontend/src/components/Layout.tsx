@@ -37,33 +37,28 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </Link>
             <p>Work Shop of games, relics, and strange machinery</p>
           </div>
-          {!isHome ? (
-            <>
-              <button
-                type="button"
-                className="ballzatram-mobile-nav-toggle"
-                aria-expanded={mobileNavOpen}
-                aria-controls="ballzatram-main-nav"
-                onClick={() => setMobileNavOpen((open) => !open)}
-              >
-                <span>{mobileNavOpen ? "Close menu" : "Open menu"}</span>
-              </button>
-              <nav
-                id="ballzatram-main-nav"
-                className={`ballzatram-main-nav ${mobileNavOpen ? "is-open" : ""}`}
-                aria-label="Ballzatram sections"
-              >
-                <Link href={"/" as Route} aria-current={currentPath === "/" ? "page" : undefined}>Home</Link>
-                <Link href={"/#toolbox" as Route}>Toolbox</Link>
-                <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Econ Arcade</Link>
-                <Link href={"/penitent" as Route} aria-current={currentPath.startsWith("/penitent") ? "page" : undefined}>Manuscript</Link>
-                <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>Macro Board</Link>
-                <Link href={"/weather-bot.html" as Route}>Weather Desk</Link>
-                <Link href={"/#workshop" as Route}>Workshop</Link>
-                <Link href={"/#lore" as Route}>Lore</Link>
-              </nav>
-            </>
-          ) : null}
+          <button
+            type="button"
+            className="ballzatram-mobile-nav-toggle"
+            aria-expanded={mobileNavOpen}
+            aria-controls="ballzatram-main-nav"
+            onClick={() => setMobileNavOpen((open) => !open)}
+          >
+            <span>{mobileNavOpen ? "Close menu" : "Open menu"}</span>
+          </button>
+          <nav
+            id="ballzatram-main-nav"
+            className={`ballzatram-main-nav ${mobileNavOpen ? "is-open" : ""}`}
+            aria-label="Ballzatram sections"
+          >
+            <Link href={"/" as Route} aria-current={currentPath === "/" ? "page" : undefined}>Home</Link>
+            <Link href={"/#front-page" as Route}>Front Page</Link>
+            <Link href={"/#back-issues" as Route}>Back Issues</Link>
+            <Link href={"/games/stoney-bologna/index.html" as Route}>Blotter</Link>
+            <Link href={"/tools/parcel/index.html" as Route}>Parcel</Link>
+            <Link href={"/macro-board" as Route} aria-current={currentPath === "/macro-board" ? "page" : undefined}>MacroBoard</Link>
+            <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Archive</Link>
+          </nav>
         </div>
         {isMacroRoute ? (
           <nav className="ballzatram-workflow-nav" aria-label="MacroBoard instruments">
