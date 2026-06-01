@@ -6,8 +6,18 @@ const nextConfig = {
   async redirects() {
     return [
       {
+        source: "/macro-board",
+        destination: "/quant-library",
+        permanent: false,
+      },
+      {
+        source: "/macro-board/:path*",
+        destination: "/quant-library",
+        permanent: false,
+      },
+      {
         source: "/tools/macroboard/:path*",
-        destination: "/macro-board",
+        destination: "/quant-library",
         permanent: false,
       },
     ];

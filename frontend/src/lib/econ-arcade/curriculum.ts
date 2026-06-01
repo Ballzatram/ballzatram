@@ -169,18 +169,18 @@ export const arcadeModules: ArcadeModule[] = [
       "A curriculum-wide game theory suite with multiple concept engines and a full campaign map.",
   },
   {
-    id: "macroboard",
-    title: "MacroBoard",
+    id: "quant-library",
+    title: "Quant Library",
     phaseId: "macro-stability",
     status: "playable",
     difficulty: "Intermediate",
-    href: "/tools/macroboard/index.html",
+    href: "/quant-library",
     hrefLabel: "Open tool",
     format: "Companion tool",
     learningGoal:
       "Applied macro data workflows, portfolio review, model governance, and scenario analysis.",
     summary:
-      "Analyze macro time series, stock workflows, portfolios, and stress scenarios in a quant-style dashboard.",
+      "Explore rates, indices, stocks, ETFs, risk, regimes, and time-series signals in an explainable research workbench.",
   },
   {
     id: "signal-vs-noise",

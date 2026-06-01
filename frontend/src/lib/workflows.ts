@@ -28,9 +28,9 @@ export const workflows: Workflow[] = [
     slug: "dashboard",
     navLabel: "Dashboard",
     eyebrow: "Command center",
-    title: "MacroBoard operating dashboard",
+    title: "Quant Library operating dashboard",
     description:
-      "Monitor demo data freshness, model coverage, and the workflows needed to move from exploratory macro analysis to a board-ready investment memo.",
+      "Monitor demo data freshness, model coverage, and the workflows needed to move from exploratory market analysis to a plain-English research note.",
     badge: "Live demo data",
     metrics: [
       { label: "Signal health", value: "81%", sub: "Composite confidence across enabled demo models" },

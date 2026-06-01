@@ -34,13 +34,13 @@ const frontPageColumns: FrontPageColumn[] = [
     byline: "By the Zoning Caveat Department",
   },
   {
-    title: "MacroBoard",
+    title: "Quant Library",
     desk: "The Markets Page",
     status: "Active Prototype",
     copy:
-      "A plain-English portfolio and macro scenario desk for understanding what you own, what can hurt you, and what the market is yelling about.",
-    href: "/macro-board" as Route,
-    cta: "Open MacroBoard",
+      "An explainable market analysis desk for rates, indices, stocks, ETFs, risk, regimes, and time-series signals.",
+    href: "/quant-library" as Route,
+    cta: "Open Quant Library",
     tone: "macro",
     byline: "By the Scenario Desk",
   },

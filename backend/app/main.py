@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
 
-app = FastAPI(title="MacroBoard Analytics API", version="0.1.0")
+app = FastAPI(title="Quant Library Analytics API", version="0.1.0")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[

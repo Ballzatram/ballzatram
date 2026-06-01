@@ -5,17 +5,17 @@ export const demoStories = [
   {
     id: "demo-market-breadth-check",
     title: "Market Breadth Check Waits For A Real Quant Library Run",
-    dek: "A placeholder markets story showing how MacroBoard-style analysis could become a newspaper item.",
+    dek: "A placeholder markets story showing how Quant Library analysis could become a newspaper item.",
     departmentId: "quant-library",
     publishedAt: "2026-06-01T09:00:00.000Z",
     updatedAt: "2026-06-01T09:00:00.000Z",
     status: "draft",
     sourceType: "tool-generated",
-    sourceToolId: "macroboard",
+    sourceToolId: "quant-library",
     heroLabel: "Demo Markets Story",
-    tags: ["demo", "markets", "macroboard", "breadth"],
+    tags: ["demo", "markets", "quant-library", "breadth"],
     summary:
-      "This demo story represents a future market breadth note generated from a validated Quant Library or MacroBoard workflow.",
+      "This demo story represents a future market breadth note generated from a validated Quant Library workflow.",
     body: [
       {
         id: "purpose",
@@ -37,8 +37,8 @@ export const demoStories = [
     ],
     relatedRoutes: [
       {
-        label: "Open MacroBoard",
-        href: "/macro-board",
+        label: "Open Quant Library",
+        href: "/quant-library",
         description: "Current prototype surface for market and macro workflow cards.",
       },
     ],

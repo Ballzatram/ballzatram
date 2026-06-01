@@ -60,10 +60,10 @@ export const departments = [
     shortTitle: "Markets",
     slug: "quant-library",
     description:
-      "The markets desk for macro research, portfolio diagnostics, factor notes, and future quantitative notebooks.",
+      "The Markets department: an explainable research desk for rates, indices, stocks, ETFs, risk, regimes, and time-series signals.",
     status: "planned",
     type: "analysis",
-    primaryRoute: "/macro-board",
+    primaryRoute: "/quant-library",
     accentLabel: "Markets",
     storyEnabled: true,
     toolEnabled: true,

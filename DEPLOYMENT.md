@@ -5,7 +5,8 @@ Ballzatram production is the AI process platform, not the retired AI Edit Factor
 Production should serve:
 
 - `https://ballzatram.com/` through the Next.js frontend
-- `https://ballzatram.com/macro-board` through the AI-guided MacroBoard route
+- `https://ballzatram.com/quant-library` through the AI-guided Quant Library route
+- `https://ballzatram.com/macro-board` as a backwards-compatible redirect to Quant Library
 - `https://ballzatram.com/api/*` through the FastAPI AI/process backend
 
 Do not put secrets in browser files, static docs, or committed build artifacts. Provider keys belong in `/root/ballzatram/.env.production` on the server or in GitHub deployment secrets.
@@ -112,7 +113,7 @@ Run:
 
 ```bash
 curl -fsS https://ballzatram.com/api/version
-curl -I https://ballzatram.com/macro-board
+curl -I https://ballzatram.com/quant-library
 curl -I https://ballzatram.com/backend/app/main.py
 curl -I https://ballzatram.com/frontend/package.json
 curl -I https://ballzatram.com/ai-edit-factory/docker-compose.prod.yml
@@ -121,7 +122,8 @@ curl -I https://ballzatram.com/ai-edit-factory/docker-compose.prod.yml
 Expected:
 
 - `/api/version` returns the current commit
-- `/macro-board` returns the Next.js app
+- `/quant-library` returns the Next.js app
+- `/macro-board` redirects to `/quant-library`
 - source-tree paths return `404`, not `200`
 
 Local/server helper:
