@@ -13,6 +13,7 @@ import {
   RiskCard,
   SourceList,
 } from "@/components/ai-tools/ToolPrimitives";
+import { api, type QuantLibraryAnalyticsDemoResponse } from "@/lib/api";
 import type { ToolCard, ToolConfidence, ToolRisk, ToolSource, ToolStatus } from "@/lib/toolOutput";
 
 type IntakeQuestion = {
@@ -181,6 +182,16 @@ const librarySections: LibrarySection[] = [
   },
 ];
 
+function formatNumber(value: number | null | undefined, digits = 2) {
+  if (typeof value !== "number" || Number.isNaN(value)) return "n/a";
+  return value.toLocaleString(undefined, { maximumFractionDigits: digits });
+}
+
+function formatPercent(value: number | null | undefined, digits = 1) {
+  if (typeof value !== "number" || Number.isNaN(value)) return "n/a";
+  return `${(value * 100).toLocaleString(undefined, { maximumFractionDigits: digits })}%`;
+}
+
 export default function QuantLibraryPage() {
   const [prompt, setPrompt] = useState("Explain what is moving markets right now without making a prediction");
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
@@ -190,6 +201,9 @@ export default function QuantLibraryPage() {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<"loading" | "intake" | "generate" | "rerun" | null>("loading");
   const [error, setError] = useState<string | null>(null);
+  const [analyticsDemo, setAnalyticsDemo] = useState<QuantLibraryAnalyticsDemoResponse | null>(null);
+  const [analyticsBusy, setAnalyticsBusy] = useState(true);
+  const [analyticsError, setAnalyticsError] = useState<string | null>(null);
 
   const active = useMemo(() => workspaces.find((workspace) => workspace.workspace_id === activeId) ?? null, [workspaces, activeId]);
   const currentVersion = active?.versions?.[active.versions.length - 1];
@@ -212,6 +226,26 @@ export default function QuantLibraryPage() {
 
   useEffect(() => {
     void load();
+  }, []);
+
+  useEffect(() => {
+    let mounted = true;
+    api.quantLibraryAnalyticsDemo(["SPY", "QQQ", "TLT"], "SPY")
+      .then((data) => {
+        if (!mounted) return;
+        setAnalyticsDemo(data);
+        setAnalyticsError(null);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        setAnalyticsError(err instanceof Error ? err.message : "Could not load analytics demo.");
+      })
+      .finally(() => {
+        if (mounted) setAnalyticsBusy(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
   async function runIntake() {
@@ -334,6 +368,98 @@ export default function QuantLibraryPage() {
             </article>
           ))}
         </div>
+      </section>
+
+      <section className="space-y-4 rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300">Internal analytics foundation</p>
+            <h2 className="mt-2 text-2xl font-semibold text-white">Provider-backed demo metrics</h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">
+              A small proof that symbols can load through the market-data abstraction, metrics can calculate, explanation metadata can render, and fallback data is labeled clearly.
+            </p>
+          </div>
+          {analyticsDemo ? (
+            <span className="rounded-full border border-slate-700 px-3 py-2 text-xs font-semibold uppercase tracking-[0.16em] text-slate-300">
+              {analyticsDemo.provider} / {analyticsDemo.status.replace("_", " ")}
+            </span>
+          ) : null}
+        </div>
+
+        {analyticsBusy ? <LoadingState message="Loading demo market data and analytics metadata..." /> : null}
+        {!analyticsBusy && analyticsError ? (
+          <ErrorState message={`Analytics preview unavailable. The page is still safe to use; backend demo endpoint returned: ${analyticsError}`} />
+        ) : null}
+        {!analyticsBusy && analyticsDemo ? (
+          <div className="space-y-5">
+            <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
+              <div className="grid gap-3 md:grid-cols-3">
+                {analyticsDemo.symbols.slice(0, 3).map((row) => (
+                  <article key={row.symbol} className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-white">{row.symbol}</h3>
+                        <p className="mt-1 text-xs leading-5 text-slate-500">{row.name}</p>
+                      </div>
+                      <span className="rounded-full border border-amber-300/40 bg-amber-300/10 px-2 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-amber-100">
+                        {row.freshness.status}
+                      </span>
+                    </div>
+                    <div className="mt-4 grid gap-2 text-sm">
+                      <p className="flex justify-between gap-3 text-slate-300"><span>Last close</span><strong className="text-white">{formatNumber(row.metrics.lastClose)}</strong></p>
+                      <p className="flex justify-between gap-3 text-slate-300"><span>Daily return</span><strong className="text-white">{formatPercent(row.metrics.latestDailyReturn)}</strong></p>
+                      <p className="flex justify-between gap-3 text-slate-300"><span>20d volatility</span><strong className="text-white">{formatPercent(row.metrics.rollingVolatility20d)}</strong></p>
+                      <p className="flex justify-between gap-3 text-slate-300"><span>Max drawdown</span><strong className="text-white">{formatPercent(row.metrics.maxDrawdown)}</strong></p>
+                      <p className="flex justify-between gap-3 text-slate-300"><span>RSI 14</span><strong className="text-white">{formatNumber(row.metrics.rsi14, 1)}</strong></p>
+                      <p className="flex justify-between gap-3 text-slate-300"><span>Beta vs {analyticsDemo.benchmark}</span><strong className="text-white">{formatNumber(row.metrics.betaVsBenchmark, 2)}</strong></p>
+                    </div>
+                  </article>
+                ))}
+              </div>
+              <article className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">Simple regime score</p>
+                <h3 className="mt-2 text-2xl font-semibold text-white">{analyticsDemo.regime.label}</h3>
+                <p className="mt-1 text-4xl font-bold text-emerald-200">{formatNumber(analyticsDemo.regime.score, 0)}</p>
+                <ul className="mt-4 space-y-2 text-sm leading-6 text-slate-400">
+                  {analyticsDemo.regime.reasons.slice(0, 3).map((reason) => <li key={reason}>{reason}</li>)}
+                </ul>
+              </article>
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              {["rollingVolatility", "maxDrawdown", "rsi"].map((metricId) => {
+                const explanation = analyticsDemo.explanations[metricId];
+                if (!explanation) return null;
+                return (
+                  <article key={metricId} className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+                    <h3 className="text-base font-semibold text-white">{explanation.name}</h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-400">{explanation.shortExplanation}</p>
+                    <p className="mt-3 text-sm leading-6 text-slate-300"><span className="font-semibold text-slate-100">Why it matters:</span> {explanation.whyItMatters}</p>
+                    <p className="mt-3 text-sm leading-6 text-amber-100"><span className="font-semibold">Caveat:</span> {explanation.caveats[0]}</p>
+                  </article>
+                );
+              })}
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <article className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+                <h3 className="text-base font-semibold text-white">Yield curve spreads</h3>
+                <div className="mt-3 grid gap-2 text-sm text-slate-300">
+                  <p className="flex justify-between"><span>2Y / 10Y</span><strong>{formatNumber(analyticsDemo.rates.spreads["2y10y"]?.latest, 2)} pts</strong></p>
+                  <p className="flex justify-between"><span>3M / 10Y</span><strong>{formatNumber(analyticsDemo.rates.spreads["3m10y"]?.latest, 2)} pts</strong></p>
+                </div>
+                <p className="mt-3 text-sm leading-6 text-slate-400">{analyticsDemo.explanations.yieldCurveSpreads?.shortExplanation}</p>
+              </article>
+              <article className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+                <h3 className="text-base font-semibold text-white">Fallback and error handling</h3>
+                <ul className="mt-3 space-y-2 text-sm leading-6 text-slate-400">
+                  {analyticsDemo.caveats.map((caveat) => <li key={caveat}>{caveat}</li>)}
+                  {analyticsDemo.errors.length ? analyticsDemo.errors.map((demoError) => <li key={`${demoError.scope}-${demoError.message}`}>{demoError.scope}: {demoError.message}</li>) : <li>No provider errors in this demo run; data is still marked as fallback.</li>}
+                </ul>
+              </article>
+            </div>
+          </div>
+        ) : null}
       </section>
 
       <div className="grid gap-5 xl:grid-cols-[0.92fr_1.08fr]">
