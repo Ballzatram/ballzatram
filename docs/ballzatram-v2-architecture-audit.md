@@ -318,3 +318,31 @@ Results:
 - `npm.cmd run lint` succeeded. This runs `tsc --noEmit` for the Next frontend.
 
 No validation-driven code rewrites were made in this discovery pass.
+
+## Implementation Notes
+
+### 2026-06-01 - Ballzatram v2 product architecture foundation
+
+Added a typed frontend product architecture foundation for departments and newspaper-style stories without rebuilding the public UI.
+
+Files added:
+
+- `frontend/src/config/departments.ts`
+- `frontend/src/types/story.ts`
+- `frontend/src/data/stories.ts`
+- `frontend/src/app/internal/product-architecture/page.tsx`
+
+Scope notes:
+
+- Department metadata now covers Ballzatram Daily, Quant Library, Bettor's Corner, Parcel, Laboratory, Culture, Arcade, Stoney Baologna, Observatory, Academy, Vault, and Ledger.
+- Story typing now supports manual, tool-generated, and hybrid story sources, related routes back to tools, confidence/caveat fields, data freshness, body sections, and reading time.
+- Demo stories are explicitly placeholder content and do not run API calls, market data fetches, AI generation, or new game logic.
+- The internal preview route is intentionally small and unlinked from public navigation: `/internal/product-architecture`.
+- Existing routes and tools were preserved.
+
+Validation run for this implementation:
+
+- `npm.cmd run lint` in `frontend/` passed. This runs `tsc --noEmit`.
+- `npm.cmd run build` in `frontend/` passed and generated the new `/internal/product-architecture` route. The build emitted existing webpack cache snapshot warnings but exited successfully.
+- `python scripts\validate_lab_readiness.py` still fails on the existing status taxonomy mismatch in `data/tool-inventory.json`: `Under Review`, `Playable Oddity`, `Playable Archive`, `Prototype Relic`, and `Back Issue` are not accepted by the validator.
+- `python -m pytest -q` in `backend/` could not run in this local environment because `pytest` is not installed for `C:\Python314\python.exe`.
