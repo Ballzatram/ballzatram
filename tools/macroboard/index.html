@@ -20,7 +20,7 @@
       <nav class="workflow-nav" id="workflow-nav"></nav>
       <div class="sidebar-card">
         <span class="eyebrow">Data rails</span>
-        <p>CSV upload works offline. Yahoo-style chart pulls and FRED macro calls run from the browser when network/CORS allows.</p>
+        <p>CSV upload works offline. Yahoo-style chart pulls may be blocked by the host. FRED live refresh requires the server-backed Quant Library route.</p>
       </div>
     </aside>
 
@@ -51,7 +51,7 @@
         <article>
           <span>03</span>
           <strong>Macro</strong>
-          <p>Refresh FRED inflation, rates, labor, credit.</p>
+          <p>Read demo macro context or use server-side FRED data.</p>
         </article>
         <article>
           <span>04</span>
@@ -77,7 +77,7 @@
           <div class="button-row">
             <button type="button" id="load-demo">Load demo portfolio</button>
             <button type="button" id="refresh-market">Pull market prices</button>
-            <button type="button" id="refresh-fred">Refresh FRED macro</button>
+            <button type="button" id="refresh-fred">Check FRED status</button>
           </div>
         </article>
 

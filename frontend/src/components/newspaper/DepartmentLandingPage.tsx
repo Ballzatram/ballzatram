@@ -71,7 +71,7 @@ export function DepartmentLandingPage({
   const prototypeRoutes = departmentPrototypeRoutes[departmentId] ?? [];
 
   return (
-    <main className="min-h-dvh bg-[#efe3c2] text-[#24150b]">
+    <section className="min-h-dvh bg-[#efe3c2] text-[#24150b]">
       <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:px-8">
         <header className="border-b-[3px] border-double border-[#24150b] pb-6">
           <EditionMeta label={editionNote} date={department.accentLabel} note={department.status} />
@@ -168,6 +168,6 @@ export function DepartmentLandingPage({
           </aside>
         </section>
       </div>
-    </main>
+    </section>
   );
 }

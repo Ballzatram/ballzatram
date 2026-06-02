@@ -1,18 +1,19 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import type { Route } from "next";
 import { stoneyProfile } from "@/config/stoney";
 import { StoneyAside, StoneyQuote, StoneyStatusLine } from "@/components/stoney/StoneyPrimitives";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Stoney Baologna | Ballzatram",
   description:
     "Profile for Stoney Baologna, Ballzatram's jester AI, resident correspondent, future playable character, and current-events nuisance.",
-};
+  path: "/stoney-baologna",
+});
 
 export default function StoneyBaolognaPage() {
   return (
-    <main className="min-h-dvh bg-[#efe3c2] text-[#24150b]">
+    <section className="min-h-dvh bg-[#efe3c2] text-[#24150b]">
       <div className="mx-auto grid w-full max-w-6xl gap-7 px-4 py-6 sm:px-6 lg:px-8">
         <header className="border-b-[3px] border-double border-[#24150b] pb-6">
           <p className="font-mono text-[0.72rem] font-black uppercase tracking-[0.2em] text-[#7a5730]">
@@ -127,6 +128,6 @@ export default function StoneyBaolognaPage() {
           </aside>
         </section>
       </div>
-    </main>
+    </section>
   );
 }

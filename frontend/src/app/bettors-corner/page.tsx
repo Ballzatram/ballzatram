@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import {
   BettingCaveatPanel,
@@ -18,12 +17,14 @@ import {
   getLineMovementDirection,
 } from "@/lib/betting-data";
 import { generateBettorsCornerDraft } from "@/lib/story-engine";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Bettor's Corner | Ballzatram",
   description:
     "An educational betting-market analysis desk for odds, implied probability, line movement, outcomes, variance, and sportsbook pricing.",
-};
+  path: "/bettors-corner",
+});
 
 type DeskSection = {
   id: string;

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { departmentById } from "@/config/departments";
 import { demoStories, getStoryBySlug, getStorySlug } from "@/data/stories";
+import { pageMetadata } from "@/lib/pageMetadata";
 import {
   EditionMeta,
   formatEditionDate,
@@ -23,14 +24,20 @@ export function generateStaticParams() {
 export function generateMetadata({ params }: StoryPageProps): Metadata {
   const story = getStoryBySlug(params.slug);
   if (!story) {
-    return {
+    return pageMetadata({
       title: "Story Not Found | Ballzatram Daily",
-    };
+      description: "This Ballzatram Daily story file is missing or has not been published.",
+      path: `/stories/${params.slug}`,
+      noIndex: true,
+      type: "article",
+    });
   }
-  return {
+  return pageMetadata({
     title: `${story.title} | Ballzatram Daily`,
     description: story.dek,
-  };
+    path: `/stories/${params.slug}`,
+    type: "article",
+  });
 }
 
 function StorySection({ section }: { section: StoryBodySection }) {

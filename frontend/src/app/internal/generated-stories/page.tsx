@@ -1,15 +1,17 @@
 import Link from "next/link";
-import type { Metadata } from "next";
 import type { Route } from "next";
 import { getDepartment } from "@/config/departments";
 import { generatedStoryPreviewDrafts, type GeneratedStoryDraft } from "@/lib/story-engine";
 import { StoneyAside } from "@/components/stoney/StoneyPrimitives";
 import type { StoryBodySection } from "@/types/story";
+import { pageMetadata } from "@/lib/pageMetadata";
 
-export const metadata: Metadata = {
+export const metadata = pageMetadata({
   title: "Generated Stories Preview | Ballzatram",
   description: "Internal preview for deterministic tool-insight to Ballzatram Daily story generation.",
-};
+  path: "/internal/generated-stories",
+  noIndex: true,
+});
 
 function SectionPreview({ section }: { section: StoryBodySection }) {
   if (section.type === "bullet-list") {
