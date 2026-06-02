@@ -1,12 +1,21 @@
-import { DepartmentLandingPage } from "@/components/newspaper/DepartmentLandingPage";
+import { ToolSectionPage } from "@/components/launchpad/ToolSectionPage";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata = pageMetadata({
-  title: "Arcade | Ballzatram Daily",
-  description: "The Arcade desk for playable simulations, economics labs, and game-shaped learning systems.",
+  title: "Games & Simulations | Ballzatram",
+  description: "Playable simulations, economics labs, game-theory tools, and experimental Ballzatram games.",
   path: "/arcade",
 });
 
 export default function ArcadePage() {
-  return <DepartmentLandingPage departmentId="arcade" editionNote="Arcade desk / playable cabinet" />;
+  return (
+    <ToolSectionPage
+      category="games"
+      title="Games & Simulations"
+      eyebrow="Playable systems"
+      description="A cabinet of economics labs, learning games, policy toys, and experimental playable worlds."
+      positioning="Live, static, and experimental games are labeled separately so users know what is polished, old, or rough."
+      primaryToolId="econ-arcade"
+    />
+  );
 }

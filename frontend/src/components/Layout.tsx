@@ -17,11 +17,22 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isPenitent = currentPath.startsWith("/penitent");
   const isHome = currentPath === "/";
   const isMarketsRoute = currentPath === "/markets" || isMacroRoute;
-  const isBettingRoute = currentPath === "/bettors-corner" || currentPath === "/betting";
   const isLandRoute = currentPath === "/land" || currentPath.startsWith("/tools/parcel");
-  const isLaboratoryRoute = currentPath === "/laboratory" || currentPath.startsWith("/ai-edit-factory");
-  const isCultureRoute = currentPath === "/culture" || currentPath.startsWith("/penitent");
-  const isStoneyRoute = currentPath === "/stoney-baologna" || currentPath.startsWith("/games/stoney-bologna");
+  const isGamesRoute = currentPath.startsWith("/arcade") || currentPath.startsWith("/econ-arcade") || currentPath.startsWith("/games");
+  const isLaboratoryRoute =
+    currentPath === "/laboratory" ||
+    currentPath.startsWith("/ai-edit-factory") ||
+    currentPath.startsWith("/internal/generated-stories");
+  const isArchiveRoute =
+    currentPath === "/archive" ||
+    currentPath === "/daily" ||
+    currentPath === "/culture" ||
+    currentPath.startsWith("/penitent") ||
+    currentPath.startsWith("/pntnt2") ||
+    currentPath.startsWith("/stoney-baologna") ||
+    currentPath.startsWith("/bettors-corner") ||
+    currentPath.startsWith("/betting") ||
+    currentPath.startsWith("/internal/product-architecture");
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -41,7 +52,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
               <img src="/assets/title.png" alt="Ballzatram" />
             </Link>
-            <p>Work Shop of games, relics, and strange machinery</p>
+            <p>AI-guided workbenches, simulations, games, and odd tools</p>
           </div>
           <button
             type="button"
@@ -57,14 +68,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
             className={`ballzatram-main-nav ${mobileNavOpen ? "is-open" : ""}`}
             aria-label="Ballzatram sections"
           >
-            <Link href={"/" as Route} aria-current={currentPath === "/" || currentPath === "/daily" ? "page" : undefined}>Daily</Link>
-            <Link href={"/markets" as Route} aria-current={isMarketsRoute ? "page" : undefined}>Markets</Link>
-            <Link href={"/bettors-corner" as Route} aria-current={isBettingRoute ? "page" : undefined}>Betting</Link>
+            <Link href={"/" as Route} aria-current={currentPath === "/" ? "page" : undefined}>Home</Link>
             <Link href={"/land" as Route} aria-current={isLandRoute ? "page" : undefined}>Land</Link>
-            <Link href={"/laboratory" as Route} aria-current={isLaboratoryRoute ? "page" : undefined}>Laboratory</Link>
-            <Link href={"/culture" as Route} aria-current={isCultureRoute ? "page" : undefined}>Culture</Link>
-            <Link href={"/arcade" as Route} aria-current={currentPath.startsWith("/arcade") || currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Arcade</Link>
-            <Link href={"/stoney-baologna" as Route} aria-current={isStoneyRoute ? "page" : undefined}>Stoney</Link>
+            <Link href={"/markets" as Route} aria-current={isMarketsRoute ? "page" : undefined}>Markets</Link>
+            <Link href={"/arcade" as Route} aria-current={isGamesRoute ? "page" : undefined}>Games</Link>
+            <Link href={"/laboratory" as Route} aria-current={isLaboratoryRoute ? "page" : undefined}>AI Lab</Link>
+            <Link href={"/archive" as Route} aria-current={isArchiveRoute ? "page" : undefined}>Archive</Link>
           </nav>
         </div>
         {isMacroRoute ? (

@@ -1,17 +1,28 @@
 # Ballzatram
 
-Ballzatram is an AI-guided workshop/newspaper platform with a FastAPI backend, Next.js frontend, static tools, games, and the Quant Library markets department.
+Ballzatram is a clean launchpad for useful AI-guided workbenches, simulations, games, and strange little tools.
 
+The public site is intentionally simple:
 
-## Site quality audit and shipped polish
+- Home: a grouped launchpad for every exposed tool and page worth finding.
+- Land Desk: Parcel Intelligence as a prototype land-acquisition research workflow.
+- Markets & Risk: Quant Library plus demo portfolio, scenario, event-study, model, and report workflows.
+- Games & Simulations: Econ Arcade, economics labs, static games, and experimental playable prototypes.
+- Creative / AI Lab: AI Edit Factory and generated-story previews with backend/review caveats.
+- Archive / Oddities: older newspaper, culture, betting-education, lore, and internal-note surfaces.
 
-A May 2026 pass tightened the public Ballzatram surface and markets app so the site feels less like a collection of placeholders and more like a coherent product:
+No checkout, billing, auth, entitlement, live trading, or paid-access implementation is part of this reset.
 
-- The homepage now describes each tool with user-facing readiness, risk, and workflow expectations instead of experimental copy.
-- Weather Prop Bot is a paper-trading scanner worksheet with live edge math, capped paper sizing, settlement-review reminders, and an explicit browser safety boundary that prevents credential collection or live orders.
-- The Next.js Quant Library pages now use a shared workflow model with polished hero sections, metrics, charts, next actions, empty states, review checklists, and governance caveats across all navigation tabs.
-- API client errors now handle non-JSON backend failures cleanly so user-facing surfaces do not collapse on unexpected responses.
-- Parcel result rendering avoids injecting listing titles/URLs through HTML strings, reducing XSS risk from remote search results.
+## Public launchpad reset
+
+A June 2026 pass reduced the public surface back to a clearer launchpad:
+
+- `frontend/src/config/toolCatalog.ts` is the typed source of truth for public tool cards, status labels, readiness notes, backend requirements, and route inventory.
+- The homepage now groups tools by use case instead of leading with Ballzatram Daily or a newspaper-first concept.
+- Land, Markets, Games, Creative / AI Lab, Culture, and Archive pages now reuse the same catalog labels.
+- Quant Library remains the primary markets route; Macro Board is a legacy redirect.
+- Betting, newspaper, Stoney, Penitent, and culture pages remain findable but de-emphasized as archive or experimental routes.
+- Weather Desk stays paper/research only, with no live orders and no financial advice.
 
 ## Econ Arcade
 

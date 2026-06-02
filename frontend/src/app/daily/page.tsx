@@ -2,9 +2,9 @@ import { BallzatramDailyPage } from "@/components/newspaper/BallzatramDailyPage"
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata = pageMetadata({
-  title: "Ballzatram Daily | Ballzatram",
+  title: "Ballzatram Daily Archive | Ballzatram",
   description:
-    "The Ballzatram Daily newspaper shell: demo stories, department rails, and links back to the tools behind the stories.",
+    "Archived newspaper shell with demo stories and department rails, kept secondary to the tool launchpad.",
   path: "/daily",
 });
 

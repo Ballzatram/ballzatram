@@ -7,9 +7,9 @@ export const metadata: Metadata = {
   metadataBase: siteMetadataBase,
   applicationName: "Ballzatram",
   ...pageMetadata({
-    title: "Ballzatram | A Strange Workshop Paper",
+    title: "Ballzatram | AI-Guided Tool Launchpad",
     description:
-      "A living-lab newspaper of useful machines, playable reports, archive clippings, and honestly labeled Ballzatram prototypes.",
+      "A lab of useful AI-guided workbenches, simulations, games, and strange little tools.",
     path: "/",
   }),
 };
