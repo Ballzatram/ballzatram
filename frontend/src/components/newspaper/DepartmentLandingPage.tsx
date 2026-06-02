@@ -3,6 +3,7 @@ import type { Route } from "next";
 import { departmentById, departments, getDepartment, type DepartmentId } from "@/config/departments";
 import { getStoriesByDepartment } from "@/data/stories";
 import { EditionMeta, RelatedToolLink, StoryGrid } from "@/components/newspaper/NewspaperPrimitives";
+import { StoneyStatusLine } from "@/components/stoney/StoneyPrimitives";
 import type { RelatedRoute } from "@/types/story";
 
 const relatedDepartmentRoutes: Partial<Record<DepartmentId, RelatedRoute["href"]>> = {
@@ -11,6 +12,38 @@ const relatedDepartmentRoutes: Partial<Record<DepartmentId, RelatedRoute["href"]
   culture: "/penitent",
   arcade: "/econ-arcade",
   laboratory: "/ai-edit-factory/",
+  "stoney-baologna": "/stoney-baologna",
+};
+
+const departmentPrototypeRoutes: Partial<Record<DepartmentId, RelatedRoute[]>> = {
+  arcade: [
+    {
+      label: "Play Bullshit Simulator",
+      href: "/arcade/bullshit-simulator",
+      description: "First Stoney arc: the Siege of South Gate Mall text-adventure prototype.",
+    },
+  ],
+  culture: [
+    {
+      label: "Open Stoney character file",
+      href: "/stoney-baologna",
+      description: "Narrative/personality layer for future Stoney stories and games.",
+    },
+  ],
+  laboratory: [
+    {
+      label: "Inspect Bullshit Simulator prototype",
+      href: "/arcade/bullshit-simulator",
+      description: "A lightweight narrative prototype without backend services or persistence.",
+    },
+  ],
+  "stoney-baologna": [
+    {
+      label: "Play the first Stoney arc",
+      href: "/arcade/bullshit-simulator",
+      description: "South Gate Mall is under siege. Stoney is reporting live without credentials.",
+    },
+  ],
 };
 
 export function DepartmentLandingPage({
@@ -24,6 +57,7 @@ export function DepartmentLandingPage({
   const stories = getStoriesByDepartment(departmentId);
   const siblingDepartments = departments.filter((item) => item.id !== departmentId && item.storyEnabled).slice(0, 5);
   const toolRoute: RelatedRoute["href"] = relatedDepartmentRoutes[departmentId] ?? department.primaryRoute;
+  const prototypeRoutes = departmentPrototypeRoutes[departmentId] ?? [];
 
   return (
     <main className="min-h-dvh bg-[#efe3c2] text-[#24150b]">
@@ -59,6 +93,13 @@ export function DepartmentLandingPage({
                 <p className="mt-3 text-sm leading-6 text-[#4b2b16]">
                   This department can still point readers to its current tool or placeholder while story generation waits for a later phase.
                 </p>
+                <div className="mt-4">
+                  <StoneyStatusLine
+                    label="Non-critical margin note"
+                    line="The story drawer is empty. I have declared it minimalist journalism."
+                    tone="amber"
+                  />
+                </div>
               </div>
             )}
           </div>
@@ -82,6 +123,19 @@ export function DepartmentLandingPage({
                 />
               </div>
             </section>
+
+            {prototypeRoutes.length ? (
+              <section className="border border-[#2b1b10] bg-[#f7edcf] p-5">
+                <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#7a5730]">
+                  Prototype routes
+                </p>
+                <div className="mt-4 grid gap-3">
+                  {prototypeRoutes.map((route) => (
+                    <RelatedToolLink key={route.href} route={route} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
 
             <section className="border border-[#2b1b10] bg-[#ead9ad] p-5">
               <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#7a5730]">

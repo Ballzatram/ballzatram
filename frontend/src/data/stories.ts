@@ -201,9 +201,14 @@ export const demoStories = [
     ],
     relatedRoutes: [
       {
-        label: "Open existing Stoney game",
-        href: "/games/stoney-bologna/index.html",
-        description: "Existing static playable oddity; route spelling is preserved.",
+        label: "Open Stoney profile",
+        href: "/stoney-baologna",
+        description: "Reusable Stoney character framework and future-game profile.",
+      },
+      {
+        label: "Play Bullshit Simulator prototype",
+        href: "/arcade/bullshit-simulator",
+        description: "First Stoney arc: the Siege of South Gate Mall.",
       },
     ],
     confidence: "medium",

@@ -147,7 +147,7 @@ export const departments = [
       "The current-events satire desk for briefing-style placeholders and future dispatches from the Stoney universe.",
     status: "prototype",
     type: "editorial",
-    primaryRoute: "/games/stoney-bologna/index.html",
+    primaryRoute: "/stoney-baologna",
     accentLabel: "Current Events",
     storyEnabled: true,
     toolEnabled: false,
