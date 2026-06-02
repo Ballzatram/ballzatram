@@ -1,13 +1,13 @@
-import { BallzatramDailyPage } from "@/components/newspaper/BallzatramDailyPage";
+import { BallzatramLaunchpad } from "@/components/launchpad/BallzatramLaunchpad";
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata = pageMetadata({
-  title: "Ballzatram Daily | Ballzatram",
+  title: "Ballzatram | Tool Launchpad",
   description:
-    "The Ballzatram Daily newspaper shell: demo stories, department rails, and links back to the tools behind the stories.",
+    "A clean launchpad for Ballzatram's AI-guided workbenches, simulations, games, and strange little tools.",
   path: "/",
 });
 
 export default function Home() {
-  return <BallzatramDailyPage />;
+  return <BallzatramLaunchpad />;
 }
