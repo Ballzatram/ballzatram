@@ -51,13 +51,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
             className={`ballzatram-main-nav ${mobileNavOpen ? "is-open" : ""}`}
             aria-label="Ballzatram sections"
           >
-            <Link href={"/" as Route} aria-current={currentPath === "/" ? "page" : undefined}>Home</Link>
-            <Link href={"/#front-page" as Route}>Front Page</Link>
-            <Link href={"/#back-issues" as Route}>Back Issues</Link>
-            <Link href={"/games/stoney-bologna/index.html" as Route}>Blotter</Link>
+            <Link href={"/" as Route} aria-current={currentPath === "/" || currentPath === "/daily" ? "page" : undefined}>Daily</Link>
+            <Link href={"/markets" as Route} aria-current={currentPath === "/markets" ? "page" : undefined}>Markets</Link>
             <Link href={"/tools/parcel/index.html" as Route}>Parcel</Link>
+            <Link href={"/laboratory" as Route} aria-current={currentPath === "/laboratory" ? "page" : undefined}>Lab</Link>
+            <Link href={"/culture" as Route} aria-current={currentPath === "/culture" ? "page" : undefined}>Culture</Link>
+            <Link href={"/arcade" as Route} aria-current={currentPath === "/arcade" || currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Arcade</Link>
+            <Link href={"/games/stoney-bologna/index.html" as Route}>Blotter</Link>
             <Link href={"/quant-library" as Route} aria-current={currentPath === "/quant-library" ? "page" : undefined}>Quant Library</Link>
-            <Link href={"/econ-arcade" as Route} aria-current={currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Archive</Link>
           </nav>
         </div>
         {isMacroRoute ? (
