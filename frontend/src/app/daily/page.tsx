@@ -7,6 +7,6 @@ export const metadata: Metadata = {
     "The Ballzatram Daily newspaper shell: demo stories, department rails, and links back to the tools behind the stories.",
 };
 
-export default function Home() {
+export default function DailyPage() {
   return <BallzatramDailyPage />;
 }

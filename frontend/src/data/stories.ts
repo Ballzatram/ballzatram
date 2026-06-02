@@ -216,6 +216,14 @@ export function getStoriesByDepartment(departmentId: DepartmentId): Story[] {
   return demoStories.filter((story) => story.departmentId === departmentId);
 }
 
+export function getStorySlug(story: Pick<Story, "id">): string {
+  return story.id;
+}
+
+export function getStoryBySlug(slug: string): Story | undefined {
+  return demoStories.find((story) => getStorySlug(story) === slug);
+}
+
 export const storyById = demoStories.reduce(
   (lookup, story) => {
     lookup[story.id] = story;
