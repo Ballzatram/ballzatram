@@ -6,7 +6,7 @@ from typing import Literal, Optional
 from pydantic import BaseModel, Field
 
 
-DataStatus = Literal["live", "fallback", "missing", "error", "unknown"]
+DataStatus = Literal["live", "cached", "demo", "stale", "fallback", "missing", "error", "unknown"]
 
 
 class DataFreshness(BaseModel):
@@ -87,4 +87,3 @@ class MarketUniverse(BaseModel):
     title: str
     description: str
     items: list[UniverseItem]
-

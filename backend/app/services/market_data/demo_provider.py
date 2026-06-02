@@ -54,7 +54,7 @@ class DemoMarketDataProvider:
         return DataFreshness(
             provider=self.name,
             source=source,
-            status="fallback",
+            status="demo",
             as_of=as_of,
             warnings=warnings
             or [
@@ -183,4 +183,3 @@ class DemoMarketDataProvider:
         if not universe:
             raise ProviderError(f"unknown market universe: {universe_id}", provider=self.name)
         return universe
-

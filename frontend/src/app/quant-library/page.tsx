@@ -2,250 +2,116 @@
 
 import { useEffect, useMemo, useState } from "react";
 import {
-  AIIntakePanel,
-  ExportSaveActionBar,
-  LoadingState,
-  NextActionPanel,
-  RecommendationCard,
-  ResultCards,
-  RiskCard,
-  SourceList,
-} from "@/components/ai-tools/ToolPrimitives";
-import {
-  AnalysisSection,
+  AnomalyTable,
+  CaveatPanel,
+  CurrentStateCard,
   DataFreshnessBadge,
-  DeskNote,
   EmptyState,
   ErrorState,
-  ExplanationPanel,
+  HowToReadPanel,
+  InterpretationPanel,
+  LoadingState,
+  MethodNote,
   MetricCard,
-  RiskBadge,
-  ToolGeneratedStoryCard,
+  NextChecksPanel,
+  RegimeBadge,
+  ResearchNoteCard,
+  ResearchQuestionHeader,
+  ScenarioControlPanel,
+  SourceQualityPanel,
+  StatusBadge,
+  type Tone,
 } from "@/components/quant-library/QuantLibraryPrimitives";
 import { api, type DataFreshness, type QuantLibraryAnalyticsDemoResponse, type QuantLibrarySymbolAnalytics } from "@/lib/api";
-import { generateQuantMarketSnapshotDraft } from "@/lib/story-engine";
-import type { ToolCard, ToolConfidence, ToolRisk, ToolSource, ToolStatus } from "@/lib/toolOutput";
 
-type IntakeQuestion = {
-  id: string;
-  question: string;
-  why?: string;
-  placeholder?: string;
-};
-
-type IntakeResponse = {
-  prompt: string;
-  inferred: Record<string, string>;
-  clarifyingQuestions: IntakeQuestion[];
-  status: ToolStatus;
-  summary: string;
-  missingData: string[];
-  recommendedNextSteps: string[];
-};
-
-type WorkspaceVersion = {
-  version_id: string;
-  created_at: string;
-  assumptions: Record<string, unknown>;
-  cards: ToolCard[];
-  analyst_outputs: Array<Record<string, unknown>>;
-  recommendations: Array<Record<string, unknown>>;
-  warnings: ToolCard[];
-  data_sources?: string[];
-  summary?: string;
-  risks?: ToolRisk[];
-  missing_data?: string[];
-  recommended_next_steps?: string[];
-  sources?: ToolSource[];
-  confidence?: ToolConfidence;
-  status?: ToolStatus;
-};
-
-type Workspace = {
-  workspace_id: string;
-  title: string;
-  original_prompt: string;
-  assumptions: Record<string, unknown>;
-  versions: WorkspaceVersion[];
-  updated_at: string;
-};
-
-const API = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
-
-async function fetchJson<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`${API}${path}`, {
-    ...init,
-    headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) },
-  });
-  const contentType = response.headers.get("content-type") ?? "";
-  const payload = contentType.includes("application/json") ? await response.json() : await response.text();
-  if (!response.ok) {
-    const message = typeof payload === "string" ? payload : payload.detail;
-    throw new Error(message || `Request failed with status ${response.status}`);
-  }
-  return payload as T;
-}
-
-function parseAssumptions(value: string, clarifyingAnswers: Record<string, string>) {
-  const parsed = JSON.parse(value) as Record<string, unknown>;
-  return {
-    ...parsed,
-    clarifyingAnswers,
-  };
-}
-
-function versionOutput(version: WorkspaceVersion) {
-  return {
-    summary: version.summary || "This workspace was created before the standard summary field existed.",
-    cards: version.cards ?? [],
-    risks: version.risks ?? [],
-    missingData: version.missing_data ?? [],
-    recommendedNextSteps: version.recommended_next_steps ?? [],
-    sources: version.sources ?? [],
-    confidence: version.confidence ?? "medium",
-    status: version.status ?? "complete",
-  };
-}
-
-type DeskId =
-  | "overview"
-  | "rates"
-  | "index-etf"
-  | "stock"
-  | "risk"
-  | "technical"
-  | "portfolio"
-  | "notes";
+type DeskId = "overview" | "rates" | "equity" | "risk" | "scenario" | "notes";
 
 type DeskDefinition = {
   id: DeskId;
+  label: string;
   title: string;
-  shortTitle: string;
-  route: string;
-  status: "live" | "structured" | "draft";
-  accent: string;
-  what: string;
-  why: string;
+  question: string;
+  summary: string;
+  howToRead: string[];
   caveats: string[];
-  next: string[];
-  storyHeadline: string;
-  storySummary: string;
+  nextChecks: string[];
+  methodId?: string;
 };
 
-const deskDefinitions: DeskDefinition[] = [
+const desks: DeskDefinition[] = [
   {
     id: "overview",
-    title: "Overview",
-    shortTitle: "Overview",
-    route: "/quant-library",
-    status: "live",
-    accent: "Market map",
-    what: "Frames the current market sample as a set of signals, caveats, and questions to investigate.",
-    why: "A shared overview keeps the desk from over-reading one chart or one symbol.",
-    caveats: ["Demo data can look tidy even when live feeds are stale or unavailable.", "A strong sample can still be a noisy starting point."],
-    next: ["Check freshness and fallback labels.", "Compare the first signal against benchmark and rates context.", "Write down what would make the interpretation weaker."],
-    storyHeadline: "Market desk opens with a mixed signal board",
-    storySummary: "A future story can summarize the sample, cite its data freshness, and link back to this overview.",
+    label: "Overview",
+    title: "Market Overview",
+    question: "What does the current market sample suggest, and what should I inspect next?",
+    summary: "A triage desk for regime, freshness, cross-asset behavior, and the next research question.",
+    howToRead: ["Check source status before the numbers.", "Read the regime reasons before the label.", "Use the next checks to decide which desk deserves attention."],
+    caveats: ["The overview is a triage surface, not a conclusion.", "Demo data proves the workflow, not current market conditions."],
+    nextChecks: ["Open Rates Desk if curve spreads look unusual.", "Open Equity / Index Desk if leadership or drawdown quality is unclear.", "Open Risk & Anomaly Desk before writing a note."],
+    methodId: "regimeScore",
   },
   {
     id: "rates",
+    label: "Rates",
     title: "Rates Desk",
-    shortTitle: "Rates",
-    route: "/scenario",
-    status: "structured",
-    accent: "Curve watch",
-    what: "Reads yield-curve levels and spreads as context for rate-sensitive assets and scenarios.",
-    why: "Historically, curve shape can reflect policy pressure, growth worries, and term-premium shifts.",
-    caveats: ["Curve inversions are not clocks.", "Synthetic/demo rates are useful for workflow testing, not real-time market calls."],
-    next: ["Compare 2Y/10Y with 3M/10Y.", "Check whether rate-sensitive assets are moving with or against the curve.", "Look for publication lag or fallback warnings."],
-    storyHeadline: "Rates desk flags the curve before the model speaks",
-    storySummary: "A future rates story can explain curve shape, spread direction, and what the desk refuses to infer.",
+    question: "What is the yield curve saying about policy pressure and rate-sensitive risk?",
+    summary: "A focused curve desk for Treasury tenors, spread direction, and plain-English curve caveats.",
+    howToRead: ["Start with 2Y/10Y and 3M/10Y.", "Compare shape with the curve table.", "Treat inversions as context, not a clock."],
+    caveats: ["Curve inversions are not timers.", "FRED data can lag or revise.", "Synthetic demo rates are not live market data."],
+    nextChecks: ["Compare rate-sensitive assets in Equity / Index Desk.", "Stress a rate shock in Scenario Engine.", "Check whether volatility also changed."],
+    methodId: "yieldCurveSpreads",
   },
   {
-    id: "index-etf",
-    title: "Index & ETF Explorer",
-    shortTitle: "Indices",
-    route: "/portfolio",
-    status: "structured",
-    accent: "Breadth lens",
-    what: "Compares broad index and ETF proxies using return, drawdown, volatility, and correlation context.",
-    why: "Indices and ETFs are often cleaner first-pass lenses than isolated single-name movement.",
-    caveats: ["ETF labels can hide concentration and sector overlap.", "Relative strength depends on benchmark choice."],
-    next: ["Inspect correlation before assuming diversification.", "Compare leadership with drawdown quality.", "Check whether one component is dominating the signal."],
-    storyHeadline: "ETF tape shows leadership, but the label is not the exposure",
-    storySummary: "A future explorer story can turn ETF metrics into a plain-English note with source and concentration caveats.",
-  },
-  {
-    id: "stock",
-    title: "Stock Analyzer",
-    shortTitle: "Stocks",
-    route: "/stock",
-    status: "structured",
-    accent: "Driver check",
-    what: "Frames a symbol against benchmark sensitivity, momentum context, and caveats.",
-    why: "Plain-English factor context can help users understand what may have moved a stock without treating the model as an oracle.",
-    caveats: ["Historical beta is descriptive, not a promise about the next move.", "Single-name work needs business, valuation, and event context outside this demo."],
-    next: ["Compare beta with drawdown and relative strength.", "Ask whether the benchmark is the right comparison.", "List external company-specific context before writing a note."],
-    storyHeadline: "Single-name readout asks better questions before it names causes",
-    storySummary: "A future stock story can cite the metric panel while avoiding instruction language.",
+    id: "equity",
+    label: "Equity / Index",
+    title: "Equity / Index Desk",
+    question: "Which markets are leading or lagging, and what risk did they take?",
+    summary: "A broad market desk for indices, ETFs, and selected equities using benchmark-aware metrics.",
+    howToRead: ["Compare return with drawdown and volatility.", "Check benchmark sensitivity before inferring idiosyncratic movement.", "Treat RSI and moving averages as context only."],
+    caveats: ["Benchmark choice can change the conclusion.", "ETF labels can hide concentration.", "Single-name work needs business and event context outside this demo."],
+    nextChecks: ["Review correlations before assuming diversification.", "Open Risk & Anomaly Desk for unusually large z-scores.", "Use Scenario Engine for transparent shock testing."],
+    methodId: "betaVsBenchmark",
   },
   {
     id: "risk",
-    title: "Risk Scanner",
-    shortTitle: "Risk",
-    route: "/model-compare",
-    status: "structured",
-    accent: "Warning rail",
-    what: "Collects drawdown, volatility, correlation, missing-data, and regime-score warnings.",
-    why: "Risk review is most useful when it appears before a conclusion hardens.",
-    caveats: ["Risk metrics can look precise while still missing regime shifts and tail events.", "A calm sample does not remove future uncertainty."],
-    next: ["Find the deepest drawdown and ask what caused it.", "Check whether correlations rise together.", "Write the weakest assumption in the note."],
-    storyHeadline: "Risk scanner keeps the caveat above the conclusion",
-    storySummary: "A future risk story can summarize what might break the current interpretation.",
+    label: "Risk & Anomaly",
+    title: "Risk & Anomaly Desk",
+    question: "What looks unusual, fragile, or worth investigating before writing a conclusion?",
+    summary: "A warning desk for volatility, drawdown, z-score, correlation, and data-quality checks.",
+    howToRead: ["Read flags as investigation prompts.", "Check the method and threshold.", "Confirm source quality before interpreting an anomaly."],
+    caveats: ["Unusual does not mean wrong or actionable.", "A calm sample can still miss tail risk.", "Z-scores depend on the selected window."],
+    nextChecks: ["Look for the largest drawdown.", "Compare anomaly flags with rates context.", "Document what could invalidate the interpretation."],
+    methodId: "zScore",
   },
   {
-    id: "technical",
-    title: "Technical Analysis Lab",
-    shortTitle: "Technicals",
-    route: "/event-study",
-    status: "structured",
-    accent: "Signal lab",
-    what: "Uses moving averages, RSI, and z-scores as time-series context, not as commands.",
-    why: "Technical signals can help phrase testable chart questions when paired with source quality and caveats.",
-    caveats: ["Patterns can overfit noise, especially when the lookback window is chosen after the fact.", "Momentum can stay stretched longer than expected."],
-    next: ["Compare RSI with trend and volatility.", "Ask whether the lookback window was chosen fairly.", "Pair chart context with rates and risk context."],
-    storyHeadline: "Technical lab treats the chart like evidence, not scripture",
-    storySummary: "A future lab story can explain the signal, the window, and the false-positive risk.",
-  },
-  {
-    id: "portfolio",
-    title: "Portfolio Sandbox",
-    shortTitle: "Portfolio",
-    route: "/portfolio",
-    status: "draft",
-    accent: "What-if bench",
-    what: "Prepares scenario and holdings questions around weights, shocks, concentration, and missing data.",
-    why: "Market analysis becomes more useful when assumptions are visible and reversible.",
-    caveats: ["A sandbox can feel personal even when the model is still generic.", "Demo holdings and generic shocks should not be treated as account advice."],
-    next: ["Check concentration before interpreting the whole portfolio.", "Document the shock size and why it was chosen.", "Separate observed data from user-specific constraints."],
-    storyHeadline: "Portfolio sandbox marks assumptions before it touches the weights",
-    storySummary: "A future sandbox story can link each conclusion back to holdings, shocks, and caveats.",
+    id: "scenario",
+    label: "Scenario",
+    title: "Scenario Engine",
+    question: "How would selected assets respond under transparent market shocks?",
+    summary: "A simple conditional stress bench that keeps assumptions visible before the result.",
+    howToRead: ["Set shocks first.", "Read factor contributions before the total impact.", "Treat output as sensitivity analysis, not a forecast."],
+    caveats: ["Scenario models are maps, not the territory.", "Linear sensitivities can fail during crises.", "Generic shocks are not personal portfolio advice."],
+    nextChecks: ["Change one assumption at a time.", "Compare scenario output with historical drawdown.", "Save a research note only after caveats are attached."],
+    methodId: "betaVsBenchmark",
   },
   {
     id: "notes",
+    label: "Research Notes",
     title: "Research Notes",
-    shortTitle: "Notes",
-    route: "/reports",
-    status: "draft",
-    accent: "Story queue",
-    what: "Turns findings, caveats, source notes, and investigation prompts into story-ready research drafts.",
-    why: "A useful quant desk should leave an audit trail that explains how an interpretation was formed.",
-    caveats: ["A polished note can still be wrong if the data, assumptions, or model are weak.", "Story generation must preserve source freshness and uncertainty."],
-    next: ["Attach freshness metadata to every note.", "Name the metric and its caveat in the same paragraph.", "Link each story back to the analysis that produced it."],
-    storyHeadline: "Research notes wait for the reporter, not the oracle",
-    storySummary: "A future newspaper story can emerge from this desk once generation persistence is ready.",
+    question: "What can be written from this analysis without losing the evidence trail?",
+    summary: "A note-prep desk that preserves observations, interpretations, caveats, methods, and sources.",
+    howToRead: ["Start with the question.", "Keep observations separate from interpretation.", "Attach caveats and sources before polishing prose."],
+    caveats: ["A polished note can still be wrong.", "Generated notes must not imply certainty.", "Ballzatram Daily automation remains later scope."],
+    nextChecks: ["Check missing data.", "Confirm caveats are visible.", "Route to the newspaper layer only after subscriber readiness."],
+    methodId: "cumulativeReturns",
   },
 ];
+
+const defaultScenario = {
+  rates: 0.75,
+  growth: -0.5,
+  credit: 0.6,
+};
 
 function formatNumber(value: number | null | undefined, digits = 2) {
   if (typeof value !== "number" || Number.isNaN(value)) return "n/a";
@@ -257,128 +123,104 @@ function formatPercent(value: number | null | undefined, digits = 1) {
   return `${(value * 100).toLocaleString(undefined, { maximumFractionDigits: digits })}%`;
 }
 
-function latestFreshness(analyticsDemo: QuantLibraryAnalyticsDemoResponse | null): DataFreshness | null {
-  return analyticsDemo?.symbols[0]?.freshness ?? analyticsDemo?.rates.yieldCurve?.freshness ?? null;
+function latestFreshness(analytics: QuantLibraryAnalyticsDemoResponse | null): DataFreshness | null {
+  return analytics?.symbols[0]?.freshness ?? analytics?.rates.yieldCurve?.freshness ?? null;
 }
 
-function symbolByIndex(analyticsDemo: QuantLibraryAnalyticsDemoResponse | null, index: number): QuantLibrarySymbolAnalytics | null {
-  return analyticsDemo?.symbols[index] ?? null;
+function firstSymbol(analytics: QuantLibraryAnalyticsDemoResponse | null): QuantLibrarySymbolAnalytics | null {
+  return analytics?.symbols[0] ?? null;
 }
 
-function renderDeskMetrics(deskId: DeskId, analyticsDemo: QuantLibraryAnalyticsDemoResponse | null) {
-  const first = symbolByIndex(analyticsDemo, 0);
-  const second = symbolByIndex(analyticsDemo, 1);
-  const third = symbolByIndex(analyticsDemo, 2);
-  const spreads = analyticsDemo?.rates.spreads;
-  const explanations = analyticsDemo?.explanations ?? {};
+function sourceLabels(analytics: QuantLibraryAnalyticsDemoResponse | null) {
+  if (!analytics) return ["No source loaded"];
+  const freshness = latestFreshness(analytics);
+  return [freshness?.source ?? analytics.provider];
+}
 
-  if (!analyticsDemo || !first) {
+function overviewMetrics(analytics: QuantLibraryAnalyticsDemoResponse | null) {
+  if (!analytics) {
     return [
-      <MetricCard key="empty-feed" label="Feed" value="Waiting" detail="The desk is open, but the data feed is not responding yet." tone="amber" />,
-      <MetricCard key="empty-sample" label="Sample" value="0" detail="This metric needs at least one loaded symbol." />,
-      <MetricCard key="empty-story" label="Story state" value="Draft" detail="Story generation waits for structured analysis output." tone="cyan" />,
+      <MetricCard key="loading" label="Feed" value="Loading" detail="Waiting for the analytics endpoint." tone="amber" />,
+      <MetricCard key="sample" label="Loaded symbols" value="0" detail="No sample has loaded yet." />,
+      <MetricCard key="errors" label="Provider errors" value="n/a" detail="Errors will appear after load." />,
+    ];
+  }
+  return [
+    <MetricCard key="symbols" label="Loaded symbols" value={`${analytics.symbols.length}`} detail={analytics.universe.title} tone="emerald" />,
+    <MetricCard key="spread" label="2Y / 10Y spread" value={`${formatNumber(analytics.rates.spreads["2y10y"]?.latest, 2)} pts`} detail="Read as curve context, not a timer." tone="amber" explanation={analytics.explanations.yieldCurveSpreads} />,
+    <MetricCard key="errors" label="Provider errors" value={`${analytics.errors.length}`} detail={analytics.errors.length ? "Review source quality before interpreting." : "No provider errors in this run."} tone={analytics.errors.length ? "rose" : "slate"} />,
+  ];
+}
+
+function deskMetrics(deskId: DeskId, analytics: QuantLibraryAnalyticsDemoResponse | null) {
+  const first = firstSymbol(analytics);
+  if (!analytics || !first) return overviewMetrics(analytics);
+
+  if (deskId === "rates") {
+    return [
+      <MetricCard key="2y10y" label="2Y / 10Y spread" value={`${formatNumber(analytics.rates.spreads["2y10y"]?.latest, 2)} pts`} detail="Historically, this can indicate curve pressure when negative." tone="cyan" explanation={analytics.explanations.yieldCurveSpreads} />,
+      <MetricCard key="3m10y" label="3M / 10Y spread" value={`${formatNumber(analytics.rates.spreads["3m10y"]?.latest, 2)} pts`} detail="Worth comparing with policy-rate and growth context." tone="cyan" />,
+      <MetricCard key="points" label="Curve points" value={`${analytics.rates.yieldCurve?.points.length ?? 0}`} detail="Current curve sample size." />,
     ];
   }
 
-  switch (deskId) {
-    case "rates":
-      return [
-        <MetricCard key="2y10y" label="2Y / 10Y spread" value={`${formatNumber(spreads?.["2y10y"]?.latest, 2)} pts`} detail="Historically this can indicate curve pressure when it turns negative." tone="cyan" explanation={explanations.yieldCurveSpreads} />,
-        <MetricCard key="3m10y" label="3M / 10Y spread" value={`${formatNumber(spreads?.["3m10y"]?.latest, 2)} pts`} detail="Worth investigating alongside policy-rate and growth context." tone="cyan" />,
-        <MetricCard key="curve-points" label="Curve points" value={`${analyticsDemo.rates.yieldCurve?.points.length ?? 0}`} detail="The curve needs current rates observations to read cleanly." />,
-      ];
-    case "index-etf":
-      return [first, second, third].filter(Boolean).map((row) => (
-        <MetricCard key={row!.symbol} label={`${row!.symbol} cumulative`} value={formatPercent(row!.metrics.cumulativeReturn)} detail={`${row!.name} vs ${analyticsDemo.benchmark} context.`} tone={row!.symbol === analyticsDemo.benchmark ? "emerald" : "slate"} explanation={explanations.cumulativeReturns} />
-      ));
-    case "stock":
-      return [
-        <MetricCard key="beta" label={`${first.symbol} beta`} value={formatNumber(first.metrics.betaVsBenchmark, 2)} detail={`Historical sensitivity versus ${analyticsDemo.benchmark}.`} tone="cyan" explanation={explanations.betaVsBenchmark} />,
-        <MetricCard key="relative" label="Relative strength" value={formatPercent(first.metrics.relativeStrengthVsBenchmark)} detail="This may suggest leadership or lagging in the selected sample." explanation={explanations.relativeStrength} />,
-        <MetricCard key="zscore" label="Return z-score" value={formatNumber(first.metrics.zScore20d, 2)} detail="A distance-from-average readout, not an instruction." tone="amber" explanation={explanations.zScore} />,
-      ];
-    case "risk":
-      return [
-        <MetricCard key="drawdown" label="Max drawdown" value={formatPercent(first.metrics.maxDrawdown)} detail="Deep drawdowns are worth investigating before writing a conclusion." tone="rose" explanation={explanations.maxDrawdown} />,
-        <MetricCard key="vol" label="20d volatility" value={formatPercent(first.metrics.rollingVolatility20d)} detail="Rising volatility means uncertainty increased, not direction." tone="amber" explanation={explanations.rollingVolatility} />,
-        <MetricCard key="regime" label="Regime score" value={formatNumber(analyticsDemo.regime.score, 0)} detail={analyticsDemo.regime.label} tone="cyan" explanation={explanations.regimeScore} />,
-      ];
-    case "technical":
-      return [
-        <MetricCard key="ma20" label="20d average" value={formatNumber(first.metrics.movingAverage20d)} detail="Shorter trend context for the selected sample." explanation={explanations.movingAverage} />,
-        <MetricCard key="ma50" label="50d average" value={formatNumber(first.metrics.movingAverage50d)} detail="Longer trend context for the selected sample." />,
-        <MetricCard key="rsi" label="RSI 14" value={formatNumber(first.metrics.rsi14, 1)} detail="Momentum context can stay stretched in trends." tone="amber" explanation={explanations.rsi} />,
-      ];
-    case "portfolio":
-      return [
-        <MetricCard key="portfolio-drawdown" label="Proxy drawdown" value={formatPercent(first.metrics.maxDrawdown)} detail="A first proxy for stress, not a user-specific result." tone="rose" />,
-        <MetricCard key="portfolio-correlation" label="Matrix size" value={`${analyticsDemo.correlationMatrix.columns.length} assets`} detail="Correlation can help find hidden overlap." explanation={explanations.correlationMatrix} />,
-        <MetricCard key="portfolio-freshness" label="Provider" value={analyticsDemo.provider} detail="Fallback status must travel with any sandbox result." tone="amber" />,
-      ];
-    case "notes":
-      return [
-        <MetricCard key="note-symbols" label="Symbols attached" value={`${analyticsDemo.symbols.length}`} detail="A story should link back to the symbols and metrics that shaped it." tone="cyan" />,
-        <MetricCard key="note-caveats" label="Caveats attached" value={`${analyticsDemo.caveats.length}`} detail="Caveats are part of the note, not footnote debris." tone="amber" />,
-        <MetricCard key="note-feed" label="Feed status" value={latestFreshness(analyticsDemo)?.status ?? "unknown"} detail="Story output should preserve the data label." />,
-      ];
-    default:
-      return [
-        <MetricCard key="regime" label="Regime score" value={formatNumber(analyticsDemo.regime.score, 0)} detail={analyticsDemo.regime.label} tone="cyan" explanation={explanations.regimeScore} />,
-        <MetricCard key="symbols" label="Loaded symbols" value={`${analyticsDemo.symbols.length}`} detail={`${analyticsDemo.universe.title} sample.`} tone="emerald" />,
-        <MetricCard key="errors" label="Provider errors" value={`${analyticsDemo.errors.length}`} detail={analyticsDemo.errors.length ? "Some feeds need attention." : "No provider errors in this demo run."} tone={analyticsDemo.errors.length ? "rose" : "slate"} />,
-      ];
+  if (deskId === "equity") {
+    return [
+      <MetricCard key="return" label={`${first.symbol} cumulative`} value={formatPercent(first.metrics.cumulativeReturn)} detail={`Compared against ${analytics.benchmark}.`} tone="emerald" explanation={analytics.explanations.cumulativeReturns} />,
+      <MetricCard key="beta" label="Beta vs benchmark" value={formatNumber(first.metrics.betaVsBenchmark, 2)} detail="Historical benchmark sensitivity." tone="cyan" explanation={analytics.explanations.betaVsBenchmark} />,
+      <MetricCard key="relative" label="Relative strength" value={formatPercent(first.metrics.relativeStrengthVsBenchmark)} detail="Leadership or lagging in this sample." explanation={analytics.explanations.relativeStrength} />,
+    ];
   }
+
+  if (deskId === "risk") {
+    return [
+      <MetricCard key="drawdown" label="Max drawdown" value={formatPercent(first.metrics.maxDrawdown)} detail="Worst peak-to-trough move in the sample." tone="rose" explanation={analytics.explanations.maxDrawdown} />,
+      <MetricCard key="vol" label="20d volatility" value={formatPercent(first.metrics.rollingVolatility20d)} detail="Movement, not direction." tone="amber" explanation={analytics.explanations.rollingVolatility} />,
+      <MetricCard key="z" label="Return z-score" value={formatNumber(first.metrics.zScore20d, 2)} detail="Distance from recent average." tone="cyan" explanation={analytics.explanations.zScore} />,
+    ];
+  }
+
+  if (deskId === "scenario") {
+    return [
+      <MetricCard key="beta" label="Benchmark beta" value={formatNumber(first.metrics.betaVsBenchmark, 2)} detail="Used as one rough sensitivity input." tone="cyan" />,
+      <MetricCard key="drawdown" label="Historical drawdown" value={formatPercent(first.metrics.maxDrawdown)} detail="Reference point for stress context." tone="rose" />,
+      <MetricCard key="vol" label="Recent volatility" value={formatPercent(first.metrics.rollingVolatility20d)} detail="Higher volatility widens uncertainty." tone="amber" />,
+    ];
+  }
+
+  if (deskId === "notes") {
+    return [
+      <MetricCard key="observations" label="Symbols attached" value={`${analytics.symbols.length}`} detail="The note should cite the symbols behind the claims." tone="cyan" />,
+      <MetricCard key="caveats" label="Caveats attached" value={`${analytics.caveats.length}`} detail="Caveats are part of the note, not a footnote." tone="amber" />,
+      <MetricCard key="status" label="Feed status" value={latestFreshness(analytics)?.status ?? "unknown"} detail="Source status travels with the draft." />,
+    ];
+  }
+
+  return overviewMetrics(analytics);
 }
 
-function DeskEvidenceTable({ deskId, analyticsDemo }: { deskId: DeskId; analyticsDemo: QuantLibraryAnalyticsDemoResponse | null }) {
-  if (!analyticsDemo) {
-    return <EmptyState title="The desk is open, but the data feed is not responding." message="Demo data or live provider output will appear here when the analytics endpoint responds." />;
-  }
-
-  if (deskId === "rates") {
-    return (
-      <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
-        <div className="border-b border-slate-800 p-4">
-          <h3 className="text-lg font-semibold text-white">Yield curve sample</h3>
-          <p className="mt-1 text-sm text-slate-400">Shown as context for rates analysis; read freshness before reading shape.</p>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[420px] text-left text-sm">
-            <thead className="bg-slate-950/70 text-xs uppercase tracking-[0.16em] text-slate-500">
-              <tr><th className="p-3">Tenor</th><th className="p-3">Months</th><th className="p-3">Rate</th></tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800 text-slate-300">
-              {(analyticsDemo.rates.yieldCurve?.points ?? []).map((point) => (
-                <tr key={point.tenor}><td className="p-3 font-semibold text-white">{point.tenor}</td><td className="p-3">{point.maturity_months}</td><td className="p-3">{formatNumber(point.rate, 2)}%</td></tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    );
-  }
-
+function SymbolTable({ analytics }: { analytics: QuantLibraryAnalyticsDemoResponse }) {
   return (
-    <div className="overflow-hidden rounded-2xl border border-slate-800 bg-slate-900">
+    <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
       <div className="border-b border-slate-800 p-4">
-        <h3 className="text-lg font-semibold text-white">Sample metric table</h3>
-        <p className="mt-1 text-sm text-slate-400">A compact desk table for comparing loaded symbols without over-reading one metric.</p>
+        <h3 className="text-lg font-semibold text-white">Market sample</h3>
+        <p className="mt-1 text-sm text-slate-400">Returns, risk, and benchmark context for the loaded symbols.</p>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[720px] text-left text-sm">
+        <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="bg-slate-950/70 text-xs uppercase tracking-[0.16em] text-slate-500">
-            <tr><th className="p-3">Symbol</th><th className="p-3">Close</th><th className="p-3">Cum. return</th><th className="p-3">Volatility</th><th className="p-3">Drawdown</th><th className="p-3">RSI</th><th className="p-3">Beta</th></tr>
+            <tr><th className="p-3">Symbol</th><th className="p-3">Last close</th><th className="p-3">Cumulative</th><th className="p-3">Volatility</th><th className="p-3">Drawdown</th><th className="p-3">Beta</th><th className="p-3">Z-score</th></tr>
           </thead>
           <tbody className="divide-y divide-slate-800 text-slate-300">
-            {analyticsDemo.symbols.map((row) => (
-              <tr key={row.symbol}>
-                <td className="p-3 font-semibold text-white">{row.symbol}</td>
-                <td className="p-3">{formatNumber(row.metrics.lastClose)}</td>
-                <td className="p-3">{formatPercent(row.metrics.cumulativeReturn)}</td>
-                <td className="p-3">{formatPercent(row.metrics.rollingVolatility20d)}</td>
-                <td className="p-3">{formatPercent(row.metrics.maxDrawdown)}</td>
-                <td className="p-3">{formatNumber(row.metrics.rsi14, 1)}</td>
-                <td className="p-3">{formatNumber(row.metrics.betaVsBenchmark, 2)}</td>
+            {analytics.symbols.map((symbol) => (
+              <tr key={symbol.symbol}>
+                <td className="p-3"><span className="font-semibold text-white">{symbol.symbol}</span><span className="ml-2 text-xs text-slate-500">{symbol.name}</span></td>
+                <td className="p-3 font-mono">{formatNumber(symbol.metrics.lastClose, 2)}</td>
+                <td className="p-3 font-mono">{formatPercent(symbol.metrics.cumulativeReturn)}</td>
+                <td className="p-3 font-mono">{formatPercent(symbol.metrics.rollingVolatility20d)}</td>
+                <td className="p-3 font-mono">{formatPercent(symbol.metrics.maxDrawdown)}</td>
+                <td className="p-3 font-mono">{formatNumber(symbol.metrics.betaVsBenchmark, 2)}</td>
+                <td className="p-3 font-mono">{formatNumber(symbol.metrics.zScore20d, 2)}</td>
               </tr>
             ))}
           </tbody>
@@ -388,396 +230,264 @@ function DeskEvidenceTable({ deskId, analyticsDemo }: { deskId: DeskId; analytic
   );
 }
 
-export default function QuantLibraryPage() {
-  const [prompt, setPrompt] = useState("Explain what may be moving markets right now while keeping caveats visible");
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
-  const [activeId, setActiveId] = useState<string | null>(null);
-  const [assumptionsText, setAssumptionsText] = useState('{"tickers":["SPY"],"macroSeries":["DGS10","CPI","CREDIT"]}');
-  const [intake, setIntake] = useState<IntakeResponse | null>(null);
-  const [answers, setAnswers] = useState<Record<string, string>>({});
-  const [busy, setBusy] = useState<"loading" | "intake" | "generate" | "rerun" | null>("loading");
-  const [error, setError] = useState<string | null>(null);
-  const [analyticsDemo, setAnalyticsDemo] = useState<QuantLibraryAnalyticsDemoResponse | null>(null);
-  const [analyticsBusy, setAnalyticsBusy] = useState(true);
-  const [analyticsError, setAnalyticsError] = useState<string | null>(null);
-  const [activeDeskId, setActiveDeskId] = useState<DeskId>("overview");
+function RatesTable({ analytics }: { analytics: QuantLibraryAnalyticsDemoResponse }) {
+  const points = analytics.rates.yieldCurve?.points ?? [];
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="border-b border-slate-800 p-4">
+        <h3 className="text-lg font-semibold text-white">Yield curve</h3>
+        <p className="mt-1 text-sm text-slate-400">Read shape and freshness before interpretation.</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[480px] text-left text-sm">
+          <thead className="bg-slate-950/70 text-xs uppercase tracking-[0.16em] text-slate-500">
+            <tr><th className="p-3">Tenor</th><th className="p-3">Maturity</th><th className="p-3">Rate</th></tr>
+          </thead>
+          <tbody className="divide-y divide-slate-800 text-slate-300">
+            {points.map((point) => (
+              <tr key={point.tenor}>
+                <td className="p-3 font-semibold text-white">{point.tenor}</td>
+                <td className="p-3">{point.maturity_months} months</td>
+                <td className="p-3 font-mono">{formatNumber(point.rate, 2)}%</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
 
-  const active = useMemo(() => workspaces.find((workspace) => workspace.workspace_id === activeId) ?? null, [workspaces, activeId]);
-  const currentVersion = active?.versions?.[active.versions.length - 1];
-  const output = currentVersion ? versionOutput(currentVersion) : null;
-  const activeDesk = deskDefinitions.find((desk) => desk.id === activeDeskId) ?? deskDefinitions[0];
-  const freshness = latestFreshness(analyticsDemo);
-  const generatedMarketDraft = useMemo(() => analyticsDemo ? generateQuantMarketSnapshotDraft(analyticsDemo) : null, [analyticsDemo]);
-
-  async function load(preferredId?: string) {
-    setBusy((state) => state ?? "loading");
-    try {
-      const data = await fetchJson<{ workspaces: Workspace[] }>("/quant-library/workspaces");
-      const rows = data.workspaces ?? [];
-      setWorkspaces(rows);
-      setActiveId(preferredId ?? rows[0]?.workspace_id ?? null);
-      setError(null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not load workspaces.");
-    } finally {
-      setBusy(null);
+function buildAnomalyRows(analytics: QuantLibraryAnalyticsDemoResponse | null) {
+  if (!analytics) return [];
+  return analytics.symbols.flatMap((symbol) => {
+    const rows: Array<{ id: string; metric: string; value: string; reason: string; severity: Tone }> = [];
+    if (Math.abs(symbol.metrics.zScore20d ?? 0) >= 1.5) {
+      rows.push({ id: `${symbol.symbol}-z`, metric: `${symbol.symbol} return z-score`, value: formatNumber(symbol.metrics.zScore20d, 2), reason: "Return is far from its recent average.", severity: "amber" });
     }
-  }
+    if ((symbol.metrics.maxDrawdown ?? 0) <= -0.12) {
+      rows.push({ id: `${symbol.symbol}-drawdown`, metric: `${symbol.symbol} drawdown`, value: formatPercent(symbol.metrics.maxDrawdown), reason: "Drawdown crossed the review threshold.", severity: "rose" });
+    }
+    if ((symbol.metrics.rollingVolatility20d ?? 0) >= 0.25) {
+      rows.push({ id: `${symbol.symbol}-vol`, metric: `${symbol.symbol} volatility`, value: formatPercent(symbol.metrics.rollingVolatility20d), reason: "Recent volatility is elevated.", severity: "amber" });
+    }
+    return rows;
+  });
+}
 
-  useEffect(() => {
-    void load();
-  }, []);
+function scenarioRows(analytics: QuantLibraryAnalyticsDemoResponse | null, shocks: typeof defaultScenario) {
+  const first = firstSymbol(analytics);
+  const beta = first?.metrics.betaVsBenchmark ?? 1;
+  const vol = first?.metrics.rollingVolatility20d ?? 0.18;
+  const ratesImpact = -0.035 * shocks.rates * Math.max(beta, 0.25);
+  const growthImpact = 0.045 * shocks.growth * Math.max(beta, 0.25);
+  const creditImpact = -0.03 * shocks.credit * (1 + vol);
+  return [
+    { id: "rates", factor: "Rates shock", shock: `${shocks.rates.toFixed(2)} pts`, impact: ratesImpact },
+    { id: "growth", factor: "Growth shock", shock: `${shocks.growth.toFixed(2)} std`, impact: growthImpact },
+    { id: "credit", factor: "Credit shock", shock: `${shocks.credit.toFixed(2)} std`, impact: creditImpact },
+  ];
+}
+
+function ScenarioTable({ rows }: { rows: ReturnType<typeof scenarioRows> }) {
+  const total = rows.reduce((sum, row) => sum + row.impact, 0);
+  return (
+    <div className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900">
+      <div className="border-b border-slate-800 p-4">
+        <h3 className="text-lg font-semibold text-white">Conditional impact estimate</h3>
+        <p className="mt-1 text-sm text-slate-400">A transparent sensitivity map using visible assumptions.</p>
+      </div>
+      <div className="overflow-x-auto">
+        <table className="w-full min-w-[560px] text-left text-sm">
+          <thead className="bg-slate-950/70 text-xs uppercase tracking-[0.16em] text-slate-500">
+            <tr><th className="p-3">Factor</th><th className="p-3">Shock</th><th className="p-3">Estimated impact</th></tr>
+          </thead>
+          <tbody className="divide-y divide-slate-800 text-slate-300">
+            {rows.map((row) => (
+              <tr key={row.id}>
+                <td className="p-3 font-semibold text-white">{row.factor}</td>
+                <td className="p-3 font-mono">{row.shock}</td>
+                <td className="p-3 font-mono">{formatPercent(row.impact)}</td>
+              </tr>
+            ))}
+            <tr>
+              <td className="p-3 font-semibold text-white">Total illustrative impact</td>
+              <td className="p-3 text-slate-500">sum</td>
+              <td className="p-3 font-mono text-white">{formatPercent(total)}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+function MainDeskContent({
+  activeDesk,
+  analytics,
+  shocks,
+  onShockChange,
+}: {
+  activeDesk: DeskDefinition;
+  analytics: QuantLibraryAnalyticsDemoResponse | null;
+  shocks: typeof defaultScenario;
+  onShockChange: (id: string, value: number) => void;
+}) {
+  if (!analytics) return <EmptyState title="No analytics payload loaded" message="The desk will render once the Quant Library analytics endpoint responds." />;
+
+  if (activeDesk.id === "rates") return <RatesTable analytics={analytics} />;
+  if (activeDesk.id === "risk") return <AnomalyTable rows={buildAnomalyRows(analytics)} />;
+  if (activeDesk.id === "scenario") {
+    const rows = scenarioRows(analytics, shocks);
+    return (
+      <div className="grid gap-4 lg:grid-cols-[360px_minmax(0,1fr)]">
+        <ScenarioControlPanel
+          controls={[
+            { id: "rates", label: "Rates", value: shocks.rates, min: -1.5, max: 2, step: 0.25, unit: " pts" },
+            { id: "growth", label: "Growth", value: shocks.growth, min: -2, max: 2, step: 0.25, unit: " std" },
+            { id: "credit", label: "Credit", value: shocks.credit, min: -1, max: 2.5, step: 0.25, unit: " std" },
+          ]}
+          onChange={onShockChange}
+        />
+        <ScenarioTable rows={rows} />
+      </div>
+    );
+  }
+  if (activeDesk.id === "notes") {
+    const first = firstSymbol(analytics);
+    return (
+      <ResearchNoteCard
+        title="Market sample opened with caveats first"
+        observations={[
+          `${analytics.symbols.length} symbols loaded from ${analytics.provider}.`,
+          `${analytics.benchmark} is the current benchmark.`,
+          first ? `${first.symbol} cumulative return is ${formatPercent(first.metrics.cumulativeReturn)} in this sample.` : "No primary symbol loaded.",
+        ]}
+        caveats={analytics.caveats}
+        sources={sourceLabels(analytics)}
+      />
+    );
+  }
+  return <SymbolTable analytics={analytics} />;
+}
+
+export default function QuantLibraryPage() {
+  const [activeDeskId, setActiveDeskId] = useState<DeskId>("overview");
+  const [analytics, setAnalytics] = useState<QuantLibraryAnalyticsDemoResponse | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [shocks, setShocks] = useState(defaultScenario);
 
   useEffect(() => {
     let mounted = true;
     api.quantLibraryAnalyticsDemo(["SPY", "QQQ", "TLT"], "SPY")
-      .then((data) => {
-        if (!mounted) return;
-        setAnalyticsDemo(data);
-        setAnalyticsError(null);
+      .then((payload) => {
+        if (mounted) {
+          setAnalytics(payload);
+          setError(null);
+        }
       })
       .catch((err) => {
-        if (!mounted) return;
-        setAnalyticsError(err instanceof Error ? err.message : "Could not load analytics demo.");
+        if (mounted) setError(err instanceof Error ? err.message : "Could not load Quant Library analytics.");
       })
       .finally(() => {
-        if (mounted) setAnalyticsBusy(false);
+        if (mounted) setLoading(false);
       });
     return () => {
       mounted = false;
     };
   }, []);
 
-  async function runIntake() {
-    setBusy("intake");
-    setError(null);
-    try {
-      const data = await fetchJson<IntakeResponse>("/quant-library/intake", {
-        method: "POST",
-        body: JSON.stringify({ prompt }),
-      });
-      setIntake(data);
-      setAnswers((existing) => {
-        const next = { ...existing };
-        data.clarifyingQuestions.forEach((question) => {
-          if (!(question.id in next)) next[question.id] = "";
-        });
-        return next;
-      });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Could not build intake questions.");
-    } finally {
-      setBusy(null);
-    }
-  }
+  const activeDesk = useMemo(() => desks.find((desk) => desk.id === activeDeskId) ?? desks[0], [activeDeskId]);
+  const freshness = latestFreshness(analytics);
+  const first = firstSymbol(analytics);
+  const explanation = activeDesk.methodId ? analytics?.explanations[activeDesk.methodId] : undefined;
+  const regime = analytics?.regime;
 
-  async function createWorkspace() {
-    setBusy("generate");
-    setError(null);
-    try {
-      const assumptions = parseAssumptions(assumptionsText, answers);
-      const created = await fetchJson<Workspace>("/quant-library/workspaces", {
-        method: "POST",
-        body: JSON.stringify({ prompt, assumptions }),
-      });
-      await load(created.workspace_id);
-    } catch (err) {
-      setError(err instanceof SyntaxError ? "Assumption controls must be valid JSON." : err instanceof Error ? err.message : "Could not generate workspace.");
-    } finally {
-      setBusy(null);
-    }
-  }
-
-  async function rerunWorkspace() {
-    if (!active) return;
-    setBusy("rerun");
-    setError(null);
-    try {
-      const assumptions = parseAssumptions(assumptionsText, answers);
-      await fetchJson<Workspace>(`/quant-library/workspaces/${active.workspace_id}/rerun`, {
-        method: "POST",
-        body: JSON.stringify({ prompt: active.original_prompt, assumptions }),
-      });
-      await load(active.workspace_id);
-    } catch (err) {
-      setError(err instanceof SyntaxError ? "Assumption controls must be valid JSON." : err instanceof Error ? err.message : "Could not rerun workspace.");
-    } finally {
-      setBusy(null);
-    }
+  function handleShockChange(id: string, value: number) {
+    setShocks((current) => ({ ...current, [id]: value }));
   }
 
   return (
-    <section className="space-y-7">
-      <section className="overflow-hidden rounded-[1.25rem] border border-slate-800 bg-[#08111f] shadow-2xl shadow-black/40">
-        <div className="grid gap-0 xl:grid-cols-[minmax(0,1fr)_380px]">
-          <div className="relative p-6 sm:p-8">
-            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-300/70 to-transparent" />
-            <p className="font-mono text-xs font-semibold uppercase tracking-[0.28em] text-emerald-300">Ballzatram markets desk / terminal left unlocked</p>
-            <h1 className="mt-4 max-w-4xl text-4xl font-black tracking-tight text-white sm:text-6xl">
-              Quant Library
-            </h1>
-            <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-300">
-              A quant stepped away from the desk. The terminal is still open. Poke around. Learn something. Do not worship the model.
-            </p>
-            <p className="mt-4 max-w-3xl text-sm leading-6 text-slate-400">
-              An explainable market analysis desk for rates, indices, stocks, ETFs, risk, regimes, and time-series signals. Outputs are research context, not directives about portfolio actions.
-            </p>
-            <div className="mt-6 flex flex-wrap gap-3">
-              <a className="rounded-full bg-emerald-300 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-emerald-200" href="#quant-library-desk">
-                Open the desk
-              </a>
-              <a className="rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 hover:border-emerald-300" href="#research-workspace">
-                Start guided workspace
-              </a>
-            </div>
-          </div>
-          <aside className="border-t border-slate-800 bg-slate-950/80 p-5 xl:border-l xl:border-t-0">
-            <div className="rounded-xl border border-slate-800 bg-black/40 p-4 font-mono">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Feed status</p>
-                <DataFreshnessBadge freshness={freshness} />
-              </div>
-              <div className="mt-5 grid gap-3 text-sm">
-                <p className="flex justify-between gap-3 text-slate-400"><span>Provider</span><strong className="text-slate-100">{analyticsDemo?.provider ?? "waiting"}</strong></p>
-                <p className="flex justify-between gap-3 text-slate-400"><span>Universe</span><strong className="text-slate-100">{analyticsDemo?.universe.title ?? "loading sample"}</strong></p>
-                <p className="flex justify-between gap-3 text-slate-400"><span>Benchmark</span><strong className="text-slate-100">{analyticsDemo?.benchmark ?? "SPY"}</strong></p>
-                <p className="flex justify-between gap-3 text-slate-400"><span>As of</span><strong className="text-slate-100">{freshness?.as_of ?? "not reported"}</strong></p>
-              </div>
-              {analyticsBusy ? <p className="mt-5 text-sm leading-6 text-amber-100">The desk is open. The feed is warming up.</p> : null}
-              {analyticsError ? <ErrorState message="The desk is open, but the data feed is not responding. Demo and workspace sections remain available." /> : null}
-            </div>
-          </aside>
-        </div>
-      </section>
+    <section className="space-y-6">
+      <ResearchQuestionHeader
+        title="Quant Library"
+        question="A financial econometrics research workstation that teaches non-quants how to think."
+        summary="The rebuilt surface focuses on six essential desks: Market Overview, Rates, Equity / Index, Risk & Anomaly, Scenario Engine, and Research Notes. Outputs are descriptive research context, not financial advice."
+        freshness={freshness}
+      >
+        <dl className="mt-5 grid gap-3 text-sm">
+          <div className="flex justify-between gap-4 text-slate-400"><dt>Provider</dt><dd className="text-right font-semibold text-slate-100">{analytics?.provider ?? "waiting"}</dd></div>
+          <div className="flex justify-between gap-4 text-slate-400"><dt>Universe</dt><dd className="text-right font-semibold text-slate-100">{analytics?.universe.title ?? "loading sample"}</dd></div>
+          <div className="flex justify-between gap-4 text-slate-400"><dt>Benchmark</dt><dd className="text-right font-semibold text-slate-100">{analytics?.benchmark ?? "SPY"}</dd></div>
+          <div className="flex justify-between gap-4 text-slate-400"><dt>As of</dt><dd className="text-right font-semibold text-slate-100">{freshness?.as_of ?? "not reported"}</dd></div>
+        </dl>
+        <p className="mt-5 text-xs leading-5 text-slate-500">Observation first. Interpretation second. Caveats always visible.</p>
+      </ResearchQuestionHeader>
 
-      <section className="grid gap-4 lg:grid-cols-4">
-        <MetricCard label="Loaded sample" value={analyticsDemo ? `${analyticsDemo.symbols.length} symbols` : "..."} detail="Sample symbols come through the provider abstraction." tone="emerald" />
-        <MetricCard label="Regime readout" value={analyticsDemo ? formatNumber(analyticsDemo.regime.score, 0) : "..."} detail={analyticsDemo?.regime.label ?? "Waiting for analytics."} tone="cyan" />
-        <MetricCard label="2Y / 10Y spread" value={analyticsDemo ? `${formatNumber(analyticsDemo.rates.spreads["2y10y"]?.latest, 2)} pts` : "..."} detail="Read with rates caveats, not as a timer." tone="amber" />
-        <MetricCard label="Errors" value={`${analyticsDemo?.errors.length ?? 0}`} detail={analyticsDemo?.errors.length ? "Some provider calls need attention." : "No provider errors in the current demo payload."} tone={analyticsDemo?.errors.length ? "rose" : "slate"} />
-      </section>
+      {loading ? <LoadingState message="Loading Quant Library analytics and source metadata..." /> : null}
+      {error ? <ErrorState message={`The workstation shell is available, but analytics did not load: ${error}`} /> : null}
 
-      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_380px]">
+      <nav className="flex max-w-full gap-2 overflow-x-auto rounded-xl border border-slate-800 bg-slate-950/70 p-2" aria-label="Quant Library desks">
+        {desks.map((desk) => (
+          <button
+            key={desk.id}
+            onClick={() => setActiveDeskId(desk.id)}
+            className={`shrink-0 rounded-lg px-3 py-2 text-sm font-semibold transition ${activeDesk.id === desk.id ? "bg-cyan-300 text-slate-950" : "text-slate-300 hover:bg-slate-800"}`}
+          >
+            {desk.label}
+          </button>
+        ))}
+      </nav>
+
+      <section className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_360px]">
         <div className="space-y-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300">Modules</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">Eight desks, one research memory</h2>
-          </div>
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-            {deskDefinitions.map((desk) => (
-              <article key={desk.id} className="flex min-h-60 flex-col rounded-2xl border border-slate-800 bg-slate-900 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <p className="font-mono text-xs uppercase tracking-[0.18em] text-emerald-300">{desk.accent}</p>
-                  <RiskBadge label={desk.status} level={desk.status === "live" ? "low" : desk.status === "draft" ? "medium" : "medium"} />
-                </div>
-                <h3 className="mt-3 text-lg font-semibold text-white">{desk.title}</h3>
-                <p className="mt-2 flex-1 text-sm leading-6 text-slate-400">{desk.what}</p>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  <button
-                    className="rounded-full border border-emerald-300/40 px-3 py-2 text-xs font-semibold text-emerald-100 hover:border-emerald-200"
-                    onClick={() => setActiveDeskId(desk.id)}
-                  >
-                    Inspect section
-                  </button>
-                  <a className="rounded-full border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-300 hover:border-slate-500" href={desk.route}>
-                    Workflow link
-                  </a>
-                </div>
-              </article>
-            ))}
+          <CurrentStateCard
+            label={regime?.label ?? "waiting for sample"}
+            summary={first ? `${first.symbol} is the primary loaded symbol. This may suggest a starting point for investigation, not a conclusion.` : "The current state summary appears after the analytics endpoint responds."}
+            drivers={regime?.reasons ?? ["Data and regime drivers have not loaded yet."]}
+          />
+          <div className="grid gap-4 md:grid-cols-3">
+            {deskMetrics(activeDesk.id, analytics)}
           </div>
         </div>
         <aside className="space-y-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300">Today's Desk Notes</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">Placeholders with a job</h2>
-          </div>
-          <DeskNote kicker="Morning marker" title="Demo data shown until live feeds are configured." body="This may suggest the interface is healthy, not that the market is fresh. Read the badge before the number." sourceLabel="demo" />
-          <DeskNote kicker="Model margin" title="The regime score is a descriptive heuristic." body="Worth investigating when its reasons conflict with price action, rates context, or source freshness." sourceLabel="caveat" />
-          <DeskNote kicker="Story queue" title="No generated newspaper story has been written yet." body="The section payload is being shaped so future stories can link back to the analysis that produced them." sourceLabel="placeholder" />
+          {regime ? <RegimeBadge label={regime.label} score={regime.score} reasons={regime.reasons} /> : null}
+          <SourceQualityPanel freshness={freshness} errors={analytics?.errors} />
         </aside>
       </section>
 
-      <section id="quant-library-desk" className="space-y-5">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-300">Analysis bench</p>
-            <h2 className="mt-2 text-2xl font-semibold text-white">Desk sections</h2>
-          </div>
-          <div className="flex max-w-full gap-2 overflow-x-auto rounded-full border border-slate-800 bg-slate-950/70 p-1">
-            {deskDefinitions.map((desk) => (
-              <button
-                key={desk.id}
-                onClick={() => setActiveDeskId(desk.id)}
-                className={`shrink-0 rounded-full px-3 py-2 text-xs font-semibold transition ${activeDesk.id === desk.id ? "bg-emerald-300 text-slate-950" : "text-slate-300 hover:bg-slate-800"}`}
-              >
-                {desk.shortTitle}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {analyticsBusy ? <LoadingState message="Loading desk metrics. This metric needs at least one provider response." /> : null}
-        {!analyticsBusy && analyticsError ? <ErrorState message="The desk is open, but the data feed is not responding. Demo metrics cannot render until the analytics endpoint replies." /> : null}
-
-        <AnalysisSection
-          eyebrow={activeDesk.accent}
-          title={activeDesk.title}
-          summary={activeDesk.what}
-          what={activeDesk.what}
-          why={activeDesk.why}
-          caveats={activeDesk.caveats}
-          next={activeDesk.next}
-          metrics={renderDeskMetrics(activeDesk.id, analyticsDemo)}
-          story={<ToolGeneratedStoryCard headline={activeDesk.storyHeadline} summary={activeDesk.storySummary} sourceLabel="tool-generated story draft" />}
-        >
-          <DeskEvidenceTable deskId={activeDesk.id} analyticsDemo={analyticsDemo} />
-        </AnalysisSection>
-
-        {generatedMarketDraft ? (
-          <section className="grid gap-4 rounded-2xl border border-emerald-300/25 bg-slate-900 p-5 lg:grid-cols-[0.92fr_1.08fr]">
-            <div>
-              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-300">Story engine preview</p>
-              <h2 className="mt-2 text-2xl font-semibold text-white">{generatedMarketDraft.story.title}</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-400">{generatedMarketDraft.story.summary}</p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
-                <span>{generatedMarketDraft.story.sourceType}</span>
-                <span>Confidence: {generatedMarketDraft.story.confidence}</span>
-                <span>{generatedMarketDraft.readyToPublish ? "review-ready draft" : "needs review"}</span>
-              </div>
-              <a className="mt-5 inline-flex rounded-full border border-emerald-300/50 px-4 py-2 text-sm font-semibold text-emerald-100 hover:border-emerald-200" href="/internal/generated-stories">
-                Open generated stories preview
-              </a>
-            </div>
-            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Input insight</p>
-              <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-300">
-                {generatedMarketDraft.insight.observations.map((observation) => <li key={observation}>{observation}</li>)}
-              </ul>
-              <div className="mt-4 rounded-lg border border-amber-300/20 bg-amber-300/10 p-3 text-sm leading-6 text-amber-50">
-                {generatedMarketDraft.story.caveats?.[0] ?? "Generated drafts keep caveats attached."}
-              </div>
-            </div>
-          </section>
-        ) : null}
-      </section>
-
-      <section className="grid gap-4 lg:grid-cols-4">
-        <ExplanationPanel title="Data freshness matters" why="Markets move quickly. Always check timestamp, source, and fallback status before trusting an output." caveats={["Demo data can prove the workflow without proving the market."]} rules={["Treat stale or fallback data as training context."]} />
-        <ExplanationPanel title="Research oriented" why="Outputs are for education and analysis. They are meant to improve questions, not automate decisions." caveats={["A polished card can still be wrong."]} rules={["Keep assumptions visible."]} />
-        <ExplanationPanel title="Not financial advice" why="Quant Library does not tell you which security to enter, exit, or time." caveats={["User-specific constraints live outside this demo."]} rules={["Use outputs as context for further diligence."]} />
-        <ExplanationPanel title="Descriptive, not certain" why="Metrics describe historical relationships and model assumptions. They cannot settle future behavior." caveats={["Regimes change. Data revisions happen."]} rules={["Ask what would invalidate the readout."]} />
-      </section>
-
-      <div id="research-workspace" className="grid gap-5 xl:grid-cols-[0.92fr_1.08fr]">
-        <AIIntakePanel
-          prompt={prompt}
-          assumptionsText={assumptionsText}
-          questions={intake?.clarifyingQuestions ?? []}
-          answers={answers}
-          busy={busy !== null}
-          error={error}
-          onPromptChange={setPrompt}
-          onAssumptionsChange={setAssumptionsText}
-          onAnswerChange={(id, value) => setAnswers((current) => ({ ...current, [id]: value }))}
-          onClarify={runIntake}
-          onGenerate={createWorkspace}
-        />
-
-        <section className="space-y-4">
-          {intake ? (
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-              <div className="flex flex-wrap items-start justify-between gap-3">
-                <div>
-                  <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Intake readout</p>
-                  <h2 className="mt-2 text-xl font-semibold text-white">{intake.summary}</h2>
-                </div>
-                <span className="rounded-full border border-emerald-300/40 bg-emerald-300/10 px-3 py-1 text-xs font-semibold text-emerald-100">{intake.status}</span>
-              </div>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                {Object.entries(intake.inferred).map(([label, value]) => (
-                  <div key={label} className="rounded-xl border border-slate-800 bg-slate-950/70 p-3">
-                    <p className="text-xs uppercase tracking-[0.16em] text-slate-500">{label}</p>
-                    <p className="mt-1 text-sm font-semibold text-slate-100">{value}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <EmptyState title="Intake has not run yet" message="Ask clarifying questions before generating the workspace to make the output feel guided instead of form-driven." />
-          )}
-
-          <section className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-            <div className="flex flex-wrap items-center justify-between gap-3">
+      <section className="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px]">
+        <div className="space-y-4">
+          <div className="rounded-xl border border-slate-800 bg-slate-900 p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
               <div>
-                <h2 className="text-lg font-semibold text-white">Saved workspaces</h2>
-                <p className="mt-1 text-sm text-slate-400">Workspace history stays free while the tool quality improves.</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">{activeDesk.label}</p>
+                <h2 className="mt-2 text-2xl font-semibold text-white">{activeDesk.title}</h2>
+                <p className="mt-2 text-sm leading-6 text-slate-400">{activeDesk.question}</p>
               </div>
-              <button
-                className="rounded-full border border-slate-700 px-4 py-2 text-sm font-semibold text-slate-200 disabled:opacity-50"
-                onClick={rerunWorkspace}
-                disabled={!active || busy !== null}
-              >
-                Rerun active
-              </button>
-            </div>
-            {workspaces.length ? (
-              <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-                {workspaces.map((workspace) => (
-                  <button
-                    key={workspace.workspace_id}
-                    onClick={() => setActiveId(workspace.workspace_id)}
-                    className={`shrink-0 rounded-full border px-3 py-2 text-xs font-semibold transition ${
-                      workspace.workspace_id === activeId
-                        ? "border-emerald-300 bg-emerald-300 text-slate-950"
-                        : "border-slate-700 text-slate-200 hover:border-emerald-300"
-                    }`}
-                  >
-                    {workspace.title} v{workspace.versions.length}
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="mt-4 text-sm text-slate-400">No saved workspaces yet.</p>
-            )}
-          </section>
-        </section>
-      </div>
-
-      {busy === "loading" || busy === "generate" || busy === "rerun" ? (
-        <LoadingState message={busy === "rerun" ? "Rerunning the active workspace with revised assumptions..." : "Generating structured research cards..."} />
-      ) : null}
-
-      {error && !busy ? <ErrorState message={error} /> : null}
-
-      {!currentVersion && !busy ? (
-        <EmptyState title="Generate your first research workspace" message="Quant Library will show card-based output, risks, missing data, sources, and next actions after the first guided run." />
-      ) : null}
-
-      {currentVersion && output ? (
-        <div className="space-y-5">
-          <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr]">
-            <RecommendationCard output={output} />
-            <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Workspace version</p>
-              <p className="mt-2 text-lg font-semibold text-white">{currentVersion.version_id.slice(0, 8)}</p>
-              <p className="mt-1 text-sm text-slate-400">{new Date(currentVersion.created_at).toLocaleString()}</p>
+              <DataFreshnessBadge freshness={freshness} />
             </div>
           </div>
-
-          <ExportSaveActionBar disabled={!currentVersion} />
-
-          <div className="grid gap-5 xl:grid-cols-[1fr_360px]">
-            <ResultCards cards={output.cards} />
-            <aside className="space-y-5">
-              <RiskCard risks={output.risks} missingData={output.missingData} />
-              <NextActionPanel actions={output.recommendedNextSteps} />
-              <SourceList sources={output.sources} />
-            </aside>
-          </div>
+          <MainDeskContent activeDesk={activeDesk} analytics={analytics} shocks={shocks} onShockChange={handleShockChange} />
         </div>
-      ) : null}
+
+        <aside className="space-y-4">
+          <InterpretationPanel
+            observations={[
+              analytics ? `${analytics.symbols.length} symbols loaded for ${analytics.universe.title}.` : "Analytics are still loading.",
+              freshness ? `The current source status is ${freshness.status}.` : "Source status is not available yet.",
+            ]}
+            interpretation={activeDesk.summary}
+            uncertainty="This does not prove causation or future direction. The model may be wrong if the sample window, benchmark, or data source changes."
+          />
+          <MethodNote explanation={explanation} minimumData={activeDesk.id === "rates" ? "3M, 2Y, and 10Y rates at minimum." : "Enough aligned observations to compute the selected metric."} />
+          <CaveatPanel caveats={activeDesk.caveats} />
+          <HowToReadPanel steps={activeDesk.howToRead} />
+          <NextChecksPanel checks={activeDesk.nextChecks} />
+          <StatusBadge label="No buy/sell/hold output" tone="emerald" />
+        </aside>
+      </section>
     </section>
   );
 }
-

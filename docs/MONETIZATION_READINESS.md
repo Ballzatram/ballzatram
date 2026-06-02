@@ -77,8 +77,7 @@ Status labels should tell users what to expect before they click.
 | Parcel | Prototype land research workflow with explicit source quality. | Good Lab Pass candidate as research/diligence workflow. Do not sell verified acquisition decisions. |
 | AI Edit | Backend-required render workflow with rights-approved media guardrails. | Good candidate with quotas and clear render limits. Do not sell unlimited rendering. |
 | Weather Desk | Paper-mode weather market worksheet. | Can be included as education/simulation. Do not add live order placement. |
-| Quant Library static archive | Prototype education-first market analysis dashboard. | Can be included as a learning and analysis artifact. Do not frame as personalized recommendations. |
-| Quant Library | Alpha AI workflow with prototype persistence. | Promising, but durable paid workspaces need auth, Postgres, and user-scoped storage. |
+| Quant Library | Six-desk financial econometrics research workstation with demo/live source labeling and prototype persistence. | Promising, but durable paid workspaces need auth, Postgres, and user-scoped storage. Do not frame as personalized recommendations. |
 | Econ Arcade | Playable economics game hub. | Strong Lab Pass value through archive, drops, saves, and future scenarios. |
 | Strategy Studio | Playable game theory curriculum. | Good member archive/drop candidate. |
 | Central Banker | Playable macro policy game. | Good public preview and member scenario expansion candidate. |

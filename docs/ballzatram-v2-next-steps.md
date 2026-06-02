@@ -2,6 +2,8 @@
 
 Date: June 2, 2026
 
+Status note, 2026-06-02: Quant Library/MacroBoard cleanup has retired `backend/app/services/macro_board.py` and the static `tools/macroboard` predecessor. Treat older MacroBoard implementation notes in this file as historical context only.
+
 ## What Was Built
 
 Ballzatram v2 now has a connected product shell around the current ecosystem:

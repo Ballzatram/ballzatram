@@ -4,7 +4,7 @@ const marketAdviceTerms = /\b(buy|sell|hold|short|long|outperform|underperform)\
 const bettingCertaintyTerms = /\b(lock|locks|guarantee|guaranteed|sure thing|free money)\b/i;
 
 export function isStaleInsight(insight: ToolInsight): boolean {
-  return ["fallback", "missing", "error", "unknown"].includes(insight.source.freshnessStatus ?? "unknown");
+  return ["demo", "stale", "fallback", "missing", "error", "unknown"].includes(insight.source.freshnessStatus ?? "unknown");
 }
 
 export function ensureCaveats(insight: ToolInsight): string[] {
@@ -42,10 +42,10 @@ export function safetyWarnings(draft: GeneratedStoryDraft): string[] {
   if (draft.story.departmentId === "bettors-corner" && bettingCertaintyTerms.test(text)) {
     warnings.push("Betting story contains certainty language.");
   }
-  const sourceLooksStale = ["fallback", "missing", "error", "unknown"].includes(draft.source.freshnessStatus ?? "unknown");
+  const sourceLooksStale = ["demo", "stale", "fallback", "missing", "error", "unknown"].includes(draft.source.freshnessStatus ?? "unknown");
   if (sourceLooksStale) {
-    const saysStale = /stale|fallback|demo-only|freshness/i.test(text);
-    if (!saysStale) warnings.push("Stale or fallback data must be disclosed in the story body.");
+    const saysStale = /stale|demo|fallback|freshness/i.test(text);
+    if (!saysStale) warnings.push("Limited-freshness data must be disclosed in the story body.");
   }
   return warnings;
 }

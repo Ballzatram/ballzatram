@@ -69,7 +69,7 @@ class QuantLibraryFoundationTests(unittest.TestCase):
         curve = provider.get_yield_curve()
 
         self.assertTrue(universe.items)
-        self.assertEqual(quote.freshness.status, "fallback")
+        self.assertEqual(quote.freshness.status, "demo")
         self.assertEqual(curve.points[-1].tenor, "30Y")
 
     def test_quant_library_analytics_demo_service_payload(self):
