@@ -9,6 +9,7 @@ import {
   StoryCard,
   StoryGrid,
 } from "@/components/newspaper/NewspaperPrimitives";
+import { StoneyBriefingCard } from "@/components/stoney/StoneyPrimitives";
 import type { Department, DepartmentId } from "@/config/departments";
 
 const editionDate = "June 1, 2026";
@@ -138,31 +139,18 @@ export function BallzatramDailyPage() {
             </div>
           </div>
 
-          <div className="border border-[#2b1b10] bg-[#24150b] p-5 text-[#f4e7c8]">
-            <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#e3bd72]">
-              Current Events / Stoney placeholder
-            </p>
-            <h2 className="mt-1 font-serif text-4xl font-black leading-none">The briefing desk has a chair. Nobody has been allowed near the microphone.</h2>
-            {stoneyStory ? (
-              <div className="mt-5 border-t border-[#f4e7c8]/25 pt-4">
-                <span className="bg-[#e3bd72] px-2 py-1 font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[#24150b]">
-                  {stoneyStory.heroLabel}
-                </span>
-                <h3 className="mt-3 font-serif text-2xl font-black leading-[1.02] text-[#fff7df]">
-                  <Link className="hover:underline" href={`/stories/${stoneyStory.id}` as Route}>
-                    {stoneyStory.title}
-                  </Link>
-                </h3>
-                <p className="mt-2 font-mono text-[0.68rem] font-black uppercase tracking-[0.14em] text-[#e3bd72]">
-                  {stoneyDepartment.accentLabel} / {stoneyStory.sourceType}
-                </p>
-                <p className="mt-3 text-sm leading-6 text-[#d9c59a]">{stoneyStory.summary}</p>
-              </div>
-            ) : null}
-            <p className="mt-5 border-t border-[#f4e7c8]/25 pt-4 text-sm leading-6 text-[#d9c59a]">
-              Stoney remains a placeholder in this newspaper phase. Existing routes stay reachable; new lore and simulator work stay out of scope.
-            </p>
-          </div>
+          <StoneyBriefingCard
+            kicker={`${stoneyDepartment.accentLabel} / Stoney framework`}
+            headline="The briefing desk has a chair. The chair is making accusations."
+            body={
+              stoneyStory
+                ? `${stoneyStory.summary} The reusable Stoney layer is active now; new simulator work stays out of scope.`
+                : "Stoney can now appear in low-risk editorial margins while future games stay out of scope."
+            }
+            href={stoneyStory ? `/stories/${stoneyStory.id}` : "/stoney-baologna"}
+            linkLabel={stoneyStory ? "Read placeholder briefing" : "Meet Stoney"}
+            tone="dark"
+          />
         </section>
 
         <section id="back-issues" className="grid gap-6 py-7 lg:grid-cols-[1fr_1fr_1fr]">

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getDepartment } from "@/config/departments";
 import { generatedStoryPreviewDrafts, type GeneratedStoryDraft } from "@/lib/story-engine";
+import { StoneyAside } from "@/components/stoney/StoneyPrimitives";
 import type { StoryBodySection } from "@/types/story";
 
 export const metadata: Metadata = {
@@ -120,6 +121,12 @@ export default function GeneratedStoriesPreviewPage() {
           the input insight, generated story card, and generated article body.
         </p>
       </div>
+
+      <StoneyAside
+        title="Margin correspondent admitted to preview room"
+        body="Stoney is allowed to heckle the machinery here because this is an internal preview, not a caveat, source label, or publication decision."
+        tone="dark"
+      />
 
       <div className="grid gap-5">
         {drafts.map((draft) => <DraftPreview key={draft.id} draft={draft} />)}

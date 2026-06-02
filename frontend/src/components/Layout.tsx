@@ -58,8 +58,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <Link href={"/tools/parcel/index.html" as Route}>Parcel</Link>
             <Link href={"/laboratory" as Route} aria-current={currentPath === "/laboratory" ? "page" : undefined}>Lab</Link>
             <Link href={"/culture" as Route} aria-current={currentPath === "/culture" ? "page" : undefined}>Culture</Link>
-            <Link href={"/arcade" as Route} aria-current={currentPath === "/arcade" || currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Arcade</Link>
-            <Link href={"/games/stoney-bologna/index.html" as Route}>Blotter</Link>
+            <Link href={"/arcade" as Route} aria-current={currentPath.startsWith("/arcade") || currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Arcade</Link>
+            <Link href={"/stoney-baologna" as Route} aria-current={currentPath === "/stoney-baologna" ? "page" : undefined}>Stoney</Link>
             <Link href={"/quant-library" as Route} aria-current={currentPath === "/quant-library" ? "page" : undefined}>Quant Library</Link>
           </nav>
         </div>
