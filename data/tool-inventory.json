@@ -1,17 +1,17 @@
 [
   {
     "id": "parcel",
-    "title": "Parcel",
+    "title": "Parcel Intelligence",
     "category": "Tool",
-    "href": "/tools/parcel/index.html",
+    "href": "/land",
     "status": "Prototype",
-    "maturity": "Guided land-acquisition workflow with deterministic fallbacks and manual verification needs.",
-    "shortDescription": "A thesis-to-shortlist land research desk with source quality labels.",
+    "maturity": "Guided land-acquisition workflow with deterministic demo data, source quality labels, shortlist comparison, and memo preview.",
+    "shortDescription": "Define a land thesis, review source-aware parcel opportunities, compare candidates, and generate a memo-style diligence preview.",
     "whyItExists": "To turn vague land searches into a structured diligence queue with assumptions, caveats, and next questions.",
     "memberPotential": true,
     "riskLevel": "high",
     "safetyNote": "Parcel does not treat listing links as verified truth and must not be sold as a real estate decision engine.",
-    "tags": ["land", "research", "diligence", "shortlist"],
+    "tags": ["land", "research", "diligence", "shortlist", "memo"],
     "heavyCompute": false,
     "requiresBackend": false,
     "freePreview": true

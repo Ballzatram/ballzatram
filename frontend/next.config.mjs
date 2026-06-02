@@ -20,6 +20,16 @@ const nextConfig = {
         destination: "/quant-library",
         permanent: false,
       },
+      {
+        source: "/tools/parcel",
+        destination: "/land",
+        permanent: false,
+      },
+      {
+        source: "/tools/parcel/:path*",
+        destination: "/land",
+        permanent: false,
+      },
     ];
   },
   webpack(config) {
