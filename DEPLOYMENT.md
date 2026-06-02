@@ -35,8 +35,11 @@ Expected server env file:
 Minimum contents:
 
 ```env
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=<server-side-openai-key>
 OPENAI_AGENT_MODEL=gpt-5.1
+FRED_API_KEY=<server-side-fred-key>
+NEXT_PUBLIC_API_BASE=/api
+NEXT_PUBLIC_SITE_URL=https://ballzatram.com
 APP_ENV=production
 GIT_BRANCH=master
 ```

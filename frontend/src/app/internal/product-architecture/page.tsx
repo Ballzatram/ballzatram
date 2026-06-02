@@ -1,5 +1,13 @@
+import { pageMetadata } from "@/lib/pageMetadata";
 import { departments, getDepartment } from "@/config/departments";
 import { demoStories, getStoriesByDepartment } from "@/data/stories";
+
+export const metadata = pageMetadata({
+  title: "Product Architecture Preview | Ballzatram",
+  description: "Internal preview of Ballzatram v2 department metadata and seed story architecture.",
+  path: "/internal/product-architecture",
+  noIndex: true,
+});
 
 function flagLabel(value: boolean) {
   return value ? "enabled" : "later";
