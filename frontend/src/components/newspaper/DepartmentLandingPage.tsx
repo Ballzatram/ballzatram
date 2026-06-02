@@ -7,7 +7,7 @@ import type { RelatedRoute } from "@/types/story";
 
 const relatedDepartmentRoutes: Partial<Record<DepartmentId, RelatedRoute["href"]>> = {
   "quant-library": "/quant-library",
-  "bettors-corner": "/weather-bot.html",
+  "bettors-corner": "/bettors-corner",
   culture: "/penitent",
   arcade: "/econ-arcade",
   laboratory: "/ai-edit-factory/",

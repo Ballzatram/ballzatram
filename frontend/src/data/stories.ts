@@ -56,7 +56,7 @@ export const demoStories = [
     updatedAt: "2026-06-01T09:10:00.000Z",
     status: "draft",
     sourceType: "hybrid",
-    sourceToolId: "weather-desk",
+    sourceToolId: "bettors-corner",
     heroLabel: "Demo Betting Lesson",
     tags: ["demo", "betting", "probability", "education"],
     summary:
@@ -79,9 +79,9 @@ export const demoStories = [
     ],
     relatedRoutes: [
       {
-        label: "Open Weather Desk",
-        href: "/weather-bot.html",
-        description: "Current paper-mode worksheet adjacent to probability and settlement education.",
+        label: "Open Bettor's Corner",
+        href: "/bettors-corner",
+        description: "Educational betting-market desk for odds, probability, movement, and risk context.",
       },
     ],
     confidence: "low",

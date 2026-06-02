@@ -29,7 +29,7 @@ function departmentRoute(department: Department): Route {
   if (department.id === "laboratory") return "/laboratory" as Route;
   if (department.id === "culture") return "/culture" as Route;
   if (department.id === "arcade") return "/arcade" as Route;
-  if (department.id === "bettors-corner") return "/betting" as Route;
+  if (department.id === "bettors-corner") return "/bettors-corner" as Route;
   return department.primaryRoute as Route;
 }
 
@@ -174,6 +174,7 @@ export function BallzatramDailyPage() {
           </div>
           <div className="grid gap-2 font-mono text-[0.72rem] font-black uppercase tracking-[0.14em]">
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/markets" as Route}>Markets desk</Link>
+            <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/bettors-corner" as Route}>Betting desk</Link>
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/tools/parcel/index.html" as Route}>Parcel tool</Link>
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/culture" as Route}>Culture desk</Link>
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/arcade" as Route}>Arcade desk</Link>

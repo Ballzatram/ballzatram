@@ -16,6 +16,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isMacroRoute = macroRoutes.has(currentPath);
   const isPenitent = currentPath.startsWith("/penitent");
   const isHome = currentPath === "/";
+  const isBettingRoute = currentPath === "/bettors-corner" || currentPath === "/betting";
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -53,6 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           >
             <Link href={"/" as Route} aria-current={currentPath === "/" || currentPath === "/daily" ? "page" : undefined}>Daily</Link>
             <Link href={"/markets" as Route} aria-current={currentPath === "/markets" ? "page" : undefined}>Markets</Link>
+            <Link href={"/bettors-corner" as Route} aria-current={isBettingRoute ? "page" : undefined}>Betting</Link>
             <Link href={"/tools/parcel/index.html" as Route}>Parcel</Link>
             <Link href={"/laboratory" as Route} aria-current={currentPath === "/laboratory" ? "page" : undefined}>Lab</Link>
             <Link href={"/culture" as Route} aria-current={currentPath === "/culture" ? "page" : undefined}>Culture</Link>

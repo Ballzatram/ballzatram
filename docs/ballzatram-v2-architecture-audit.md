@@ -387,3 +387,36 @@ Validation run for this implementation:
 - `python -m pytest -q` in `backend/` still cannot run in this local environment because `pytest` is not installed for `C:\Python314\python.exe`.
 - `python -m py_compile app\api\routes.py app\main.py app\services\agent.py app\services\macro_board.py` in `backend/` passed as a lightweight syntax check for the touched backend modules.
 - There is no `npm test` script in `frontend/package.json`.
+
+### 2026-06-02 - Bettor's Corner MVP
+
+Created Bettor's Corner as a provider-backed educational betting-market analysis desk without adding live sportsbook integrations or pick-selling language.
+
+Files added:
+
+- `frontend/src/app/bettors-corner/page.tsx`
+- `frontend/src/components/bettors-corner/BettorsCornerPrimitives.tsx`
+- `frontend/src/lib/betting-data/types.ts`
+- `frontend/src/lib/betting-data/analytics.ts`
+- `frontend/src/lib/betting-data/explanations.ts`
+- `frontend/src/lib/betting-data/demo-provider.ts`
+- `frontend/src/lib/betting-data/index.ts`
+
+Scope notes:
+
+- `/bettors-corner` is the primary product route.
+- `/betting` remains available as a compatibility redirect to `/bettors-corner`.
+- Department metadata now marks Bettor's Corner as a prototype analysis department with `storyEnabled` and `toolEnabled`.
+- The demo provider exposes odds board, event odds, line history, market list, and demo odds methods without scraping DraftKings or requiring API keys.
+- Betting analytics include American odds conversion, implied probability, decimal odds, break-even probability, payout estimate, parlay probability, approximate hold, line movement direction, and a simple normalized outcome distribution.
+- The story engine now has a deterministic Bettor's Corner implied-probability classroom draft using a +150 example line.
+- Daily/newsroom links now route betting readers back to `/bettors-corner`.
+
+Validation run for this implementation:
+
+- `npm.cmd run lint` in `frontend/` passed. This runs `tsc --noEmit`.
+- `npm.cmd run build` in `frontend/` passed and generated `/bettors-corner` and `/betting`. The build emitted webpack cache snapshot warnings but exited successfully.
+- `C:\Users\devin\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe -m unittest discover -s backend\tests -q` from the repo root failed because that environment could not import `fastapi` and could not resolve the backend `app` package from that working directory.
+- `C:\Users\devin\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe -m unittest discover -s tests -p test_quant_library_foundation.py -q` in `backend/` passed.
+- Local HTTP smoke check on the dev server returned 200 for `/bettors-corner`, 307 for `/betting`, and 200 for `/internal/generated-stories`.
+- In-app Browser visual verification could not run because the Browser runtime failed before connecting with a local kernel-assets path error.

@@ -74,13 +74,13 @@ export const departments = [
     shortTitle: "Betting",
     slug: "bettors-corner",
     description:
-      "A probability and betting-education desk for odds, implied probability, settlement notes, and paper-mode lessons.",
-    status: "planned",
+      "An educational betting-market analysis desk for odds, implied probability, line movement, outcomes, variance, and sportsbook pricing.",
+    status: "prototype",
     type: "analysis",
-    primaryRoute: "/weather-bot.html",
+    primaryRoute: "/bettors-corner",
     accentLabel: "Betting",
     storyEnabled: true,
-    toolEnabled: false,
+    toolEnabled: true,
   },
   {
     id: "parcel",
