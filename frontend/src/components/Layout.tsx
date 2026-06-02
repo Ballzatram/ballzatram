@@ -16,7 +16,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
   const isMacroRoute = macroRoutes.has(currentPath);
   const isPenitent = currentPath.startsWith("/penitent");
   const isHome = currentPath === "/";
+  const isMarketsRoute = currentPath === "/markets" || isMacroRoute;
   const isBettingRoute = currentPath === "/bettors-corner" || currentPath === "/betting";
+  const isLandRoute = currentPath === "/land" || currentPath.startsWith("/tools/parcel");
+  const isLaboratoryRoute = currentPath === "/laboratory" || currentPath.startsWith("/ai-edit-factory");
+  const isCultureRoute = currentPath === "/culture" || currentPath.startsWith("/penitent");
+  const isStoneyRoute = currentPath === "/stoney-baologna" || currentPath.startsWith("/games/stoney-bologna");
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -53,14 +58,13 @@ export function Layout({ children }: { children: React.ReactNode }) {
             aria-label="Ballzatram sections"
           >
             <Link href={"/" as Route} aria-current={currentPath === "/" || currentPath === "/daily" ? "page" : undefined}>Daily</Link>
-            <Link href={"/markets" as Route} aria-current={currentPath === "/markets" ? "page" : undefined}>Markets</Link>
+            <Link href={"/markets" as Route} aria-current={isMarketsRoute ? "page" : undefined}>Markets</Link>
             <Link href={"/bettors-corner" as Route} aria-current={isBettingRoute ? "page" : undefined}>Betting</Link>
-            <Link href={"/tools/parcel/index.html" as Route}>Parcel</Link>
-            <Link href={"/laboratory" as Route} aria-current={currentPath === "/laboratory" ? "page" : undefined}>Lab</Link>
-            <Link href={"/culture" as Route} aria-current={currentPath === "/culture" ? "page" : undefined}>Culture</Link>
+            <Link href={"/land" as Route} aria-current={isLandRoute ? "page" : undefined}>Land</Link>
+            <Link href={"/laboratory" as Route} aria-current={isLaboratoryRoute ? "page" : undefined}>Laboratory</Link>
+            <Link href={"/culture" as Route} aria-current={isCultureRoute ? "page" : undefined}>Culture</Link>
             <Link href={"/arcade" as Route} aria-current={currentPath.startsWith("/arcade") || currentPath.startsWith("/econ-arcade") ? "page" : undefined}>Arcade</Link>
-            <Link href={"/stoney-baologna" as Route} aria-current={currentPath === "/stoney-baologna" ? "page" : undefined}>Stoney</Link>
-            <Link href={"/quant-library" as Route} aria-current={currentPath === "/quant-library" ? "page" : undefined}>Quant Library</Link>
+            <Link href={"/stoney-baologna" as Route} aria-current={isStoneyRoute ? "page" : undefined}>Stoney</Link>
           </nav>
         </div>
         {isMacroRoute ? (

@@ -9,10 +9,21 @@ import type { RelatedRoute } from "@/types/story";
 const relatedDepartmentRoutes: Partial<Record<DepartmentId, RelatedRoute["href"]>> = {
   "quant-library": "/quant-library",
   "bettors-corner": "/bettors-corner",
+  parcel: "/tools/parcel/index.html",
   culture: "/penitent",
   arcade: "/econ-arcade",
   laboratory: "/ai-edit-factory/",
   "stoney-baologna": "/stoney-baologna",
+};
+
+const relatedDepartmentLabels: Partial<Record<DepartmentId, string>> = {
+  "quant-library": "Open Quant Library",
+  "bettors-corner": "Open Bettor's Corner",
+  parcel: "Open Parcel",
+  laboratory: "Open Lab prototype",
+  culture: "Open Penitent II",
+  arcade: "Open Econ Arcade",
+  "stoney-baologna": "Open Stoney file",
 };
 
 const departmentPrototypeRoutes: Partial<Record<DepartmentId, RelatedRoute[]>> = {
@@ -116,7 +127,7 @@ export function DepartmentLandingPage({
               <div className="mt-4">
                 <RelatedToolLink
                   route={{
-                    label: `Open ${department.shortTitle}`,
+                    label: relatedDepartmentLabels[departmentId] ?? `Open ${department.shortTitle}`,
                     href: toolRoute,
                     description: department.description,
                   }}

@@ -1,4 +1,6 @@
+import Link from "next/link";
 import type { Metadata } from "next";
+import type { Route } from "next";
 import { getDepartment } from "@/config/departments";
 import { generatedStoryPreviewDrafts, type GeneratedStoryDraft } from "@/lib/story-engine";
 import { StoneyAside } from "@/components/stoney/StoneyPrimitives";
@@ -86,6 +88,23 @@ function DraftPreview({ draft }: { draft: GeneratedStoryDraft }) {
                 <ul className="mt-2 grid gap-1 text-sm leading-6 text-amber-50/90">
                   {draft.story.caveats.map((caveat) => <li key={caveat}>{caveat}</li>)}
                 </ul>
+              </div>
+            ) : null}
+            {draft.story.relatedRoutes.length ? (
+              <div className="mt-5 rounded-xl border border-emerald-300/25 bg-emerald-300/5 p-4">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-300">Back to the producing tool</p>
+                <div className="mt-3 grid gap-2">
+                  {draft.story.relatedRoutes.map((route) => (
+                    <Link
+                      key={route.href}
+                      href={route.href as Route}
+                      className="rounded-lg border border-slate-800 bg-slate-950/70 p-3 text-sm leading-6 text-slate-300 hover:border-emerald-300 hover:text-white"
+                    >
+                      <strong className="block text-slate-100">{route.label}</strong>
+                      {route.description ? <span className="text-slate-400">{route.description}</span> : null}
+                    </Link>
+                  ))}
+                </div>
               </div>
             ) : null}
             {draft.generationWarnings.length ? (

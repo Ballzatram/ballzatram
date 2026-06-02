@@ -27,12 +27,50 @@ function toolDepartments() {
 
 function departmentRoute(department: Department): Route {
   if (department.id === "quant-library") return "/markets" as Route;
+  if (department.id === "parcel") return "/land" as Route;
   if (department.id === "laboratory") return "/laboratory" as Route;
   if (department.id === "culture") return "/culture" as Route;
   if (department.id === "arcade") return "/arcade" as Route;
   if (department.id === "bettors-corner") return "/bettors-corner" as Route;
   return department.primaryRoute as Route;
 }
+
+function toolRoute(department: Department): Route {
+  if (department.id === "quant-library") return "/quant-library" as Route;
+  if (department.id === "parcel") return "/tools/parcel/index.html" as Route;
+  if (department.id === "laboratory") return "/ai-edit-factory/" as Route;
+  if (department.id === "arcade") return "/econ-arcade" as Route;
+  return department.primaryRoute as Route;
+}
+
+const sectionLinks = [
+  { label: "Daily", href: "/" as Route, description: "The self-writing front page." },
+  { label: "Markets", href: "/markets" as Route, description: "Quant Library stories and market tools." },
+  { label: "Betting", href: "/bettors-corner" as Route, description: "Odds education without pick-selling." },
+  { label: "Land", href: "/land" as Route, description: "Parcel and infrastructure notes." },
+  { label: "Laboratory", href: "/laboratory" as Route, description: "Experimental machines and prototypes." },
+  { label: "Culture", href: "/culture" as Route, description: "Penitent II and creative artifacts." },
+  { label: "Arcade", href: "/arcade" as Route, description: "Playable experiments and learning games." },
+  { label: "Stoney", href: "/stoney-baologna" as Route, description: "Resident correspondent and playable chaos." },
+];
+
+const playableWorlds = [
+  {
+    label: "Bullshit Simulator",
+    href: "/arcade/bullshit-simulator" as Route,
+    description: "Stoney's first text-adventure arc: the Siege of South Gate Mall.",
+  },
+  {
+    label: "Econ Arcade",
+    href: "/econ-arcade" as Route,
+    description: "Economic simulations, learning games, and playable systems.",
+  },
+  {
+    label: "Penitent II",
+    href: "/penitent" as Route,
+    description: "Culture-desk manuscript, rhythm, hymns, and relics.",
+  },
+];
 
 export function BallzatramDailyPage() {
   const stories = [...demoStories].sort((a, b) => b.publishedAt.localeCompare(a.publishedAt));
@@ -51,10 +89,37 @@ export function BallzatramDailyPage() {
       <div className="mx-auto w-full max-w-[1500px] px-4 py-6 sm:px-6 lg:px-8">
         <NewspaperMasthead
           title="Ballzatram Daily"
-          subtitle="A self-writing newspaper shell for tools, demo stories, playable oddities, and source-labeled caveats. The machines write drafts later; today the paper prints the wiring."
+          subtitle="A strange but useful newspaper shell for tools, demo stories, playable worlds, and source-labeled caveats. The machines write drafts later; today the paper prints the wiring."
           editionLabel="Vol. II / Demo No. 001"
           date={editionDate}
         />
+
+        <section className="grid gap-5 border-b-[3px] border-double border-[#24150b] py-6 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          <article className="border border-[#2b1b10] bg-[#24150b] p-5 text-[#f4e7c8]">
+            <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#e3bd72]">
+              What is Ballzatram?
+            </p>
+            <h2 className="mt-2 font-serif text-4xl font-black leading-none">
+              A self-writing newspaper with machinery behind the ink.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-[#d9c59a]">
+              Ballzatram is a self-writing newspaper powered by AI tools, analysis engines, creative worlds, and playable experiments.
+              The tools produce stories. The stories lead back into tools. The games and characters make the world feel alive.
+            </p>
+          </article>
+          <nav className="grid gap-2 sm:grid-cols-2" aria-label="Ballzatram section map">
+            {sectionLinks.map((section) => (
+              <Link
+                key={section.href}
+                href={section.href}
+                className="grid gap-1 border border-[#2b1b10] bg-[#f7edcf] p-3 text-[#24150b] transition hover:-translate-y-0.5 hover:bg-white"
+              >
+                <strong className="font-serif text-xl leading-6">{section.label}</strong>
+                <span className="text-sm leading-5 text-[#4b2b16]">{section.description}</span>
+              </Link>
+            ))}
+          </nav>
+        </section>
 
         <section id="front-page" className="mt-6 grid gap-6 border-b-[3px] border-double border-[#24150b] pb-7 lg:grid-cols-[minmax(0,1.55fr)_420px]">
           <LeadStory story={leadStory} department={departmentById[leadStory.departmentId]} />
@@ -102,7 +167,7 @@ export function BallzatramDailyPage() {
               {toolDepartments().slice(0, 6).map((department) => (
                 <Link
                   key={department.id}
-                  href={departmentRoute(department)}
+                  href={toolRoute(department)}
                   className="grid gap-1 border border-[#2b1b10] bg-[#f7edcf] p-4 text-[#24150b] transition hover:-translate-y-0.5 hover:bg-white"
                 >
                   <span className="font-mono text-[0.65rem] font-black uppercase tracking-[0.16em] text-[#7a5730]">
@@ -119,23 +184,31 @@ export function BallzatramDailyPage() {
         <section className="grid gap-6 border-b border-[#2b1b10] py-7 lg:grid-cols-[1fr_1fr]">
           <div className="border border-[#2b1b10] bg-[#ead9ad] p-5">
             <p className="font-mono text-[0.68rem] font-black uppercase tracking-[0.18em] text-[#7a5730]">
-              Culture / Arcade
+              Playable Worlds
             </p>
             <h2 className="mt-1 font-serif text-4xl font-black leading-none text-[#1b1109]">
-              Playable relics, printed with labels.
+              The newspaper has doors you can walk through.
             </h2>
+            <p className="mt-3 text-sm leading-6 text-[#4b2b16]">
+              Ballzatram's games and creative artifacts are part of the paper, not a side drawer. They produce worlds, characters, and eventually story material.
+            </p>
             <div className="mt-5 grid gap-5 md:grid-cols-2">
               {cultureStory ? <StoryCard story={cultureStory} department={cultureDepartment} compact /> : null}
-              <article className="grid content-start gap-3 border-t border-[#2b1b10] pt-4">
-                <span className="w-fit bg-[#24150b] px-2 py-1 font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[#f4e7c8]">
-                  {arcadeDepartment.accentLabel}
-                </span>
-                <h3 className="font-serif text-2xl font-black leading-[1.02] text-[#1b1109]">{arcadeDepartment.title}</h3>
-                <p className="text-sm leading-6 text-[#4b2b16]">{arcadeDepartment.description}</p>
-                <Link className="font-mono text-[0.7rem] font-black uppercase tracking-[0.14em] text-[#7f1d1d]" href={"/arcade" as Route}>
-                  Open arcade desk
-                </Link>
-              </article>
+              <div className="grid content-start gap-3">
+                {playableWorlds.map((world) => (
+                  <Link
+                    key={world.href}
+                    href={world.href}
+                    className="grid gap-1 border-t border-[#2b1b10] pt-3 text-[#24150b] hover:text-[#7f1d1d]"
+                  >
+                    <span className="font-mono text-[0.65rem] font-black uppercase tracking-[0.14em] text-[#7a5730]">
+                      {arcadeDepartment.accentLabel}
+                    </span>
+                    <strong className="font-serif text-2xl leading-7">{world.label}</strong>
+                    <span className="text-sm leading-6 text-[#4b2b16]">{world.description}</span>
+                  </Link>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -144,11 +217,11 @@ export function BallzatramDailyPage() {
             headline="The briefing desk has a chair. The chair is making accusations."
             body={
               stoneyStory
-                ? `${stoneyStory.summary} The reusable Stoney layer is active now; new simulator work stays out of scope.`
-                : "Stoney can now appear in low-risk editorial margins while future games stay out of scope."
+                ? `${stoneyStory.summary} Stoney's profile and first playable prototype now sit inside the same newspaper map.`
+                : "Stoney can now appear in low-risk editorial margins and playable prototype routes."
             }
-            href={stoneyStory ? `/stories/${stoneyStory.id}` : "/stoney-baologna"}
-            linkLabel={stoneyStory ? "Read placeholder briefing" : "Meet Stoney"}
+            href="/stoney-baologna"
+            linkLabel="Meet Stoney"
             tone="dark"
           />
         </section>
@@ -163,9 +236,10 @@ export function BallzatramDailyPage() {
           <div className="grid gap-2 font-mono text-[0.72rem] font-black uppercase tracking-[0.14em]">
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/markets" as Route}>Markets desk</Link>
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/bettors-corner" as Route}>Betting desk</Link>
-            <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/tools/parcel/index.html" as Route}>Parcel tool</Link>
+            <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/land" as Route}>Land desk</Link>
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/culture" as Route}>Culture desk</Link>
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/arcade" as Route}>Arcade desk</Link>
+            <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/stoney-baologna" as Route}>Stoney file</Link>
             <Link className="border border-[#2b1b10] px-3 py-2 text-[#24150b] hover:bg-[#24150b] hover:text-[#f4e7c8]" href={"/internal/product-architecture" as Route}>Product architecture</Link>
           </div>
         </section>
