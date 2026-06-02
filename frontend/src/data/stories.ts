@@ -182,7 +182,7 @@ export const demoStories = [
     heroLabel: "Demo Briefing",
     tags: ["demo", "stoney", "briefing", "current-events"],
     summary:
-      "This placeholder keeps the Stoney concept represented in the newspaper architecture without implementing a new simulator.",
+      "This placeholder keeps the Stoney concept represented in the newspaper architecture while the first playable prototype stays clearly labeled.",
     body: [
       {
         id: "briefing-intent",
@@ -196,7 +196,7 @@ export const demoStories = [
         type: "data-note",
         heading: "Phase boundary",
         content:
-          "This seed only defines the story slot. It does not implement Stoney Baologna, Bullshit Simulator, or any new game logic.",
+          "This seed defines the story slot. The playable Bullshit Simulator route is still a lightweight prototype, not the full Stoney game engine.",
       },
     ],
     relatedRoutes: [
@@ -212,7 +212,7 @@ export const demoStories = [
       },
     ],
     confidence: "medium",
-    caveats: ["Demo content only.", "No new Stoney implementation was added."],
+    caveats: ["Demo content only.", "Bullshit Simulator is currently a lightweight prototype, not a full game engine."],
     readingTime: 2,
   },
 ] as const satisfies readonly Story[];
