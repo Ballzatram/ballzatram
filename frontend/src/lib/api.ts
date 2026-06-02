@@ -7,7 +7,7 @@ export type AgentChatResponse = { conversation_id: string; page_id: string; proc
 export type DataFreshness = {
   provider: string;
   source: string;
-  status: "live" | "fallback" | "missing" | "error" | "unknown";
+  status: "live" | "cached" | "demo" | "stale" | "fallback" | "missing" | "error" | "unknown";
   as_of?: string | null;
   retrieved_at: string;
   warnings: string[];

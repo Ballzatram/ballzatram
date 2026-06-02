@@ -19,7 +19,7 @@ export type StorySource = {
   sourceLabel: string;
   runId?: string;
   provider?: string;
-  freshnessStatus?: "live" | "fallback" | "missing" | "error" | "unknown";
+  freshnessStatus?: "live" | "cached" | "demo" | "stale" | "fallback" | "missing" | "error" | "unknown";
   warnings: string[];
 };
 

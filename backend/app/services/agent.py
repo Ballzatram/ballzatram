@@ -37,7 +37,7 @@ TOOL_OUTPUT_JSON_SCHEMA: dict[str, Any] = {
                             "properties": {
                                 "title": {"type": "string"},
                                 "url": {"type": "string"},
-                                "status": {"type": "string", "enum": ["live", "fallback", "missing", "unknown"]},
+                                "status": {"type": "string", "enum": ["live", "cached", "demo", "stale", "fallback", "missing", "error", "unknown"]},
                                 "description": {"type": "string"},
                             },
                             "required": ["title", "url", "status", "description"],
@@ -85,7 +85,7 @@ TOOL_OUTPUT_JSON_SCHEMA: dict[str, Any] = {
                 "properties": {
                     "title": {"type": "string"},
                     "url": {"type": "string"},
-                    "status": {"type": "string", "enum": ["live", "fallback", "missing", "unknown"]},
+                    "status": {"type": "string", "enum": ["live", "cached", "demo", "stale", "fallback", "missing", "error", "unknown"]},
                     "description": {"type": "string"},
                 },
                 "required": ["title", "url", "status", "description"],
@@ -102,18 +102,18 @@ PROCESS_REGISTRY: Dict[str, List[AgentProcess]] = {
         AgentProcess(
             id="market-research-workspace",
             title="Build a Quant Library research workspace",
-            outcome="A card-based market research workspace with assumptions, risks, sources, and next steps.",
+            outcome="A card-based market research workspace with assumptions, caveats, sources, and next checks.",
             starter_prompt="Guide me from a market question to an explainable Quant Library workspace.",
-            steps=["Clarify the decision and horizon", "Map data, assumptions, and missing evidence", "Produce recommendation, risk, and next-step cards"],
+            steps=["Clarify the research question and horizon", "Map data, assumptions, and missing evidence", "Produce observation, caveat, and next-check cards"],
         )
     ],
     "macro-board": [
         AgentProcess(
             id="market-research-workspace",
             title="Build a structured market research workspace",
-            outcome="A card-based decision workspace with assumptions, risks, sources, and next steps.",
+            outcome="A compatibility entrypoint for Quant Library research cards with assumptions, caveats, sources, and next checks.",
             starter_prompt="Guide me from a market question to a structured research workspace.",
-            steps=["Clarify the decision and horizon", "Map data, assumptions, and missing evidence", "Produce recommendation, risk, and next-step cards"],
+            steps=["Clarify the research question and horizon", "Map data, assumptions, and missing evidence", "Produce observation, caveat, and next-check cards"],
         )
     ],
     "dashboard": [
@@ -287,17 +287,17 @@ def _fallback_output(page_id: str, process: AgentProcess, message: str) -> dict[
         "summary": f"I can guide the {process.title} workflow for the {page_id} page.",
         "cards": [
             {
-                "title": "Clarify the decision",
+                "title": "Clarify the research question",
                 "type": "next_step",
-                "content": f"Start by turning {message!r} into a concrete decision, owner, and horizon.",
+                "content": f"Start by turning {message!r} into a concrete research question, owner, and horizon.",
                 "confidence": "high",
                 "assumptions": ["The user wants workflow guidance before a final output."],
                 "sources": [],
-                "actions": [{"label": process.steps[0], "description": "Complete this before asking for final recommendations.", "href": ""}],
+                "actions": [{"label": process.steps[0], "description": "Complete this before asking for interpretation.", "href": ""}],
             },
             {
-                "title": "Evidence before recommendation",
-                "type": "recommendation",
+                "title": "Evidence before interpretation",
+                "type": "data",
                 "content": f"Use the workflow steps to build {process.outcome.lower()} rather than accepting a generic answer.",
                 "confidence": "medium",
                 "assumptions": ["Live OpenAI response generation may be disabled in development."],
@@ -309,7 +309,7 @@ def _fallback_output(page_id: str, process: AgentProcess, message: str) -> dict[
             {
                 "title": "Generic prompt risk",
                 "severity": "medium",
-                "content": "Without a ticker, portfolio, horizon, or decision context, the agent can only provide broad process guidance.",
+                "content": "Without a ticker, portfolio, horizon, or research context, the agent can only provide broad process guidance.",
                 "mitigation": "Add the missing context in the next message.",
                 "confidence": "high",
             }

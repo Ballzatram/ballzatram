@@ -24,10 +24,10 @@ The static homepage now links to `econ-arcade/index.html`, a dedicated strategy-
 ## Architecture (text diagram)
 - `backend/app/data`: ingestion adapters, normalization, validation, caching
 - `backend/app/analytics`: deterministic model runners (OLS, rolling, regularized, event study, stress, importance, regimes)
-- `backend/app/services`: workflow orchestration + reporting
+- `backend/app/services`: workflow orchestration, provider interfaces, Quant Library research payloads, and reporting
 - `backend/app/api`: HTTP route handlers
 - `frontend/src/app`: Next.js product workflows for local/backend-backed development
-- `tools/macroboard`: static Quant Library predecessor kept for compatibility
+- `frontend/src/app/quant-library`: the active Quant Library workstation; old MacroBoard URLs redirect here for compatibility
 - `frontend/src/components`: reusable KPI/model assumption/chart UI
 
 ## Setup

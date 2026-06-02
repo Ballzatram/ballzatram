@@ -96,7 +96,7 @@ class AgentMessage(BaseModel):
 class ToolSource(BaseModel):
     title: str
     url: Optional[str] = None
-    status: Literal["live", "fallback", "missing", "unknown"] = "unknown"
+    status: Literal["live", "cached", "demo", "stale", "fallback", "missing", "error", "unknown"] = "unknown"
     description: str = ""
 
 

@@ -32,7 +32,7 @@ function sourceFor(
     departmentId,
     sourceLabel,
     provider: analytics?.provider ?? freshness?.provider,
-    freshnessStatus: freshness?.status ?? "fallback",
+    freshnessStatus: freshness?.status ?? "demo",
     warnings: [...(freshness?.warnings ?? []), ...(analytics?.errors.map((error) => error.message) ?? [])],
   };
 }
@@ -57,7 +57,7 @@ export function createQuantMarketSnapshotInsight(analytics?: QuantLibraryAnalyti
         : "The desk can convert a market-analysis payload into a newspaper draft, even when only demo data is available.",
     observations: [
       analytics ? `Benchmark context is ${analytics.benchmark}.` : "No live analytics payload is attached to this preview.",
-      analytics ? `Regime score is ${formatNumber(analytics.regime.score, 0)} (${analytics.regime.label}).` : "The generated draft keeps fallback status visible.",
+      analytics ? `Regime score is ${formatNumber(analytics.regime.score, 0)} (${analytics.regime.label}).` : "The generated draft keeps demo/source status visible.",
       errors ? `${errors} provider issue${errors === 1 ? "" : "s"} need review before publication.` : "No provider errors are attached to this demo payload.",
     ],
     metrics: [
@@ -69,7 +69,7 @@ export function createQuantMarketSnapshotInsight(analytics?: QuantLibraryAnalyti
     confidence: source.freshnessStatus === "live" ? "medium" : "low",
     caveats: [
       "Market outputs are descriptive research context.",
-      "Source freshness and fallback labels must travel with the story.",
+      "Source freshness and demo/cached/stale labels must travel with the story.",
       ...(analytics?.caveats ?? []),
     ],
     relatedRoutes: [
@@ -178,7 +178,7 @@ export function createParcelPlaceholderInsight(): ToolInsight {
       toolName: "Parcel",
       departmentId: "parcel",
       sourceLabel: "Parcel placeholder insight",
-      freshnessStatus: "fallback",
+      freshnessStatus: "demo",
       warnings: ["Placeholder insight has no live parcel records."],
     },
   };
@@ -222,7 +222,7 @@ export function createBettorsCornerPlaceholderInsight(): ToolInsight {
       toolName: "Bettor's Corner",
       departmentId: "bettors-corner",
       sourceLabel: "Bettor's Corner demo odds education insight",
-      freshnessStatus: "fallback",
+      freshnessStatus: "demo",
       warnings: ["Demo insight has no live odds feed."],
     },
   };

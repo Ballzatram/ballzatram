@@ -9,9 +9,16 @@ from app.data.timeseries import load_demo_series, parse_uploaded_csv
 from app.models.schemas import AnalysisRequest, CsvUploadRequest, EventStudyRequest, ReportRequest, ScenarioRequest
 from app.services.analytics import run_event_study, run_scenario, run_stock_analysis
 
-from app.services.macro_board import build_intake, build_research, get_market_data, get_series, run_macro_stress
 from app.services.market_data import ProviderError, get_market_data_provider
-from app.services.quant_library import build_analytics_demo, list_quant_library_universes
+from app.services.quant_library import (
+    build_analytics_demo,
+    build_research_intake,
+    build_research_workspace,
+    get_market_data,
+    get_series,
+    list_quant_library_universes,
+    run_quant_scenario,
+)
 from app.services.workspace_store import WorkspaceStore
 from app.services.reporting import render_markdown
 
@@ -78,19 +85,19 @@ def create_markdown_report(req: ReportRequest):
 @router.post("/quant-library/intake")
 @router.post("/macro-board/intake", include_in_schema=False)
 def macro_intake(payload: dict):
-    return build_intake(payload.get("prompt", ""))
+    return build_research_intake(payload.get("prompt", ""))
 
 
 @router.post("/quant-library/research")
 @router.post("/macro-board/research", include_in_schema=False)
 def macro_research(payload: dict):
-    return build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
+    return build_research_workspace(payload.get("prompt", ""), payload.get("assumptions", {}))
 
 
 @router.post("/quant-library/stress-test")
 @router.post("/macro-board/stress-test", include_in_schema=False)
 def macro_stress(payload: dict):
-    return run_macro_stress(payload.get("scenario", {}), payload.get("holdings", {"SPY": 1.0}))
+    return run_quant_scenario(payload.get("scenario", {}), payload.get("holdings", {"SPY": 1.0}))
 
 
 @router.post("/quant-library/regime")
@@ -159,14 +166,14 @@ def get_workspace(workspace_id: str):
 @router.post("/quant-library/workspaces")
 @router.post("/macro-board/workspaces", include_in_schema=False)
 def create_workspace(payload: dict):
-    result = build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
+    result = build_research_workspace(payload.get("prompt", ""), payload.get("assumptions", {}))
     title = payload.get("title") or payload.get("prompt", "Untitled")[:48]
     return store.create_workspace(title, payload.get("prompt", ""), payload.get("assumptions", {}), result)
 
 @router.post("/quant-library/workspaces/{workspace_id}/rerun")
 @router.post("/macro-board/workspaces/{workspace_id}/rerun", include_in_schema=False)
 def rerun_workspace(workspace_id: str, payload: dict):
-    result = build_research(payload.get("prompt", ""), payload.get("assumptions", {}))
+    result = build_research_workspace(payload.get("prompt", ""), payload.get("assumptions", {}))
     try:
         return store.rerun_workspace(workspace_id, payload.get("assumptions", {}), result)
     except KeyError:

@@ -4,6 +4,8 @@ Date: 2026-06-01
 Branch audited: `codex/ballzatram-newspaper-front-page`  
 Latest local commit observed: `6f7b797 Refactor homepage into Ballzatram newspaper`
 
+Status note, 2026-06-02: Quant Library implementation details in this audit are historical. The old static `tools/macroboard` predecessor and `backend/app/services/macro_board.py` have since been retired; current Quant Library route/API behavior lives in `frontend/src/app/quant-library/page.tsx`, `frontend/src/components/quant-library/QuantLibraryPrimitives.tsx`, and `backend/app/services/quant_library.py`.
+
 ## Scope
 
 This is a discovery and risk-reduction pass only. It does not rename Macro Board/MacroBoard, does not delete existing features, does not build Quant Library, does not implement the newspaper, and does not implement Stoney Baologna or Bullshit Simulator work.

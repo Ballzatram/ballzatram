@@ -16,7 +16,7 @@ Quant Library is Ballzatram's explainable market analysis workbench. This founda
   - `get_quote(symbol)`
   - `get_batch_quotes(symbols)`
   - `get_universe(universe_id)`
-- `backend/app/services/market_data/demo_provider.py` implements deterministic fallback data for local development.
+- `backend/app/services/market_data/demo_provider.py` implements deterministic demo data for local development.
 - `backend/app/services/market_data/factory.py` is the central provider swap point for future Yahoo, FRED, feed API, or paid provider adapters.
 - `backend/app/services/market_data/universes.py` defines initial market universes.
 - `backend/app/analytics/quant_library.py` contains reusable analytics utilities.
@@ -30,9 +30,9 @@ Current local provider:
 
 - `DemoMarketDataProvider`
   - Requires no API keys.
-  - Generates deterministic fallback price series for arbitrary symbols.
+  - Generates deterministic demo price series for arbitrary symbols.
   - Synthesizes rates and yield-curve data from `demo_data/macro_timeseries.csv`.
-  - Marks freshness status as `fallback` and includes warnings so UI and future story logic can avoid treating demo data as live.
+  - Marks freshness status as `demo` and includes warnings so UI and future story logic can avoid treating demo data as live.
 
 Optional rates provider:
 
@@ -48,7 +48,7 @@ Future provider candidates:
 - Paid market-data vendor adapter for quotes, fundamentals, and corporate actions.
 - Cache/degradation layer that records provider failures, last successful refresh, and source timestamps.
 
-Provider failures should raise `ProviderError` inside provider implementations and be converted into structured `errors` fields at service boundaries. UI code should render errors and fallback status, not crash.
+Provider failures should raise `ProviderError` inside provider implementations and be converted into structured `errors` fields at service boundaries. UI code should render errors and demo/cached/stale status, not crash.
 
 ## Initial Universes
 
@@ -96,7 +96,7 @@ The explanation registry is intended for both UI rendering and future newspaper-
 - Quant Library is not a stock-picking tool.
 - Quant Library is not a prediction engine.
 - Metrics are descriptive and sample-dependent.
-- Demo/fallback data should never be presented as fresh live market data.
+- Demo or cached data should never be presented as fresh live market data.
 - Beta, correlation, RSI, and moving averages can all produce false confidence when regimes shift.
 - Yield-curve inversions are contextual signals, not clocks.
 - Regime scoring is a transparent heuristic, not a forecast.
@@ -108,10 +108,10 @@ The Quant Library page now includes a small "Internal analytics foundation" prev
 - Loads sample symbols through `/api/quant-library/analytics-demo`.
 - Shows demo metrics for `SPY`, `QQQ`, and `TLT`.
 - Renders explanation metadata beside outputs.
-- Shows fallback/freshness labels.
+- Shows demo/freshness labels.
 - Shows a safe error state if the backend endpoint is unavailable.
 
-The preview is intentionally small. Later phases can replace it with richer desks for Rates, Index & ETF Explorer, Stock Analyzer, Risk Scanner, Technical Analysis Lab, Portfolio Sandbox, and Research Notes.
+The active route now focuses on the six MVP desks: Market Overview, Rates Desk, Equity / Index Desk, Risk & Anomaly Desk, Scenario Engine, and Research Notes.
 
 ## Future Expansion Plan
 
@@ -121,9 +121,8 @@ The preview is intentionally small. Later phases can replace it with richer desk
 4. Split each Quant Library module into its own service-level payload:
    - Rates Desk: curve, spreads, policy-rate context.
    - Index & ETF Explorer: breadth, leadership, correlation, concentration.
-   - Stock Analyzer: benchmark sensitivity and factor context without recommendations.
-   - Risk Scanner: drawdown, volatility, concentration, missing-data warnings.
-   - Technical Analysis Lab: moving averages, RSI, z-score, event windows.
-   - Portfolio Sandbox: holdings, weights, scenario shocks, caveats.
+   - Equity / Index Desk: benchmark sensitivity, index/ETF context, and single-name teaching context.
+   - Risk & Anomaly Desk: drawdown, volatility, z-score, correlation, and missing-data warnings.
+   - Scenario Engine: transparent shocks, assumptions, and caveats.
    - Research Notes: structured summaries that can become newspaper stories.
 5. Add story-output contracts that link a published story back to the tool run, provider freshness, inputs, and caveats that produced it.

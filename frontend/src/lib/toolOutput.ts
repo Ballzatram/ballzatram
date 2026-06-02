@@ -5,7 +5,7 @@ export type ToolCardType = "opportunity" | "risk" | "recommendation" | "data" | 
 export type ToolSource = {
   title: string;
   url?: string | null;
-  status?: "live" | "fallback" | "missing" | "unknown";
+  status?: "live" | "cached" | "demo" | "stale" | "fallback" | "missing" | "error" | "unknown";
   description?: string;
 };
 
