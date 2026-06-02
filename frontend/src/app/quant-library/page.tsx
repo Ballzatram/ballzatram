@@ -23,6 +23,7 @@ import {
   ToolGeneratedStoryCard,
 } from "@/components/quant-library/QuantLibraryPrimitives";
 import { api, type DataFreshness, type QuantLibraryAnalyticsDemoResponse, type QuantLibrarySymbolAnalytics } from "@/lib/api";
+import { generateQuantMarketSnapshotDraft } from "@/lib/story-engine";
 import type { ToolCard, ToolConfidence, ToolRisk, ToolSource, ToolStatus } from "@/lib/toolOutput";
 
 type IntakeQuestion = {
@@ -406,6 +407,7 @@ export default function QuantLibraryPage() {
   const output = currentVersion ? versionOutput(currentVersion) : null;
   const activeDesk = deskDefinitions.find((desk) => desk.id === activeDeskId) ?? deskDefinitions[0];
   const freshness = latestFreshness(analyticsDemo);
+  const generatedMarketDraft = useMemo(() => analyticsDemo ? generateQuantMarketSnapshotDraft(analyticsDemo) : null, [analyticsDemo]);
 
   async function load(preferredId?: string) {
     setBusy((state) => state ?? "loading");
@@ -631,6 +633,33 @@ export default function QuantLibraryPage() {
         >
           <DeskEvidenceTable deskId={activeDesk.id} analyticsDemo={analyticsDemo} />
         </AnalysisSection>
+
+        {generatedMarketDraft ? (
+          <section className="grid gap-4 rounded-2xl border border-emerald-300/25 bg-slate-900 p-5 lg:grid-cols-[0.92fr_1.08fr]">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-emerald-300">Story engine preview</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white">{generatedMarketDraft.story.title}</h2>
+              <p className="mt-3 text-sm leading-6 text-slate-400">{generatedMarketDraft.story.summary}</p>
+              <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-400">
+                <span>{generatedMarketDraft.story.sourceType}</span>
+                <span>Confidence: {generatedMarketDraft.story.confidence}</span>
+                <span>{generatedMarketDraft.readyToPublish ? "review-ready draft" : "needs review"}</span>
+              </div>
+              <a className="mt-5 inline-flex rounded-full border border-emerald-300/50 px-4 py-2 text-sm font-semibold text-emerald-100 hover:border-emerald-200" href="/internal/generated-stories">
+                Open generated stories preview
+              </a>
+            </div>
+            <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-300">Input insight</p>
+              <ul className="mt-3 grid gap-2 text-sm leading-6 text-slate-300">
+                {generatedMarketDraft.insight.observations.map((observation) => <li key={observation}>{observation}</li>)}
+              </ul>
+              <div className="mt-4 rounded-lg border border-amber-300/20 bg-amber-300/10 p-3 text-sm leading-6 text-amber-50">
+                {generatedMarketDraft.story.caveats?.[0] ?? "Generated drafts keep caveats attached."}
+              </div>
+            </div>
+          </section>
+        ) : null}
       </section>
 
       <section className="grid gap-4 lg:grid-cols-4">
