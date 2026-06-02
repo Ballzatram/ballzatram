@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import { DepartmentLandingPage } from "@/components/newspaper/DepartmentLandingPage";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Betting | Ballzatram Daily",
-  description: "Bettor's Corner placeholder for probability lessons and paper-mode betting education.",
+  title: "Bettor's Corner | Ballzatram",
+  description: "Compatibility route for the Bettor's Corner betting-market education desk.",
 };
 
 export default function BettingPage() {
-  return <DepartmentLandingPage departmentId="bettors-corner" editionNote="Betting desk / placeholder" />;
+  redirect("/bettors-corner");
 }

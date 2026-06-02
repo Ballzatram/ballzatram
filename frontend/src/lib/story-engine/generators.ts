@@ -1,5 +1,6 @@
 import type { DepartmentId } from "@/config/departments";
 import type { DataFreshness, QuantLibraryAnalyticsDemoResponse, QuantLibrarySymbolAnalytics } from "@/lib/api";
+import { americanOddsToImpliedProbability } from "@/lib/betting-data";
 import { createStoryGenerator } from "@/lib/story-engine/generate";
 import type { GeneratedStoryDraft, StoryGenerationContext, StorySource, ToolInsight } from "@/lib/story-engine/types";
 
@@ -184,26 +185,35 @@ export function createParcelPlaceholderInsight(): ToolInsight {
 }
 
 export function createBettorsCornerPlaceholderInsight(): ToolInsight {
+  const exampleOdds = 150;
+  const impliedProbability = americanOddsToImpliedProbability(exampleOdds);
   return {
     id: "bettors-corner-placeholder-insight",
     toolId: "bettors-corner",
     departmentId: "bettors-corner",
     title: "Bettor's Corner drafts an implied-probability classroom note",
     summary:
-      "The betting desk can turn odds math into an educational article while avoiding certainty language and wagering instructions.",
+      "The betting desk turns odds math into an educational article while avoiding certainty language and wagering instructions.",
     observations: [
-      "The lesson frame is educational and paper-mode only.",
-      "No live odds feed is attached.",
-      "The article should explain implied probability and settlement caveats without claiming an outcome.",
+      `A +${exampleOdds} line implies roughly ${formatPercent(impliedProbability)} break-even probability before accounting for vig.`,
+      "The lesson frame is educational and demo-only.",
+      "No live odds feed is attached, so the draft must keep the data status visible.",
+      "The article should explain implied probability, movement, and variance without claiming an outcome.",
     ],
     metrics: [
-      { id: "example-odds", label: "Example odds", value: "+150" },
-      { id: "implied-probability", label: "Implied probability", value: "40%" },
+      { id: "example-odds", label: "Example odds", value: `+${exampleOdds}` },
+      { id: "implied-probability", label: "Implied probability", value: formatPercent(impliedProbability) },
     ],
     dataAsOf: "demo-only",
     confidence: "low",
-    caveats: ["Demo education content only.", "No live odds feed was used.", "No wagering recommendation is made."],
-    relatedRoutes: [{ label: "Open Betting Desk", href: "/betting", description: "Current placeholder department page." }],
+    caveats: [
+      "Demo education content only.",
+      "No live odds feed was used.",
+      "No wagering recommendation is made.",
+      "Odds can change rapidly and should be rechecked at the source.",
+      "Variance can make outcomes noisy even when the arithmetic is correct.",
+    ],
+    relatedRoutes: [{ label: "Open Bettor's Corner", href: "/bettors-corner", description: "Review the betting education desk that produced the note." }],
     importance: "low",
     severity: "low",
     tags: ["betting", "probability", "education", "generated"],
@@ -211,9 +221,9 @@ export function createBettorsCornerPlaceholderInsight(): ToolInsight {
       toolId: "bettors-corner",
       toolName: "Bettor's Corner",
       departmentId: "bettors-corner",
-      sourceLabel: "Bettor's Corner placeholder insight",
+      sourceLabel: "Bettor's Corner demo odds education insight",
       freshnessStatus: "fallback",
-      warnings: ["Placeholder insight has no live odds feed."],
+      warnings: ["Demo insight has no live odds feed."],
     },
   };
 }
@@ -274,12 +284,16 @@ export function generateRiskScannerDraft(
   return riskScannerStoryGenerator.generate(createRiskScannerAlertInsight(analytics), context);
 }
 
+export function generateBettorsCornerDraft(context?: Partial<StoryGenerationContext>): GeneratedStoryDraft {
+  return bettorsCornerStoryGenerator.generate(createBettorsCornerPlaceholderInsight(), context);
+}
+
 export function generatedStoryPreviewDrafts(): GeneratedStoryDraft[] {
   return [
     generateQuantMarketSnapshotDraft(),
     generateRatesDeskDraft(),
     generateRiskScannerDraft(),
     parcelStoryGenerator.generate(createParcelPlaceholderInsight()),
-    bettorsCornerStoryGenerator.generate(createBettorsCornerPlaceholderInsight()),
+    generateBettorsCornerDraft(),
   ];
 }

@@ -43,7 +43,7 @@ Current implementation lives in:
 - Rates Desk snapshot
 - Risk Scanner alert
 - Placeholder Parcel insight
-- Placeholder Bettor's Corner insight
+- Bettor's Corner implied-probability classroom insight backed by deterministic odds math
 
 The internal preview route is:
 
@@ -58,7 +58,7 @@ The preview renders:
 - generated article body
 - caveats and generation warnings
 
-Quant Library also renders a compact story-engine preview from the analytics demo payload when that payload is available.
+Quant Library also renders a compact story-engine preview from the analytics demo payload when that payload is available. Bettor's Corner renders a demo story preview from the deterministic +150 implied-probability lesson without publishing it.
 
 ## Safety Rules
 
