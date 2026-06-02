@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import os
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from app.api.agent_routes import router as agent_router
 from app.data.timeseries import load_demo_series, parse_uploaded_csv
@@ -10,6 +10,8 @@ from app.models.schemas import AnalysisRequest, CsvUploadRequest, EventStudyRequ
 from app.services.analytics import run_event_study, run_scenario, run_stock_analysis
 
 from app.services.macro_board import build_intake, build_research, get_market_data, get_series, run_macro_stress
+from app.services.market_data import ProviderError, get_market_data_provider
+from app.services.quant_library import build_analytics_demo, list_quant_library_universes
 from app.services.workspace_store import WorkspaceStore
 from app.services.reporting import render_markdown
 
@@ -114,6 +116,29 @@ def macro_series():
 @router.get("/macro-board/market-data", include_in_schema=False)
 def macro_market_data():
     return get_market_data()
+
+
+@router.get("/quant-library/universes")
+def quant_library_universes():
+    return {"universes": list_quant_library_universes()}
+
+
+@router.get("/quant-library/universes/{universe_id}")
+def quant_library_universe(universe_id: str):
+    try:
+        universe = get_market_data_provider().get_universe(universe_id)
+        return {"universe": universe.model_dump(mode="json")}
+    except ProviderError as exc:
+        raise HTTPException(status_code=404, detail=str(exc)) from exc
+
+
+@router.get("/quant-library/analytics-demo")
+def quant_library_analytics_demo(
+    symbols: list[str] | None = Query(default=None),
+    benchmark: str = "SPY",
+    universe_id: str = "major-us-indices",
+):
+    return build_analytics_demo(symbols, benchmark=benchmark, universe_id=universe_id)
 
 
 store = WorkspaceStore()
