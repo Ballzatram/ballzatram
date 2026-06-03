@@ -60,8 +60,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <div className="ballzatram-site-header__inner">
           <div className="ballzatram-site-header__brand">
             {isLandRoute ? (
-              <Link href={"/" as Route} className="ballzatram-product-mark" aria-label="Ballzatram home">
-                Ballzatram
+              <Link href={"/land" as Route} className="ballzatram-product-mark" aria-label="Parcel home">
+                Parcel
               </Link>
             ) : (
               <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
@@ -70,8 +70,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             )}
             {isLandRoute ? (
               <div className="ballzatram-site-header__product">
-                <span>Parcel</span>
-                <b>AI property suitability analyst</b>
+                <span>Evaluator Workspace</span>
+                <b>Ballzatram</b>
               </div>
             ) : (
               <p>AI-guided workbenches, simulations, games, and odd tools</p>
