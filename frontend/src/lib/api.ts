@@ -78,6 +78,7 @@ export type ParcelResearchRequestBody = {
   };
   selectedOpportunityIds: string[];
   shortlistedOpportunityIds: string[];
+  candidateInputs?: Array<{ sourceUrl?: string; notes: string; title?: string }>;
 };
 
 const BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
@@ -113,6 +114,7 @@ export const api = {
   },
   parcelResearch: (body: ParcelResearchRequestBody) =>
     req<ParcelResearchResult>("/parcel/research", { method: "POST", body: JSON.stringify(body) }),
+  parcelCandidates: () => req<{ candidateRecords: ParcelResearchResult["candidateRecords"] }>("/parcel/candidates"),
   agentProcesses: () => req<{ processes: Record<string, AgentProcess[]> }>("/agent/processes"),
   agentChat: (body: unknown) => req<AgentChatResponse>("/agent/chat", { method: "POST", body: JSON.stringify(body) }),
 };

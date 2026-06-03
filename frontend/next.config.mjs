@@ -2,7 +2,7 @@ import path from "node:path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { typedRoutes: true },
+  experimental: { typedRoutes: true, externalDir: true },
   async redirects() {
     return [
       {

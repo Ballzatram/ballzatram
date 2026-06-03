@@ -2,7 +2,10 @@ from __future__ import annotations
 
 import json
 import os
+import re
+from pathlib import Path
 from typing import Any
+from urllib.parse import urlparse
 
 from app.models.schemas import ParcelResearchRequest, ParcelResearchResponse
 
@@ -59,6 +62,91 @@ PARCEL_RESPONSE_JSON_SCHEMA: dict[str, Any] = {
                 "required": ["candidateId", "category", "suitabilityScore", "reasons", "dealKillers", "nextQuestions"],
             },
         },
+        "candidateRecords": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "additionalProperties": False,
+                "properties": {
+                    "id": {"type": "string"},
+                    "title": {"type": "string"},
+                    "county": {"type": "string"},
+                    "state": {"type": "string"},
+                    "market": {"type": "string"},
+                    "acreage": {"type": ["number", "null"]},
+                    "price": {"type": ["number", "null"]},
+                    "pricePerAcre": {"type": ["number", "null"]},
+                    "distanceMiles": {"type": ["number", "null"]},
+                    "distanceLabel": {"type": ["string", "null"]},
+                    "driveTimeMinutes": {"type": ["integer", "null"]},
+                    "latitude": {"type": ["number", "null"]},
+                    "longitude": {"type": ["number", "null"]},
+                    "mapX": {"type": ["number", "null"]},
+                    "mapY": {"type": ["number", "null"]},
+                    "sourceType": {"type": "string", "enum": ["broker", "land-listing", "county-gis", "manual", "seed", "unknown"]},
+                    "sourceStatus": {"type": "string", "enum": ["live", "partial", "unknown", "dead"]},
+                    "sourceUrl": {"type": ["string", "null"]},
+                    "sourceLabel": {"type": ["string", "null"]},
+                    "listingId": {"type": ["string", "null"]},
+                    "lastResearched": {"type": ["string", "null"]},
+                    "dataConfidence": {"type": "integer", "minimum": 0, "maximum": 100},
+                    "fitScore": {"type": "integer", "minimum": 0, "maximum": 100},
+                    "riskScore": {"type": "integer", "minimum": 0, "maximum": 100},
+                    "readinessScore": {"type": "integer", "minimum": 0, "maximum": 100},
+                    "tier": {
+                        "type": "string",
+                        "enum": [
+                            "Tier 1 - Facility Candidate",
+                            "Tier 2 - Destination / Event Use",
+                            "Tier 3 - Land Bank / Conservation",
+                            "Watchlist"
+                        ],
+                    },
+                    "rationale": {"type": "string"},
+                    "sourceVerification": {"type": "string"},
+                    "diligenceConcerns": {"type": "array", "items": {"type": "string"}},
+                    "nextDiligence": {"type": "array", "items": {"type": "string"}},
+                    "missingData": {"type": "array", "items": {"type": "string"}},
+                    "tags": {"type": "array", "items": {"type": "string"}},
+                    "verificationNote": {"type": "string"},
+                },
+                "required": [
+                    "id",
+                    "title",
+                    "county",
+                    "state",
+                    "market",
+                    "acreage",
+                    "price",
+                    "pricePerAcre",
+                    "distanceMiles",
+                    "distanceLabel",
+                    "driveTimeMinutes",
+                    "latitude",
+                    "longitude",
+                    "mapX",
+                    "mapY",
+                    "sourceType",
+                    "sourceStatus",
+                    "sourceUrl",
+                    "sourceLabel",
+                    "listingId",
+                    "lastResearched",
+                    "dataConfidence",
+                    "fitScore",
+                    "riskScore",
+                    "readinessScore",
+                    "tier",
+                    "rationale",
+                    "sourceVerification",
+                    "diligenceConcerns",
+                    "nextDiligence",
+                    "missingData",
+                    "tags",
+                    "verificationNote",
+                ],
+            },
+        },
         "sourceAudit": {
             "type": "array",
             "items": {
@@ -95,6 +183,7 @@ PARCEL_RESPONSE_JSON_SCHEMA: dict[str, Any] = {
         "rankedCandidateIds",
         "toolEvents",
         "candidateSuitability",
+        "candidateRecords",
         "sourceAudit",
         "missingData",
         "warnings",
@@ -119,7 +208,7 @@ PARCEL_TOOL_DEFINITIONS: list[dict[str, Any]] = [
     {
         "type": "function",
         "name": "score_property_suitability",
-        "description": "Score seed candidates against the thesis and return suitability categories.",
+        "description": "Score seed and user-provided candidates against the thesis and return suitability categories.",
         "strict": True,
         "parameters": {
             "type": "object",
@@ -154,104 +243,169 @@ PARCEL_TOOL_DEFINITIONS: list[dict[str, Any]] = [
     },
 ]
 
-SEED_OPPORTUNITIES: list[dict[str, Any]] = [
-    {
-        "id": "york-kays-drive",
-        "title": "8088 Kays Drive equestrian estate lead",
-        "status": "live",
-        "sourceUrl": "https://www.landsearch.com/properties/8088-kays-dr-york-sc-29745/5236376",
-        "sourceVerification": "Exact LandSearch source page checked in the committed research record; broker, MLS, and county GIS verification still required.",
-        "fitScore": 91,
-        "readinessScore": 84,
-        "riskScore": 39,
-        "missingData": ["county parcel boundary", "zoning confirmation", "utility letters", "event-use permissions"],
-        "nextDiligence": [
-            "Call listing broker to confirm active status and full offering package.",
-            "Pull York County GIS parcel card, boundary, ownership, zoning, and floodplain layers.",
-            "Estimate field layout, access, utility, and improvement reuse costs before memo reliance.",
-        ],
-    },
-    {
-        "id": "chester-humpback-bridge",
-        "title": "Humpback Bridge Road large-acre tract",
-        "status": "live",
-        "sourceUrl": "https://www.landsearch.com/properties/humpback-bridge-rd-chester-sc-29712/4797527",
-        "sourceVerification": "Exact source page checked in the committed research record; listing facts require broker and county reconciliation.",
-        "fitScore": 83,
-        "readinessScore": 73,
-        "riskScore": 48,
-        "missingData": ["wetlands/floodplain screen", "utility availability", "field layout", "access plan"],
-        "nextDiligence": [
-            "Confirm active status, full acreage, and asking price with the listing broker.",
-            "Pull Chester County GIS parcel boundary, zoning, and floodplain/wetlands overlays.",
-            "Screen likely field areas against topography, creek buffers, access, and clearing cost.",
-        ],
-    },
-    {
-        "id": "lancaster-charlotte-highway",
-        "title": "Charlotte Highway close-in development parcel",
-        "status": "live",
-        "sourceUrl": "https://www.landsearch.com/properties/1-charlotte-hwy-lancaster-sc-29720/2490553",
-        "sourceVerification": "Exact source page checked in the committed research record; price, acreage, zoning, and infrastructure assumptions require independent verification.",
-        "fitScore": 78,
-        "readinessScore": 66,
-        "riskScore": 67,
-        "missingData": ["entitlement path", "utility capacity", "wetlands details", "basis scenario"],
-        "nextDiligence": [
-            "Ask broker for offering package, entitlement notes, and utility assumptions.",
-            "Review Lancaster County planning area, zoning, sewer/water access, and wetland constraints.",
-            "Build a basis-sensitive scenario before ranking it above lower-cost alternatives.",
-        ],
-    },
-    {
-        "id": "hickory-grove-worth-mountain",
-        "title": "Worth Mountain land-bank tract",
-        "status": "live",
-        "sourceUrl": "https://www.landsearch.com/properties/hickory-grove-sc-29717/4663937",
-        "sourceVerification": "Exact source page checked in the committed research record; county GIS, broker, and site-level verification still required.",
-        "fitScore": 72,
-        "readinessScore": 62,
-        "riskScore": 59,
-        "missingData": ["topography", "buildable uplands", "utility path", "frontage/access details"],
-        "nextDiligence": [
-            "Verify parcel boundary, road frontage, utility availability, and any conservation adjacency limits.",
-            "Screen topography and creek buffers before assuming event or field feasibility.",
-            "Compare against lower-distance candidates before adding to paid memo scope.",
-        ],
-    },
-    {
-        "id": "sharon-morning-branch",
-        "title": "Morning Branch / Blanton Road scale tract",
-        "status": "live",
-        "sourceUrl": "https://www.landsearch.com/properties/sharon-sc/4706308",
-        "sourceVerification": "Exact source page checked in the committed research record; source facts must be independently verified before investor reliance.",
-        "fitScore": 74,
-        "readinessScore": 61,
-        "riskScore": 63,
-        "missingData": ["buildable uplands", "wetlands/floodplain", "clearing cost", "event access"],
-        "nextDiligence": [
-            "Call broker to confirm active status, acreage, and source facts.",
-            "Pull York County GIS parcel boundary and wetlands/floodplain screens.",
-            "Identify buildable uplands and compare clearing/access cost against thesis value.",
-        ],
-    },
-    {
-        "id": "statesville-myers-mill",
-        "title": "Myers Mill regional estate benchmark",
-        "status": "live",
-        "sourceUrl": "https://www.landsearch.com/properties/334-myers-mill-rd-statesville-nc-28625/4912025",
-        "sourceVerification": "Exact source page checked in the committed research record; treat as a benchmark until distance, operations, and local demand are reviewed.",
-        "fitScore": 67,
-        "readinessScore": 58,
-        "riskScore": 62,
-        "missingData": ["regional demand thesis", "operations plan", "zoning", "utility details"],
-        "nextDiligence": [
-            "Confirm source status and property facts with broker and county GIS.",
-            "Decide whether a regional Iredell thesis exists before spending memo time.",
-            "Use as a comp for improved agricultural acreage, not as the default shortlist leader.",
-        ],
-    },
-]
+DATA_PATH = Path(__file__).resolve().parents[3] / "data" / "parcel-opportunities.json"
+
+
+def load_seed_candidates() -> list[dict[str, Any]]:
+    with DATA_PATH.open(encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+SEED_OPPORTUNITIES = load_seed_candidates()
+
+
+def get_seed_candidate_records() -> list[dict[str, Any]]:
+    return SEED_OPPORTUNITIES
+
+
+def stable_user_candidate_id(source_url: str, notes: str, title: str) -> str:
+    canonical = f"{source_url.strip().lower()}|{title.strip().lower()}|{notes.strip().lower()}"
+    value = 0
+    for char in canonical:
+        value = ((value * 31) + ord(char)) % 1_000_000_007
+    return f"user-{_base36(value)}"
+
+
+def _base36(value: int) -> str:
+    alphabet = "0123456789abcdefghijklmnopqrstuvwxyz"
+    if value == 0:
+        return "0"
+    result = ""
+    while value:
+        value, remainder = divmod(value, 36)
+        result = alphabet[remainder] + result
+    return result
+
+
+def _url_host(url: str) -> str:
+    if not url:
+        return ""
+    parsed = urlparse(url if re.match(r"^https?://", url, re.I) else f"https://{url}")
+    return parsed.netloc.replace("www.", "")
+
+
+def _first_line(value: str) -> str:
+    return next((line.strip() for line in value.splitlines() if line.strip()), "")
+
+
+def _extract_acreage(notes: str) -> float | None:
+    match = re.search(r"(\d+(?:\.\d+)?)\s*\+?\s*(?:acres|acre|ac\b)", notes, re.I)
+    return float(match.group(1)) if match else None
+
+
+def _extract_price(notes: str) -> float | None:
+    match = re.search(r"\$\s*(\d+(?:[,\d]{0,12})?(?:\.\d+)?)\s*(m|million|k)?\b", notes, re.I)
+    if not match:
+        return None
+    amount = float(match.group(1).replace(",", ""))
+    unit = (match.group(2) or "").lower()
+    if unit in {"m", "million"}:
+        return amount * 1_000_000
+    if unit == "k":
+        return amount * 1_000
+    return amount
+
+
+def normalize_candidate_inputs(req: ParcelResearchRequest) -> list[dict[str, Any]]:
+    candidates: list[dict[str, Any]] = []
+    for index, candidate_input in enumerate(req.candidateInputs, start=1):
+        notes = candidate_input.notes.strip()
+        source_url = (candidate_input.sourceUrl or "").strip() or None
+        title = (candidate_input.title or "").strip() or _first_line(notes)[:90]
+        if not title:
+            title = f"User lead: {_url_host(source_url or '') or f'property {index}'}"
+
+        acreage = _extract_acreage(notes)
+        price = _extract_price(notes)
+        price_per_acre = round(price / acreage) if price and acreage else None
+        known_fact_count = sum(1 for value in [source_url, acreage, price] if value)
+        notes_lower = notes.lower()
+        must_haves = " ".join(req.thesis.mustHaves).lower()
+        fit_score = 52
+        if acreage and acreage >= 50:
+            fit_score += 10
+        if any(term in notes_lower for term in ["frontage", "access", "road"]):
+            fit_score += 6
+        if any(term in notes_lower for term in ["utility", "utilities", "water", "sewer", "power"]):
+            fit_score += 6
+        if any(term in notes_lower for term in ["pasture", "field", "cleared", "flat"]):
+            fit_score += 5
+        if "acre" in must_haves and not acreage:
+            fit_score -= 4
+
+        risk_score = 72
+        if any(term in notes_lower for term in ["wetland", "flood", "easement", "zoning", "entitlement"]):
+            risk_score += 6
+        if any(term in notes_lower for term in ["survey", "gis", "parcel id", "zoning confirmed"]):
+            risk_score -= 6
+
+        readiness_score = min(58, 30 + known_fact_count * 6 + (8 if len(notes) > 120 else 0))
+        data_confidence = min(48, 28 + known_fact_count * 5 + (5 if len(notes) > 120 else 0))
+        map_seed = int(stable_user_candidate_id(source_url or "", notes, title).replace("user-", ""), 36)
+
+        candidates.append(
+            {
+                "id": stable_user_candidate_id(source_url or "", notes, title),
+                "title": title,
+                "county": "",
+                "state": "",
+                "market": req.thesis.market,
+                "acreage": acreage,
+                "price": price,
+                "pricePerAcre": price_per_acre,
+                "distanceMiles": None,
+                "distanceLabel": "User-provided lead; location not verified",
+                "driveTimeMinutes": None,
+                "latitude": None,
+                "longitude": None,
+                "mapX": 35 + (map_seed % 30),
+                "mapY": 34 + ((map_seed // 31) % 42),
+                "sourceType": "manual",
+                "sourceStatus": "unknown",
+                "sourceUrl": source_url,
+                "sourceLabel": "User-provided URL + notes",
+                "listingId": None,
+                "lastResearched": None,
+                "dataConfidence": data_confidence,
+                "fitScore": max(0, min(100, fit_score)),
+                "riskScore": max(0, min(100, risk_score)),
+                "readinessScore": max(0, min(100, readiness_score)),
+                "tier": "Watchlist",
+                "rationale": (
+                    "User-provided lead created from pasted notes. Parcel can triage it against the thesis, "
+                    "but it has not verified availability, acreage, price, location, zoning, access, or source facts."
+                ),
+                "sourceVerification": (
+                    "Unverified user-provided candidate. No live scraping, broker confirmation, county GIS pull, "
+                    "or listing fact verification has run for this lead."
+                ),
+                "diligenceConcerns": [
+                    "Source status is unknown until the listing, broker, or owner confirms availability.",
+                    "Acreage, price, ownership, parcel IDs, zoning, access, utilities, and environmental constraints are unverified.",
+                    "Use this as a triage placeholder until source documents and county records are collected.",
+                ],
+                "nextDiligence": [
+                    "Confirm the listing or broker source and capture active status, asking price, acreage, ownership, and parcel IDs.",
+                    "Pull county GIS parcel boundary, zoning, floodplain/wetlands, access, utility, and easement records.",
+                    "Replace user notes with verified source documents before relying on suitability or memo conclusions.",
+                ],
+                "missingData": [
+                    "active listing status",
+                    "parcel boundary",
+                    "acreage confirmation",
+                    "asking price confirmation",
+                    "zoning/access/utilities",
+                    "wetlands/floodplain screen",
+                ],
+                "tags": ["user lead", "unverified", "needs source review"],
+                "verificationNote": "Dynamic lead is session-only and unverified; Parcel did not scrape or verify the source URL.",
+            }
+        )
+    return candidates
+
+
+def build_candidate_universe(req: ParcelResearchRequest) -> list[dict[str, Any]]:
+    return [*SEED_OPPORTUNITIES, *normalize_candidate_inputs(req)]
 
 
 def _strength(candidate: dict[str, Any]) -> int:
@@ -272,11 +426,13 @@ def _unique(values: list[str], limit: int = 12) -> list[str]:
 
 def _selected_candidates(req: ParcelResearchRequest) -> list[dict[str, Any]]:
     requested_ids = [*req.shortlistedOpportunityIds, *req.selectedOpportunityIds]
-    candidates = SEED_OPPORTUNITIES
+    candidates = build_candidate_universe(req)
     if requested_ids:
         requested = {item for item in requested_ids if item}
-        candidates = [candidate for candidate in SEED_OPPORTUNITIES if candidate["id"] in requested]
-    return sorted(candidates or SEED_OPPORTUNITIES, key=_strength, reverse=True)
+        requested_candidates = [candidate for candidate in candidates if candidate["id"] in requested]
+        remaining_candidates = [candidate for candidate in candidates if candidate["id"] not in requested]
+        candidates = [*requested_candidates, *remaining_candidates]
+    return sorted(candidates or build_candidate_universe(req), key=_strength, reverse=True)
 
 
 def extract_project_thesis(req: ParcelResearchRequest) -> dict[str, Any]:
@@ -304,7 +460,7 @@ def normalize_listing_links(req: ParcelResearchRequest) -> list[dict[str, Any]]:
 
 
 def _suitability_category(score: int, candidate: dict[str, Any]) -> str:
-    if candidate["status"] != "live":
+    if candidate["sourceStatus"] != "live":
         return "needs_source_review"
     if score >= 82:
         return "strong_fit"
@@ -323,7 +479,7 @@ def score_candidate_suitability(candidate: dict[str, Any], req: ParcelResearchRe
     )
     must_haves = " ".join(req.thesis.mustHaves).lower()
     missing = [item.lower() for item in candidate["missingData"]]
-    if candidate["status"] != "live":
+    if candidate["sourceStatus"] != "live":
         raw_score -= 12
     if "utility" in must_haves and any("utility" in item for item in missing):
         raw_score -= 4
@@ -342,7 +498,7 @@ def score_candidate_suitability(candidate: dict[str, Any], req: ParcelResearchRe
         deal_killers.append("Wetlands or floodplain constraints could materially reduce usable acreage.")
     if any("access" in item or "frontage" in item for item in missing):
         deal_killers.append("Access/frontage must be verified before site planning or valuation reliance.")
-    if candidate["status"] != "live":
+    if candidate["sourceStatus"] != "live":
         deal_killers.append("Source status needs review before the candidate can be treated as available.")
 
     reasons = [
@@ -367,9 +523,9 @@ def audit_candidate_sources(candidates: list[dict[str, Any]], user_link_audit: l
         {
             "candidateId": candidate["id"],
             "title": candidate["title"],
-            "status": candidate["status"],
+            "status": candidate["sourceStatus"],
             "note": candidate["sourceVerification"],
-            "url": candidate["sourceUrl"],
+            "url": candidate.get("sourceUrl"),
         }
         for candidate in candidates
     ]
@@ -480,6 +636,7 @@ def _tool_analysis(req: ParcelResearchRequest) -> dict[str, Any]:
         "rankedCandidateIds": [candidate["id"] for candidate in candidates],
         "toolEvents": tool_events,
         "candidateSuitability": suitability,
+        "candidateRecords": candidates,
         "sourceAudit": source_audit,
         "missingData": missing_data,
         "nextDiligence": next_diligence,
@@ -505,6 +662,7 @@ def _fallback(req: ParcelResearchRequest, summary_override: str | None = None) -
         "rankedCandidateIds": analysis["rankedCandidateIds"],
         "toolEvents": analysis["toolEvents"],
         "candidateSuitability": analysis["candidateSuitability"],
+        "candidateRecords": analysis["candidateRecords"],
         "sourceAudit": analysis["sourceAudit"],
         "missingData": analysis["missingData"],
         "warnings": warnings,
@@ -575,7 +733,7 @@ def build_parcel_research(req: ParcelResearchRequest) -> dict[str, Any]:
         prompt = {
             "thesis": req.thesis.model_dump(mode="json"),
             "fallbackDraft": fallback,
-            "candidateRecords": analysis["candidates"],
+            "candidateRecords": analysis["candidateRecords"],
             "serverToolOutputs": analysis,
             "toolCallingNote": f"Responses tool-call pass returned {tool_call_count} function call(s).",
         }
@@ -603,6 +761,7 @@ def build_parcel_research(req: ParcelResearchRequest) -> dict[str, Any]:
         )
         parsed = json.loads(response.output_text)
         parsed["mode"] = "ai"
+        parsed["candidateRecords"] = analysis["candidateRecords"]
         parsed.setdefault("warnings", []).extend(
             [
                 "AI synthesis used only provided records and thesis context.",

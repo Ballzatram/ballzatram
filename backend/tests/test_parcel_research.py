@@ -36,6 +36,7 @@ def test_parcel_research_fallback_without_openai_key(monkeypatch):
     assert body["sourceAudit"]
     assert body["toolEvents"]
     assert body["candidateSuitability"]
+    assert body["candidateRecords"]
     assert body["candidateSuitability"][0]["category"] in {
         "strong_fit",
         "conditional_fit",
@@ -44,6 +45,48 @@ def test_parcel_research_fallback_without_openai_key(monkeypatch):
         "needs_source_review",
     }
     assert "verified acquisition facts" in body["memo"]["sourceReadiness"]
+
+
+def test_parcel_candidates_returns_seed_records():
+    response = client.get("/api/parcel/candidates")
+
+    assert response.status_code == 200
+    records = response.json()["candidateRecords"]
+    assert records
+    assert records[0]["id"] == "york-kays-drive"
+    assert records[0]["sourceStatus"] == "live"
+
+
+def test_parcel_research_accepts_dynamic_candidate_inputs(monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
+    body = payload()
+    body["candidateInputs"] = [
+        {
+            "title": "User pasted 125 acre lead",
+            "sourceUrl": "https://example.com/new-land-lead",
+            "notes": "125 acres, $2.4M, road frontage, pasture, unknown zoning, possible wetlands.",
+        }
+    ]
+
+    response = client.post("/api/parcel/research", json=body)
+
+    assert response.status_code == 200
+    result = response.json()
+    dynamic_records = [item for item in result["candidateRecords"] if item["id"].startswith("user-")]
+    assert dynamic_records
+    dynamic = dynamic_records[0]
+    assert dynamic["title"] == "User pasted 125 acre lead"
+    assert dynamic["sourceStatus"] == "unknown"
+    assert dynamic["sourceType"] == "manual"
+    assert dynamic["acreage"] == 125
+    assert dynamic["price"] == 2400000
+    assert dynamic["id"] in result["rankedCandidateIds"]
+    suitability = next(item for item in result["candidateSuitability"] if item["candidateId"] == dynamic["id"])
+    assert suitability["category"] == "needs_source_review"
+    source_audit = next(item for item in result["sourceAudit"] if item["candidateId"] == dynamic["id"])
+    assert source_audit["status"] == "unknown"
+    assert "No live scraping" in source_audit["note"]
+    assert "verified" not in dynamic["verificationNote"].lower().replace("unverified", "")
 
 
 def test_parcel_research_exposes_agentic_tool_trace(monkeypatch):

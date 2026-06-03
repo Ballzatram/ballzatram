@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { parcelOpportunities, type ParcelOpportunity, type ParcelSourceStatus } from "@/data/parcelOpportunities";
 import { api } from "@/lib/api";
 import {
@@ -11,10 +11,12 @@ import {
   formatCurrency,
   formatNumber,
   getLocalSuitability,
+  normalizeCandidateInputs,
   sourceStatusLabels,
   sourceTypeLabels,
   suitabilityCategoryLabels,
   splitList,
+  type ParcelCandidateInput,
   type ParcelCandidateSuitability,
   type ParcelResearchResult,
   type ParcelThesisInput,
@@ -31,6 +33,12 @@ type EvaluationCandidate = {
   missingProof: string[];
   dealKillers: string[];
   nextQuestions: string[];
+};
+
+type LeadDraft = {
+  title: string;
+  sourceUrl: string;
+  notes: string;
 };
 
 const categoryTone: Record<ParcelCandidateSuitability["category"], string> = {
@@ -194,6 +202,104 @@ function ProjectBriefComposer({
   );
 }
 
+function AddLeadComposer({
+  draft,
+  dynamicCandidates,
+  onDraftChange,
+  onAddLead,
+  onRemoveLead,
+  onSelectLead,
+}: {
+  draft: LeadDraft;
+  dynamicCandidates: ParcelOpportunity[];
+  onDraftChange: (field: keyof LeadDraft, value: string) => void;
+  onAddLead: (event: FormEvent<HTMLFormElement>) => void;
+  onRemoveLead: (id: string) => void;
+  onSelectLead: (id: string) => void;
+}) {
+  return (
+    <section className="grid gap-3 rounded-[6px] border border-[#d5ddd3] bg-white p-4 shadow-[0_18px_60px_rgba(21,32,26,0.08)]">
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-black uppercase text-[#66796e]">Candidate Inputs</p>
+          <h2 className="mt-1 text-xl font-black leading-tight text-[#18241e]">Add a lead to evaluate.</h2>
+        </div>
+        <span className="rounded-full bg-[#edf4ef] px-3 py-1 text-xs font-black text-[#365347]">
+          {dynamicCandidates.length} added
+        </span>
+      </div>
+
+      <form className="grid gap-3" onSubmit={onAddLead}>
+        <label className="grid gap-1 text-sm font-bold text-[#27362f]" htmlFor="parcel-lead-title">
+          Title
+          <input
+            id="parcel-lead-title"
+            value={draft.title}
+            onChange={(event) => onDraftChange("title", event.target.value)}
+            placeholder="Optional property name"
+            className="min-h-10 rounded-[4px] border border-[#c8d2cb] bg-[#fbfcfa] px-3 text-[#18241e] outline-none placeholder:text-[#8a9a92] focus-visible:border-[#1f6a4a] focus-visible:ring-2 focus-visible:ring-[#9ad7bd]"
+          />
+        </label>
+        <label className="grid gap-1 text-sm font-bold text-[#27362f]" htmlFor="parcel-lead-url">
+          Source URL
+          <input
+            id="parcel-lead-url"
+            value={draft.sourceUrl}
+            onChange={(event) => onDraftChange("sourceUrl", event.target.value)}
+            placeholder="Paste listing or broker URL"
+            className="min-h-10 rounded-[4px] border border-[#c8d2cb] bg-[#fbfcfa] px-3 text-[#18241e] outline-none placeholder:text-[#8a9a92] focus-visible:border-[#1f6a4a] focus-visible:ring-2 focus-visible:ring-[#9ad7bd]"
+          />
+        </label>
+        <label className="grid gap-1 text-sm font-bold text-[#27362f]" htmlFor="parcel-lead-notes">
+          Notes
+          <textarea
+            id="parcel-lead-notes"
+            rows={3}
+            value={draft.notes}
+            onChange={(event) => onDraftChange("notes", event.target.value)}
+            placeholder="Example: 125 acres, $2.4M, road frontage, pasture, unknown zoning"
+            className="rounded-[4px] border border-[#c8d2cb] bg-[#fbfcfa] px-3 py-2 text-[#18241e] outline-none placeholder:text-[#8a9a92] focus-visible:border-[#1f6a4a] focus-visible:ring-2 focus-visible:ring-[#9ad7bd]"
+          />
+        </label>
+        <button
+          type="submit"
+          className="inline-flex min-h-10 items-center justify-center rounded-[4px] border border-[#1f6a4a] bg-[#edf5ef] px-3 text-sm font-black text-[#18241e] transition hover:bg-[#dceee4] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1f6a4a]"
+        >
+          Add lead
+        </button>
+      </form>
+
+      <div className="grid gap-2" aria-live="polite">
+        {dynamicCandidates.length ? dynamicCandidates.map((candidate) => (
+          <div key={candidate.id} className="grid gap-2 rounded-[4px] border border-[#dce4df] bg-[#fbfcfa] p-3">
+            <button
+              type="button"
+              onClick={() => onSelectLead(candidate.id)}
+              className="text-left text-sm font-black text-[#18241e] hover:text-[#1f6a4a] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1f6a4a]"
+            >
+              {candidate.title}
+            </button>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-[#66796e]">Session-only; needs source review</span>
+              <button
+                type="button"
+                onClick={() => onRemoveLead(candidate.id)}
+                className="rounded-[4px] border border-[#d3b9af] bg-white px-2 py-1 text-xs font-black text-[#703024] hover:border-[#a64435] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#a64435]"
+              >
+                Remove
+              </button>
+            </div>
+          </div>
+        )) : (
+          <p className="rounded-[4px] bg-[#f4f7f2] p-3 text-sm leading-6 text-[#52645b]">
+            Added leads become provisional candidates immediately. Parcel will not scrape or verify them.
+          </p>
+        )}
+      </div>
+    </section>
+  );
+}
+
 function RankedResults({
   candidates,
   selectedId,
@@ -350,7 +456,7 @@ function MiniMap({
             key={opportunity.id}
             type="button"
             aria-pressed={opportunity.id === selectedId}
-            aria-label={`${opportunity.title}, ${opportunity.distanceLabel}, ${suitabilityCategoryLabels[candidate.suitability.category]}`}
+            aria-label={`${opportunity.title}, ${opportunity.distanceLabel ?? "location not verified"}, ${suitabilityCategoryLabels[candidate.suitability.category]}`}
             className={classNames(
               "parcel-mini-map__pin",
               opportunity.id === selectedId && "parcel-mini-map__pin--selected",
@@ -456,7 +562,7 @@ function CandidateDetail({
           <MiniMap candidates={candidates} selectedId={opportunity.id} savedIds={savedIds} onSelect={onSelect} />
           <div className="grid content-start gap-3 rounded-[5px] bg-[#f4f7f2] p-4">
             <Metric label="Market" value={opportunity.market} />
-            <Metric label="County" value={`${opportunity.county}, ${opportunity.state}`} />
+            <Metric label="County" value={[opportunity.county, opportunity.state].filter(Boolean).join(", ") || "Unverified"} />
             <Metric label="Distance" value={opportunity.distanceLabel ?? "Unknown"} />
           </div>
         </div>
@@ -509,16 +615,41 @@ function ListBlock({ title, items, tone }: { title: string; items: string[]; ton
 
 export function ParcelIntelligencePage() {
   const [thesis, setThesis] = useState<ParcelThesisInput>(defaultParcelThesis);
+  const [seedCandidates, setSeedCandidates] = useState<ParcelOpportunity[]>(parcelOpportunities);
+  const [candidateInputs, setCandidateInputs] = useState<ParcelCandidateInput[]>([]);
+  const [leadDraft, setLeadDraft] = useState<LeadDraft>({ title: "", sourceUrl: "", notes: "" });
   const [selectedId, setSelectedId] = useState("york-kays-drive");
   const [savedIds, setSavedIds] = useState<string[]>(["york-kays-drive", "chester-humpback-bridge"]);
   const [researchStatus, setResearchStatus] = useState<ResearchStatus>("idle");
   const [researchResult, setResearchResult] = useState<ParcelResearchResult | undefined>();
   const [detailTab, setDetailTab] = useState<DetailTab>("evidence");
 
+  useEffect(() => {
+    let active = true;
+    api.parcelCandidates()
+      .then((response) => {
+        if (active && response.candidateRecords.length) {
+          setSeedCandidates(response.candidateRecords);
+        }
+      })
+      .catch(() => {
+        // The shared local catalog keeps the workbench usable if the backend is offline.
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const listingLinks = extractListingLinks(thesis.listingLinks);
-  const localResult = useMemo(() => buildLocalParcelResearchResult(thesis, parcelOpportunities), [thesis]);
+  const dynamicCandidates = useMemo(() => normalizeCandidateInputs(thesis, candidateInputs), [candidateInputs, thesis]);
+  const baseCandidateRecords = useMemo(
+    () => [...seedCandidates, ...dynamicCandidates],
+    [dynamicCandidates, seedCandidates],
+  );
+  const localResult = useMemo(() => buildLocalParcelResearchResult(thesis, baseCandidateRecords), [baseCandidateRecords, thesis]);
   const result = researchResult ?? localResult;
-  const candidates = useMemo(() => buildEvaluationCandidates(parcelOpportunities, result), [result]);
+  const resultCandidateRecords = result.candidateRecords.length ? result.candidateRecords : baseCandidateRecords;
+  const candidates = useMemo(() => buildEvaluationCandidates(resultCandidateRecords, result), [result, resultCandidateRecords]);
   const selectedCandidate = candidates.find((candidate) => candidate.opportunity.id === selectedId) ?? candidates[0];
   const savedCandidates = candidates.filter((candidate) => savedIds.includes(candidate.opportunity.id));
   const topCandidate = candidates[0];
@@ -526,6 +657,41 @@ export function ParcelIntelligencePage() {
 
   function updateThesis(field: keyof ParcelThesisInput, value: string) {
     setThesis((current) => ({ ...current, [field]: value }));
+    setResearchResult(undefined);
+    setResearchStatus("idle");
+  }
+
+  function updateLeadDraft(field: keyof LeadDraft, value: string) {
+    setLeadDraft((current) => ({ ...current, [field]: value }));
+  }
+
+  function addLead(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const nextInput = {
+      title: leadDraft.title.trim() || undefined,
+      sourceUrl: leadDraft.sourceUrl.trim() || undefined,
+      notes: leadDraft.notes.trim(),
+    };
+    if (!nextInput.notes) return;
+
+    const [candidate] = normalizeCandidateInputs(thesis, [nextInput]);
+    setCandidateInputs((current) => [...current, nextInput]);
+    setLeadDraft({ title: "", sourceUrl: "", notes: "" });
+    setResearchResult(undefined);
+    setResearchStatus("idle");
+    if (candidate) {
+      setSelectedId(candidate.id);
+    }
+  }
+
+  function removeLead(id: string) {
+    setCandidateInputs((current) => current.filter((input) => normalizeCandidateInputs(thesis, [input])[0]?.id !== id));
+    setSavedIds((current) => current.filter((item) => item !== id));
+    setResearchResult(undefined);
+    setResearchStatus("idle");
+    if (selectedId === id) {
+      setSelectedId("york-kays-drive");
+    }
   }
 
   function toggleSaved(id: string) {
@@ -535,7 +701,7 @@ export function ParcelIntelligencePage() {
   async function runEvaluation(event?: FormEvent<HTMLFormElement>) {
     event?.preventDefault();
     setResearchStatus("loading");
-    const request = buildParcelResearchRequest(thesis, [selectedId], savedIds);
+    const request = buildParcelResearchRequest(thesis, [selectedId], savedIds, candidateInputs);
 
     try {
       const nextResult = await api.parcelResearch(request);
@@ -543,7 +709,7 @@ export function ParcelIntelligencePage() {
       setSelectedId(nextResult.rankedCandidateIds[0] ?? selectedId);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Backend request failed.";
-      const fallback = buildLocalParcelResearchResult(thesis, savedCandidates.length ? savedCandidates.map((item) => item.opportunity) : parcelOpportunities);
+      const fallback = buildLocalParcelResearchResult(thesis, baseCandidateRecords);
       setResearchResult({
         ...fallback,
         warnings: [`Backend research endpoint was unavailable, so deterministic local evaluation was used: ${message}`, ...fallback.warnings],
@@ -573,13 +739,23 @@ export function ParcelIntelligencePage() {
           </div>
 
           <div className="grid gap-4 xl:grid-cols-[420px_minmax(0,1fr)]">
-            <ProjectBriefComposer
-              thesis={thesis}
-              listingLinks={listingLinks}
-              researchStatus={researchStatus}
-              onChange={updateThesis}
-              onRunEvaluation={runEvaluation}
-            />
+            <div className="grid content-start gap-4">
+              <ProjectBriefComposer
+                thesis={thesis}
+                listingLinks={listingLinks}
+                researchStatus={researchStatus}
+                onChange={updateThesis}
+                onRunEvaluation={runEvaluation}
+              />
+              <AddLeadComposer
+                draft={leadDraft}
+                dynamicCandidates={dynamicCandidates}
+                onDraftChange={updateLeadDraft}
+                onAddLead={addLead}
+                onRemoveLead={removeLead}
+                onSelectLead={setSelectedId}
+              />
+            </div>
             <RankedResults
               candidates={candidates}
               selectedId={selectedCandidate?.opportunity.id ?? selectedId}

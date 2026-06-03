@@ -146,10 +146,17 @@ class ParcelResearchThesis(BaseModel):
     listingLinks: List[str] = Field(default_factory=list, max_length=20)
 
 
+class ParcelCandidateInput(BaseModel):
+    sourceUrl: Optional[str] = Field(default=None, max_length=800)
+    notes: str = Field(min_length=1, max_length=3000)
+    title: Optional[str] = Field(default=None, max_length=160)
+
+
 class ParcelResearchRequest(BaseModel):
     thesis: ParcelResearchThesis
     selectedOpportunityIds: List[str] = Field(default_factory=list, max_length=20)
     shortlistedOpportunityIds: List[str] = Field(default_factory=list, max_length=20)
+    candidateInputs: List[ParcelCandidateInput] = Field(default_factory=list, max_length=20)
 
 
 class ParcelNormalizedThesis(BaseModel):
@@ -184,6 +191,47 @@ class ParcelCandidateSuitability(BaseModel):
     nextQuestions: List[str] = Field(default_factory=list)
 
 
+class ParcelCandidateRecord(BaseModel):
+    id: str
+    title: str
+    county: str = ""
+    state: str = ""
+    market: str = ""
+    acreage: Optional[float] = None
+    price: Optional[float] = None
+    pricePerAcre: Optional[float] = None
+    distanceMiles: Optional[float] = None
+    distanceLabel: Optional[str] = None
+    driveTimeMinutes: Optional[int] = None
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+    mapX: Optional[float] = None
+    mapY: Optional[float] = None
+    sourceType: Literal["broker", "land-listing", "county-gis", "manual", "seed", "unknown"] = "unknown"
+    sourceStatus: Literal["live", "partial", "unknown", "dead"] = "unknown"
+    sourceUrl: Optional[str] = None
+    sourceLabel: Optional[str] = None
+    listingId: Optional[str] = None
+    lastResearched: Optional[str] = None
+    dataConfidence: int = Field(ge=0, le=100)
+    fitScore: int = Field(ge=0, le=100)
+    riskScore: int = Field(ge=0, le=100)
+    readinessScore: int = Field(ge=0, le=100)
+    tier: Literal[
+        "Tier 1 - Facility Candidate",
+        "Tier 2 - Destination / Event Use",
+        "Tier 3 - Land Bank / Conservation",
+        "Watchlist",
+    ] = "Watchlist"
+    rationale: str
+    sourceVerification: str
+    diligenceConcerns: List[str] = Field(default_factory=list)
+    nextDiligence: List[str] = Field(default_factory=list)
+    missingData: List[str] = Field(default_factory=list)
+    tags: List[str] = Field(default_factory=list)
+    verificationNote: str
+
+
 class ParcelMemoSections(BaseModel):
     executiveSummary: str
     sourceReadiness: str
@@ -197,11 +245,16 @@ class ParcelResearchResponse(BaseModel):
     rankedCandidateIds: List[str] = Field(default_factory=list)
     toolEvents: List[ParcelToolEvent] = Field(default_factory=list)
     candidateSuitability: List[ParcelCandidateSuitability] = Field(default_factory=list)
+    candidateRecords: List[ParcelCandidateRecord] = Field(default_factory=list)
     sourceAudit: List[ParcelSourceAuditItem] = Field(default_factory=list)
     missingData: List[str] = Field(default_factory=list)
     warnings: List[str] = Field(default_factory=list)
     nextDiligence: List[str] = Field(default_factory=list)
     memo: ParcelMemoSections
+
+
+class ParcelCandidateListResponse(BaseModel):
+    candidateRecords: List[ParcelCandidateRecord] = Field(default_factory=list)
 
 
 class AgentChatRequest(BaseModel):
