@@ -172,9 +172,9 @@ PARCEL_RESPONSE_JSON_SCHEMA: dict[str, Any] = {
                 "executiveSummary": {"type": "string"},
                 "sourceReadiness": {"type": "string"},
                 "diligencePlan": {"type": "array", "items": {"type": "string"}},
-                "paidMemoScope": {"type": "array", "items": {"type": "string"}},
+                "memoScope": {"type": "array", "items": {"type": "string"}},
             },
-            "required": ["executiveSummary", "sourceReadiness", "diligencePlan", "paidMemoScope"],
+            "required": ["executiveSummary", "sourceReadiness", "diligencePlan", "memoScope"],
         },
     },
     "required": [
@@ -196,7 +196,7 @@ PARCEL_TOOL_DEFINITIONS: list[dict[str, Any]] = [
     {
         "type": "function",
         "name": "extract_project_thesis",
-        "description": "Normalize the user's project thesis into acquisition criteria.",
+        "description": "Normalize the user's project thesis into research criteria.",
         "strict": True,
         "parameters": {
             "type": "object",
@@ -452,7 +452,7 @@ def normalize_listing_links(req: ParcelResearchRequest) -> list[dict[str, Any]]:
             "candidateId": None,
             "title": "User-provided listing link",
             "status": "unknown",
-            "note": "The backend records this URL as user-provided research context only; it has not scraped, verified, or guaranteed listing facts.",
+            "note": "The backend records this URL as user-provided research context only; it has not scraped or verified listing facts.",
             "url": link,
         }
         for link in req.thesis.listingLinks
@@ -503,7 +503,7 @@ def score_candidate_suitability(candidate: dict[str, Any], req: ParcelResearchRe
 
     reasons = [
         f"Fit score {candidate['fitScore']}/100 and readiness {candidate['readinessScore']}/100 against the current project thesis.",
-        f"Risk score {candidate['riskScore']}/100 keeps the recommendation caveated until missing data is cleared.",
+        f"Risk score {candidate['riskScore']}/100 keeps the research readout caveated until missing data is cleared.",
         candidate["sourceVerification"],
     ]
     next_questions = generate_broker_questions(candidate, req)
@@ -563,11 +563,11 @@ def synthesize_memo(
             f"thesis in {req.thesis.market}, pending source, parcel, zoning, access, utility, and environmental verification."
         ),
         "sourceReadiness": (
-            "The preview separates source status from investment readiness. Exact listing links and pasted URLs are research aids, "
-            "not verified acquisition facts."
+            "The preview separates source status from research readiness. Exact listing links and pasted URLs are research aids, "
+            "not verified parcel facts."
         ),
         "diligencePlan": next_diligence[:5],
-        "paidMemoScope": [
+        "memoScope": [
             "Verify active listing status, acreage, parcel boundary, ownership, and source chain.",
             "Pull county GIS, zoning, floodplain, wetlands, access, utility, and easement records.",
             "Rank candidates against the thesis and write a human-reviewed diligence memo with caveats.",
@@ -649,8 +649,8 @@ def _fallback(req: ParcelResearchRequest, summary_override: str | None = None) -
 
     warnings = [
         "Fallback mode uses committed demo records and deterministic ranking.",
-        "No live scraping or paid entitlement check ran for this request.",
-        "Parcel Intelligence is research support, not brokerage, appraisal, legal, engineering, tax, or investment advice.",
+        "No live scraping or entitlement check ran for this request.",
+        "Parcel Intelligence is research support, not brokerage, appraisal, legal, engineering, tax, financial, or real-estate advice.",
         "Every listing, parcel, zoning, access, ownership, and environmental fact must be independently verified before reliance.",
     ]
     if summary_override:
@@ -678,7 +678,7 @@ def _instructions() -> str:
         "Do not scrape the web, invent parcel facts, or call a listing verified. "
         "Keep source quality, missing data, and next diligence prominent. "
         "Speak like a land research analyst evaluating which available properties fit a specific project. "
-        "The paid deliverable is a human-reviewed founding diligence memo, not an automated acquisition decision."
+        "The deliverable is a human-reviewed founding diligence memo, not an automated parcel decision."
     )
 
 

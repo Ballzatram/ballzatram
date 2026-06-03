@@ -236,7 +236,7 @@ class ParcelMemoSections(BaseModel):
     executiveSummary: str
     sourceReadiness: str
     diligencePlan: List[str] = Field(default_factory=list)
-    paidMemoScope: List[str] = Field(default_factory=list)
+    memoScope: List[str] = Field(default_factory=list)
 
 
 class ParcelResearchResponse(BaseModel):

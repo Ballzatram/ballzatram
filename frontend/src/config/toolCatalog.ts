@@ -111,7 +111,7 @@ export const toolCatalog: ToolCatalogItem[] = [
     id: "parcel-intelligence",
     name: "Parcel Intelligence",
     description:
-      "Define a land thesis, inspect source-checked map candidates, compare shortlists, and generate a backend-assisted diligence memo preview.",
+      "Define a land thesis, inspect source-labeled map candidates, compare shortlists, and generate a backend-assisted diligence memo preview.",
     category: "land",
     status: "prototype",
     href: "/land",
@@ -166,7 +166,7 @@ export const toolCatalog: ToolCatalogItem[] = [
   {
     id: "land-desk",
     name: "Land Desk",
-    description: "A focused map-based land research workflow with source status, shortlist comparison, and founding memo request path.",
+    description: "A focused map-based land research workflow with source labels, shortlist comparison, and founding memo request path.",
     category: "land",
     status: "prototype",
     href: "/land",
