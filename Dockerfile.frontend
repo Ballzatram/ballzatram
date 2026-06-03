@@ -9,6 +9,7 @@ COPY frontend/package.json ./package.json
 RUN npm install --include=dev
 
 COPY frontend ./
+COPY data /data
 
 ARG NEXT_PUBLIC_API_BASE=/api
 ARG GIT_COMMIT=unknown
