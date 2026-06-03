@@ -135,6 +135,75 @@ class ToolOutput(BaseModel):
     status: Literal["empty", "complete", "partial_success", "error"] = "complete"
 
 
+class ParcelResearchThesis(BaseModel):
+    useCase: str = Field(min_length=1, max_length=160)
+    market: str = Field(min_length=1, max_length=160)
+    acreageRange: str = Field(default="", max_length=80)
+    budget: str = Field(default="", max_length=80)
+    mustHaves: List[str] = Field(default_factory=list, max_length=20)
+    riskFactors: List[str] = Field(default_factory=list, max_length=20)
+    notes: str = Field(default="", max_length=2000)
+    listingLinks: List[str] = Field(default_factory=list, max_length=20)
+
+
+class ParcelResearchRequest(BaseModel):
+    thesis: ParcelResearchThesis
+    selectedOpportunityIds: List[str] = Field(default_factory=list, max_length=20)
+    shortlistedOpportunityIds: List[str] = Field(default_factory=list, max_length=20)
+
+
+class ParcelNormalizedThesis(BaseModel):
+    useCase: str
+    market: str
+    acreageRange: str
+    budget: str
+    mustHaves: List[str] = Field(default_factory=list)
+    riskFactors: List[str] = Field(default_factory=list)
+
+
+class ParcelSourceAuditItem(BaseModel):
+    candidateId: Optional[str] = None
+    title: str
+    status: Literal["live", "partial", "unknown", "dead", "fallback", "missing"]
+    note: str
+    url: Optional[str] = None
+
+
+class ParcelToolEvent(BaseModel):
+    toolName: str
+    status: Literal["complete", "fallback", "skipped"] = "complete"
+    summary: str
+
+
+class ParcelCandidateSuitability(BaseModel):
+    candidateId: str
+    category: Literal["strong_fit", "conditional_fit", "weak_fit", "disqualified", "needs_source_review"]
+    suitabilityScore: int = Field(ge=0, le=100)
+    reasons: List[str] = Field(default_factory=list)
+    dealKillers: List[str] = Field(default_factory=list)
+    nextQuestions: List[str] = Field(default_factory=list)
+
+
+class ParcelMemoSections(BaseModel):
+    executiveSummary: str
+    sourceReadiness: str
+    diligencePlan: List[str] = Field(default_factory=list)
+    paidMemoScope: List[str] = Field(default_factory=list)
+
+
+class ParcelResearchResponse(BaseModel):
+    mode: Literal["ai", "fallback"] = "fallback"
+    normalizedThesis: ParcelNormalizedThesis
+    rankedCandidateIds: List[str] = Field(default_factory=list)
+    toolEvents: List[ParcelToolEvent] = Field(default_factory=list)
+    candidateSuitability: List[ParcelCandidateSuitability] = Field(default_factory=list)
+    sourceAudit: List[ParcelSourceAuditItem] = Field(default_factory=list)
+    missingData: List[str] = Field(default_factory=list)
+    warnings: List[str] = Field(default_factory=list)
+    nextDiligence: List[str] = Field(default_factory=list)
+    memo: ParcelMemoSections
+
+
 class AgentChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=4000)
     page_id: str = Field(min_length=1, max_length=64)

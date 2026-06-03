@@ -8,211 +8,323 @@ export type ParcelSourceType =
   | "seed"
   | "unknown";
 
+export type ParcelRecommendationTier =
+  | "Tier 1 - Facility Candidate"
+  | "Tier 2 - Destination / Event Use"
+  | "Tier 3 - Land Bank / Conservation"
+  | "Watchlist";
+
 export type ParcelOpportunity = {
   id: string;
   title: string;
-  county?: string;
-  state?: string;
-  market?: string;
-  acreage?: number;
+  county: string;
+  state: string;
+  market: string;
+  acreage: number;
   price?: number;
   pricePerAcre?: number;
+  distanceMiles?: number;
   distanceLabel?: string;
   driveTimeMinutes?: number;
+  latitude?: number;
+  longitude?: number;
+  mapX?: number;
+  mapY?: number;
   sourceType: ParcelSourceType;
   sourceStatus: ParcelSourceStatus;
   sourceUrl?: string;
+  sourceLabel?: string;
+  listingId?: string;
+  lastResearched?: string;
   dataConfidence: number;
   fitScore: number;
   riskScore: number;
   readinessScore: number;
-  tier?: string;
+  tier: ParcelRecommendationTier;
   rationale: string;
+  sourceVerification: string;
   diligenceConcerns: string[];
   nextDiligence: string[];
-  missingData?: string[];
-  tags?: string[];
+  missingData: string[];
+  tags: string[];
   verificationNote: string;
 };
 
 export const parcelOpportunities: ParcelOpportunity[] = [
   {
-    id: "richburg-old-catholic-church",
-    title: "Old Catholic Church Road assemblage",
-    county: "Chester County",
-    state: "SC",
-    market: "I-77 South / Richburg",
-    acreage: 117,
-    price: 1450000,
-    pricePerAcre: 12393,
-    distanceLabel: "35-45 min from Charlotte region",
-    driveTimeMinutes: 42,
-    sourceType: "land-listing",
-    sourceStatus: "partial",
-    sourceUrl: "https://www.landsearch.com/properties/old-catholic-church-rd-richburg-sc-29729/5043157",
-    dataConfidence: 62,
-    fitScore: 82,
-    riskScore: 44,
-    readinessScore: 68,
-    tier: "Diligence candidate",
-    rationale:
-      "Large enough for a flexible land thesis with I-77 corridor access and a source link retained from the Parcel MVP. The current page does not fetch the listing live, so all listing facts stay caveated.",
-    diligenceConcerns: [
-      "Current listing status and acreage need source re-check.",
-      "Floodplain, wetlands, and easements are unknown from the demo record.",
-      "Utility access and road frontage need county and broker confirmation.",
-    ],
-    nextDiligence: [
-      "Call the listing contact or broker platform to confirm active status.",
-      "Pull Chester County GIS parcel card and boundary.",
-      "Screen FEMA floodplain, wetlands, access, and utility tie-in assumptions.",
-    ],
-    missingData: ["zoning", "parcel boundary", "utility letters", "environmental constraints"],
-    tags: ["50+ acres", "I-77", "South Carolina", "listing seed"],
-    verificationNote:
-      "Seed listing URL retained from Parcel MVP. Treat price, acreage, and status as demo inputs until independently verified.",
-  },
-  {
-    id: "fort-lawn-hightower-road",
-    title: "Hightower Road tract",
-    county: "Chester County",
-    state: "SC",
-    market: "Fort Lawn / Catawba River side",
-    acreage: 68,
-    price: 850000,
-    pricePerAcre: 12500,
-    distanceLabel: "40-50 min from Charlotte region",
-    driveTimeMinutes: 48,
-    sourceType: "land-listing",
-    sourceStatus: "unknown",
-    sourceUrl: "https://www.landsearch.com/properties/fort-lawn-sc/5095610",
-    dataConfidence: 54,
-    fitScore: 74,
-    riskScore: 53,
-    readinessScore: 57,
-    tier: "Source re-check",
-    rationale:
-      "The tract clears a 50+ acre screen and sits in a plausible regional search band, but the committed seed record is thin. It belongs in the queue as a prompt for source verification, not as a ranked recommendation.",
-    diligenceConcerns: [
-      "Acreage and pricing are demo-normalized and may not match current listing data.",
-      "Parcel access, topography, and floodplain exposure are not established.",
-      "No county GIS source has been attached to the demo record.",
-    ],
-    nextDiligence: [
-      "Verify whether the listing link still resolves to an active opportunity.",
-      "Locate parcel IDs and check ownership, zoning, and access.",
-      "Ask broker for survey, timber/clearing notes, and utility availability.",
-    ],
-    missingData: ["parcel IDs", "survey", "active status", "access rights"],
-    tags: ["50+ acres", "source unknown", "broker call"],
-    verificationNote:
-      "The page keeps unknown-source candidates visible so weak evidence cannot look stronger than it is.",
-  },
-  {
-    id: "rock-hill-highway-324",
-    title: "Highway 324 development lead",
+    id: "york-kays-drive",
+    title: "8088 Kays Drive equestrian estate lead",
     county: "York County",
     state: "SC",
-    market: "Rock Hill / Highway frontage",
-    acreage: 54,
-    price: 2200000,
-    pricePerAcre: 40741,
-    distanceLabel: "25-35 min from Charlotte region",
-    driveTimeMinutes: 33,
+    market: "York / Western York County",
+    acreage: 214.66,
+    price: 3300000,
+    pricePerAcre: 15373,
+    distanceMiles: 31.2,
+    distanceLabel: "48 min - 31.2 mi from Uptown Charlotte",
+    driveTimeMinutes: 48,
+    latitude: 34.9051,
+    longitude: -81.2287,
+    mapX: 38,
+    mapY: 54,
     sourceType: "land-listing",
     sourceStatus: "live",
-    sourceUrl: "https://www.landsearch.com/properties/3805-e-highway-324-rock-hill-sc-29732/4693533",
-    dataConfidence: 70,
-    fitScore: 79,
-    riskScore: 58,
-    readinessScore: 64,
-    tier: "Closer-in review",
+    sourceUrl: "https://www.landsearch.com/properties/8088-kays-dr-york-sc-29745/5236376",
+    sourceLabel: "LandSearch exact listing",
+    listingId: "5236376",
+    lastResearched: "2026-05-13",
+    dataConfidence: 82,
+    fitScore: 91,
+    riskScore: 39,
+    readinessScore: 84,
+    tier: "Tier 1 - Facility Candidate",
     rationale:
-      "Closer market access improves sponsor, event, or development optionality, while higher implied basis and entitlement complexity keep the risk score elevated.",
+      "Pasture, fencing, water, buildings, agricultural operations, and western York County access make this the cleanest current demo fit for a facility or event-forward land thesis.",
+    sourceVerification:
+      "Exact LandSearch source page was checked in the committed research record. LandSearch, MLS, and broker data still require independent confirmation before reliance.",
     diligenceConcerns: [
-      "Price per acre may compress flexibility if entitlement scope is limited.",
-      "Frontage, ingress, and traffic implications need review.",
-      "Zoning and municipal/county jurisdiction need confirmation.",
+      "Confirm active status, acreage, price, and included improvements with broker or MLS.",
+      "Verify parcel boundary, zoning, easements, wells, utilities, and event-use permissions.",
+      "Translate existing pasture and building layout into a realistic field, access, and parking plan.",
     ],
     nextDiligence: [
-      "Confirm listing status and ask for offering memorandum.",
-      "Check York County zoning, road access, and utility maps.",
-      "Estimate entitlement path and likely pre-development cost.",
+      "Call listing broker to confirm active status and full offering package.",
+      "Pull York County GIS parcel card, boundary, ownership, zoning, and floodplain layers.",
+      "Estimate field layout, access, utility, and improvement reuse costs before memo reliance.",
     ],
-    missingData: ["entitlement path", "traffic/access notes", "utility capacity"],
-    tags: ["frontage", "closer-in", "higher basis"],
+    missingData: ["county parcel boundary", "zoning confirmation", "utility letters", "event-use permissions"],
+    tags: ["50+ acres", "pasture", "facility candidate", "source checked"],
     verificationNote:
-      "Source link is present in the seed set. Parcel still requires independent confirmation before reliance.",
+      "Source link is retained as a research aid; acreage, pricing, status, and parcel conditions must be verified independently.",
   },
   {
-    id: "edgemoor-westbrook-road",
-    title: "Westbrook Road land-bank lead",
+    id: "chester-humpback-bridge",
+    title: "Humpback Bridge Road large-acre tract",
     county: "Chester County",
     state: "SC",
-    market: "Edgemoor / rural land-bank",
-    acreage: 142,
-    price: 990000,
-    pricePerAcre: 6972,
-    distanceLabel: "40-55 min from Charlotte region",
-    driveTimeMinutes: 52,
-    sourceType: "seed",
-    sourceStatus: "dead",
-    sourceUrl: "https://www.landsearch.com/properties/westbrook-rd-edgemoor-sc-29712/3187032",
-    dataConfidence: 38,
-    fitScore: 66,
-    riskScore: 72,
-    readinessScore: 39,
-    tier: "Archive / dead-source watch",
+    market: "I-77 South / Chester County",
+    acreage: 275,
+    price: 1629000,
+    pricePerAcre: 5924,
+    distanceMiles: 31.4,
+    distanceLabel: "48 min - 31.4 mi from Uptown Charlotte",
+    driveTimeMinutes: 48,
+    latitude: 34.8055,
+    longitude: -81.0505,
+    mapX: 49,
+    mapY: 68,
+    sourceType: "land-listing",
+    sourceStatus: "live",
+    sourceUrl: "https://www.landsearch.com/properties/humpback-bridge-rd-chester-sc-29712/4797527",
+    sourceLabel: "LandSearch exact listing",
+    listingId: "4797527",
+    lastResearched: "2026-05-13",
+    dataConfidence: 80,
+    fitScore: 83,
+    riskScore: 48,
+    readinessScore: 73,
+    tier: "Tier 2 - Destination / Event Use",
     rationale:
-      "The acreage and basis look interesting in a seed record, but the source is intentionally marked weak. It should stay visible as a watch item only if a human can reacquire a current source.",
+      "Large scale, lower price per acre, I-77 proximity, road frontage, and recreation/timber profile make it a viable destination-property review if buildable uplands and access check out.",
+    sourceVerification:
+      "Exact source page was checked in the committed research record. Listing facts are not guaranteed and must be reconciled with broker and county records.",
     diligenceConcerns: [
-      "Source may be stale, removed, or materially changed.",
-      "No current listing facts should be used without reacquiring the source.",
-      "Unknown environmental and access constraints dominate the risk profile.",
+      "Managed timber and creek frontage can add environmental, clearing, and field-development complexity.",
+      "Road frontage and entrance geometry need field verification.",
+      "Utility path and zoning flexibility are not proven by the demo record.",
     ],
     nextDiligence: [
-      "Search current broker and county records before discussing the lead.",
-      "If no current source exists, archive the candidate from active shortlist.",
-      "Record why the source failed so it does not re-enter as fresh evidence.",
+      "Confirm active status, full acreage, and asking price with the listing broker.",
+      "Pull Chester County GIS parcel boundary, zoning, and floodplain/wetlands overlays.",
+      "Screen likely field areas against topography, creek buffers, access, and clearing cost.",
     ],
-    missingData: ["current source", "price", "listing status", "ownership"],
-    tags: ["dead source", "archive", "land bank"],
+    missingData: ["wetlands/floodplain screen", "utility availability", "field layout", "access plan"],
+    tags: ["50+ acres", "I-77", "value basis", "destination property"],
     verificationNote:
-      "Dead-source examples are kept in the demo to show how Parcel flags weak evidence instead of hiding it.",
+      "Use the listing as a source clue, not a verified acquisition fact.",
   },
   {
-    id: "manual-i77-assembly",
-    title: "I-77 frontage assembly lead",
-    county: "York / Chester County",
+    id: "lancaster-charlotte-highway",
+    title: "Charlotte Highway close-in development parcel",
+    county: "Lancaster County",
     state: "SC",
-    market: "I-77 South corridor",
-    acreage: 210,
-    price: undefined,
-    pricePerAcre: undefined,
-    distanceLabel: "30-50 min from Charlotte region",
-    driveTimeMinutes: 44,
-    sourceType: "manual",
-    sourceStatus: "unknown",
-    dataConfidence: 46,
-    fitScore: 71,
-    riskScore: 66,
-    readinessScore: 45,
-    tier: "Manual thesis lead",
+    market: "US-521 / Lancaster Panhandle",
+    acreage: 100,
+    price: 8000000,
+    pricePerAcre: 80000,
+    distanceMiles: 21.5,
+    distanceLabel: "35 min - 21.5 mi from Uptown Charlotte",
+    driveTimeMinutes: 35,
+    latitude: 34.9169,
+    longitude: -80.8176,
+    mapX: 64,
+    mapY: 52,
+    sourceType: "land-listing",
+    sourceStatus: "live",
+    sourceUrl: "https://www.landsearch.com/properties/1-charlotte-hwy-lancaster-sc-29720/2490553",
+    sourceLabel: "LandSearch exact listing",
+    listingId: "2490553",
+    lastResearched: "2026-05-13",
+    dataConfidence: 78,
+    fitScore: 78,
+    riskScore: 67,
+    readinessScore: 66,
+    tier: "Tier 2 - Destination / Event Use",
     rationale:
-      "A manual thesis lead can be useful before a broker packet exists, but missing price, parcel IDs, and seller context prevent it from outranking source-backed opportunities.",
+      "The close-in location improves sponsor, lesson, event, and development optionality, but the high basis and entitlement profile make it a serious diligence item rather than an easy facility call.",
+    sourceVerification:
+      "Exact source page was checked in the committed research record. Price, acreage, zoning, and infrastructure assumptions require independent verification.",
     diligenceConcerns: [
-      "No source URL is attached.",
-      "Assemblage feasibility and ownership fragmentation are unknown.",
-      "Pricing and seller motivation are not established.",
+      "High price per acre can overwhelm a lower-intensity land-use thesis.",
+      "Wetland, pond, sewer, and entitlement details need technical review.",
+      "Jurisdiction and roadway impacts may shape what can actually be built.",
     ],
     nextDiligence: [
-      "Identify parcel IDs and ownership from county GIS.",
-      "Check frontage, access, utilities, and zoning for each parcel.",
-      "Decide whether the lead belongs in a broker outreach list.",
+      "Ask broker for offering package, entitlement notes, and utility assumptions.",
+      "Review Lancaster County planning area, zoning, sewer/water access, and wetland constraints.",
+      "Build a basis-sensitive scenario before ranking it above lower-cost alternatives.",
     ],
-    missingData: ["source URL", "seller", "price", "parcel IDs"],
-    tags: ["manual", "assemblage", "frontage"],
+    missingData: ["entitlement path", "utility capacity", "wetlands details", "basis scenario"],
+    tags: ["close-in", "higher basis", "development optionality", "sponsor access"],
     verificationNote:
-      "Manual lead added to show how Parcel handles user-entered opportunities with no source attached.",
+      "Source checked does not mean investment-ready; the economics need a separate scenario review.",
+  },
+  {
+    id: "hickory-grove-worth-mountain",
+    title: "Worth Mountain land-bank tract",
+    county: "York County",
+    state: "SC",
+    market: "Western York County",
+    acreage: 206,
+    price: 1250975,
+    pricePerAcre: 6073,
+    distanceMiles: 40,
+    distanceLabel: "59 min - 40.0 mi from Uptown Charlotte",
+    driveTimeMinutes: 59,
+    latitude: 34.9479,
+    longitude: -81.4624,
+    mapX: 26,
+    mapY: 47,
+    sourceType: "land-listing",
+    sourceStatus: "live",
+    sourceUrl: "https://www.landsearch.com/properties/hickory-grove-sc-29717/4663937",
+    sourceLabel: "LandSearch exact listing",
+    listingId: "4663937",
+    lastResearched: "2026-05-13",
+    dataConfidence: 76,
+    fitScore: 72,
+    riskScore: 59,
+    readinessScore: 62,
+    tier: "Tier 3 - Land Bank / Conservation",
+    rationale:
+      "Low price per acre, timber, creek, utility signals, and large scale create land-bank value, but distance and buildout uncertainty push it below near-term facility candidates.",
+    sourceVerification:
+      "Exact source page was checked in the committed research record. It still needs county GIS, broker, and site-level verification.",
+    diligenceConcerns: [
+      "Distance makes recurring lessons and operations harder unless the land thesis is strong.",
+      "Timber, creek, terrain, and clearing assumptions can materially change cost.",
+      "The demo record does not prove buildable field areas or utility capacity.",
+    ],
+    nextDiligence: [
+      "Verify parcel boundary, road frontage, utility availability, and any conservation adjacency limits.",
+      "Screen topography and creek buffers before assuming event or field feasibility.",
+      "Compare against lower-distance candidates before adding to paid memo scope.",
+    ],
+    missingData: ["topography", "buildable uplands", "utility path", "frontage/access details"],
+    tags: ["land bank", "value basis", "western York", "timber"],
+    verificationNote:
+      "The source is useful for triage, but the candidate is not facility-ready without site diligence.",
+  },
+  {
+    id: "sharon-morning-branch",
+    title: "Morning Branch / Blanton Road scale tract",
+    county: "York County",
+    state: "SC",
+    market: "Western York County",
+    acreage: 514.31,
+    price: 2658275,
+    pricePerAcre: 5169,
+    distanceMiles: 38.2,
+    distanceLabel: "57 min - 38.2 mi from Uptown Charlotte",
+    driveTimeMinutes: 57,
+    latitude: 34.8641,
+    longitude: -81.3527,
+    mapX: 31,
+    mapY: 60,
+    sourceType: "land-listing",
+    sourceStatus: "live",
+    sourceUrl: "https://www.landsearch.com/properties/sharon-sc/4706308",
+    sourceLabel: "LandSearch exact listing",
+    listingId: "4706308",
+    lastResearched: "2026-05-13",
+    dataConfidence: 79,
+    fitScore: 74,
+    riskScore: 63,
+    readinessScore: 61,
+    tier: "Tier 3 - Land Bank / Conservation",
+    rationale:
+      "Exceptional scale and low basis make this strategically interesting, while wetlands, timber, distance, and event-access questions keep it in land-bank review.",
+    sourceVerification:
+      "Exact source page was checked in the committed research record. LandSearch and broker facts must be independently verified before investor reliance.",
+    diligenceConcerns: [
+      "Wetlands, creek bottoms, and planted pine may reduce usable acreage.",
+      "Distance and access can weaken recurring-use economics.",
+      "Clearing, grading, and field development cost are not yet bounded.",
+    ],
+    nextDiligence: [
+      "Call broker to confirm active status, acreage, and source facts.",
+      "Pull York County GIS parcel boundary and wetlands/floodplain screens.",
+      "Identify buildable uplands and compare clearing/access cost against thesis value.",
+    ],
+    missingData: ["buildable uplands", "wetlands/floodplain", "clearing cost", "event access"],
+    tags: ["500+ acres", "land bank", "low basis", "wetlands review"],
+    verificationNote:
+      "Scale is not the same as usable facility acreage; buildable land needs proof.",
+  },
+  {
+    id: "statesville-myers-mill",
+    title: "Myers Mill regional estate benchmark",
+    county: "Iredell County",
+    state: "NC",
+    market: "I-77 North / Iredell County",
+    acreage: 306.82,
+    price: 5500000,
+    pricePerAcre: 17926,
+    distanceMiles: 52,
+    distanceLabel: "75 min - 52.0 mi from Uptown Charlotte",
+    driveTimeMinutes: 75,
+    latitude: 35.9782,
+    longitude: -80.9115,
+    mapX: 59,
+    mapY: 16,
+    sourceType: "land-listing",
+    sourceStatus: "live",
+    sourceUrl: "https://www.landsearch.com/properties/334-myers-mill-rd-statesville-nc-28625/4912025",
+    sourceLabel: "LandSearch exact listing",
+    listingId: "4912025",
+    lastResearched: "2026-05-13",
+    dataConfidence: 75,
+    fitScore: 67,
+    riskScore: 62,
+    readinessScore: 58,
+    tier: "Watchlist",
+    rationale:
+      "Existing agricultural infrastructure makes it useful as a regional estate benchmark, but distance from Charlotte keeps it from leading a Charlotte-centered operating thesis.",
+    sourceVerification:
+      "Exact source page was checked in the committed research record. Treat it as a benchmark until distance, operations, and local demand are reviewed.",
+    diligenceConcerns: [
+      "The commute profile is weak for recurring Charlotte use.",
+      "North-market demand and partnership angle would need its own thesis.",
+      "Infrastructure may not map cleanly to the intended paid memo use case.",
+    ],
+    nextDiligence: [
+      "Confirm source status and property facts with broker and county GIS.",
+      "Decide whether a regional Iredell thesis exists before spending memo time.",
+      "Use as a comp for improved agricultural acreage, not as the default shortlist leader.",
+    ],
+    missingData: ["regional demand thesis", "operations plan", "zoning", "utility details"],
+    tags: ["regional benchmark", "I-77 north", "agricultural improvements", "watchlist"],
+    verificationNote:
+      "Useful as a benchmark, but not enough to justify a Charlotte-region facility decision by itself.",
   },
 ];

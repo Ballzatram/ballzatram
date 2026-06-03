@@ -5,6 +5,7 @@ import os
 from fastapi import APIRouter, HTTPException, Query
 
 from app.api.agent_routes import router as agent_router
+from app.api.parcel_routes import router as parcel_router
 from app.data.timeseries import load_demo_series, parse_uploaded_csv
 from app.models.schemas import AnalysisRequest, CsvUploadRequest, EventStudyRequest, ReportRequest, ScenarioRequest
 from app.services.analytics import run_event_study, run_scenario, run_stock_analysis
@@ -25,6 +26,7 @@ from app.services.reporting import render_markdown
 router = APIRouter()
 
 router.include_router(agent_router)
+router.include_router(parcel_router)
 
 
 @router.get("/health")
