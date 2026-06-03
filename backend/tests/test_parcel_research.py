@@ -32,7 +32,7 @@ def test_parcel_research_fallback_without_openai_key(monkeypatch):
     assert body["normalizedThesis"]["market"] == "Charlotte-region Carolinas"
     assert body["rankedCandidateIds"]
     assert body["memo"]["executiveSummary"]
-    assert body["memo"]["paidMemoScope"]
+    assert body["memo"]["memoScope"]
     assert body["sourceAudit"]
     assert body["toolEvents"]
     assert body["candidateSuitability"]
@@ -44,7 +44,7 @@ def test_parcel_research_fallback_without_openai_key(monkeypatch):
         "disqualified",
         "needs_source_review",
     }
-    assert "verified acquisition facts" in body["memo"]["sourceReadiness"]
+    assert "verified parcel facts" in body["memo"]["sourceReadiness"]
 
 
 def test_parcel_candidates_returns_seed_records():

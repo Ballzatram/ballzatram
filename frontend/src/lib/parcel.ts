@@ -1,15 +1,29 @@
-import type { ParcelOpportunity, ParcelSourceStatus, ParcelSourceType } from "@/data/parcelOpportunities";
+import type {
+  ParcelConfidenceStatus,
+  ParcelFreshnessStatus,
+  ParcelOpportunity,
+  ParcelSourceStatus,
+  ParcelSourceTrustStatus,
+  ParcelSourceType,
+} from "@/data/parcelOpportunities";
 
-export type ParcelThesisInput = {
-  useCase: string;
-  market: string;
-  acreageRange: string;
-  budget: string;
+export type ParcelThesis = {
+  intendedUse: string;
+  targetCountyOrRegion: string;
+  budgetMin: number;
+  budgetMax: number;
+  acreageMin: number;
+  acreageMax: number;
   mustHaves: string;
-  riskFactors: string;
-  notes: string;
+  dealBreakers: string;
+  riskTolerance: ParcelRiskTolerance;
+};
+
+export type ParcelThesisInput = ParcelThesis & {
   listingLinks: string;
 };
+
+export type ParcelRiskTolerance = "low" | "medium" | "high";
 
 export type ParcelCandidateInput = {
   sourceUrl?: string;
@@ -38,13 +52,31 @@ export type ParcelCandidateSuitability = {
   reasons: string[];
   dealKillers: string[];
   nextQuestions: string[];
+  fitAssumptions?: string[];
+  flagsQuestions?: string[];
+};
+
+export type ParcelFitAssessment = {
+  candidateId: string;
+  score: number;
+  category: ParcelSuitabilityCategory;
+  assumptions: string[];
+  flagsQuestions: string[];
+  componentScores: {
+    acreage: number;
+    budget: number;
+    region: number;
+    mustHaves: number;
+    risk: number;
+    readiness: number;
+  };
 };
 
 export type ParcelMemoSections = {
   executiveSummary: string;
   sourceReadiness: string;
   diligencePlan: string[];
-  paidMemoScope: string[];
+  memoScope: string[];
 };
 
 export type ParcelResearchResult = {
@@ -75,14 +107,15 @@ export type ParcelResearchResult = {
 };
 
 export const defaultParcelThesis: ParcelThesisInput = {
-  useCase: "Equestrian, event, or long-hold development site",
-  market: "Charlotte-region Carolinas",
-  acreageRange: "50-300 acres",
-  budget: "$1.5M-$8M",
+  intendedUse: "Equestrian, event, or long-hold development site",
+  targetCountyOrRegion: "Charlotte-region Carolinas",
+  budgetMin: 1_500_000,
+  budgetMax: 8_000_000,
+  acreageMin: 50,
+  acreageMax: 300,
   mustHaves: "road frontage, utility path, defensible access, room for phased development",
-  riskFactors: "floodplain, unclear easements, stale listing links, entitlement uncertainty",
-  notes:
-    "Prioritize source-aware 50+ acre opportunities that can survive a first diligence memo without overstating what is known.",
+  dealBreakers: "floodplain, unclear easements, stale listing links, entitlement uncertainty",
+  riskTolerance: "medium",
   listingLinks: "",
 };
 
@@ -106,7 +139,7 @@ export const suitabilityCategoryLabels: Record<ParcelSuitabilityCategory, string
   strong_fit: "Strong fit",
   conditional_fit: "Conditional fit",
   weak_fit: "Weak fit",
-  disqualified: "Disqualified",
+  disqualified: "Needs major review",
   needs_source_review: "Needs source review",
 };
 
@@ -163,6 +196,48 @@ export function extractListingLinks(value: string) {
   return Array.from(new Set(matches.map((item) => item.replace(/[).;]+$/, ""))));
 }
 
+export function formatBudgetRange(thesis: ParcelThesisInput) {
+  return `${formatCurrency(thesis.budgetMin)}-${formatCurrency(thesis.budgetMax)}`;
+}
+
+export function formatAcreageRange(thesis: ParcelThesisInput) {
+  return `${formatNumber(thesis.acreageMin, 0)}-${formatNumber(thesis.acreageMax, 0)} acres`;
+}
+
+export function getParcelSourceTrustStatus(opportunity: ParcelOpportunity): ParcelSourceTrustStatus {
+  if (opportunity.sourceTrustStatus) return opportunity.sourceTrustStatus;
+  if (opportunity.sourceType === "manual" || opportunity.id.startsWith("user-")) return "user-provided";
+  if (opportunity.sourceType === "county-gis") return "public-record";
+  if (opportunity.sourceStatus === "partial") return "estimated";
+  if (opportunity.sourceType === "seed" || opportunity.lastResearched || opportunity.sourceLabel?.includes("LandSearch exact listing")) {
+    return "demo";
+  }
+  return "unknown";
+}
+
+export function getParcelFreshnessStatus(opportunity: ParcelOpportunity): ParcelFreshnessStatus {
+  if (opportunity.freshnessStatus) return opportunity.freshnessStatus;
+  if (!opportunity.lastResearched) return "unknown";
+
+  const researchedAt = new Date(`${opportunity.lastResearched}T00:00:00`);
+  if (Number.isNaN(researchedAt.getTime())) return "unknown";
+
+  const ageDays = (Date.now() - researchedAt.getTime()) / 86_400_000;
+  return ageDays <= 60 ? "current" : "stale";
+}
+
+export function getParcelConfidenceStatus(opportunity: ParcelOpportunity): ParcelConfidenceStatus {
+  if (opportunity.confidenceStatus) return opportunity.confidenceStatus;
+  const sourceTrustStatus = getParcelSourceTrustStatus(opportunity);
+  if (sourceTrustStatus === "user-provided" || sourceTrustStatus === "unknown" || opportunity.sourceStatus === "unknown") {
+    return "needs-verification";
+  }
+  if (opportunity.dataConfidence >= 80) return "high";
+  if (opportunity.dataConfidence >= 65) return "medium";
+  if (opportunity.dataConfidence >= 50) return "low";
+  return "needs-verification";
+}
+
 function base36(value: number) {
   return Math.max(0, value).toString(36);
 }
@@ -205,6 +280,148 @@ function extractPrice(notes: string) {
   return amount;
 }
 
+function clampScore(value: number) {
+  return Math.max(0, Math.min(100, Math.round(value)));
+}
+
+function candidateSearchText(opportunity: ParcelOpportunity) {
+  return [
+    opportunity.title,
+    opportunity.county,
+    opportunity.state,
+    opportunity.market,
+    opportunity.rationale,
+    opportunity.sourceVerification,
+    opportunity.verificationNote,
+    ...opportunity.diligenceConcerns,
+    ...opportunity.nextDiligence,
+    ...opportunity.missingData,
+    ...opportunity.tags,
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+function criteriaTerms(value: string) {
+  const stopWords = new Set([
+    "and",
+    "or",
+    "the",
+    "for",
+    "with",
+    "without",
+    "room",
+    "path",
+    "clear",
+    "defensible",
+    "unknown",
+    "unclear",
+  ]);
+
+  return splitList(value)
+    .flatMap((item) => item.toLowerCase().split(/[^a-z0-9]+/))
+    .map((item) => item.trim())
+    .filter((item) => item.length >= 4 && !stopWords.has(item));
+}
+
+function scoreRange(value: number | undefined, min: number, max: number) {
+  if (value === undefined || value === null || min <= 0 || max <= 0 || min > max) return 50;
+  if (value >= min && value <= max) return 100;
+  const nearest = value < min ? min : max;
+  const deviation = Math.abs(value - nearest) / nearest;
+  return clampScore(100 - deviation * 120);
+}
+
+function scoreRegion(opportunity: ParcelOpportunity, thesis: ParcelThesisInput) {
+  const region = thesis.targetCountyOrRegion.trim().toLowerCase();
+  if (!region) return 70;
+  const tokens = region.split(/[^a-z0-9]+/).filter((item) => item.length >= 3);
+  const text = `${opportunity.county} ${opportunity.state} ${opportunity.market}`.toLowerCase();
+  if (!tokens.length) return 70;
+  const matches = tokens.filter((token) => text.includes(token)).length;
+  return clampScore(45 + (matches / tokens.length) * 55);
+}
+
+function scoreMustHaves(opportunity: ParcelOpportunity, thesis: ParcelThesisInput) {
+  const terms = criteriaTerms(thesis.mustHaves);
+  if (!terms.length) return 70;
+  const text = candidateSearchText(opportunity);
+  const matches = terms.filter((term) => text.includes(term)).length;
+  return clampScore(45 + (matches / terms.length) * 55);
+}
+
+function scoreRiskTolerance(opportunity: ParcelOpportunity, thesis: ParcelThesisInput) {
+  const targetRisk = thesis.riskTolerance === "low" ? 42 : thesis.riskTolerance === "medium" ? 58 : 74;
+  const excessRisk = Math.max(0, opportunity.riskScore - targetRisk);
+  const base = 100 - excessRisk * 1.6;
+  return clampScore(base - Math.max(0, opportunity.missingData.length - 3) * 3);
+}
+
+export function scoreParcelAgainstThesis(opportunity: ParcelOpportunity, thesis: ParcelThesisInput): ParcelFitAssessment {
+  const acreage = scoreRange(opportunity.acreage, thesis.acreageMin, thesis.acreageMax);
+  const budget = scoreRange(opportunity.price, thesis.budgetMin, thesis.budgetMax);
+  const region = scoreRegion(opportunity, thesis);
+  const mustHaves = scoreMustHaves(opportunity, thesis);
+  const risk = scoreRiskTolerance(opportunity, thesis);
+  const readiness = clampScore(opportunity.readinessScore);
+  const score = clampScore(
+    acreage * 0.2 +
+      budget * 0.18 +
+      region * 0.12 +
+      mustHaves * 0.2 +
+      risk * 0.18 +
+      readiness * 0.12,
+  );
+  const category: ParcelSuitabilityCategory =
+    getParcelSourceTrustStatus(opportunity) === "user-provided" || getParcelSourceTrustStatus(opportunity) === "unknown"
+      ? "needs_source_review"
+      : score >= 82
+        ? "strong_fit"
+        : score >= 68
+          ? "conditional_fit"
+          : score >= 50
+            ? "weak_fit"
+            : "disqualified";
+  const mustHaveTerms = criteriaTerms(thesis.mustHaves);
+  const matchedTerms = mustHaveTerms.filter((term) => candidateSearchText(opportunity).includes(term));
+  const assumptions = [
+    `Acreage fit compares ${formatNumber(opportunity.acreage, 1)} acres against the ${formatAcreageRange(thesis)} thesis range.`,
+    `Budget fit compares ${formatCurrency(opportunity.price)} against the ${formatBudgetRange(thesis)} thesis range.`,
+    `Must-have fit uses demo text fields and matched ${matchedTerms.length} of ${mustHaveTerms.length || 0} extracted criteria terms.`,
+    `Risk fit treats risk tolerance as ${thesis.riskTolerance} and keeps open items as flags/questions for review.`,
+    `Readiness uses the existing demo readiness score and source caveats, not field-verified diligence.`,
+  ];
+  const dealBreakerTerms = criteriaTerms(thesis.dealBreakers);
+  const text = candidateSearchText(opportunity);
+  const matchedDealBreakers = dealBreakerTerms.filter((term) => text.includes(term));
+  const flagsQuestions = Array.from(
+    new Set([
+      ...matchedDealBreakers.map((term) => `Thesis constraint to review: ${term}.`),
+      ...opportunity.missingData.map((item) => `Verify ${item}.`),
+      ...(opportunity.riskScore > (thesis.riskTolerance === "low" ? 42 : thesis.riskTolerance === "medium" ? 58 : 74)
+        ? ["Risk score is above the current tolerance setting; treat this as a review question."]
+        : []),
+      ...(opportunity.sourceStatus !== "live" ? ["Source status needs review before relying on candidate facts."] : []),
+    ]),
+  ).slice(0, 7);
+
+  return {
+    candidateId: opportunity.id,
+    score,
+    category,
+    assumptions,
+    flagsQuestions,
+    componentScores: {
+      acreage,
+      budget,
+      region,
+      mustHaves,
+      risk,
+      readiness,
+    },
+  };
+}
+
 export function normalizeCandidateInputs(
   thesis: ParcelThesisInput,
   inputs: ParcelCandidateInput[],
@@ -241,7 +458,7 @@ export function normalizeCandidateInputs(
       title,
       county: "",
       state: "",
-      market: thesis.market,
+      market: thesis.targetCountyOrRegion,
       acreage,
       price,
       pricePerAcre,
@@ -250,6 +467,9 @@ export function normalizeCandidateInputs(
       mapY: 34 + (Math.floor(mapSeed / 31) % 42),
       sourceType: "manual",
       sourceStatus: "unknown",
+      sourceTrustStatus: "user-provided",
+      freshnessStatus: "unknown",
+      confidenceStatus: "needs-verification",
       sourceUrl,
       sourceLabel: "User-provided URL + notes",
       dataConfidence,
@@ -287,8 +507,8 @@ export function normalizeCandidateInputs(
   return candidates;
 }
 
-export function getOpportunityStrength(opportunity: ParcelOpportunity) {
-  return opportunity.fitScore + opportunity.readinessScore - opportunity.riskScore;
+export function getOpportunityStrength(opportunity: ParcelOpportunity, thesis: ParcelThesisInput = defaultParcelThesis) {
+  return scoreParcelAgainstThesis(opportunity, thesis).score;
 }
 
 export function getBestCandidate(opportunities: ParcelOpportunity[]) {
@@ -317,21 +537,10 @@ export function summarizeShortlist(opportunities: ParcelOpportunity[]) {
   )}/100 fit and ${avgReadiness.toFixed(0)}/100 readiness, with source verification still required before any reliance.`;
 }
 
-export function getLocalSuitability(opportunity: ParcelOpportunity): ParcelCandidateSuitability {
-  const rawScore = Math.round(opportunity.fitScore * 0.45 + opportunity.readinessScore * 0.35 + (100 - opportunity.riskScore) * 0.2);
-  const score = Math.max(0, Math.min(100, rawScore));
-  const category: ParcelSuitabilityCategory =
-    opportunity.sourceStatus !== "live"
-      ? "needs_source_review"
-      : score >= 82
-        ? "strong_fit"
-        : score >= 68
-          ? "conditional_fit"
-          : score >= 50
-            ? "weak_fit"
-            : "disqualified";
-  const dealKillers = [
-    opportunity.riskScore >= 65 ? "High risk score; verify entitlement, access, utilities, and environmental constraints before advancing." : "",
+export function getLocalSuitability(opportunity: ParcelOpportunity, thesis: ParcelThesisInput = defaultParcelThesis): ParcelCandidateSuitability {
+  const assessment = scoreParcelAgainstThesis(opportunity, thesis);
+  const flagsQuestions = [
+    opportunity.riskScore >= 65 ? "High risk score; verify entitlement, access, utilities, and environmental constraints as review questions." : "",
     opportunity.missingData.some((item) => /wetlands|floodplain/i.test(item))
       ? "Wetlands or floodplain constraints could materially reduce usable acreage."
       : "",
@@ -339,23 +548,26 @@ export function getLocalSuitability(opportunity: ParcelOpportunity): ParcelCandi
     opportunity.missingData.some((item) => /access|frontage/i.test(item))
       ? "Access/frontage must be verified before site planning or valuation reliance."
       : "",
+    ...assessment.flagsQuestions,
   ].filter(Boolean);
 
   return {
     candidateId: opportunity.id,
-    category,
-    suitabilityScore: score,
+    category: assessment.category,
+    suitabilityScore: assessment.score,
     reasons: [
-      `${opportunity.fitScore}/100 fit and ${opportunity.readinessScore}/100 readiness against the current thesis.`,
-      `${opportunity.riskScore}/100 risk keeps the recommendation caveated until missing data is cleared.`,
+      `${assessment.score}/100 thesis fit from acreage, budget, region, must-have, risk, and readiness assumptions.`,
+      `${opportunity.riskScore}/100 risk keeps the research readout framed as flags/questions until missing data is cleared.`,
       opportunity.sourceVerification,
     ],
-    dealKillers,
+    dealKillers: flagsQuestions,
     nextQuestions: [
       `Is ${opportunity.title} still active, and can acreage, asking price, ownership, and parcel IDs be confirmed?`,
       "Can the broker provide survey, county GIS parcel map, zoning confirmation, and easement/access documents?",
       "Are there known utility, floodplain/wetlands, entrance, parking, or use-permission constraints?",
     ],
+    fitAssumptions: assessment.assumptions,
+    flagsQuestions,
   };
 }
 
@@ -367,13 +579,13 @@ export function buildParcelResearchRequest(
 ) {
   return {
     thesis: {
-      useCase: thesis.useCase,
-      market: thesis.market,
-      acreageRange: thesis.acreageRange,
-      budget: thesis.budget,
+      useCase: thesis.intendedUse,
+      market: thesis.targetCountyOrRegion,
+      acreageRange: formatAcreageRange(thesis),
+      budget: formatBudgetRange(thesis),
       mustHaves: splitList(thesis.mustHaves),
-      riskFactors: splitList(thesis.riskFactors),
-      notes: thesis.notes,
+      riskFactors: splitList(thesis.dealBreakers),
+      notes: `Risk tolerance: ${thesis.riskTolerance}.`,
       listingLinks: extractListingLinks(thesis.listingLinks),
     },
     selectedOpportunityIds,
@@ -386,20 +598,20 @@ export function buildLocalParcelResearchResult(
   thesis: ParcelThesisInput,
   candidates: ParcelOpportunity[],
 ): ParcelResearchResult {
-  const ranked = [...candidates].sort((a, b) => getOpportunityStrength(b) - getOpportunityStrength(a));
+  const ranked = [...candidates].sort((a, b) => getOpportunityStrength(b, thesis) - getOpportunityStrength(a, thesis));
   const best = ranked[0];
   const missingData = Array.from(new Set(ranked.flatMap((candidate) => candidate.missingData))).slice(0, 10);
   const nextDiligence = Array.from(new Set(ranked.flatMap((candidate) => candidate.nextDiligence))).slice(0, 8);
   const mustHaves = splitList(thesis.mustHaves);
-  const riskFactors = splitList(thesis.riskFactors);
+  const riskFactors = splitList(thesis.dealBreakers);
 
   return {
     mode: "fallback",
     normalizedThesis: {
-      useCase: thesis.useCase,
-      market: thesis.market,
-      acreageRange: thesis.acreageRange,
-      budget: thesis.budget,
+      useCase: thesis.intendedUse,
+      market: thesis.targetCountyOrRegion,
+      acreageRange: formatAcreageRange(thesis),
+      budget: formatBudgetRange(thesis),
       mustHaves,
       riskFactors,
     },
@@ -408,7 +620,7 @@ export function buildLocalParcelResearchResult(
       {
         toolName: "extract_project_thesis",
         status: "complete",
-        summary: `Normalized ${thesis.useCase} in ${thesis.market} into screenable criteria.`,
+        summary: `Normalized ${thesis.intendedUse} in ${thesis.targetCountyOrRegion} into screenable criteria.`,
       },
       {
         toolName: "normalize_listing_links",
@@ -416,9 +628,9 @@ export function buildLocalParcelResearchResult(
         summary: `Recorded ${extractListingLinks(thesis.listingLinks).length} user-provided listing link(s) as unverified context.`,
       },
       {
-        toolName: "score_property_suitability",
+        toolName: "score_parcel_fit",
         status: "complete",
-        summary: `Scored ${ranked.length} candidate(s) into suitability categories.`,
+        summary: `Scored ${ranked.length} candidate(s) against acreage, budget, region, must-have, risk, and readiness assumptions.`,
       },
       {
         toolName: "audit_sources_and_missing_data",
@@ -431,7 +643,7 @@ export function buildLocalParcelResearchResult(
         summary: "Generated broker and county-record questions for next diligence.",
       },
     ],
-    candidateSuitability: ranked.map(getLocalSuitability).sort((a, b) => b.suitabilityScore - a.suitabilityScore),
+    candidateSuitability: ranked.map((candidate) => getLocalSuitability(candidate, thesis)).sort((a, b) => b.suitabilityScore - a.suitabilityScore),
     candidateRecords: ranked,
     sourceAudit: ranked.map((candidate) => ({
       candidateId: candidate.id,
@@ -443,18 +655,18 @@ export function buildLocalParcelResearchResult(
     missingData,
     warnings: [
       "Fallback mode uses committed demo records and deterministic ranking.",
-      "Parcel Intelligence is research support, not brokerage, appraisal, legal, engineering, tax, or investment advice.",
+      "Parcel Intelligence is research support, not brokerage, appraisal, legal, engineering, tax, financial, or real-estate advice.",
       "Every listing, parcel, zoning, access, ownership, and environmental fact must be independently verified before reliance.",
     ],
     nextDiligence,
     memo: {
       executiveSummary: best
-        ? `${best.title} is the current strongest fit for a ${thesis.useCase.toLowerCase()} thesis in ${thesis.market}, pending source, parcel, zoning, access, and environmental diligence.`
-        : `Parcel Intelligence needs at least one candidate before it can draft a useful memo for ${thesis.market}.`,
+        ? `${best.title} is the current strongest fit for a ${thesis.intendedUse.toLowerCase()} thesis in ${thesis.targetCountyOrRegion}, pending source, parcel, zoning, access, and environmental diligence.`
+        : `Parcel Intelligence needs at least one candidate before it can draft a useful memo for ${thesis.targetCountyOrRegion}.`,
       sourceReadiness:
-        "The preview separates source status from investment readiness. Live or exact listing links are treated as research aids, not verified acquisition facts.",
+        "The preview separates source status from research readiness. Live or exact listing links are treated as research aids, not verified parcel facts.",
       diligencePlan: nextDiligence.slice(0, 5),
-      paidMemoScope: [
+      memoScope: [
         "Verify active listing status, acreage, parcel boundary, ownership, and source chain.",
         "Pull county GIS, zoning, floodplain, wetlands, access, utility, and easement records.",
         "Rank candidates against the thesis and write a human-reviewed diligence memo with caveats.",

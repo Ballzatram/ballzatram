@@ -1,6 +1,9 @@
-import parcelOpportunityRecords from "../../../data/parcel-opportunities.json";
+import parcelOpportunityRecords from "./parcel-opportunities.json";
 
 export type ParcelSourceStatus = "live" | "partial" | "unknown" | "dead";
+export type ParcelSourceTrustStatus = "demo" | "user-provided" | "public-record" | "estimated" | "unknown";
+export type ParcelFreshnessStatus = "current" | "stale" | "unknown";
+export type ParcelConfidenceStatus = "high" | "medium" | "low" | "needs-verification";
 
 export type ParcelSourceType =
   | "broker"
@@ -34,6 +37,9 @@ export type ParcelOpportunity = {
   mapY?: number;
   sourceType: ParcelSourceType;
   sourceStatus: ParcelSourceStatus;
+  sourceTrustStatus?: ParcelSourceTrustStatus;
+  freshnessStatus?: ParcelFreshnessStatus;
+  confidenceStatus?: ParcelConfidenceStatus;
   sourceUrl?: string;
   sourceLabel?: string;
   listingId?: string;
