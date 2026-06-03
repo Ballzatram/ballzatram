@@ -19,6 +19,33 @@ main, section { max-width: 100%; }
   }
 }
 
+.skip-link {
+  position: fixed;
+  top: 0.6rem;
+  left: 0.6rem;
+  z-index: 100;
+  transform: translateY(-160%);
+  opacity: 0;
+  pointer-events: none;
+  border: 2px solid #18241e;
+  border-radius: 4px;
+  background: #ffffff;
+  color: #18241e;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.78rem;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+  outline: 2px solid #f6cb74;
+  outline-offset: 2px;
+}
+
 .ballzatram-site-shell {
   background:
     linear-gradient(115deg, rgba(77, 23, 17, 0.62), transparent 38%),
@@ -140,32 +167,30 @@ main, section { max-width: 100%; }
 }
 
 .ballzatram-site-shell--land {
-  background: #07100e;
+  background: #f4f7f2;
 }
 
 .ballzatram-site-header--land {
-  border-bottom-color: rgba(111, 137, 126, 0.32);
-  background:
-    linear-gradient(90deg, rgba(5, 13, 11, 0.98), rgba(12, 25, 21, 0.95)),
-    linear-gradient(180deg, rgba(228, 196, 111, 0.06), transparent);
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.24);
+  border-bottom-color: rgba(116, 132, 124, 0.28);
+  background: rgba(251, 252, 250, 0.94);
+  box-shadow: 0 12px 36px rgba(21, 32, 26, 0.08);
 }
 
 .ballzatram-site-header--land .ballzatram-site-header__inner {
-  min-height: 52px;
-  padding: 0.35rem clamp(0.85rem, 2vw, 1.25rem);
+  min-height: 58px;
+  padding: 0.5rem clamp(0.85rem, 2vw, 1.25rem);
 }
 
 .ballzatram-product-mark {
   display: inline-flex;
-  min-height: 2rem;
+  min-height: 2.35rem;
   align-items: center;
-  color: #f6cb74;
-  font: 950 1rem/1 Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
-  letter-spacing: 0.03em;
+  color: #18241e;
+  font-size: 1.12rem;
+  font-weight: 950;
+  letter-spacing: 0;
   text-decoration: none;
-  text-transform: uppercase;
-  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.65);
+  text-transform: none;
 }
 
 .ballzatram-site-header--land .ballzatram-site-header__brand {
@@ -174,17 +199,17 @@ main, section { max-width: 100%; }
 
 .ballzatram-product-mark:hover,
 .ballzatram-product-mark:focus-visible {
-  color: #ffdf8c;
-  outline: 2px solid #f6cb74;
+  color: #1f6a4a;
+  outline: 2px solid #1f6a4a;
   outline-offset: 3px;
 }
 
 .ballzatram-site-header__product {
   display: grid;
   gap: 0.15rem;
-  border-left: 1px solid rgba(228, 196, 111, 0.26);
+  border-left: 1px solid rgba(116, 132, 124, 0.32);
   padding-left: 0.75rem;
-  color: #fff5d8;
+  color: #26362f;
   white-space: nowrap;
 }
 
@@ -196,7 +221,7 @@ main, section { max-width: 100%; }
 }
 
 .ballzatram-site-header__product b {
-  color: #a9c9bd;
+  color: #66796e;
   font-size: 0.66rem;
   font-weight: 750;
   letter-spacing: 0;
@@ -204,21 +229,22 @@ main, section { max-width: 100%; }
 }
 
 .ballzatram-site-header--land .ballzatram-main-nav a {
-  min-height: 2rem;
-  border-color: rgba(169, 201, 189, 0.24);
-  padding: 0.42rem 0.7rem;
-  color: #dce7dd;
+  min-height: 2.15rem;
+  border-color: rgba(116, 132, 124, 0.32);
+  padding: 0.44rem 0.78rem;
+  color: #26362f;
   font-size: 0.76rem;
   letter-spacing: 0;
   text-transform: none;
+  background: rgba(255, 255, 255, 0.72);
 }
 
 .ballzatram-site-header--land .ballzatram-main-nav a:hover,
 .ballzatram-site-header--land .ballzatram-main-nav a:focus-visible,
 .ballzatram-site-header--land .ballzatram-main-nav a[aria-current="page"] {
-  border-color: #e4c46f;
-  background: #e4c46f;
-  color: #101714;
+  border-color: #1f6a4a;
+  background: #18241e;
+  color: #ffffff;
 }
 
 @media (max-width: 900px) {
@@ -242,6 +268,114 @@ main, section { max-width: 100%; }
   .ballzatram-site-header__product b {
     display: none;
   }
+}
+
+.parcel-mini-map {
+  position: relative;
+  min-height: 320px;
+  overflow: hidden;
+  border: 1px solid #d5ddd3;
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 54% 58%, rgba(31, 106, 74, 0.16), transparent 7%),
+    repeating-linear-gradient(18deg, rgba(64, 80, 71, 0.12) 0 1px, transparent 1px 54px),
+    repeating-linear-gradient(112deg, rgba(64, 80, 71, 0.1) 0 1px, transparent 1px 70px),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.84), rgba(231, 238, 233, 0.78));
+}
+
+.parcel-mini-map::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, transparent 0 18%, rgba(86, 107, 100, 0.15) 18.2%, transparent 19%, transparent 47%, rgba(86, 107, 100, 0.14) 47.2%, transparent 48%),
+    linear-gradient(14deg, transparent 0 34%, rgba(86, 107, 100, 0.14) 34.2%, transparent 35%, transparent 64%, rgba(86, 107, 100, 0.12) 64.2%, transparent 65%);
+  pointer-events: none;
+}
+
+.parcel-mini-map__rings {
+  position: absolute;
+  left: 54%;
+  top: 58%;
+  width: min(68%, 430px);
+  aspect-ratio: 1;
+  border: 1px dashed rgba(31, 106, 74, 0.42);
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+}
+
+.parcel-mini-map__rings::before,
+.parcel-mini-map__rings::after {
+  content: "";
+  position: absolute;
+  border: 1px dashed rgba(86, 107, 100, 0.3);
+  border-radius: inherit;
+}
+
+.parcel-mini-map__rings::before {
+  inset: 22%;
+}
+
+.parcel-mini-map__rings::after {
+  inset: 40%;
+}
+
+.parcel-mini-map__center {
+  position: absolute;
+  left: 54%;
+  top: 58%;
+  z-index: 2;
+  display: grid;
+  width: 42px;
+  height: 42px;
+  place-items: center;
+  border: 1px solid rgba(31, 106, 74, 0.38);
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.86);
+  color: #1f6a4a;
+  font-size: 0.78rem;
+  font-weight: 950;
+  transform: translate(-50%, -50%);
+}
+
+.parcel-mini-map__pin {
+  position: absolute;
+  z-index: 3;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+}
+
+.parcel-mini-map__pin span {
+  width: 14px;
+  height: 14px;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  background: #566b64;
+  box-shadow: 0 0 0 7px rgba(86, 107, 100, 0.14);
+}
+
+.parcel-mini-map__pin--saved span {
+  background: #a46b15;
+  box-shadow: 0 0 0 7px rgba(164, 107, 21, 0.17);
+}
+
+.parcel-mini-map__pin--selected span,
+.parcel-mini-map__pin:hover span,
+.parcel-mini-map__pin:focus-visible span {
+  background: #1f6a4a;
+  box-shadow: 0 0 0 10px rgba(31, 106, 74, 0.2);
+  transform: scale(1.18);
+}
+
+.parcel-mini-map__pin:focus-visible {
+  outline: 2px solid #18241e;
+  outline-offset: 3px;
 }
 
 .parcel-map-board {
