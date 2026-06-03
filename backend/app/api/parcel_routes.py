@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from fastapi import APIRouter, HTTPException
 
-from app.models.schemas import ParcelResearchRequest, ParcelResearchResponse
-from app.services.parcel_research import build_parcel_research
+from app.models.schemas import ParcelCandidateListResponse, ParcelResearchRequest, ParcelResearchResponse
+from app.services.parcel_research import build_parcel_research, get_seed_candidate_records
 
 router = APIRouter(prefix="/parcel", tags=["parcel"])
 
@@ -14,3 +14,8 @@ def parcel_research(req: ParcelResearchRequest) -> dict:
         return build_parcel_research(req)
     except Exception as exc:  # noqa: BLE001 - route should return a useful API error envelope.
         raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+
+@router.get("/candidates", response_model=ParcelCandidateListResponse)
+def parcel_candidates() -> dict:
+    return {"candidateRecords": get_seed_candidate_records()}

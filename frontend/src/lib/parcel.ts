@@ -11,6 +11,12 @@ export type ParcelThesisInput = {
   listingLinks: string;
 };
 
+export type ParcelCandidateInput = {
+  sourceUrl?: string;
+  notes: string;
+  title?: string;
+};
+
 export type ParcelResearchMode = "ai" | "fallback";
 export type ParcelSuitabilityCategory =
   | "strong_fit"
@@ -54,6 +60,7 @@ export type ParcelResearchResult = {
   rankedCandidateIds: string[];
   toolEvents: ParcelToolEvent[];
   candidateSuitability: ParcelCandidateSuitability[];
+  candidateRecords: ParcelOpportunity[];
   sourceAudit: Array<{
     candidateId?: string | null;
     title: string;
@@ -156,6 +163,130 @@ export function extractListingLinks(value: string) {
   return Array.from(new Set(matches.map((item) => item.replace(/[).;]+$/, ""))));
 }
 
+function base36(value: number) {
+  return Math.max(0, value).toString(36);
+}
+
+export function stableUserCandidateId(sourceUrl: string, notes: string, title: string) {
+  const canonical = `${sourceUrl.trim().toLowerCase()}|${title.trim().toLowerCase()}|${notes.trim().toLowerCase()}`;
+  let value = 0;
+  for (const character of canonical) {
+    value = (value * 31 + character.charCodeAt(0)) % 1_000_000_007;
+  }
+  return `user-${base36(value)}`;
+}
+
+function firstLine(value: string) {
+  return value.split(/\r?\n/).map((line) => line.trim()).find(Boolean) ?? "";
+}
+
+function urlHost(value?: string) {
+  if (!value) return "";
+  try {
+    const url = new URL(/^https?:\/\//i.test(value) ? value : `https://${value}`);
+    return url.hostname.replace(/^www\./, "");
+  } catch {
+    return "";
+  }
+}
+
+function extractAcreage(notes: string) {
+  const match = notes.match(/(\d+(?:\.\d+)?)\s*\+?\s*(?:acres|acre|ac\b)/i);
+  return match ? Number(match[1]) : undefined;
+}
+
+function extractPrice(notes: string) {
+  const match = notes.match(/\$\s*(\d+(?:[,\d]{0,12})?(?:\.\d+)?)\s*(m|million|k)?\b/i);
+  if (!match) return undefined;
+  const amount = Number(match[1].replace(/,/g, ""));
+  const unit = (match[2] ?? "").toLowerCase();
+  if (unit === "m" || unit === "million") return amount * 1_000_000;
+  if (unit === "k") return amount * 1_000;
+  return amount;
+}
+
+export function normalizeCandidateInputs(
+  thesis: ParcelThesisInput,
+  inputs: ParcelCandidateInput[],
+): ParcelOpportunity[] {
+  const candidates: ParcelOpportunity[] = [];
+
+  inputs.forEach((input, index) => {
+    const notes = input.notes.trim();
+    if (!notes) return;
+
+    const sourceUrl = input.sourceUrl?.trim() || undefined;
+    const title = input.title?.trim() || firstLine(notes).slice(0, 90) || `User lead: ${urlHost(sourceUrl) || `property ${index + 1}`}`;
+    const acreage = extractAcreage(notes);
+    const price = extractPrice(notes);
+    const pricePerAcre = acreage && price ? Math.round(price / acreage) : undefined;
+    const knownFactCount = [sourceUrl, acreage, price].filter(Boolean).length;
+    const mustHaves = thesis.mustHaves.toLowerCase();
+    let fitScore = 52;
+    if (acreage && acreage >= 50) fitScore += 10;
+    if (/(frontage|access|road)/i.test(notes)) fitScore += 6;
+    if (/(utility|utilities|water|sewer|power)/i.test(notes)) fitScore += 6;
+    if (/(pasture|field|cleared|flat)/i.test(notes)) fitScore += 5;
+    if (mustHaves.includes("acre") && !acreage) fitScore -= 4;
+    let riskScore = 72;
+    if (/(wetland|flood|easement|zoning|entitlement)/i.test(notes)) riskScore += 6;
+    if (/(survey|gis|parcel id|zoning confirmed)/i.test(notes)) riskScore -= 6;
+    const readinessScore = Math.min(58, 30 + knownFactCount * 6 + (notes.length > 120 ? 8 : 0));
+    const dataConfidence = Math.min(48, 28 + knownFactCount * 5 + (notes.length > 120 ? 5 : 0));
+    const id = stableUserCandidateId(sourceUrl ?? "", notes, title);
+    const mapSeed = Number.parseInt(id.replace("user-", ""), 36);
+
+    candidates.push({
+      id,
+      title,
+      county: "",
+      state: "",
+      market: thesis.market,
+      acreage,
+      price,
+      pricePerAcre,
+      distanceLabel: "User-provided lead; location not verified",
+      mapX: 35 + (mapSeed % 30),
+      mapY: 34 + (Math.floor(mapSeed / 31) % 42),
+      sourceType: "manual",
+      sourceStatus: "unknown",
+      sourceUrl,
+      sourceLabel: "User-provided URL + notes",
+      dataConfidence,
+      fitScore: Math.max(0, Math.min(100, fitScore)),
+      riskScore: Math.max(0, Math.min(100, riskScore)),
+      readinessScore,
+      tier: "Watchlist",
+      rationale:
+        "User-provided lead created from pasted notes. Parcel can triage it against the thesis, but it has not verified availability, acreage, price, location, zoning, access, or source facts.",
+      sourceVerification:
+        "Unverified user-provided candidate. No live scraping, broker confirmation, county GIS pull, or listing fact verification has run for this lead.",
+      diligenceConcerns: [
+        "Source status is unknown until the listing, broker, or owner confirms availability.",
+        "Acreage, price, ownership, parcel IDs, zoning, access, utilities, and environmental constraints are unverified.",
+        "Use this as a triage placeholder until source documents and county records are collected.",
+      ],
+      nextDiligence: [
+        "Confirm the listing or broker source and capture active status, asking price, acreage, ownership, and parcel IDs.",
+        "Pull county GIS parcel boundary, zoning, floodplain/wetlands, access, utility, and easement records.",
+        "Replace user notes with verified source documents before relying on suitability or memo conclusions.",
+      ],
+      missingData: [
+        "active listing status",
+        "parcel boundary",
+        "acreage confirmation",
+        "asking price confirmation",
+        "zoning/access/utilities",
+        "wetlands/floodplain screen",
+      ],
+      tags: ["user lead", "unverified", "needs source review"],
+      verificationNote: "Dynamic lead is session-only and unverified; Parcel did not scrape or verify the source URL.",
+    });
+  });
+
+  return candidates;
+}
+
 export function getOpportunityStrength(opportunity: ParcelOpportunity) {
   return opportunity.fitScore + opportunity.readinessScore - opportunity.riskScore;
 }
@@ -232,6 +363,7 @@ export function buildParcelResearchRequest(
   thesis: ParcelThesisInput,
   selectedOpportunityIds: string[],
   shortlistedOpportunityIds: string[],
+  candidateInputs: ParcelCandidateInput[] = [],
 ) {
   return {
     thesis: {
@@ -246,6 +378,7 @@ export function buildParcelResearchRequest(
     },
     selectedOpportunityIds,
     shortlistedOpportunityIds,
+    candidateInputs,
   };
 }
 
@@ -299,6 +432,7 @@ export function buildLocalParcelResearchResult(
       },
     ],
     candidateSuitability: ranked.map(getLocalSuitability).sort((a, b) => b.suitabilityScore - a.suitabilityScore),
+    candidateRecords: ranked,
     sourceAudit: ranked.map((candidate) => ({
       candidateId: candidate.id,
       title: candidate.title,
