@@ -1,4 +1,5 @@
 import type { ToolOutput } from "@/lib/toolOutput";
+import type { ParcelResearchResult } from "@/lib/parcel";
 
 export type ApiError = { detail: string };
 export type AgentProcess = { id: string; title: string; outcome: string; starter_prompt: string; steps: string[] };
@@ -64,6 +65,21 @@ export type QuantLibraryAnalyticsDemoResponse = {
   caveats: string[];
 };
 
+export type ParcelResearchRequestBody = {
+  thesis: {
+    useCase: string;
+    market: string;
+    acreageRange: string;
+    budget: string;
+    mustHaves: string[];
+    riskFactors: string[];
+    notes: string;
+    listingLinks: string[];
+  };
+  selectedOpportunityIds: string[];
+  shortlistedOpportunityIds: string[];
+};
+
 const BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://localhost:8000/api";
 
 async function parseError(res: Response): Promise<string> {
@@ -95,6 +111,8 @@ export const api = {
     symbols.forEach((symbol) => params.append("symbols", symbol));
     return req<QuantLibraryAnalyticsDemoResponse>(`/quant-library/analytics-demo?${params.toString()}`);
   },
+  parcelResearch: (body: ParcelResearchRequestBody) =>
+    req<ParcelResearchResult>("/parcel/research", { method: "POST", body: JSON.stringify(body) }),
   agentProcesses: () => req<{ processes: Record<string, AgentProcess[]> }>("/agent/processes"),
   agentChat: (body: unknown) => req<AgentChatResponse>("/agent/chat", { method: "POST", body: JSON.stringify(body) }),
 };

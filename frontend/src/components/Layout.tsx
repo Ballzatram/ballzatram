@@ -33,6 +33,14 @@ export function Layout({ children }: { children: React.ReactNode }) {
     currentPath.startsWith("/bettors-corner") ||
     currentPath.startsWith("/betting") ||
     currentPath.startsWith("/internal/product-architecture");
+  const primaryNav = [
+    { label: "Home", href: "/" as Route, active: currentPath === "/" },
+    { label: "Parcel", href: "/land" as Route, active: isLandRoute },
+    { label: "Quant Library", href: "/quant-library" as Route, active: isMarketsRoute },
+    { label: "Games", href: "/arcade" as Route, active: isGamesRoute },
+    { label: "AI Lab", href: "/laboratory" as Route, active: isLaboratoryRoute },
+    { label: "Archive", href: "/archive" as Route, active: isArchiveRoute },
+  ];
 
   useEffect(() => {
     setMobileNavOpen(false);
@@ -43,16 +51,31 @@ export function Layout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className={`ballzatram-site-shell min-h-dvh ${isHome ? "ballzatram-site-shell--sky" : "text-[#f8ead1]"}`}>
+    <div
+      className={`ballzatram-site-shell min-h-dvh ${isHome ? "ballzatram-site-shell--sky" : "text-[#f8ead1]"} ${isLandRoute ? "ballzatram-site-shell--land" : ""}`}
+    >
       {isHome ? <SkyLayer /> : null}
       <a className="skip-link" href="#site-content">Skip to content</a>
-      <header className={`ballzatram-site-header ${isHome ? "ballzatram-site-header--sky" : ""}`}>
+      <header className={`ballzatram-site-header ${isHome ? "ballzatram-site-header--sky" : ""} ${isLandRoute ? "ballzatram-site-header--land" : ""}`}>
         <div className="ballzatram-site-header__inner">
           <div className="ballzatram-site-header__brand">
-            <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
-              <img src="/assets/title.png" alt="Ballzatram" />
-            </Link>
-            <p>AI-guided workbenches, simulations, games, and odd tools</p>
+            {isLandRoute ? (
+              <Link href={"/" as Route} className="ballzatram-product-mark" aria-label="Ballzatram home">
+                Ballzatram
+              </Link>
+            ) : (
+              <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
+                <img src="/assets/title.png" alt="Ballzatram" />
+              </Link>
+            )}
+            {isLandRoute ? (
+              <div className="ballzatram-site-header__product">
+                <span>Parcel</span>
+                <b>AI property suitability analyst</b>
+              </div>
+            ) : (
+              <p>AI-guided workbenches, simulations, games, and odd tools</p>
+            )}
           </div>
           <button
             type="button"
@@ -68,12 +91,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
             className={`ballzatram-main-nav ${mobileNavOpen ? "is-open" : ""}`}
             aria-label="Ballzatram sections"
           >
-            <Link href={"/" as Route} aria-current={currentPath === "/" ? "page" : undefined}>Home</Link>
-            <Link href={"/land" as Route} aria-current={isLandRoute ? "page" : undefined}>Land</Link>
-            <Link href={"/markets" as Route} aria-current={isMarketsRoute ? "page" : undefined}>Markets</Link>
-            <Link href={"/arcade" as Route} aria-current={isGamesRoute ? "page" : undefined}>Games</Link>
-            <Link href={"/laboratory" as Route} aria-current={isLaboratoryRoute ? "page" : undefined}>AI Lab</Link>
-            <Link href={"/archive" as Route} aria-current={isArchiveRoute ? "page" : undefined}>Archive</Link>
+            {primaryNav.map((item) => (
+              <Link key={item.href} href={item.href} aria-current={item.active ? "page" : undefined}>
+                {item.label}
+              </Link>
+            ))}
           </nav>
         </div>
         {isMacroRoute ? (
