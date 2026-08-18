@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f766e" />
+  <meta name="description" content="A browser-native supply and demand simulation for equilibrium, welfare, shocks, taxes, and price controls." />
+  <title>Supply & Demand Lab | Ballzatram</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="lab-shell">
+    <nav class="lab-nav" aria-label="Lab navigation">
+      <a href="../index.html">← Lab Directory</a>
+      <a href="../../econ-arcade/index.html">Econ Arcade</a>
+      <a href="../../index.html">Ballzatram</a>
+    </nav>
+
+    <header class="lab-hero lab-hero--green">
+      <p class="lab-kicker">Pages-native · Econ Arcade · zero backend</p>
+      <h1>Supply & Demand Lab</h1>
+      <p>Move demand, supply, taxes, ceilings, and floors. Predict what happens first, then compare equilibrium, welfare, shortages, and deadweight loss.</p>
+      <div class="lab-badges">
+        <span>Runs entirely in your browser</span>
+        <span>Deterministic teaching model</span>
+        <span>No API keys</span>
+      </div>
+    </header>
+
+    <section class="mode-bar" aria-label="Lab mode">
+      <button class="mode-button active" data-mode="challenge">Challenge Mode</button>
+      <button class="mode-button" data-mode="sandbox">Free-play Sandbox</button>
+      <span>Predict → act → compare</span>
+    </section>
+
+    <div class="lab-layout">
+      <aside class="control-stack">
+        <section class="lab-card" id="setupCard">
+          <p class="card-label">Market setup</p>
+          <label>Market
+            <select id="scenarioSelect"></select>
+          </label>
+          <label id="challengeLabel">Challenge
+            <select id="challengeSelect"></select>
+          </label>
+          <div class="brief" id="scenarioBrief"></div>
+          <div class="brief brief--accent" id="challengeBrief"></div>
+        </section>
+
+        <section class="lab-card" id="predictionCard">
+          <p class="card-label">Predict before acting</p>
+          <p class="helper">Pick what you expect the next move to do. Sandbox mode makes prediction optional.</p>
+          <div class="prediction-grid">
+            <div>
+              <strong>Price</strong>
+              <div class="prediction-pair">
+                <button data-predict="price" data-direction="up">↑ Up</button>
+                <button data-predict="price" data-direction="down">↓ Down</button>
+              </div>
+            </div>
+            <div>
+              <strong>Quantity</strong>
+              <div class="prediction-pair">
+                <button data-predict="quantity" data-direction="up">↑ Up</button>
+                <button data-predict="quantity" data-direction="down">↓ Down</button>
+              </div>
+            </div>
+          </div>
+          <p class="helper" id="predictionScore">Prediction accuracy: —</p>
+        </section>
+
+        <section class="lab-card">
+          <div class="card-heading-row">
+            <p class="card-label">Market moves</p>
+            <button class="text-button" id="resetButton">Reset</button>
+          </div>
+          <div class="action-list" id="actionList"></div>
+        </section>
+      </aside>
+
+      <section class="results-stack">
+        <div class="metric-grid">
+          <article class="metric-card"><span>Price</span><strong id="priceMetric">—</strong><small id="priceDelta">—</small></article>
+          <article class="metric-card"><span>Quantity</span><strong id="quantityMetric">—</strong><small id="quantityDelta">—</small></article>
+          <article class="metric-card"><span>Stability</span><strong id="stabilityMetric">—</strong><small id="stabilityDelta">—</small></article>
+          <article class="metric-card"><span>Deadweight loss</span><strong id="dwlMetric">—</strong><small id="dwlDelta">—</small></article>
+        </div>
+
+        <section class="lab-card">
+          <p class="card-label">Baseline vs current</p>
+          <div class="compare-grid">
+            <div><span>Consumer surplus</span><strong id="consumerCompare">—</strong></div>
+            <div><span>Producer surplus</span><strong id="producerCompare">—</strong></div>
+            <div><span>Total private surplus</span><strong id="totalCompare">—</strong></div>
+            <div><span>Market balance</span><strong id="balanceCompare">—</strong></div>
+          </div>
+          <div class="explanation" id="explanation"></div>
+        </section>
+
+        <section class="lab-card">
+          <div class="card-heading-row">
+            <div>
+              <p class="card-label">Market history</p>
+              <h2 id="marketTitle">—</h2>
+            </div>
+            <span class="state-pill" id="marketState">Balanced</span>
+          </div>
+          <div class="history-strip" id="historyStrip"></div>
+        </section>
+
+        <section class="lab-card debrief-card" id="debriefCard" hidden>
+          <p class="card-label">Challenge debrief</p>
+          <h2 id="debriefTitle"></h2>
+          <p id="debriefCopy"></p>
+          <div class="debrief-stats" id="debriefStats"></div>
+          <button class="primary-action" id="replayButton">Replay challenge</button>
+        </section>
+
+        <section class="boundary-card">
+          <strong>Model boundary</strong>
+          <p>This is a deliberately simplified teaching model. It demonstrates directional economics and policy tradeoffs; it does not estimate a real market or forecast prices.</p>
+        </section>
+      </section>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
