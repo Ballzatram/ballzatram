@@ -19,7 +19,11 @@ export default function StockLabPage() {
     const normalized = symbol.trim().toUpperCase();
     if (!normalized) return setError("Enter a symbol.");
     setBusy(true); setError(""); setResult(null);
-    try { setResult(await api.marketStock({ symbol: normalized, benchmark: benchmark.trim().toUpperCase() || "SPY", range })); }
+    try {
+      const next = await api.marketStock({ symbol: normalized, benchmark: benchmark.trim().toUpperCase() || "SPY", range });
+      setResult(next);
+      localStorage.setItem("ballzatram:stock-last-run:v1", JSON.stringify({ savedAt: new Date().toISOString(), request: { symbol: normalized, benchmark: benchmark.trim().toUpperCase() || "SPY", range }, result: next }));
+    }
     catch (err) { setError(err instanceof Error ? err.message : "Stock analysis failed."); }
     finally { setBusy(false); }
   }
