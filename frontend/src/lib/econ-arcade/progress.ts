@@ -34,7 +34,9 @@ export type ProgressUpdate = {
 };
 
 const emptyStore = (): EconProgressStore => ({ version: 1, games: {} });
-const tierRank: Record<MasteryTier, number> = { bronze: 1, silver: 2, gold: 3 };
+export const masteryTierRank: Record<MasteryTier, number> = { bronze: 1, silver: 2, gold: 3 };
+export const CORE_MASTERY_GAME_IDS = ["supply-demand-lab", "prisoners-dilemma-arena", "central-bank-simulator", "invisible-hands"] as const;
+export const CAPSTONE_PREREQUISITE_IDS = ["supply-demand-lab", "prisoners-dilemma-arena", "central-bank-simulator"] as const;
 
 export function readEconProgress(): EconProgressStore {
   if (typeof window === "undefined") return emptyStore();
@@ -58,7 +60,7 @@ export function recordEconProgress(gameId: string, update: ProgressUpdate): Econ
   const concepts = Array.from(new Set([...(previous?.concepts ?? []), ...(update.concepts ?? [])]));
   const achievements = Array.from(new Set([...(previous?.achievements ?? []), ...(update.achievements ?? [])]));
   const bestScore = score == null ? previous?.bestScore : Math.max(previous?.bestScore ?? score, score);
-  const masteryTier = update.masteryTier && (!previous?.masteryTier || tierRank[update.masteryTier] > tierRank[previous.masteryTier])
+  const masteryTier = update.masteryTier && (!previous?.masteryTier || masteryTierRank[update.masteryTier] > masteryTierRank[previous.masteryTier])
     ? update.masteryTier
     : previous?.masteryTier;
 
@@ -90,4 +92,23 @@ export function masteredConcepts(store: EconProgressStore): string[] {
 
 export function earnedAchievements(store: EconProgressStore): string[] {
   return Array.from(new Set(Object.values(store.games).flatMap((game) => game.achievements ?? []))).sort();
+}
+
+export function masteryScore(store: EconProgressStore): number {
+  const earned = CORE_MASTERY_GAME_IDS.reduce((sum, gameId) => sum + (store.games[gameId]?.masteryTier ? masteryTierRank[store.games[gameId]!.masteryTier!] : 0), 0);
+  return Math.round((earned / (CORE_MASTERY_GAME_IDS.length * masteryTierRank.gold)) * 100);
+}
+
+export function capstoneAccessTier(store: EconProgressStore): MasteryTier {
+  const prerequisiteRanks = CAPSTONE_PREREQUISITE_IDS.map((gameId) => store.games[gameId]?.masteryTier ? masteryTierRank[store.games[gameId]!.masteryTier!] : 0);
+  if (prerequisiteRanks.every((rank) => rank >= masteryTierRank.silver)) return "gold";
+  if (prerequisiteRanks.every((rank) => rank >= masteryTierRank.bronze)) return "silver";
+  return "bronze";
+}
+
+export function capstoneReadiness(store: EconProgressStore) {
+  const access = capstoneAccessTier(store);
+  const missingBronze = CAPSTONE_PREREQUISITE_IDS.filter((gameId) => (store.games[gameId]?.masteryTier ? masteryTierRank[store.games[gameId]!.masteryTier!] : 0) < masteryTierRank.bronze);
+  const missingSilver = CAPSTONE_PREREQUISITE_IDS.filter((gameId) => (store.games[gameId]?.masteryTier ? masteryTierRank[store.games[gameId]!.masteryTier!] : 0) < masteryTierRank.silver);
+  return { access, missingBronze, missingSilver };
 }

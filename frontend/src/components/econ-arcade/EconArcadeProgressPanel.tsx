@@ -4,9 +4,11 @@ import Link from "next/link";
 import type { Route } from "next";
 import { useEffect, useMemo, useState } from "react";
 import {
+  capstoneReadiness,
   earnedAchievements,
   gameStatus,
   masteredConcepts,
+  masteryScore,
   readEconProgress,
   recordEconProgress,
   type EconProgressStore,
@@ -18,6 +20,13 @@ const mission = [
   { id: "central-bank-simulator", title: "3. Central Banker", route: "/games/central-bank.html", concepts: ["inflation targeting", "policy lags", "credibility"] },
   { id: "invisible-hands", title: "4. Invisible Hands", route: "/econ-arcade/invisible-hands", concepts: ["systems thinking", "second-order effects", "trade retaliation"] },
 ] as const;
+
+const gameName: Record<string, string> = {
+  "supply-demand-lab": "Supply & Demand",
+  "prisoners-dilemma-arena": "Prisoner’s Dilemma",
+  "central-bank-simulator": "Central Banker",
+  "invisible-hands": "Invisible Hands",
+};
 
 function migrateLegacyProgress() {
   const store = readEconProgress();
@@ -54,6 +63,9 @@ export function EconArcadeProgressPanel() {
   const concepts = useMemo(() => masteredConcepts(progress), [progress]);
   const achievements = useMemo(() => earnedAchievements(progress), [progress]);
   const tierCount = mission.filter((item) => progress.games[item.id]?.masteryTier).length;
+  const mastery = useMemo(() => masteryScore(progress), [progress]);
+  const capstone = useMemo(() => capstoneReadiness(progress), [progress]);
+  const nextCapstoneRequirement = capstone.access === "bronze" ? capstone.missingBronze : capstone.access === "silver" ? capstone.missingSilver : [];
 
   return (
     <section className="rounded-3xl border border-emerald-300/25 bg-[linear-gradient(135deg,rgba(6,78,59,.22),rgba(15,23,42,.96),rgba(8,47,73,.2))] p-5 shadow-xl shadow-black/30 sm:p-6">
@@ -61,12 +73,26 @@ export function EconArcadeProgressPanel() {
         <div>
           <p className="font-mono text-xs font-black uppercase tracking-[0.28em] text-emerald-300">Your Econ Arcade campaign · local progress</p>
           <h2 className="mt-2 text-3xl font-black text-white">{completedCount}/4 core missions complete</h2>
-          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">Completion gets you through the campaign. Mastery tiers and achievements show how deeply you understand the mechanics after the first clear.</p>
+          <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-300">Completion gets you through the campaign. Mastery score measures depth: each core game contributes 1 point for Bronze, 2 for Silver, and 3 for Gold.</p>
         </div>
         <div className="flex flex-col gap-2 sm:flex-row lg:flex-col">
           <div className="rounded-full border border-amber-300/30 bg-amber-300/10 px-4 py-2 text-center text-xs font-bold uppercase tracking-[.14em] text-amber-100">{tierCount} mastery tier{tierCount===1?"":"s"} earned</div>
           <Link href={next.route as Route} className="inline-flex min-h-12 items-center justify-center rounded-full bg-emerald-300 px-5 py-3 text-sm font-black uppercase tracking-[0.16em] text-slate-950">Play next: {next.title.replace(/^\d+\.\s*/, "")}</Link>
         </div>
+      </div>
+
+      <div className="mt-5 grid gap-4 lg:grid-cols-[.7fr_1.3fr]">
+        <article className="rounded-2xl border border-violet-300/25 bg-violet-300/5 p-5">
+          <p className="text-xs font-bold uppercase tracking-[.22em] text-violet-200">Cross-game mastery</p>
+          <div className="mt-3 flex items-end gap-3"><span className="font-mono text-5xl font-black text-white">{mastery}</span><span className="pb-1 text-sm text-slate-400">/100</span></div>
+          <div className="mt-3 h-3 overflow-hidden rounded-full bg-slate-800"><div className="h-full rounded-full bg-violet-300" style={{ width: `${mastery}%` }} /></div>
+          <p className="mt-3 text-xs leading-5 text-slate-400">100 requires Gold mastery across all four core games—not just finishing them once.</p>
+        </article>
+        <article className="rounded-2xl border border-cyan-300/25 bg-cyan-300/5 p-5">
+          <div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs font-bold uppercase tracking-[.22em] text-cyan-200">Invisible Hands capstone readiness</p><h3 className="mt-2 text-2xl font-black uppercase text-white">{capstone.access} track unlocked</h3></div><Link href={"/econ-arcade/invisible-hands" as Route} className="rounded-full border border-cyan-200/40 px-4 py-2 text-xs font-bold uppercase tracking-[.14em] text-cyan-100">Enter capstone</Link></div>
+          <p className="mt-3 text-sm leading-6 text-slate-300">Bronze is always open. Silver unlocks after Bronze mastery in Supply & Demand, Prisoner’s Dilemma, and Central Banker. Gold unlocks after Silver mastery in all three.</p>
+          {nextCapstoneRequirement.length ? <p className="mt-3 rounded-xl border border-amber-300/20 bg-amber-300/10 p-3 text-xs text-amber-100">To unlock the next capstone tier: {nextCapstoneRequirement.map((id)=>gameName[id] ?? id).join(" · ")}</p> : <p className="mt-3 rounded-xl border border-emerald-300/20 bg-emerald-300/10 p-3 text-xs text-emerald-100">All prerequisite mastery requirements are satisfied. Gold capstone track is available.</p>}
+        </article>
       </div>
 
       <div className="mt-5 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
