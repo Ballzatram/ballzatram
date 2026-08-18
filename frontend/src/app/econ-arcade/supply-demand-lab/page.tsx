@@ -1,5 +1,5 @@
-import { SupplyDemandLab } from "@/components/econ-arcade/SupplyDemandLab";
+import { SupplyDemandExperience } from "@/components/econ-arcade/SupplyDemandExperience";
 
 export default function Page() {
-  return <SupplyDemandLab />;
+  return <SupplyDemandExperience />;
 }
