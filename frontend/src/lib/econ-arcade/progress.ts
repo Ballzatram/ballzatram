@@ -1,6 +1,7 @@
 export const ECON_PROGRESS_KEY = "ballzatram:econ-progress:v1";
 
 export type EconGameStatus = "unplayed" | "attempted" | "completed";
+export type MasteryTier = "bronze" | "silver" | "gold";
 
 export type EconGameProgress = {
   status: Exclude<EconGameStatus, "unplayed">;
@@ -10,6 +11,9 @@ export type EconGameProgress = {
   lastScore?: number;
   lastOutcome?: string;
   concepts: string[];
+  achievements?: string[];
+  masteryTier?: MasteryTier;
+  mastery?: Record<string, string | number | boolean>;
   updatedAt: string;
 };
 
@@ -23,10 +27,14 @@ export type ProgressUpdate = {
   score?: number;
   outcome?: string;
   concepts?: string[];
+  achievements?: string[];
+  masteryTier?: MasteryTier;
+  mastery?: Record<string, string | number | boolean>;
   countAttempt?: boolean;
 };
 
 const emptyStore = (): EconProgressStore => ({ version: 1, games: {} });
+const tierRank: Record<MasteryTier, number> = { bronze: 1, silver: 2, gold: 3 };
 
 export function readEconProgress(): EconProgressStore {
   if (typeof window === "undefined") return emptyStore();
@@ -48,7 +56,11 @@ export function recordEconProgress(gameId: string, update: ProgressUpdate): Econ
   const attempts = (previous?.attempts ?? 0) + (update.countAttempt === false ? 0 : 1);
   const completions = (previous?.completions ?? 0) + (completed ? 1 : 0);
   const concepts = Array.from(new Set([...(previous?.concepts ?? []), ...(update.concepts ?? [])]));
+  const achievements = Array.from(new Set([...(previous?.achievements ?? []), ...(update.achievements ?? [])]));
   const bestScore = score == null ? previous?.bestScore : Math.max(previous?.bestScore ?? score, score);
+  const masteryTier = update.masteryTier && (!previous?.masteryTier || tierRank[update.masteryTier] > tierRank[previous.masteryTier])
+    ? update.masteryTier
+    : previous?.masteryTier;
 
   store.games[gameId] = {
     status: completed || previous?.status === "completed" ? "completed" : "attempted",
@@ -58,6 +70,9 @@ export function recordEconProgress(gameId: string, update: ProgressUpdate): Econ
     lastScore: score ?? previous?.lastScore,
     lastOutcome: update.outcome ?? previous?.lastOutcome,
     concepts,
+    achievements,
+    masteryTier,
+    mastery: { ...(previous?.mastery ?? {}), ...(update.mastery ?? {}) },
     updatedAt: new Date().toISOString(),
   };
   window.localStorage.setItem(ECON_PROGRESS_KEY, JSON.stringify(store));
@@ -71,4 +86,8 @@ export function gameStatus(store: EconProgressStore, gameId: string): EconGameSt
 
 export function masteredConcepts(store: EconProgressStore): string[] {
   return Array.from(new Set(Object.values(store.games).flatMap((game) => game.concepts))).sort();
+}
+
+export function earnedAchievements(store: EconProgressStore): string[] {
+  return Array.from(new Set(Object.values(store.games).flatMap((game) => game.achievements ?? []))).sort();
 }

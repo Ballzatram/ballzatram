@@ -25,6 +25,9 @@
       lastScore: Number.isFinite(score) ? score : previous?.lastScore,
       lastOutcome: outcome || previous?.lastOutcome,
       concepts,
+      achievements: previous?.achievements || [],
+      masteryTier: previous?.masteryTier,
+      mastery: previous?.mastery || {},
       updatedAt: new Date().toISOString(),
     };
     localStorage.setItem(PROGRESS_KEY, JSON.stringify(store));
@@ -123,9 +126,7 @@
       `a payoff in round ${Math.max(2, state.history.length || 2)} is worth ${Math.pow(state.discount, Math.max(1, (state.history.length || 2) - 1)).toFixed(2)} times its immediate value. ` +
       `Retaliations observed: ${metrics.retaliation}; forgiveness moves: ${metrics.forgiveness}.`;
 
-    if (state.history.length > 0 && !attemptRecorded) {
-      recordArcadeProgress(false, discounted.user, `Match vs ${state.agent.name}`);
-    }
+    if (state.history.length > 0 && !attemptRecorded) recordArcadeProgress(false, discounted.user, `Match vs ${state.agent.name}`);
     if (state.history.length >= state.maxRounds && !completionRecorded) {
       completionRecorded = true;
       recordArcadeProgress(true, discounted.user, `Completed vs ${state.agent.name}`);
