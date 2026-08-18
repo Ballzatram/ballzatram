@@ -1,6 +1,5 @@
-import { WorkflowPage } from "@/components/WorkflowPage";
-import { workflowBySlug } from "@/lib/workflows";
+import { PortfolioLab } from "@/components/PortfolioLab";
 
 export default function Page() {
-  return <WorkflowPage workflow={workflowBySlug["portfolio"]} />;
+  return <PortfolioLab />;
 }
