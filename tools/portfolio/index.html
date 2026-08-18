@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#0f172a" />
+  <meta name="description" content="Analyze a portfolio locally from price-history CSV data: return, volatility, drawdown, beta, concentration, correlations, and risk contribution." />
+  <title>Portfolio Lab | Ballzatram</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="shell">
+    <nav class="top-nav" aria-label="Portfolio navigation">
+      <a href="../index.html">← Lab Directory</a>
+      <a href="../scenario/index.html">Scenario Lab</a>
+      <a href="../reports/index.html">Reports</a>
+      <a href="../../index.html">Ballzatram</a>
+    </nav>
+
+    <header class="hero">
+      <p class="kicker">Pages-native · local portfolio analytics</p>
+      <h1>Portfolio Lab</h1>
+      <p>Bring your own historical prices and run the portfolio math locally: returns, volatility, drawdown, beta, concentration, correlations, and risk contribution. Nothing is uploaded anywhere.</p>
+      <div class="badges"><span>CSV / paste</span><span>Runs in browser</span><span>No market-data key</span></div>
+    </header>
+
+    <div class="layout">
+      <aside class="sidebar">
+        <section class="panel">
+          <div class="heading-row"><div><p class="label">Holdings</p><h2>Weights</h2></div><button id="addHolding" class="small-button">+ Add</button></div>
+          <div id="holdingsList" class="holdings-list"></div>
+          <label class="field">Benchmark column
+            <input id="benchmarkInput" value="SPY" placeholder="Optional, e.g. SPY" />
+          </label>
+          <p class="helper">Weights are relative and will be normalized. CSV columns must match holding symbols. Benchmark is optional.</p>
+        </section>
+
+        <section class="panel">
+          <p class="label">Price history</p>
+          <label class="file-button">Choose CSV<input id="fileInput" type="file" accept=".csv,text/csv" /></label>
+          <textarea id="csvInput" rows="10" spellcheck="false" placeholder="date,QQQ,TLT,GLD,SPY&#10;2026-01-02,500.12,86.11,185.20,590.45&#10;..."></textarea>
+          <div class="button-grid">
+            <button id="demoButton" class="secondary-button">Load demo data</button>
+            <button id="analyzeButton" class="primary-button">Analyze portfolio</button>
+          </div>
+          <p id="inputStatus" class="helper">Expected format: first column date, remaining columns are price series.</p>
+        </section>
+      </aside>
+
+      <section class="results">
+        <section id="emptyState" class="empty-state">Add/paste price history or load the demo dataset, then analyze.</section>
+        <div id="resultsContent" hidden>
+          <div class="status-row"><span id="sourceBadge" class="source-badge">Local CSV</span><span id="windowBadge" class="source-badge">—</span></div>
+          <div class="metric-grid">
+            <article><span>Cumulative return</span><strong id="cumReturn">—</strong></article>
+            <article><span>Annualized return</span><strong id="annReturn">—</strong></article>
+            <article><span>Annualized volatility</span><strong id="volatility">—</strong></article>
+            <article><span>Max drawdown</span><strong id="drawdown">—</strong></article>
+            <article><span>Beta vs benchmark</span><strong id="beta">—</strong></article>
+            <article><span>Benchmark correlation</span><strong id="correlation">—</strong></article>
+            <article><span>Top holding</span><strong id="topHolding">—</strong></article>
+            <article><span>Effective positions</span><strong id="effectivePositions">—</strong></article>
+          </div>
+
+          <section class="panel">
+            <div class="heading-row"><div><p class="label">Risk contribution</p><h2>Holdings</h2></div><a class="text-link" href="../reports/index.html">Open Reports →</a></div>
+            <div class="table-wrap"><table><thead><tr><th>Symbol</th><th>Weight</th><th>Return</th><th>Volatility</th><th>Risk contribution</th></tr></thead><tbody id="holdingRows"></tbody></table></div>
+          </section>
+
+          <section class="panel">
+            <p class="label">Correlation</p><h2>Holding matrix</h2>
+            <div class="table-wrap"><table id="correlationTable"></table></div>
+          </section>
+
+          <section class="panel" id="benchmarkPanel">
+            <p class="label">Benchmark</p><div class="compare-grid"><div><span>Benchmark return</span><strong id="benchmarkReturn">—</strong></div><div><span>Observations</span><strong id="observations">—</strong></div><div><span>Start</span><strong id="startDate">—</strong></div><div><span>End</span><strong id="endDate">—</strong></div></div>
+          </section>
+
+          <section class="boundary"><strong>Data & model boundary</strong><p id="warnings"></p></section>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
