@@ -69,6 +69,15 @@ export type MarketPortfolioAnalysisResponse = {
   warnings: string[];
   scenarioPayload: { holdings: Record<string, number> };
 };
+export type ScenarioStressResponse = {
+  portfolio_return_shock: number;
+  confidence_band: [number, number];
+  factor_contributions: Array<{ factor: string; shock: number; impact: number }>;
+  warnings: {
+    correlation_warning: string;
+    model_assumptions: string[];
+  };
+};
 export type MetricExplanation = {
   name: string;
   shortExplanation: string;
@@ -165,7 +174,7 @@ export const api = {
     req<MarketStockAnalysisResponse>("/analyze/stock/market", { method: "POST", body: JSON.stringify(body) }),
   marketPortfolio: (body: { holdings: Array<{ symbol: string; weight: number }>; benchmark?: string; range?: MarketPortfolioAnalysisResponse["range"] }) =>
     req<MarketPortfolioAnalysisResponse>("/analyze/portfolio/market", { method: "POST", body: JSON.stringify(body) }),
-  scenario: (body: unknown) => req<unknown>("/analyze/portfolio/scenario", { method: "POST", body: JSON.stringify(body) }),
+  scenario: (body: { name: string; shocks: Record<string, number>; holdings: Record<string, number> }) => req<ScenarioStressResponse>("/analyze/portfolio/scenario", { method: "POST", body: JSON.stringify(body) }),
   eventStudy: (body: unknown) => req<unknown>("/analyze/event-study", { method: "POST", body: JSON.stringify(body) }),
   quantLibraryAnalyticsDemo: (symbols: string[] = ["SPY", "QQQ", "TLT"], benchmark = "SPY", universeId = "major-us-indices") => {
     const params = new URLSearchParams({ benchmark, universe_id: universeId });
