@@ -4,10 +4,19 @@ on:
   push:
     branches:
       - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - name: Deploy over SSH
@@ -17,9 +26,15 @@ jobs:
           username: ${{ secrets.DO_USER }}
           port: ${{ secrets.DO_PORT }}
           key: ${{ secrets.DO_SSH_KEY }}
+          command_timeout: 25m
           script: |
-            set -e
+            set -Eeuo pipefail
             cd /root/ballzatram
+
+            COMPOSE="docker compose --env-file .env.production -f docker-compose.prod.yml"
+            LEGACY_DIR="/root/ballzatram/ai-edit-factory"
+            LEGACY_WAS_RUNNING=0
+
             git fetch origin master
             git reset --hard origin/master
 
@@ -32,37 +47,109 @@ jobs:
             export GIT_BRANCH="master"
             export DEPLOYED_AT="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 
-            docker compose --env-file .env.production -f docker-compose.prod.yml build
+            echo "Validating compose configuration..."
+            $COMPOSE config -q
 
-            if [ -f ai-edit-factory/docker-compose.prod.yml ]; then
-              echo "Stopping legacy AI Edit production stack before binding ports 80/443."
-              (cd ai-edit-factory && docker compose -f docker-compose.prod.yml down --remove-orphans)
-            fi
+            echo "Building production images before touching live traffic..."
+            $COMPOSE build backend frontend
 
-            docker compose --env-file .env.production -f docker-compose.prod.yml up -d --remove-orphans
-            docker compose --env-file .env.production -f docker-compose.prod.yml ps
+            echo "Starting backend/frontend without changing ports 80/443..."
+            $COMPOSE up -d backend frontend
 
-            echo "Waiting for production version endpoint..."
-            for i in 1 2 3 4 5 6 7 8 9 10 11 12; do
-              VERSION="$(curl -fsS https://ballzatram.com/api/version || true)"
-              if echo "$VERSION" | grep -q "$GIT_COMMIT"; then
-                echo "$VERSION"
+            echo "Waiting for backend health..."
+            BACKEND_ID="$($COMPOSE ps -q backend)"
+            for i in $(seq 1 30); do
+              STATUS="$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$BACKEND_ID" 2>/dev/null || true)"
+              if [ "$STATUS" = "healthy" ]; then
                 break
               fi
-              sleep 5
+              if [ "$i" -eq 30 ]; then
+                echo "Backend did not become healthy."
+                $COMPOSE logs --tail=200 backend
+                exit 1
+              fi
+              sleep 2
             done
 
-            VERSION="$(curl -fsS https://ballzatram.com/api/version)"
-            echo "$VERSION" | grep "$GIT_COMMIT"
+            echo "Verifying frontend inside its container..."
+            FRONTEND_ID="$($COMPOSE ps -q frontend)"
+            for i in $(seq 1 30); do
+              if docker exec "$FRONTEND_ID" node -e "fetch('http://127.0.0.1:3000').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"; then
+                break
+              fi
+              if [ "$i" -eq 30 ]; then
+                echo "Frontend did not become reachable."
+                $COMPOSE logs --tail=200 frontend
+                exit 1
+              fi
+              sleep 2
+            done
+
+            if [ -f "$LEGACY_DIR/docker-compose.prod.yml" ] && (cd "$LEGACY_DIR" && docker compose -f docker-compose.prod.yml ps -q | grep -q .); then
+              LEGACY_WAS_RUNNING=1
+            fi
+
+            rollback_legacy() {
+              echo "Production cutover failed. Attempting rollback."
+              $COMPOSE stop caddy || true
+              if [ "$LEGACY_WAS_RUNNING" = "1" ]; then
+                (cd "$LEGACY_DIR" && docker compose -f docker-compose.prod.yml up -d) || true
+              fi
+              $COMPOSE ps || true
+            }
+
+            if [ "$LEGACY_WAS_RUNNING" = "1" ]; then
+              echo "New app services are healthy; stopping legacy stack for port cutover."
+              (cd "$LEGACY_DIR" && docker compose -f docker-compose.prod.yml down --remove-orphans)
+            fi
+
+            trap rollback_legacy ERR
+
+            echo "Starting Caddy and completing production cutover..."
+            $COMPOSE up -d caddy --remove-orphans
+            $COMPOSE ps
+
+            echo "Verifying Caddy locally without relying on public DNS..."
+            LOCAL_VERSION=""
+            for i in $(seq 1 24); do
+              LOCAL_VERSION="$(curl -kfsS --resolve ballzatram.com:443:127.0.0.1 https://ballzatram.com/api/version || true)"
+              if echo "$LOCAL_VERSION" | grep -q "$GIT_COMMIT"; then
+                echo "$LOCAL_VERSION"
+                break
+              fi
+              if [ "$i" -eq 24 ]; then
+                echo "Local Caddy/API verification failed."
+                $COMPOSE logs --tail=200 caddy backend frontend
+                false
+              fi
+              sleep 3
+            done
 
             for path in /backend/app/main.py /frontend/package.json /ai-edit-factory/docker-compose.prod.yml; do
-              status="$(curl -s -o /dev/null -w "%{http_code}" "https://ballzatram.com$path")"
+              status="$(curl -ks -o /dev/null -w "%{http_code}" --resolve ballzatram.com:443:127.0.0.1 "https://ballzatram.com$path")"
               if [ "$status" = "200" ]; then
-                echo "Source path is publicly reachable: $path"
-                exit 1
+                echo "Source path is publicly reachable through local Caddy: $path"
+                false
               fi
             done
 
+            trap - ERR
+
+            echo "Checking public DNS/HTTPS path..."
+            if ! getent ahosts ballzatram.com | head -n 5; then
+              echo "WARNING: ballzatram.com does not resolve from the droplet. Application stack is healthy locally; check DNS records."
+              exit 1
+            fi
+
+            VERSION="$(curl -fsS --connect-timeout 10 --max-time 30 https://ballzatram.com/api/version || true)"
+            if ! echo "$VERSION" | grep -q "$GIT_COMMIT"; then
+              echo "WARNING: public HTTPS path did not return deployed commit $GIT_COMMIT."
+              echo "Local application/Caddy verification passed; investigate DNS/firewall/edge routing."
+              echo "Public response: $VERSION"
+              exit 1
+            fi
+
+            echo "$VERSION"
             pwd
             git rev-parse --short HEAD
             git status --short
