@@ -13,6 +13,29 @@ export type DataFreshness = {
   retrieved_at: string;
   warnings: string[];
 };
+export type MarketStockAnalysisResponse = {
+  status: "complete" | "partial_success";
+  symbol: string;
+  name: string;
+  benchmark: string;
+  range: "1mo" | "3mo" | "6mo" | "1y" | "2y" | "5y";
+  quote: { price: number; change: number; changePercent: number };
+  metrics: {
+    cumulativeReturn: number | null;
+    rollingVolatility20d: number | null;
+    maxDrawdown: number | null;
+    movingAverage20d: number | null;
+    movingAverage50d: number | null;
+    rsi14: number | null;
+    zScore20d: number | null;
+    betaVsBenchmark: number | null;
+    relativeStrengthVsBenchmark: number | null;
+  };
+  priceHistory: Array<{ date: string; close: number }>;
+  freshness: DataFreshness;
+  benchmarkFreshness: DataFreshness;
+  warnings: string[];
+};
 export type MetricExplanation = {
   name: string;
   shortExplanation: string;
@@ -105,6 +128,8 @@ async function req<T>(path: string, init?: RequestInit): Promise<T> {
 export const api = {
   demo: () => req<{ rows: number; columns: string[]; start: string; end: string }>("/data/demo"),
   stock: (body: unknown) => req<unknown>("/analyze/stock", { method: "POST", body: JSON.stringify(body) }),
+  marketStock: (body: { symbol: string; benchmark?: string; range?: MarketStockAnalysisResponse["range"] }) =>
+    req<MarketStockAnalysisResponse>("/analyze/stock/market", { method: "POST", body: JSON.stringify(body) }),
   scenario: (body: unknown) => req<unknown>("/analyze/portfolio/scenario", { method: "POST", body: JSON.stringify(body) }),
   eventStudy: (body: unknown) => req<unknown>("/analyze/event-study", { method: "POST", body: JSON.stringify(body) }),
   quantLibraryAnalyticsDemo: (symbols: string[] = ["SPY", "QQQ", "TLT"], benchmark = "SPY", universeId = "major-us-indices") => {
