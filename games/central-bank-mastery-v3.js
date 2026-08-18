@@ -1,9 +1,38 @@
 (() => {
   const DIFFICULTY_KEY = "centralBankMasteryDifficultyV3";
+  const PROGRESS_KEY = "ballzatram:econ-progress:v1";
   const thresholds = { bronze: 55, silver: 62, gold: 70 };
+  const tierRank = { bronze: 1, silver: 2, gold: 3 };
   let difficulty = localStorage.getItem(DIFFICULTY_KEY) || "bronze";
   let actionMix = {};
   let endingRecorded = false;
+
+  function recordProgress(update) {
+    let store;
+    try { store = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "null"); } catch { store = null; }
+    if (!store || store.version !== 1 || typeof store.games !== "object") store = { version: 1, games: {} };
+    const gameId = "central-bank-simulator";
+    const previous = store.games[gameId];
+    const score = Number.isFinite(update.score) ? Number(update.score) : undefined;
+    const achievements = Array.from(new Set([...(previous?.achievements || []), ...(update.achievements || [])]));
+    const concepts = Array.from(new Set([...(previous?.concepts || []), ...(update.concepts || [])]));
+    const masteryTier = update.masteryTier && (!previous?.masteryTier || tierRank[update.masteryTier] > tierRank[previous.masteryTier]) ? update.masteryTier : previous?.masteryTier;
+    store.games[gameId] = {
+      status: update.completed || previous?.status === "completed" ? "completed" : "attempted",
+      attempts: (previous?.attempts || 0) + (update.countAttempt === false ? 0 : 1),
+      completions: (previous?.completions || 0) + (update.completed ? 1 : 0),
+      bestScore: score == null ? previous?.bestScore : Math.max(previous?.bestScore ?? score, score),
+      lastScore: score ?? previous?.lastScore,
+      lastOutcome: update.outcome ?? previous?.lastOutcome,
+      concepts,
+      achievements,
+      masteryTier,
+      mastery: { ...(previous?.mastery || {}), ...(update.mastery || {}) },
+      updatedAt: new Date().toISOString(),
+    };
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(store));
+    window.dispatchEvent(new CustomEvent("ballzatram:econ-progress", { detail: store }));
+  }
 
   const baseResetMetrics = resetMetrics;
   resetMetrics = function masteryResetMetrics() {
@@ -79,7 +108,7 @@
     const fullTerm = state.quarter >= MAX_QUARTERS;
     const masterySuccess = fullTerm && score >= thresholds[difficulty] && (difficulty !== "gold" || title === "Soft Landing");
     const achievements = endingAchievements(title);
-    window.BallzatramEconProgress?.record("central-bank-simulator", {
+    recordProgress({
       completed: fullTerm,
       countAttempt: false,
       score,
@@ -106,7 +135,7 @@
     const name = button.querySelector("strong")?.textContent || "Unknown action";
     actionMix[name] = (actionMix[name] || 0) + 1;
   });
-  document.getElementById("startGame")?.addEventListener("click", () => { actionMix = {}; endingRecorded = false; });
+  document.getElementById("startGame")?.addEventListener("click", () => { actionMix = {}; endingRecorded = false; recordProgress({ outcome: `${difficulty.toUpperCase()} term started`, concepts: ["inflation targeting","policy lags"], countAttempt: true }); });
   document.getElementById("playAgain")?.addEventListener("click", () => { actionMix = {}; endingRecorded = false; });
 
   const modal = document.getElementById("endingModal");
