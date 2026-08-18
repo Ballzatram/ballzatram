@@ -3,11 +3,12 @@
 
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Ballzatram is a strange workshop newspaper of useful machines, playable reports, public nonsense, and honestly labeled prototypes." />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="description" content="Ballzatram is an independent workshop for useful machines, playable experiments, quantitative tools, and strange ideas." />
   <meta name="theme-color" content="#0589d1" />
-  <title>Ballzatram | A Strange Workshop Paper</title>
+  <title>Ballzatram | The Workshop</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="mobile-home.css" />
 </head>
 
 <body>
@@ -19,9 +20,7 @@
       </a>
 
       <nav class="nav-panel" aria-label="Main navigation">
-        <a href="#front-page">Front Page</a>
-        <span></span>
-        <a href="#back-issues">Back Issues</a>
+        <a href="#front-page">Tools</a>
         <span></span>
         <a href="games/stoney-bologna/index.html">Blotter</a>
         <span></span>
@@ -34,42 +33,37 @@
     <main class="homepage-main newspaper-home">
       <section class="paper-masthead" aria-labelledby="homeHeroTitle">
         <div class="paper-masthead__copy">
-          <p class="eyebrow">Hangar edition // useful machines // playable reports</p>
+          <p class="eyebrow">Independent lab // useful machines // strange ideas</p>
 
           <h1 id="homeHeroTitle" class="paper-nameplate">
             <img src="assets/title.png" alt="Ballzatram" />
           </h1>
 
           <p class="paper-subtitle">
-            A strange workshop paper of useful machines, playable reports, and public nonsense.
+            A workshop for quantitative tools, AI experiments, simulations, games, and whatever deserves to exist next.
           </p>
 
-          <div class="issue-strip" aria-label="Issue metadata">
-            <span>Vol. 1</span>
-            <span>Issue 7</span>
-            <span>Filed from the hangar</span>
-            <span>Early access edition</span>
+          <div class="issue-strip" aria-label="Site status">
+            <span>Independent</span>
+            <span>Experimental</span>
+            <span>Built in public</span>
           </div>
 
           <div class="headline-rule"></div>
 
           <p class="hero-text">
-            Ballzatram is still the same blue-sky workshop: part living lab, part tool bench, part rocketeer incident report. The front page is narrower now, so the active machines get room to breathe and the archive can stay weird without pretending everything is equally done.
-          </p>
-          <p class="hero-text">
-            Some dispatches are useful. Some are playable. Some are only safe if you read the label. The paper prints the label.
+            Ballzatram is a living laboratory. The front page keeps the useful, playable, and actively developed work easy to find while everything else stays out of the way.
           </p>
 
           <div class="trust-row" aria-label="Site quality markers">
-            <span>Active prototypes marked plainly</span>
-            <span>No fake polish</span>
-            <span>Archive intact</span>
+            <span>Active work labeled clearly</span>
+            <span>Experimental by design</span>
+            <span>No fake certainty</span>
           </div>
 
           <div class="hero-actions">
-            <a class="primary-button" href="#front-page">Read the Front Page</a>
+            <a class="primary-button" href="#front-page">Explore the Lab</a>
             <a class="secondary-button" href="games/stoney-bologna/index.html">Open Police Blotter</a>
-            <a class="secondary-button weather-action" href="#back-issues">Visit the Morgue</a>
           </div>
         </div>
 
@@ -79,181 +73,109 @@
       </section>
 
       <section class="mission-panel editorial-standards" aria-labelledby="missionTitle">
-        <p class="eyebrow">Editorial standards</p>
-        <h2 id="missionTitle">A workshop can be rough and still print corrections.</h2>
-        <div class="mission-grid">
-          <article><strong>Status</strong><span>Every machine gets a readable label: active prototype, playable oddity, back issue, backend-required, or under review.</span></article>
-          <article><strong>Caveats</strong><span>Parcel keeps diligence caveats. Quant Library keeps market uncertainty visible. The games remain games, even when they wear a badge.</span></article>
-          <article><strong>Morgue</strong><span>Older experiments are not erased. They move to clippings, back issues, and relic drawers when they are not leading the paper.</span></article>
+        <p class="eyebrow">How the lab works</p>
+        <h2 id="missionTitle">Build useful things. Label the rough edges.</h2>
+        <div class="mission-grid mission-grid--compact">
+          <article>
+            <strong>Status</strong>
+            <span>Every active machine is labeled so you can tell what is usable, experimental, or still being built.</span>
+          </article>
+          <article>
+            <strong>Caveats</strong>
+            <span>Analytical tools keep uncertainty visible. Games stay games. Prototypes do not pretend to be finished products.</span>
+          </article>
         </div>
       </section>
 
       <section class="front-page-section" id="front-page" aria-labelledby="frontPageTitle">
         <div class="category-heading">
-          <p class="eyebrow">Today's columns</p>
-          <h2 id="frontPageTitle">Front Page Desk</h2>
+          <p class="eyebrow">Active work</p>
+          <h2 id="frontPageTitle">Inside the Hangar</h2>
         </div>
 
-        <div class="front-page-grid" aria-label="Active Ballzatram columns">
+        <div class="front-page-grid" aria-label="Active Ballzatram projects">
           <article class="lead-dispatch">
-            <span class="dispatch-stamp">Filed 07:13 from Hangar B</span>
-            <h2>The living lab narrows the front page.</h2>
+            <span class="dispatch-stamp">Workshop note</span>
+            <h2>The lab is getting sharper.</h2>
             <p>
-              Three columns are currently above the fold: land diligence, macro risk, and one mall-police fiasco preserved as a playable report. Everything else is still in the building, just not shouting from the masthead.
+              Ballzatram is moving away from a pile of experiments and toward a connected product: analyze something, understand the risk, stress it, and turn the work into something reusable.
             </p>
           </article>
 
           <article class="classified-note">
-            <span class="dispatch-stamp">Classified</span>
-            <h3>Wanted: better questions.</h3>
-            <p>Bring zoning mysteries, portfolio anxieties, broker riddles, and public nonsense. Ballzatram will not promise certainty, but it will assemble a machine and label the loose bolts.</p>
+            <span class="dispatch-stamp">Now building</span>
+            <h3>Better machines, fewer distractions.</h3>
+            <p>Stock analysis, portfolio risk, scenarios, reports, economic games, parcel diligence, and whatever earns a permanent place next.</p>
           </article>
 
           <article class="dispatch-card dispatch-card--parcel">
             <div class="dispatch-card__topline">
-              <span class="dispatch-label">The Land Desk</span>
+              <span class="dispatch-label">Land & Diligence</span>
               <span class="tool-status experimental">Active Prototype</span>
             </div>
             <h2>Parcel</h2>
-            <p class="byline">By the Zoning Caveat Department</p>
+            <p class="byline">Property intelligence</p>
             <p>
-              A due-diligence report machine for parcels, zoning mysteries, development hunches, caveats, and broker questions.
+              A due-diligence machine for parcels, zoning questions, development ideas, caveats, and broker follow-ups.
             </p>
             <a href="tools/parcel/index.html">Launch Parcel</a>
           </article>
 
           <article class="dispatch-card dispatch-card--macro">
             <div class="dispatch-card__topline">
-              <span class="dispatch-label">The Markets Page</span>
-              <span class="tool-status experimental">Active Prototype</span>
+              <span class="dispatch-label">Markets & Risk</span>
+              <span class="tool-status experimental">V3 In Development</span>
             </div>
-            <h2>Quant Library</h2>
-            <p class="byline">By the Scenario Desk</p>
+            <h2>Quant Lab</h2>
+            <p class="byline">Stock → Portfolio → Scenario → Reports</p>
             <p>
-              An explainable market analysis desk for rates, indices, stocks, ETFs, risk, regimes, and time-series signals.
+              The next-generation Ballzatram market workstation is being built as a connected research and risk workflow.
             </p>
-            <a href="/quant-library">Open Quant Library</a>
+            <b aria-label="V3 deployment pending"><i>Full-stack deployment next</i></b>
           </article>
 
           <article class="dispatch-card dispatch-card--stoney">
             <div class="dispatch-card__topline">
-              <span class="dispatch-label">Police Blotter Serial</span>
-              <span class="tool-status live">Playable Oddity</span>
+              <span class="dispatch-label">Playable Experiment</span>
+              <span class="tool-status live">Live</span>
             </div>
             <h2>Stoney Bologna&rsquo;s Bullshit Simulator 7</h2>
             <p class="byline">Yuma dispatch, mall desk</p>
             <p>
-              Yuma&rsquo;s least-qualified police chief attempts to bluff through a hostage crisis at South Gate Mall without letting the cameras realize he has no idea what he is doing.
+              Yuma&rsquo;s least-qualified police chief attempts to bluff through a hostage crisis without letting the cameras realize he has no idea what he is doing.
             </p>
-            <a href="games/stoney-bologna/index.html">Read the Blotter</a>
+            <a href="games/stoney-bologna/index.html">Play the Blotter</a>
+          </article>
+
+          <article class="dispatch-card dispatch-card--arcade">
+            <div class="dispatch-card__topline">
+              <span class="dispatch-label">Learning Arcade</span>
+              <span class="tool-status live">Playable</span>
+            </div>
+            <h2>Econ Arcade</h2>
+            <p class="byline">Economics through decisions</p>
+            <p>
+              Interactive economics games covering markets, incentives, strategic behavior, monetary policy, and economic systems.
+            </p>
+            <a href="econ-arcade/index.html">Open Econ Arcade</a>
           </article>
         </div>
-      </section>
-
-      <section class="archive-section" id="back-issues" aria-labelledby="archiveTitle">
-        <div class="category-heading">
-          <p class="eyebrow">Back Issues / The Morgue</p>
-          <h2 id="archiveTitle">Clippings Still Breathing</h2>
-        </div>
-
-        <div class="archive-grid" aria-label="Archived Ballzatram experiments">
-          <article class="archive-card archive-card--manuscript">
-            <span class="archive-stamp">Back Issue</span>
-            <h3>The Penitent 2</h3>
-            <p>A playable manuscript relic with hymns, crusades, and suspiciously dramatic marginalia. Off the front page, not buried.</p>
-            <div class="archive-labels"><span>Playable Archive</span><span>Prototype Relic</span></div>
-            <a href="/penitent">Open clipping</a>
-          </article>
-
-          <article class="archive-card archive-card--arcade">
-            <span class="archive-stamp">Back Issue</span>
-            <h3>Econ Arcade</h3>
-            <p>Economics games, simulations, and learning cabinets filed together for readers who like curves with buttons on them.</p>
-            <div class="archive-labels"><span>Playable Archive</span></div>
-            <a href="econ-arcade/index.html">Open clipping</a>
-          </article>
-
-          <article class="archive-card archive-card--strategy">
-            <span class="archive-stamp">Back Issue</span>
-            <h3>Strategy Studio</h3>
-            <p>A game-theory curriculum map of bargaining, auctions, repeated games, and rational-choice machinery.</p>
-            <div class="archive-labels"><span>Playable Archive</span></div>
-            <a href="econ-arcade/platform.html">Open clipping</a>
-          </article>
-
-          <article class="archive-card archive-card--policy">
-            <span class="archive-stamp">Playable Archive</span>
-            <h3>Central Banker</h3>
-            <p>A fictional policy desk for shocks, inflation pressure, credibility, dashboards, and end-of-term debriefs.</p>
-            <div class="archive-labels"><span>Prototype Relic</span></div>
-            <a href="games/central-bank.html">Open clipping</a>
-          </article>
-
-          <article class="archive-card archive-card--weather">
-            <span class="archive-stamp">Under Review</span>
-            <h3>Weather Desk</h3>
-            <p>Paper-mode weather-market worksheets with settlement reminders and no live-trading wire hidden behind the curtain.</p>
-            <div class="archive-labels"><span>Back Issue</span><span>Under Review</span></div>
-            <a href="weather-bot.html">Open clipping</a>
-          </article>
-
-          <article class="archive-card archive-card--edit">
-            <span class="archive-stamp">Requires Backend</span>
-            <h3>AI Edit</h3>
-            <p>A rights-approved edit factory that still needs its worker path awake before it can behave like a production machine.</p>
-            <div class="archive-labels"><span>Requires Backend</span><span>Prototype Relic</span></div>
-            <a href="ai-edit-factory/">Open clipping</a>
-          </article>
-        </div>
-      </section>
-
-      <section class="mission-panel lab-spin-panel" id="spin-lab" aria-labelledby="spinLabTitle" data-lab-spin>
-        <div class="lab-section-heading">
-          <div>
-            <p class="eyebrow">Discovery machine</p>
-            <h2 id="spinLabTitle">Spin the Morgue</h2>
-          </div>
-          <button class="primary-button" type="button" data-spin-button>Spin the Morgue</button>
-        </div>
-        <p class="lab-page-copy">
-          Pull a small medley from the paper: one active desk, one playable oddity, one back issue, and sometimes a roadmap ghost. Discovery only, just a guided shuffle through the archive drawers.
-        </p>
-        <div class="local-prototype-note">
-          Favorites are saved in this browser only for now. No account, backend, or member entitlement exists yet.
-        </div>
-        <div class="spin-results" data-spin-results aria-live="polite"></div>
-      </section>
-
-      <section class="mission-panel favorites-panel" aria-labelledby="favoritesTitle" data-favorites-panel>
-        <div class="lab-section-heading">
-          <div>
-            <p class="eyebrow">Reader shelf</p>
-            <h2 id="favoritesTitle">Saved clippings</h2>
-          </div>
-          <button class="secondary-button" type="button" data-clear-favorites>Clear clippings</button>
-        </div>
-        <p class="lab-page-copy">
-          Local/browser-only prototype: saved clippings stay on this device until real member accounts exist.
-        </p>
-        <div class="favorites-list" data-favorites-list aria-live="polite"></div>
       </section>
     </main>
 
     <footer class="site-footer">
       <nav class="footer-links" aria-label="Footer navigation">
-        <a href="#front-page">Front Page</a>
-        <a href="#back-issues">Back Issues</a>
+        <a href="#front-page">Tools</a>
         <a href="lab-pass.html">Lab Pass</a>
         <a href="community.html">Community</a>
         <a href="privacy.html">Privacy</a>
         <a href="terms.html">Terms</a>
       </nav>
-      <p>Built in the hangar. Filed with caveats. Labeled honestly.</p>
+      <p>Built in the hangar. Filed with caveats.</p>
     </footer>
   </div>
 
   <script src="script.js"></script>
-  <script src="lab.js"></script>
 </body>
 
 </html>
