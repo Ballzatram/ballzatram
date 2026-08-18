@@ -114,7 +114,8 @@ def test_parcel_research_includes_user_link_as_unverified_context(monkeypatch):
     link_row = next(item for item in source_audit if item["url"] == "https://example.com/listing")
     assert link_row["candidateId"] is None
     assert link_row["status"] == "unknown"
-    assert "not scraped, verified, or guaranteed" in link_row["note"]
+    assert "user-provided research context only" in link_row["note"]
+    assert "has not scraped or verified listing facts" in link_row["note"]
 
 
 def test_parcel_research_validates_required_thesis():
