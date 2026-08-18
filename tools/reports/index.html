@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#5b21b6" />
+  <meta name="description" content="Compose a local Ballzatram report from browser-native lab runs and download it as Markdown." />
+  <title>Reports | Ballzatram</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="report-shell">
+    <nav class="report-nav" aria-label="Report navigation">
+      <a href="../index.html">← Lab Directory</a>
+      <a href="../scenario/index.html">Scenario Lab</a>
+      <a href="../supply-demand/index.html">Supply & Demand</a>
+      <a href="../../index.html">Ballzatram</a>
+    </nav>
+
+    <header class="report-hero">
+      <p class="kicker">Pages-native · local artifact builder</p>
+      <h1>Reports</h1>
+      <p>Turn the work you already ran in this browser into a reusable Markdown artifact. Nothing is sent to a server, and missing analysis is never silently invented.</p>
+      <div class="badges"><span>Runs locally</span><span>No AI required</span><span>Download .md</span></div>
+    </header>
+
+    <div class="report-layout">
+      <aside class="sidebar">
+        <section class="panel">
+          <p class="panel-label">Available analysis</p>
+          <div id="sourceList" class="source-list"></div>
+          <p class="helper">Run a browser-native lab first if a source is unavailable.</p>
+        </section>
+
+        <section class="panel">
+          <label class="field">Report title
+            <input id="reportTitle" value="Ballzatram Research Report" />
+          </label>
+          <label class="field">Opening note
+            <textarea id="openingNote" rows="4" placeholder="Optional context, question, or purpose for this report."></textarea>
+          </label>
+          <button id="generateButton" class="primary-button">Generate report</button>
+          <button id="clearDraftButton" class="secondary-button">Clear draft</button>
+        </section>
+      </aside>
+
+      <section class="main-column">
+        <section class="panel">
+          <div class="panel-heading">
+            <div><p class="panel-label">Report structure</p><h2 id="sectionCount">0 sections</h2></div>
+          </div>
+          <div id="sectionList" class="section-list"></div>
+        </section>
+
+        <section class="panel preview-panel">
+          <div class="panel-heading">
+            <div><p class="panel-label">Markdown preview</p><h2>Generated artifact</h2></div>
+            <div class="button-row">
+              <button id="copyButton" class="small-button" disabled>Copy</button>
+              <button id="downloadButton" class="small-button" disabled>Download .md</button>
+            </div>
+          </div>
+          <pre id="markdownPreview">Add at least one saved lab run, then generate the report.</pre>
+        </section>
+
+        <section class="boundary">
+          <strong>Report boundary</strong>
+          <p>This tool only summarizes data already stored by Ballzatram browser labs plus text you type here. It does not call AI, fetch new facts, or create unsupported research conclusions.</p>
+        </section>
+      </section>
+    </div>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>
