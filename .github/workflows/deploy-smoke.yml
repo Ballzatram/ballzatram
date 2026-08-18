@@ -16,5 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Prepare non-secret production env stub
+        run: cp .env.example .env.production
       - name: Validate production compose
-        run: docker compose --env-file .env.example -f docker-compose.prod.yml config -q
+        run: docker compose --env-file .env.production -f docker-compose.prod.yml config -q
