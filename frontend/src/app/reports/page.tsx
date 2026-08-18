@@ -1,6 +1,5 @@
-import { WorkflowPage } from "@/components/WorkflowPage";
-import { workflowBySlug } from "@/lib/workflows";
+import { ReportComposer } from "@/components/ReportComposer";
 
 export default function Page() {
-  return <WorkflowPage workflow={workflowBySlug["reports"]} />;
+  return <ReportComposer />;
 }

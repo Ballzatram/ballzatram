@@ -4,30 +4,27 @@ from datetime import date
 
 
 def render_markdown(title: str, findings: list[str], scenario_outcomes: dict[str, float]) -> str:
-    lines = [
-        f"# {title}",
-        f"Generated: {date.today().isoformat()}",
-        "",
-        "## Executive Summary",
-        *(f"- {x}" for x in findings[:5]),
-        "",
-        "## Methodology",
-        "- Multi-model workflow: OLS, regularized linear models, tree importance, and regime clustering.",
-        "- Event analysis uses abnormal returns and cumulative abnormal returns (CAR).",
-        "",
-        "## Key Drivers",
-        "- Real rates, inflation, and credit spread proxies are primary explanatory factors in demo runs.",
-        "",
-        "## Risk Exposures",
-        "- Portfolio drawdown sensitivity is highest to rates and credit shocks under baseline coefficients.",
-        "",
-        "## Scenario Outcomes",
-    ]
-    lines.extend([f"- {k}: {v:.2%}" for k, v in scenario_outcomes.items()] or ["- No scenarios submitted."])
+    """Render only user/tool-supplied report content.
+
+    The previous renderer inserted canned methodology, drivers, and risk text even
+    when the underlying analysis had not produced those findings. Reports are now
+    deliberately conservative: if a section was not supplied by a real tool run,
+    it is not invented here.
+    """
+    lines = [f"# {title}", f"Generated: {date.today().isoformat()}", ""]
+
+    if findings:
+        lines.extend(["## Findings", *(f"- {item}" for item in findings), ""])
+    else:
+        lines.extend(["## Findings", "- No findings were supplied.", ""])
+
+    if scenario_outcomes:
+        lines.append("## Scenario Outcomes")
+        lines.extend(f"- {name}: {value:.2%}" for name, value in scenario_outcomes.items())
+        lines.append("")
+
     lines.extend([
-        "",
-        "## Caveats",
-        "- Correlation does not establish causation.",
-        "- Backtests may not generalize across structural breaks.",
+        "## Report Boundary",
+        "- This artifact contains only supplied analysis outputs and their attached context; it does not add unstated research conclusions.",
     ])
     return "\n".join(lines)
