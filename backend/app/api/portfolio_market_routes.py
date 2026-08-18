@@ -68,7 +68,7 @@ def analyze_market_portfolio(req: MarketPortfolioAnalysisRequest):
             response = provider.get_price_series(holding.symbol, range=req.range, interval="1d")
             returns = daily_returns(_prices(response))
             if len(returns) < 2:
-                raise ProviderError("portfolio", f"Not enough usable observations for {holding.symbol}")
+                raise ProviderError(f"Not enough usable observations for {holding.symbol}", provider="portfolio")
             successful.append((holding, response, returns))
         except ProviderError as exc:
             failures.append({"symbol": holding.symbol, "weight": holding.weight, "message": str(exc), "provider": exc.provider})
