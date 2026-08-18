@@ -17,7 +17,6 @@
     };
   }
 
-  // Fix the known title mismatch and make all future scenario additions safe.
   if (scenarioCoaches["Soup-Price Jump Scare"] && !scenarioCoaches["Soup Price Meteor"]) {
     scenarioCoaches["Soup Price Meteor"] = scenarioCoaches["Soup-Price Jump Scare"];
   }
@@ -63,11 +62,7 @@
     const scoreMatch = document.getElementById("endingScore")?.textContent?.match(/Final score:\s*(\d+)/i);
     const finalScore = scoreMatch ? Number(scoreMatch[1]) : calculateScore();
     const run = {
-      at: new Date().toISOString(),
-      campaign,
-      mode: state.mode,
-      ending: title,
-      score: finalScore,
+      at: new Date().toISOString(), campaign, mode: state.mode, ending: title, score: finalScore,
       inflation: Number(state.metrics.inflation.toFixed(1)),
       unemployment: Number(state.metrics.unemployment.toFixed(1)),
       growth: Number(state.metrics.gdpGrowth.toFixed(1)),
@@ -88,18 +83,8 @@
       document.querySelector(".ending-card .action-row")?.before(card);
     }
     const delta = previous ? current.score - previous.score : null;
-    const topActions = Object.entries(current.actionMix)
-      .sort((a, b) => b[1] - a[1])
-      .slice(0, 3)
-      .map(([name, count]) => `${name} ×${count}`)
-      .join(" · ") || "No policy actions recorded";
-    card.innerHTML = `
-      <h3>Run comparison</h3>
-      <p><strong>${current.campaign === "crisis" ? "Shuffled crisis deck" : "Guided curriculum"}</strong> · ${current.mode} mode · ${current.ending}</p>
-      <p>Score ${current.score}${delta == null ? " · first recorded V3 run" : ` · ${delta >= 0 ? "+" : ""}${delta} vs previous run`}</p>
-      <p>Final: inflation ${current.inflation}% · unemployment ${current.unemployment}% · GDP ${current.growth}% · bank stability ${current.bankStability}/100</p>
-      <p>Policy mix: ${topActions}</p>
-    `;
+    const topActions = Object.entries(current.actionMix).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([name, count]) => `${name} ×${count}`).join(" · ") || "No policy actions recorded";
+    card.innerHTML = `<h3>Run comparison</h3><p><strong>${current.campaign === "crisis" ? "Shuffled crisis deck" : "Guided curriculum"}</strong> · ${current.mode} mode · ${current.ending}</p><p>Score ${current.score}${delta == null ? " · first recorded V3 run" : ` · ${delta >= 0 ? "+" : ""}${delta} vs previous run`}</p><p>Final: inflation ${current.inflation}% · unemployment ${current.unemployment}% · GDP ${current.growth}% · bank stability ${current.bankStability}/100</p><p>Policy mix: ${topActions}</p>`;
   }
 
   function renderRecentRunPreview() {
@@ -111,51 +96,30 @@
       preview.className = "mode-details";
       document.getElementById("startGame")?.before(preview);
     }
-    preview.textContent = latest
-      ? `Last run: ${latest.ending} · score ${latest.score} · ${latest.campaign === "crisis" ? "shuffled crisis" : "guided"} · ${latest.mode} mode.`
-      : "No V3 term recorded yet. Finish a run to unlock comparison notes.";
+    preview.textContent = latest ? `Last run: ${latest.ending} · score ${latest.score} · ${latest.campaign === "crisis" ? "shuffled crisis" : "guided"} · ${latest.mode} mode.` : "No V3 term recorded yet. Finish a run to unlock comparison notes.";
   }
 
   function injectCampaignPicker() {
     const setup = document.getElementById("setupPanel");
     const modeGrid = setup?.querySelector(".mode-grid");
     if (!setup || !modeGrid || document.getElementById("campaignPickerV3")) return;
-
     const wrapper = document.createElement("div");
     wrapper.id = "campaignPickerV3";
-    wrapper.innerHTML = `
-      <div style="margin-top:1.25rem">
-        <p class="eyebrow">Run structure</p>
-        <h3 style="margin:.35rem 0 .65rem">Choose the crisis deck</h3>
-        <div class="mode-grid" role="radiogroup" aria-label="Campaign structure">
-          <button type="button" class="mode-card ${campaign === "guided" ? "active" : ""}" data-campaign="guided" aria-pressed="${campaign === "guided"}">
-            <strong>Guided Curriculum</strong><span>Fixed sequence designed to teach the policy toolkit progressively.</span>
-          </button>
-          <button type="button" class="mode-card ${campaign === "crisis" ? "active" : ""}" data-campaign="crisis" aria-pressed="${campaign === "crisis"}">
-            <strong>Shuffled Crisis Deck</strong><span>Same economics, unpredictable order. Diagnose before acting.</span>
-          </button>
-        </div>
-      </div>`;
+    wrapper.innerHTML = `<div style="margin-top:1.25rem"><p class="eyebrow">Run structure</p><h3 style="margin:.35rem 0 .65rem">Choose the crisis deck</h3><div class="mode-grid" role="radiogroup" aria-label="Campaign structure"><button type="button" class="mode-card ${campaign === "guided" ? "active" : ""}" data-campaign="guided" aria-pressed="${campaign === "guided"}"><strong>Guided Curriculum</strong><span>Fixed sequence designed to teach the policy toolkit progressively.</span></button><button type="button" class="mode-card ${campaign === "crisis" ? "active" : ""}" data-campaign="crisis" aria-pressed="${campaign === "crisis"}"><strong>Shuffled Crisis Deck</strong><span>Same economics, unpredictable order. Diagnose before acting.</span></button></div></div>`;
     modeGrid.after(wrapper);
-
-    wrapper.querySelectorAll("[data-campaign]").forEach((button) => {
-      button.addEventListener("click", () => {
-        campaign = button.dataset.campaign;
-        wrapper.querySelectorAll("[data-campaign]").forEach((candidate) => {
-          const active = candidate.dataset.campaign === campaign;
-          candidate.classList.toggle("active", active);
-          candidate.setAttribute("aria-pressed", String(active));
-        });
+    wrapper.querySelectorAll("[data-campaign]").forEach((button) => button.addEventListener("click", () => {
+      campaign = button.dataset.campaign;
+      wrapper.querySelectorAll("[data-campaign]").forEach((candidate) => {
+        const active = candidate.dataset.campaign === campaign;
+        candidate.classList.toggle("active", active);
+        candidate.setAttribute("aria-pressed", String(active));
       });
-    });
+    }));
   }
 
-  // Capture runs before the original start handler consumes scenario 0.
   document.getElementById("startGame")?.addEventListener("click", prepareCampaign, true);
   document.getElementById("playAgain")?.addEventListener("click", prepareCampaign, true);
   document.getElementById("restartGame")?.addEventListener("click", () => { actionMix = {}; }, true);
-
-  // Count actual policy choices without touching the deterministic action engine.
   document.addEventListener("click", (event) => {
     const button = event.target.closest?.(".action-button");
     if (!button) return;
@@ -164,17 +128,20 @@
   });
 
   const modal = document.getElementById("endingModal");
-  if (modal) {
-    new MutationObserver(() => {
-      const visible = !modal.classList.contains("hidden");
-      if (visible && !endingObserved) {
-        endingObserved = true;
-        saveRun();
-      }
-      if (!visible) endingObserved = false;
-    }).observe(modal, { attributes: true, attributeFilter: ["class"] });
-  }
+  if (modal) new MutationObserver(() => {
+    const visible = !modal.classList.contains("hidden");
+    if (visible && !endingObserved) { endingObserved = true; saveRun(); }
+    if (!visible) endingObserved = false;
+  }).observe(modal, { attributes: true, attributeFilter: ["class"] });
 
   injectCampaignPicker();
   renderRecentRunPreview();
 })();
+
+// Phase 2 is loaded here so the original static HTML does not need another script tag.
+if (!document.querySelector('script[data-central-bank-mastery-v3]')) {
+  const masteryScript = document.createElement("script");
+  masteryScript.src = "central-bank-mastery-v3.js";
+  masteryScript.dataset.centralBankMasteryV3 = "true";
+  document.body.appendChild(masteryScript);
+}
