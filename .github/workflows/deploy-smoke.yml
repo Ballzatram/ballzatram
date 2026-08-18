@@ -1,0 +1,22 @@
+name: Deployment workflow smoke
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - '.github/workflows/deploy.yml'
+      - 'docker-compose.prod.yml'
+      - 'deploy/caddy/Caddyfile'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-deploy-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare non-secret production env stub
+        run: cp .env.example .env.production
+      - name: Validate production compose
+        run: docker compose --env-file .env.production -f docker-compose.prod.yml config -q
