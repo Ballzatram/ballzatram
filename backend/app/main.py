@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.routes import router
 from app.api.stock_market_routes import router as stock_market_router
+from app.api.portfolio_market_routes import router as portfolio_market_router
 
 app = FastAPI(title="Quant Library Analytics API", version="0.1.0")
 app.add_middleware(
@@ -17,6 +18,7 @@ app.add_middleware(
 )
 app.include_router(router, prefix="/api")
 app.include_router(stock_market_router, prefix="/api")
+app.include_router(portfolio_market_router, prefix="/api")
 
 @app.get("/health")
 def health():
