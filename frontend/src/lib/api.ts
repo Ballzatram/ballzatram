@@ -36,6 +36,39 @@ export type MarketStockAnalysisResponse = {
   benchmarkFreshness: DataFreshness;
   warnings: string[];
 };
+export type MarketPortfolioAnalysisResponse = {
+  status: "complete" | "partial_success";
+  benchmark: string;
+  range: MarketStockAnalysisResponse["range"];
+  requestedWeightTotal: number;
+  analyzedWeightTotal: number;
+  metrics: {
+    cumulativeReturn: number;
+    annualizedReturn: number;
+    annualizedVolatility: number;
+    maxDrawdown: number;
+    betaVsBenchmark: number | null;
+    correlationVsBenchmark: number | null;
+    benchmarkCumulativeReturn: number | null;
+    topHoldingWeight: number;
+    effectivePositions: number;
+  };
+  holdings: Array<{
+    symbol: string;
+    name: string;
+    requestedWeight: number;
+    normalizedWeight: number;
+    annualizedVolatility: number | null;
+    cumulativeReturn: number | null;
+    riskContribution: number | null;
+    freshness: DataFreshness;
+  }>;
+  correlationMatrix: { columns: string[]; matrix: Array<Array<number | null>> };
+  benchmarkFreshness: DataFreshness | null;
+  errors: Array<{ symbol: string; weight: number; message: string; provider: string }>;
+  warnings: string[];
+  scenarioPayload: { holdings: Record<string, number> };
+};
 export type MetricExplanation = {
   name: string;
   shortExplanation: string;
@@ -130,6 +163,8 @@ export const api = {
   stock: (body: unknown) => req<unknown>("/analyze/stock", { method: "POST", body: JSON.stringify(body) }),
   marketStock: (body: { symbol: string; benchmark?: string; range?: MarketStockAnalysisResponse["range"] }) =>
     req<MarketStockAnalysisResponse>("/analyze/stock/market", { method: "POST", body: JSON.stringify(body) }),
+  marketPortfolio: (body: { holdings: Array<{ symbol: string; weight: number }>; benchmark?: string; range?: MarketPortfolioAnalysisResponse["range"] }) =>
+    req<MarketPortfolioAnalysisResponse>("/analyze/portfolio/market", { method: "POST", body: JSON.stringify(body) }),
   scenario: (body: unknown) => req<unknown>("/analyze/portfolio/scenario", { method: "POST", body: JSON.stringify(body) }),
   eventStudy: (body: unknown) => req<unknown>("/analyze/event-study", { method: "POST", body: JSON.stringify(body) }),
   quantLibraryAnalyticsDemo: (symbols: string[] = ["SPY", "QQQ", "TLT"], benchmark = "SPY", universeId = "major-us-indices") => {
