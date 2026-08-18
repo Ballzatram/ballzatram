@@ -1,0 +1,7 @@
+name = "ballzatram-ai-bridge"
+main = "worker.js"
+compatibility_date = "2026-08-18"
+
+[vars]
+OPENAI_MODEL = "gpt-5-mini"
+ALLOWED_ORIGINS = "https://ballzatram.com,https://www.ballzatram.com"
