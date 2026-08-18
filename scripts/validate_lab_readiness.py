@@ -51,6 +51,17 @@ STATUSES = {
     "Retired",
 }
 
+# The machine taxonomy above remains canonical. These aliases are deliberate
+# presentation labels used by the public inventory and must map to a canonical
+# status instead of silently expanding the taxonomy.
+INVENTORY_STATUS_ALIASES = {
+    "Under Review": "Paper Mode",
+    "Playable Oddity": "Playable",
+    "Playable Archive": "Playable",
+    "Prototype Relic": "Prototype",
+    "Back Issue": "Prototype",
+}
+
 CATEGORIES = {
     "Tool",
     "Game",
@@ -111,8 +122,9 @@ def validate_inventory(failures: list[str]) -> None:
         missing = INVENTORY_FIELDS - set(item)
         if missing:
             add_failure(failures, f"Inventory item {item.get('id', index)} missing fields: {sorted(missing)}")
-        if item.get("status") not in STATUSES:
-            add_failure(failures, f"Inventory item {item.get('id', index)} has invalid status: {item.get('status')}")
+        status = item.get("status")
+        if status not in STATUSES and status not in INVENTORY_STATUS_ALIASES:
+            add_failure(failures, f"Inventory item {item.get('id', index)} has invalid status: {status}")
         if item.get("category") not in CATEGORIES:
             add_failure(failures, f"Inventory item {item.get('id', index)} has invalid category: {item.get('category')}")
         if item.get("riskLevel") not in RISK_LEVELS:
@@ -133,6 +145,10 @@ def validate_status_taxonomy(failures: list[str]) -> None:
     labels = {item.get("label") for item in taxonomy if isinstance(item, dict)}
     if labels != STATUSES:
         add_failure(failures, f"Status taxonomy labels do not match expected labels: {sorted(labels)}")
+
+    invalid_alias_targets = set(INVENTORY_STATUS_ALIASES.values()) - STATUSES
+    if invalid_alias_targets:
+        add_failure(failures, f"Inventory status aliases map to unknown canonical statuses: {sorted(invalid_alias_targets)}")
 
     for item in taxonomy:
         if not isinstance(item, dict):
