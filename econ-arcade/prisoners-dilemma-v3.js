@@ -1,7 +1,36 @@
 (() => {
   const SEED_KEY = "pd-seed-v3";
+  const PROGRESS_KEY = "ballzatram:econ-progress:v1";
   let seed = Number(localStorage.getItem(SEED_KEY) || 424242) >>> 0;
   let rngState = seed || 1;
+  let attemptRecorded = false;
+  let completionRecorded = false;
+
+  function recordArcadeProgress(completed, score, outcome) {
+    let store;
+    try {
+      store = JSON.parse(localStorage.getItem(PROGRESS_KEY) || "null");
+    } catch {
+      store = null;
+    }
+    if (!store || store.version !== 1 || typeof store.games !== "object") store = { version: 1, games: {} };
+    const gameId = "prisoners-dilemma-arena";
+    const previous = store.games[gameId];
+    const concepts = Array.from(new Set([...(previous?.concepts || []), "repeated games", "cooperation", "retaliation", "continuation value"]));
+    store.games[gameId] = {
+      status: completed || previous?.status === "completed" ? "completed" : "attempted",
+      attempts: (previous?.attempts || 0) + (!attemptRecorded ? 1 : 0),
+      completions: (previous?.completions || 0) + (completed ? 1 : 0),
+      bestScore: Number.isFinite(score) ? Math.max(previous?.bestScore ?? score, score) : previous?.bestScore,
+      lastScore: Number.isFinite(score) ? score : previous?.lastScore,
+      lastOutcome: outcome || previous?.lastOutcome,
+      concepts,
+      updatedAt: new Date().toISOString(),
+    };
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(store));
+    window.dispatchEvent(new CustomEvent("ballzatram:econ-progress", { detail: store }));
+    attemptRecorded = true;
+  }
 
   function seededRandom() {
     rngState += 0x6D2B79F5;
@@ -11,14 +40,13 @@
     return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
   }
 
-  // This page is a self-contained simulation, so replacing Math.random here makes
-  // stochastic opponent archetypes reproducible without affecting the rest of Ballzatram.
   Math.random = seededRandom;
 
   function resetSeed(nextSeed = seed) {
     seed = (Number(nextSeed) || 1) >>> 0;
     rngState = seed;
     localStorage.setItem(SEED_KEY, String(seed));
+    completionRecorded = false;
   }
 
   function discountedTotals() {
@@ -94,10 +122,16 @@
       `δ=${state.discount.toFixed(2)} creates a ${horizon} effective horizon. Later-round payoffs are weighted by δ^t: ` +
       `a payoff in round ${Math.max(2, state.history.length || 2)} is worth ${Math.pow(state.discount, Math.max(1, (state.history.length || 2) - 1)).toFixed(2)} times its immediate value. ` +
       `Retaliations observed: ${metrics.retaliation}; forgiveness moves: ${metrics.forgiveness}.`;
+
+    if (state.history.length > 0 && !attemptRecorded) {
+      recordArcadeProgress(false, discounted.user, `Match vs ${state.agent.name}`);
+    }
+    if (state.history.length >= state.maxRounds && !completionRecorded) {
+      completionRecorded = true;
+      recordArcadeProgress(true, discounted.user, `Completed vs ${state.agent.name}`);
+    }
   }
 
-  // Existing game functions stay authoritative; this layer recalculates the repeated-game
-  // valuation after the original render/update cycle.
   [el.cooperateButton, el.defectButton].forEach((button) => button?.addEventListener("click", () => queueMicrotask(renderV3)));
   el.resetButton?.addEventListener("click", () => { resetSeed(seed); queueMicrotask(renderV3); });
   el.agentSelect?.addEventListener("change", () => { resetSeed(seed); queueMicrotask(renderV3); });
