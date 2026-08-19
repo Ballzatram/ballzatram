@@ -61,8 +61,10 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
-      - name: Validate static game and tool JavaScript
-        run: find games econ-arcade tools -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Validate static game, tool, and bridge JavaScript
+        run: |
+          find games econ-arcade tools -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+          node --check ai-bridge/worker.js
 
       - name: Build frontend
         working-directory: frontend
