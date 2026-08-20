@@ -1,91 +1,122 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b1020">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Econ Arcade">
-<link rel="manifest" href="manifest.webmanifest">
-<title>Osiris · Econ Arcade Playtest</title>
-<style>
-:root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color-scheme:dark;--bg:#080b14;--panel:#111728;--line:#26314c;--muted:#9aa8c5;--gold:#f4cf50;--cyan:#63d7ff;--good:#6fe3a1;--bad:#ff7a8b}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at top,#182442 0,#080b14 44%);color:#f7f9ff;min-height:100vh}.shell{max-width:980px;margin:auto;padding:calc(18px + env(safe-area-inset-top)) 16px calc(36px + env(safe-area-inset-bottom))}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:16px}.brand small,.muted{color:var(--muted)}.brand strong{display:block;font-size:20px}.pill{border:1px solid var(--line);background:#0d1322;border-radius:999px;padding:8px 11px;font-size:12px}.hero,.card{background:linear-gradient(180deg,rgba(24,34,59,.96),rgba(13,18,31,.96));border:1px solid var(--line);border-radius:22px;box-shadow:0 18px 60px rgba(0,0,0,.24)}.hero{padding:22px;margin-bottom:14px}.kicker{text-transform:uppercase;letter-spacing:.16em;font-size:11px;color:var(--cyan);font-weight:800}.hero h1{font-size:clamp(34px,9vw,64px);line-height:.95;margin:8px 0 12px}.hero p{color:#cad4ea;max-width:720px;line-height:1.55}.osiris{border-left:4px solid var(--gold)}.osiris strong{color:var(--gold)}.tabs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.tabs button,.btn{appearance:none;border:1px solid var(--line);background:#121a2d;color:#eef3ff;border-radius:14px;padding:12px;font-weight:800;cursor:pointer}.tabs button.active,.btn.primary{background:var(--gold);color:#15120a;border-color:transparent}.btn.secondary{background:#17213a}.btn.good{background:#173927;border-color:#2c6547}.btn.bad{background:#401d27;border-color:#743342}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.card{padding:17px}.stat{font-size:30px;font-weight:900;margin-top:3px}.label{font-size:12px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}.section{display:none}.section.active{display:block}.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:12px 0}.control label{display:block;color:var(--muted);font-size:12px;margin-bottom:6px}input,select,textarea{width:100%;border:1px solid var(--line);background:#090f1d;color:white;padding:12px;border-radius:12px;font:inherit}textarea{min-height:88px;resize:vertical}.bar{height:8px;border-radius:99px;background:#090e19;overflow:hidden;margin-top:6px}.bar>i{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--gold));border-radius:inherit}.list{display:grid;gap:8px;margin-top:10px}.row{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid #1e2840}.callout{padding:14px;border:1px dashed #445270;border-radius:15px;background:#0b1221}.game-title{display:flex;justify-content:space-between;gap:12px;align-items:start;margin-bottom:10px}.game-title h2{margin:0}.actions{display:flex;gap:9px;flex-wrap:wrap}.actions .btn{flex:1;min-width:120px}.hidden{display:none!important}.result{margin-top:12px}.relationship{font-size:12px;color:var(--cyan);text-transform:uppercase;letter-spacing:.12em}.footer{margin-top:18px;text-align:center;color:var(--muted);font-size:12px}.footer a{color:#dce7ff}@media(max-width:680px){.grid,.controls{grid-template-columns:1fr}.tabs{grid-template-columns:repeat(2,1fr)}.hero{padding:18px}.stat{font-size:26px}.top{align-items:flex-start}.pill{font-size:11px}}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#09111d">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Econ Arcade">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="world.css">
+  <title>Osiris · Econ Arcade</title>
 </head>
 <body>
-<div class="shell">
-  <div class="top"><div class="brand"><small>Ballzatram · mobile playtest</small><strong>Osiris / Econ Arcade</strong></div><div class="pill" id="rankPill">Rank 1 · Observer</div></div>
-  <section class="hero">
-    <div class="kicker">A world of games that learns how you think</div>
-    <h1>Econ Arcade</h1>
-    <p>Economics should feel like making consequential choices, not memorizing apples-and-oranges examples. Play first. Discover the mechanism. Let Osiris decide what should challenge you next.</p>
-  </section>
-  <div class="tabs"><button data-tab="arcade" class="active">Osiris</button><button data-tab="lemon">Lemon Empire</button><button data-tab="banker">Central Banker</button><button data-tab="dilemma">Dilemma</button></div>
+<div class="sky"></div>
+<div class="app-shell">
+  <header class="topbar">
+    <button class="ghost icon" id="homeBtn" aria-label="Return to map">✦</button>
+    <div class="brand"><small>Ballzatram presents</small><strong>ECON ARCADE</strong></div>
+    <div class="chapter-badge" id="rankBadge">Wanderer</div>
+  </header>
 
-  <section id="arcade" class="section active">
-    <div class="card osiris"><strong>Osiris</strong><p id="metaMessage">I’m building a model of how you think. Give me a few decisions and I’ll start choosing your next challenge.</p></div>
-    <div class="grid" style="margin-top:12px">
-      <div class="card"><div class="label">Next challenge</div><div class="stat" id="nextGame">Lemon Empire</div><p class="muted" id="nextReason">Start with markets: price something, observe demand, and form a theory.</p><button class="btn primary" id="enterChallenge">Enter challenge</button></div>
-      <div class="card"><div class="label">Economic cognition</div><div class="list" id="domainBars"></div></div>
-    </div>
-    <div class="grid" style="margin-top:12px"><div class="card"><div class="label">Strongest signals</div><div id="strengths" class="list"></div></div><div class="card"><div class="label">Gaps Osiris sees</div><div id="gaps" class="list"></div></div></div>
-  </section>
+  <main>
+    <section id="world" class="screen active">
+      <div class="world-hero">
+        <div class="moon"></div>
+        <div class="kicker">The city of Meridian</div>
+        <h1>Every choice<br>leaves a mark.</h1>
+        <p>Three districts. Three kinds of power. One companion watching how you think.</p>
+      </div>
 
-  <section id="lemon" class="section">
-    <div class="game-title"><div><div class="kicker">Microeconomics · entrepreneurship</div><h2>Lemon Empire</h2></div><div class="pill" id="lemonCash">$20.00</div></div>
-    <div class="card osiris"><strong>Osiris</strong><p id="lemonOsiris">Turn $20 into an empire. I care less about winning than whether you can explain why a decision worked.</p></div>
-    <div class="callout" style="margin-top:12px"><strong id="lemonEventTitle">A normal summer day</strong><div class="muted" id="lemonEventBody">Demand is steady. This is a clean experiment.</div></div>
-    <div class="controls"><div class="control"><label>Price per cup</label><input id="lemonPrice" type="number" value="2" step=".25" min=".25"></div><div class="control"><label>Cups to make</label><input id="lemonUnits" type="number" value="60" step="1" min="0"></div><div class="control"><label>Marketing spend</label><input id="lemonMarketing" type="number" value="0" step="1" min="0"></div></div>
-    <button class="btn primary" id="runLemon">Run the day</button>
-    <div class="grid result hidden" id="lemonResult"><div class="card"><div class="label">Demand</div><div class="stat" id="lDemand">—</div></div><div class="card"><div class="label">Profit</div><div class="stat" id="lProfit">—</div></div><div class="card"><div class="label">Sold</div><div class="stat" id="lSold">—</div></div><div class="card"><div class="label">Unsold</div><div class="stat" id="lUnsold">—</div></div></div>
-  </section>
+      <article class="dialogue osiris-card">
+        <div class="portrait osiris-mark">O</div>
+        <div><div class="speaker">Osiris</div><p id="worldOsiris">You can read economics in a book. Or you can walk into a world where it pushes back. I prefer the second way.</p></div>
+      </article>
 
-  <section id="banker" class="section">
-    <div class="game-title"><div><div class="kicker">Macroeconomics · systems</div><h2>Central Banker</h2></div><div class="pill" id="cbScore">Mandate 72</div></div>
-    <div class="card osiris"><strong>Osiris</strong><p id="cbOsiris">The economy reacts with lags. Markets react immediately. Your job is to know the difference.</p></div>
-    <div class="grid" style="margin-top:12px"><div class="card"><div class="label">Inflation</div><div class="stat" id="cbInflation">3.4%</div></div><div class="card"><div class="label">Unemployment</div><div class="stat" id="cbUnemployment">4.4%</div></div><div class="card"><div class="label">Growth</div><div class="stat" id="cbGrowth">2.1%</div></div><div class="card"><div class="label">Credibility</div><div class="stat" id="cbCredibility">72%</div></div></div>
-    <div class="callout" style="margin-top:12px"><strong id="cbShockTitle">Policy briefing</strong><div class="muted" id="cbShockBody">No new shock yet. Decide how you want to position policy.</div></div>
-    <div class="controls"><div class="control"><label>Policy rate</label><input id="cbRate" type="number" value="4.25" min="0" max="20" step=".25"></div><div class="control"><label>Forward guidance</label><select id="cbGuidance"><option>neutral</option><option>hawkish</option><option>dovish</option></select></div><div class="control"><label>Your inflation forecast</label><input id="cbForecast" type="number" value="3.0" step=".1"></div></div>
-    <textarea id="cbStatement" placeholder="Optional policy statement: what are you trying to accomplish?"></textarea><button class="btn primary" id="runCB" style="margin-top:10px">Make policy decision</button>
-    <div class="grid result hidden" id="cbResult"><div class="card"><div class="label">2Y market rate</div><div class="stat" id="cb2y">—</div></div><div class="card"><div class="label">Equities</div><div class="stat" id="cbEq">—</div></div></div>
-  </section>
+      <section class="mission-card" id="missionCard">
+        <div class="mission-top"><span>OSIRIS // NEXT THREAD</span><span id="missionUrgency">NEW</span></div>
+        <h2 id="missionTitle">Market Row</h2>
+        <p id="missionReason">Start small. Twenty dollars, a battered cart, and a street full of people who owe you nothing.</p>
+        <button class="primary" id="missionBtn">Follow the thread →</button>
+      </section>
 
-  <section id="dilemma" class="section">
-    <div class="game-title"><div><div class="kicker">Game theory · relationships</div><h2>Prisoner’s Dilemma</h2></div><div class="pill" id="pdScore">0 – 0</div></div>
-    <div class="card osiris"><strong>Osiris</strong><p id="pdOsiris">A one-round win can be a long-run loss. Meet people who remember.</p></div>
-    <div class="controls"><div class="control"><label>Opponent</label><select id="pdOpponent"><option value="mara">Mara Voss</option><option value="cassian">Cassian Vale</option><option value="iona">Iona Reed</option><option value="felix">Felix North</option></select></div><div class="control"><label>Promise before round</label><select id="pdPromise"><option value="none">Make no promise</option><option value="cooperate">Promise cooperation</option><option value="defect">Threaten defection</option></select></div><div class="control"><label>Relationship</label><div class="stat" id="pdRelationship">Unknown</div></div></div>
-    <div class="callout"><div class="relationship" id="pdName">Mara Voss</div><strong id="pdBio">Patient, observant, and slow to forget.</strong><p id="pdDialogue">“I’m willing to start clean. What you do next matters more than what you say.”</p></div>
-    <div class="actions" style="margin-top:12px"><button class="btn good" id="pdCoop">Cooperate</button><button class="btn bad" id="pdDefect">Defect</button></div>
-    <div class="grid result hidden" id="pdResult"><div class="card"><div class="label">Trust</div><div class="stat" id="pdTrust">50%</div></div><div class="card"><div class="label">Reputation</div><div class="stat" id="pdRep">50%</div></div></div>
-  </section>
+      <div class="district-label">MERIDIAN</div>
+      <section class="districts">
+        <button class="district market" data-go="lemon">
+          <span class="district-number">01</span><span class="district-icon">🍋</span>
+          <strong>Market Row</strong><small>Lemon Empire</small><em id="marketStatus">A cart waits under the old clocktower.</em>
+        </button>
+        <button class="district bank" data-go="banker">
+          <span class="district-number">02</span><span class="district-icon">🏛️</span>
+          <strong>The Heights</strong><small>Central Banker</small><em id="bankStatus">The Republic is watching the next rate decision.</em>
+        </button>
+        <button class="district docks" data-go="dilemma">
+          <span class="district-number">03</span><span class="district-icon">⚓</span>
+          <strong>Low Harbor</strong><small>The Dilemma</small><em id="dockStatus">Promises travel faster than ships here.</em>
+        </button>
+      </section>
 
-  <div class="footer">Phone playtest · progress stays on this device · <a href="../index.html">back to Econ Arcade</a><br>For the full Osiris AI layer, the production app will use the server-side model so API credentials never live in the browser.</div>
+      <section class="notebook">
+        <div class="notebook-head"><span>OSIRIS'S NOTEBOOK</span><button class="ghost small" id="toggleNotebook">open</button></div>
+        <div id="notebookBody" class="hidden">
+          <p class="muted">I keep the scores to myself. You get the useful part.</p>
+          <div class="two-col"><div><h3>Instincts I trust</h3><div id="strengthList"></div></div><div><h3>Patterns I want to test</h3><div id="gapList"></div></div></div>
+        </div>
+      </section>
+    </section>
+
+    <section id="lemon" class="screen">
+      <div class="scene market-scene">
+        <button class="back ghost" data-go="world">← Meridian</button>
+        <div class="scene-copy"><div class="kicker">MARKET ROW · CHAPTER <span id="lemonChapter">1</span></div><h1>Lemon Empire</h1><p id="lemonSceneText">The morning bell rings over Market Row. Your cart leans slightly left. You have $20, sixty paper cups, and exactly zero regular customers.</p></div>
+      </div>
+      <article class="dialogue character"><div class="portrait mina">M</div><div><div class="speaker">Mina Reyes · neighboring florist</div><p id="minaLine">“Theo charges three bucks across the street. He thinks tourists don't look at prices. Prove him wrong.”</p></div></article>
+      <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="lemonGuide">Before we touch a number: what do you think people on this street actually care about?</p></div></article>
+
+      <section class="story-panel">
+        <div class="headline" id="lemonHeadline">THE MERIDIAN MORNING // Clear skies over Market Row</div>
+        <p id="lemonEvent">Foot traffic is normal. Theo's cart is open across the square.</p>
+      </section>
+
+      <section id="lemonDecision" class="decision-card">
+        <div class="step">1 · MAKE A PLAN</div>
+        <div class="controls three"><label>Price per cup<input id="lemonPrice" type="number" value="2" step=".25" min=".25"></label><label>Cups to make<input id="lemonUnits" type="number" value="60" step="1" min="0"></label><label>Promotion spend<input id="lemonMarketing" type="number" value="0" step="1" min="0"></label></div>
+        <div class="prediction"><strong>What do you expect?</strong><select id="lemonPrediction"><option value="sellout">We'll sell out</option><option value="balanced" selected>We'll sell most of it</option><option value="surplus">We'll have lots left</option></select><textarea id="lemonTheory" placeholder="Why? Give Osiris your theory. Even a bad theory is useful."></textarea></div>
+        <button class="primary" id="runLemon">Open the cart</button>
+      </section>
+
+      <section id="lemonOutcome" class="hidden">
+        <article class="consequence"><div class="headline">END OF DAY // MARKET ROW</div><h2 id="lemonOutcomeTitle">The shutters come down.</h2><p id="lemonNarrative"></p><div class="stats"><span><small>Cash</small><strong id="lCash">—</strong></span><span><small>Sold</small><strong id="lSold">—</strong></span><span><small>Left</small><strong id="lUnsold">—</strong></span><span><small>Profit</small><strong id="lProfit">—</strong></span></div></article>
+        <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="lemonQuestion"></p></div></article>
+        <div class="reflection"><div class="step">2 · EXPLAIN WHAT HAPPENED</div><textarea id="lemonReflection" placeholder="What mechanism do you think caused that outcome?"></textarea><button class="primary" id="reflectLemon">Tell Osiris</button></div>
+      </section>
+      <section id="lemonDiscovery" class="discovery hidden"><div class="glyph">◇</div><div><small>IDEA DISCOVERED</small><h2 id="lemonConcept">Price Elasticity</h2><p id="lemonFeedback"></p><button class="primary" id="nextLemon">Next morning →</button></div></section>
+    </section>
+
+    <section id="banker" class="screen">
+      <div class="scene bank-scene"><button class="back ghost" data-go="world">← Meridian</button><div class="scene-copy"><div class="kicker">THE REPUBLIC OF ASTER · QUARTER <span id="bankQuarter">1</span></div><h1>The Mandate</h1><p>The marble halls are quiet before a rate decision. They won't stay that way.</p></div></div>
+      <article class="dialogue character"><div class="portrait lio">L</div><div><div class="speaker">Lio Chen · chief economist</div><p id="lioLine">“Governor, inflation is still above target. The labor market is holding. The problem is that markets already think they know what you'll do.”</p></div></article>
+      <section class="news-grid"><div class="metric"><small>Inflation</small><strong id="bInflation">3.4%</strong></div><div class="metric"><small>Unemployment</small><strong id="bUnemployment">4.4%</strong></div><div class="metric"><small>Growth</small><strong id="bGrowth">2.1%</strong></div><div class="metric"><small>Credibility</small><strong id="bCredibility">72%</strong></div></section>
+      <section class="story-panel"><div class="headline" id="bankHeadline">ASTER WIRE // Markets wait for the governor</div><p id="bankBrief">Two-year yields are steady. Editorials warn against declaring victory too early.</p></section>
+      <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="bankGuide">Your rate changes the economy slowly. Your words can move expectations before lunch. Tell me which one you're trying to move.</p></div></article>
+      <section class="decision-card"><div class="step">1 · SET POLICY</div><div class="controls three"><label>Policy rate<input id="bankRate" type="number" value="4.25" step=".25" min="0" max="20"></label><label>Guidance<select id="bankGuidance"><option value="neutral">Measured</option><option value="hawkish">Hawkish</option><option value="dovish">Dovish</option></select></label><label>Inflation forecast<input id="bankForecast" type="number" value="3.0" step=".1"></label></div><div class="prediction"><strong>What happens next?</strong><select id="bankPrediction"><option value="inflation_down">Inflation falls</option><option value="growth_down">Growth weakens first</option><option value="markets_first" selected>Markets move before the economy</option></select><textarea id="bankTheory" placeholder="What is your policy trying to accomplish, and through what channel?"></textarea></div><button class="primary" id="runBank">Walk to the podium</button></section>
+      <section id="bankOutcome" class="hidden"><article class="consequence"><div class="headline" id="bankAfterHeadline">ASTER WIRE // DECISION HITS THE TAPE</div><h2 id="bankOutcomeTitle"></h2><p id="bankNarrative"></p><div class="stats"><span><small>2Y yield</small><strong id="bYield">—</strong></span><span><small>Equities</small><strong id="bEquity">—</strong></span><span><small>Inflation</small><strong id="bAfterInflation">—</strong></span><span><small>Growth</small><strong id="bAfterGrowth">—</strong></span></div></article><article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="bankQuestion"></p></div></article><div class="reflection"><div class="step">2 · THE PRESS CONFERENCE</div><textarea id="bankReflection" placeholder="A reporter asks why the market moved before inflation did. How do you explain it?"></textarea><button class="primary" id="reflectBank">Answer the room</button></div></section>
+      <section id="bankDiscovery" class="discovery hidden"><div class="glyph">◇</div><div><small>IDEA DISCOVERED</small><h2 id="bankConcept">Policy Lags</h2><p id="bankFeedback"></p><button class="primary" id="nextBank">Next quarter →</button></div></section>
+    </section>
+
+    <section id="dilemma" class="screen">
+      <div class="scene docks-scene"><button class="back ghost" data-go="world">← Meridian</button><div class="scene-copy"><div class="kicker">LOW HARBOR · ENCOUNTER <span id="dilemmaRound">1</span></div><h1>Terms of Trust</h1><p>In Low Harbor, contracts matter. Memory matters more.</p></div></div>
+      <section class="opponent-card"><div class="portrait mara" id="oppPortrait">M</div><div><div class="speaker" id="oppName">Mara Voss</div><h2 id="oppRole">Freight broker. Patient. Dangerous.</h2><p id="oppBio">Mara built her business by remembering every favor and every betrayal.</p><div class="relationship-line"><span id="relationshipLabel">Strangers</span><span id="trustText">Trust uncertain</span></div></div></section>
+      <article class="dialogue character"><div class="portrait mara">M</div><div><div class="speaker" id="oppSpeaker">Mara</div><p id="oppDialogue">“One container. Two manifests. If neither of us talks, we both make money. I can live with that.”</p></div></article>
+      <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris · private channel</div><p id="dilemmaGuide">Don't ask whether cooperation is nice. Ask what the other person expects you to do after today.</p></div></article>
+      <section class="decision-card"><div class="step">1 · CHOOSE WHAT THEY HEAR</div><label>Before the deal<select id="promise"><option value="none">Make no promise</option><option value="cooperate">Promise to honor the deal</option><option value="defect">Warn them you'll protect yourself</option></select></label><div class="prediction"><strong>What do you think they'll do?</strong><select id="oppPrediction"><option value="cooperate">Honor the deal</option><option value="defect">Betray me</option></select><textarea id="dilemmaTheory" placeholder="Why do you trust or distrust them?"></textarea></div><div class="actions"><button class="good" id="cooperate">Honor the deal</button><button class="bad" id="defect">Betray them</button></div></section>
+      <section id="dilemmaOutcome" class="hidden"><article class="consequence"><div class="headline">LOW HARBOR // WORD TRAVELS</div><h2 id="dilemmaOutcomeTitle"></h2><p id="dilemmaNarrative"></p><div class="stats"><span><small>You</small><strong id="dYou">—</strong></span><span><small>Them</small><strong id="dThem">—</strong></span><span><small>Trust</small><strong id="dTrust">—</strong></span><span><small>Reputation</small><strong id="dRep">—</strong></span></div></article><article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="dilemmaQuestion"></p></div></article><div class="reflection"><div class="step">2 · WHAT DID THIS ROUND CHANGE?</div><textarea id="dilemmaReflection" placeholder="Would you make the same choice if you knew you'd meet again tomorrow? Why?"></textarea><button class="primary" id="reflectDilemma">Answer Osiris</button></div></section>
+      <section id="dilemmaDiscovery" class="discovery hidden"><div class="glyph">◇</div><div><small>IDEA DISCOVERED</small><h2 id="dilemmaConcept">Reputation</h2><p id="dilemmaFeedback"></p><button class="primary" id="nextDilemma">Next encounter →</button></div></section>
+    </section>
+  </main>
+  <footer>Experimental build · progress stays on this device · <a href="../index.html">Econ Arcade overview</a></footer>
 </div>
-<script>
-const C={micro:['supply_demand','elasticity','unit_economics','marginal_thinking','opportunity_cost','risk'],macro:['inflation','unemployment','monetary_policy','expectations','policy_lags','tradeoffs'],game:['incentives','cooperation','reciprocity','repeated_games','signaling','reputation']};
-const defaults=()=>({scores:{},lastGame:null,lemon:{day:0,cash:20},cb:{q:0,inflation:3.4,unemployment:4.4,growth:2.1,rate:4.25,expectations:2.8,stress:.15,credibility:.72},pd:{round:0,player:0,opp:0,trust:.5,reputation:.5,playerHistory:[],oppHistory:[],opponent:'mara'}});
-let state=(()=>{try{return Object.assign(defaults(),JSON.parse(localStorage.getItem('osiris-econ-pwa')||'{}'))}catch{return defaults()}})();
-const save=()=>localStorage.setItem('osiris-econ-pwa',JSON.stringify(state));
-const score=k=>Number(state.scores[k]||0); const learn=(k,e,lr=.18)=>{state.scores[k]=Math.max(0,Math.min(1,score(k)+lr*(e-score(k))))};
-const avg=arr=>arr.reduce((a,k)=>a+score(k),0)/arr.length; const pct=v=>`${Math.round(v*100)}%`; const money=v=>`$${Number(v).toFixed(2)}`;
-const gameForDomain=d=>d==='micro'?'lemon':d==='macro'?'banker':'dilemma'; const displayGame=g=>g==='lemon'?'Lemon Empire':g==='banker'?'Central Banker':'Prisoner’s Dilemma';
-function recommend(){let domains=[['micro',avg(C.micro)],['macro',avg(C.macro)],['game',avg(C.game)]];domains.sort((a,b)=>a[1]-b[1]);if(gameForDomain(domains[0][0])===state.lastGame&&domains[1][1]-domains[0][1]<.12)domains=[domains[1],domains[0],domains[2]];let [d,a]=domains[0],keys=C[d].slice().sort((x,y)=>score(x)-score(y)),concept=keys[0],g=gameForDomain(d);let reason=d==='micro'?`Your weakest signal is ${concept.replaceAll('_',' ')}. I want you making prices and watching customers react.`:d==='macro'?`Your weakest macro signal is ${concept.replaceAll('_',' ')}. I want you managing a system where effects arrive at different speeds.`:`Your weakest strategic signal is ${concept.replaceAll('_',' ')}. I want an opponent who can remember what you did.`;return{g,concept,reason}}
-function renderMeta(){let all=[...C.micro,...C.macro,...C.game],broad=all.reduce((a,k)=>a+score(k),0)/all.length,rank=broad>.72?5:broad>.55?4:broad>.38?3:broad>.2?2:1,names=['','Observer','Operator','Strategist','Systems Thinker','Imagineer'];document.getElementById('rankPill').textContent=`Rank ${rank} · ${names[rank]}`;let rec=recommend();document.getElementById('nextGame').textContent=displayGame(rec.g);document.getElementById('nextReason').textContent=rec.reason;document.getElementById('metaMessage').textContent=broad<.08?'I don’t know you yet. Good. Surprise me with a few decisions and I’ll start building your economic profile.':`I’m seeing a pattern. Your next challenge targets ${rec.concept.replaceAll('_',' ')} without turning it into a worksheet.`;document.getElementById('enterChallenge').onclick=()=>switchTab(rec.g);let domains=[['Markets',avg(C.micro)],['Macro systems',avg(C.macro)],['Strategic reasoning',avg(C.game)]];document.getElementById('domainBars').innerHTML=domains.map(([n,v])=>`<div><div class="row"><span>${n}</span><strong>${pct(v)}</strong></div><div class="bar"><i style="width:${pct(v)}"></i></div></div>`).join('');let sorted=all.slice().sort((a,b)=>score(b)-score(a));document.getElementById('strengths').innerHTML=sorted.slice(0,3).map(k=>`<div class="row"><span>${k.replaceAll('_',' ')}</span><strong>${pct(score(k))}</strong></div>`).join('');document.getElementById('gaps').innerHTML=sorted.slice(-3).reverse().map(k=>`<div class="row"><span>${k.replaceAll('_',' ')}</span><strong>${pct(score(k))}</strong></div>`).join('')}
-function switchTab(id){document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('active',x.dataset.tab===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='arcade')renderMeta()}
-document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>switchTab(b.dataset.tab));
-const lemonEvents=[['A normal summer day','Demand is steady. This is a clean experiment.',1,1],['Heat wave','Everyone is thirsty. Demand jumps.',1.35,1],['New competitor','A stand opens across the street at a lower price.',.8,1],['Lemon shortage','Your ingredient cost jumps today.',1,1.55],['Neighborhood festival','Foot traffic surges for one day.',1.45,1]];
-function renderLemonEvent(){let e=lemonEvents[state.lemon.day%lemonEvents.length];document.getElementById('lemonEventTitle').textContent=e[0];document.getElementById('lemonEventBody').textContent=e[1];document.getElementById('lemonCash').textContent=money(state.lemon.cash)}renderLemonEvent();
-document.getElementById('runLemon').onclick=()=>{let p=+document.getElementById('lemonPrice').value,u=+document.getElementById('lemonUnits').value,m=+document.getElementById('lemonMarketing').value,e=lemonEvents[state.lemon.day%lemonEvents.length],cost=.55*e[3],d=Math.max(0,Math.round(80*Math.pow(p/2,-1.25)*e[2]*(1+Math.log1p(m)*.025))),sold=Math.min(u,d),unsold=u-sold,rev=sold*p,total=u*cost+2+m,profit=rev-total;state.lemon.cash=+(state.lemon.cash+profit).toFixed(2);state.lemon.day++;learn('supply_demand',Math.max(.15,1-Math.abs(.85-(u?sold/u:0))));learn('unit_economics',profit>0?.85:.25);learn('elasticity',Math.min(1,.35+Math.abs(p-2)/2));learn('marginal_thinking',Math.max(.15,Math.min(1,(profit/(Math.max(rev,1))+.25)/.75)));state.lastGame='lemon';save();document.getElementById('lDemand').textContent=d;document.getElementById('lSold').textContent=sold;document.getElementById('lUnsold').textContent=unsold;document.getElementById('lProfit').textContent=money(profit);document.getElementById('lemonResult').classList.remove('hidden');document.getElementById('lemonOsiris').textContent=unsold>0?`You made ${unsold} cups nobody bought. Was the mistake price, production, or your belief about demand?`:profit<0?`You brought in ${money(rev)} and spent ${money(total)}. Which decision would you isolate tomorrow?`:`You made ${money(profit)}. Change one major variable tomorrow and predict the result before you run it.`;renderLemonEvent();renderMeta()};
-const shocks=[['Energy shock',.65,-.15,.05],['Credit freeze',.05,-.65,.35],['Productivity boom',-.15,.7,-.05],['Demand surge',.35,.55,.05],['Calm quarter',0,0,0]];
-function renderCB(){let s=state.cb;document.getElementById('cbInflation').textContent=s.inflation.toFixed(1)+'%';document.getElementById('cbUnemployment').textContent=s.unemployment.toFixed(1)+'%';document.getElementById('cbGrowth').textContent=s.growth.toFixed(1)+'%';document.getElementById('cbCredibility').textContent=pct(s.credibility)}renderCB();
-document.getElementById('runCB').onclick=()=>{let s=state.cb,rate=+document.getElementById('cbRate').value,g=document.getElementById('cbGuidance').value,forecast=+document.getElementById('cbForecast').value,sh=shocks[(s.q+1)%shocks.length],anchor=g==='hawkish'?-0.18:g==='dovish'?.18:0,priorStance=(s.rate-s.expectations)-.75,stance=(rate-s.expectations)-.75,exp=Math.max(0,Math.min(10,.72*s.expectations+.28*s.inflation+anchor*(.5+s.credibility))),growth=.58*s.growth+.42*2-.42*priorStance+sh[2]-.45*s.stress,unemp=.78*s.unemployment+.22*4.3+.28*(2-growth),infl=.62*s.inflation+.28*exp+.2+.18*(s.growth-2)-.10*stance+sh[1],stress=Math.max(0,Math.min(1,.7*s.stress+.3*Math.max(0,rate-5)/5+sh[3])),forecastErr=Math.abs(forecast-infl),cred=Math.max(0,Math.min(1,s.credibility+.04*(forecastErr<.5?1:-1)+(g==='neutral'?0:.01))),market2y=rate+.45*(g==='hawkish'?.5:g==='dovish'?-.5:0)+.25*(exp-2),equity=-(rate-s.rate)*2.2-sh[3]*18+sh[2]*4,score=Math.max(0,Math.min(100,100-16*Math.abs(infl-2)-8*Math.abs(unemp-4.3)-7*Math.abs(growth-2)-25*stress));state.cb={q:s.q+1,inflation:+infl.toFixed(2),unemployment:+unemp.toFixed(2),growth:+growth.toFixed(2),rate,expectations:+exp.toFixed(2),stress:+stress.toFixed(3),credibility:+cred.toFixed(3)};learn('monetary_policy',score/100);learn('expectations',Math.max(.2,1-Math.abs(exp-2)/4));learn('policy_lags',Math.min(1,.4+s.q*.07));learn('tradeoffs',score>60?.72:.35);learn('inflation',Math.max(.2,1-Math.abs(infl-2)/4));state.lastGame='banker';save();document.getElementById('cbScore').textContent='Mandate '+Math.round(score);document.getElementById('cb2y').textContent=market2y.toFixed(2)+'%';document.getElementById('cbEq').textContent=(equity>=0?'+':'')+equity.toFixed(1)+'%';document.getElementById('cbResult').classList.remove('hidden');document.getElementById('cbShockTitle').textContent=sh[0];document.getElementById('cbShockBody').textContent=`The shock is now in the data. Your forecast missed inflation by ${forecastErr.toFixed(1)} points.`;document.getElementById('cbOsiris').textContent=Math.abs(rate-s.rate)>=1?`You moved rates aggressively. Which effects should markets price today, and which should take several quarters to reach jobs and inflation?`:Math.abs(exp-2)>.7?`Expectations are ${exp.toFixed(1)}%. What can your words change before the policy rate fully hits the economy?`:`What evidence would make you reverse this decision next quarter?`;renderCB();renderMeta()};
-const people={mara:{name:'Mara Voss',bio:'Patient, observant, and slow to forget.',strategy:'tft'},cassian:{name:'Cassian Vale',bio:'Charming, opportunistic, and always counting the upside.',strategy:'greedy'},iona:{name:'Iona Reed',bio:'Principled. Rewards consistency and punishes broken commitments.',strategy:'grim'},felix:{name:'Felix North',bio:'Forgiving, experimental, and willing to reset after conflict.',strategy:'forgiving'}};
-function pdOppAction(p){let h=state.pd.playerHistory,o=people[p];if(!h.length)return 'cooperate';if(o.strategy==='tft')return h[h.length-1];if(o.strategy==='grim')return h.includes('defect')?'defect':'cooperate';if(o.strategy==='greedy')return state.pd.trust>.7?'cooperate':'defect';if(o.strategy==='forgiving')return h.slice(-2).every(x=>x==='defect')?'defect':'cooperate';return'cooperate'}
-function renderPDPerson(){let id=document.getElementById('pdOpponent').value,p=people[id];document.getElementById('pdName').textContent=p.name;document.getElementById('pdBio').textContent=p.bio;let r=state.pd.round,dialogue=r===0?'“I’m willing to start clean. What you do next matters more than what you say.”':state.pd.trust>.7?'“We have something worth protecting now.”':state.pd.trust<.3?'“You’ve given me reasons not to trust you.”':'“I’m still deciding what kind of player you are.”';document.getElementById('pdDialogue').textContent=dialogue;document.getElementById('pdRelationship').textContent=state.pd.trust>.75?'Alliance':state.pd.trust>.55?'Trusting':state.pd.trust>.35?'Uncertain':'Hostile'}document.getElementById('pdOpponent').onchange=()=>{state.pd.opponent=document.getElementById('pdOpponent').value;state.pd.round=0;state.pd.player=0;state.pd.opp=0;state.pd.trust=.5;state.pd.reputation=.5;state.pd.playerHistory=[];state.pd.oppHistory=[];save();renderPDPerson()};renderPDPerson();
-function playPD(action){let promise=document.getElementById('pdPromise').value,opp=pdOppAction(state.pd.opponent),map={cooperate:{cooperate:[3,3],defect:[0,5]},defect:{cooperate:[5,0],defect:[1,1]}},pay=map[action][opp],broken=promise!=='none'&&promise!==action;state.pd.round++;state.pd.player+=pay[0];state.pd.opp+=pay[1];if(action==='cooperate'&&opp==='cooperate'){state.pd.trust=Math.min(1,state.pd.trust+.12);state.pd.reputation=Math.min(1,state.pd.reputation+.08)}else if(action==='defect'&&opp==='cooperate'){state.pd.trust=Math.max(0,state.pd.trust-.28);state.pd.reputation=Math.max(0,state.pd.reputation-.22)}else if(action==='defect'&&opp==='defect'){state.pd.trust=Math.max(0,state.pd.trust-.10);state.pd.reputation=Math.max(0,state.pd.reputation-.05)}else state.pd.trust=Math.max(0,state.pd.trust-.08);if(broken){state.pd.trust=Math.max(0,state.pd.trust-.16);state.pd.reputation=Math.max(0,state.pd.reputation-.18)}state.pd.playerHistory.push(action);state.pd.oppHistory.push(opp);learn('incentives',.7);learn('repeated_games',Math.min(1,.35+state.pd.round*.08));learn(action==='defect'&&opp==='cooperate'?'reputation':action==='cooperate'&&opp==='defect'?'reciprocity':'cooperation',.76);if(broken)learn('signaling',.35);state.lastGame='dilemma';save();document.getElementById('pdScore').textContent=`${state.pd.player} – ${state.pd.opp}`;document.getElementById('pdTrust').textContent=pct(state.pd.trust);document.getElementById('pdRep').textContent=pct(state.pd.reputation);document.getElementById('pdResult').classList.remove('hidden');document.getElementById('pdOsiris').textContent=broken?'You made a commitment and broke it. Even if the payoff was good, what did the signal do to your future options?':action==='defect'&&opp==='cooperate'?'You won this round. What might that victory cost if the same person remembers it?':action==='cooperate'&&opp==='defect'?'You were exploited. Is retaliation automatically optimal when another round is coming?':'Would you make the same choice if I told you this was the final round?';renderPDPerson();renderMeta()}
-document.getElementById('pdCoop').onclick=()=>playPD('cooperate');document.getElementById('pdDefect').onclick=()=>playPD('defect');
-renderMeta();if('serviceWorker'in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
-</script>
+<script src="world.js"></script>
 </body>
 </html>
