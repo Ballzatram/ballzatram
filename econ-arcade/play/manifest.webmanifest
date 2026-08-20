@@ -1,0 +1,10 @@
+{
+  "name": "Osiris · Econ Arcade",
+  "short_name": "Econ Arcade",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#080b14",
+  "theme_color": "#0b1020",
+  "description": "A world of economics games that learns how you think."
+}
