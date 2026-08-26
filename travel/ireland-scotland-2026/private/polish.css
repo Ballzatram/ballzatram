@@ -1,51 +1,38 @@
 .tool:last-child:before{content:'✕'!important;font-size:12px!important;font-weight:900!important}
+[hidden]{display:none!important}
+.field-label{display:block;margin:0 2px 7px;color:#35423b;font-size:12px;font-weight:850}
+.trip-key-help{margin:8px 2px 12px;color:#77817b;font-size:11px;line-height:1.4}
+body.trip-unlocked #lock{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.trip-unlocked #app{display:block!important}
+.app-status-row{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 10px}
+.connectivity-badge{display:inline-flex;align-items:center;gap:7px;min-height:34px;padding:7px 11px;border:1px solid #e1e7e3;border-radius:999px;background:#fff;color:#617067;font-size:10px;font-weight:800;line-height:1.25}
+.connectivity-badge .status-dot{width:8px;height:8px;border-radius:50%;background:#c79a3b;box-shadow:0 0 0 3px #fff7df}
+.connectivity-badge.online{color:#0f6b43;background:#f4fbf7;border-color:#d5eee0}
+.connectivity-badge.online .status-dot{background:#169b62;box-shadow:0 0 0 3px #eaf9f1}
+.connectivity-badge.offline{color:#6f4d16;background:#fff9e8;border-color:#efe1b9}
+.connectivity-badge.offline .status-dot{background:#c79a3b;box-shadow:0 0 0 3px #fff2c9}
+.quiet-action{min-height:34px;padding:7px 11px;border:1px solid #eadcdf;border-radius:999px;background:#fff;color:#8b3540;font-size:10px;font-weight:850}
+.day{scroll-margin-top:110px}
+.map-preview{min-height:220px;display:grid;place-items:center;background:linear-gradient(135deg,#f7faf8,#eef4f1);border-bottom:1px solid #e6ebe8}
+.map-placeholder{display:grid;justify-items:center;gap:7px;max-width:290px;padding:28px 18px;text-align:center;color:#637068}
+.map-placeholder-icon{font-size:30px;line-height:1}
+.map-placeholder strong{color:#26342c;font-size:14px}
+.map-placeholder span:not(.map-placeholder-icon){font-size:11px;line-height:1.4}
+.map-load{min-height:40px;margin-top:4px;padding:9px 13px;border:1px solid #c5d7cc;border-radius:12px;background:#fff;color:#176b45;font-size:11px;font-weight:900;box-shadow:0 4px 12px rgba(24,48,36,.05)}
+.map-load:disabled{opacity:.58;cursor:not-allowed}
+.map-preview iframe{display:block!important;width:100%!important;height:clamp(235px,42vw,365px)!important;border:0!important;background:#f1f4f2!important}
 
 @media(max-width:680px){
-  .story-card{
-    display:grid!important;
-    grid-template-columns:48px minmax(0,1fr)!important;
-    grid-template-rows:auto auto!important;
-    column-gap:12px!important;
-    align-items:center!important;
-    min-height:96px!important;
-    padding:14px 46px 14px 16px!important;
-  }
-  .story-card .story-icon{
-    position:static!important;
-    grid-column:1!important;
-    grid-row:1 / 3!important;
-    display:grid!important;
-    place-items:center!important;
-    width:46px!important;
-    height:46px!important;
-    margin:0!important;
-    padding:0!important;
-    border-radius:15px!important;
-    font-size:22px!important;
-    line-height:1!important;
-  }
+  .story-card{display:grid!important;grid-template-columns:48px minmax(0,1fr)!important;grid-template-rows:auto auto!important;column-gap:12px!important;align-items:center!important;min-height:96px!important;padding:14px 46px 14px 16px!important}
+  .story-card .story-icon{position:static!important;grid-column:1!important;grid-row:1 / 3!important;display:grid!important;place-items:center!important;width:46px!important;height:46px!important;margin:0!important;padding:0!important;border-radius:15px!important;font-size:22px!important;line-height:1!important}
   .story-card.ireland .story-icon{background:var(--irish-soft)!important}
   .story-card.game .story-icon{background:var(--tcu-soft)!important}
   .story-card.scotland .story-icon{background:var(--scotland-soft)!important}
-  .story-card strong{
-    grid-column:2!important;
-    grid-row:1!important;
-    align-self:end!important;
-    padding:0!important;
-    margin:0!important;
-  }
-  .story-card > span:last-child{
-    grid-column:2!important;
-    grid-row:2!important;
-    align-self:start!important;
-    padding:0!important;
-    margin:4px 0 0!important;
-  }
-  .story-card .story-go{
-    position:absolute!important;
-    right:13px!important;
-    top:50%!important;
-    transform:translateY(-50%)!important;
-    padding:0!important;
-  }
+  .story-card strong{grid-column:2!important;grid-row:1!important;align-self:end!important;padding:0!important;margin:0!important}
+  .story-card > span:last-child{grid-column:2!important;grid-row:2!important;align-self:start!important;padding:0!important;margin:4px 0 0!important}
+  .story-card .story-go{position:absolute!important;right:13px!important;top:50%!important;transform:translateY(-50%)!important;padding:0!important}
+  .app-status-row{align-items:flex-start}
+  .connectivity-badge{max-width:75%}
+  .quiet-action{flex:0 0 auto}
+  .map-preview{min-height:195px}
 }
