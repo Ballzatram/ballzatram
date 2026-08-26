@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#0d1b2a" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Ireland + Scotland" />
+  <title>Ireland + Scotland 2026</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <style>
+    :root{--bg:#07131f;--card:#102235;--card2:#142a40;--text:#f5f7fa;--muted:#aab8c7;--accent:#7dd3fc;--accent2:#86efac;--line:#27445f;--danger:#fca5a5}
+    *{box-sizing:border-box}html{background:var(--bg)}body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:linear-gradient(180deg,#07131f,#0b1b2b 55%,#07131f);color:var(--text);min-height:100vh}
+    .wrap{max-width:760px;margin:auto;padding:calc(env(safe-area-inset-top) + 18px) 16px calc(env(safe-area-inset-bottom) + 44px)}
+    .hero{padding:20px 2px 12px}.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);font-weight:800}.hero h1{margin:7px 0 4px;font-size:30px;line-height:1.05}.hero p{margin:0;color:var(--muted)}
+    .topbar{display:flex;gap:9px;overflow:auto;padding:10px 0 14px;position:sticky;top:0;z-index:5;background:linear-gradient(180deg,rgba(7,19,31,.98),rgba(7,19,31,.86),rgba(7,19,31,0));backdrop-filter:blur(10px)}
+    button,.pill{border:1px solid var(--line);background:#0f263a;color:var(--text);border-radius:999px;padding:10px 13px;font-weight:700;font-size:14px;white-space:nowrap;text-decoration:none}.pill.active{border-color:var(--accent);color:#dff7ff}.install{margin-left:auto;color:#06131f;background:var(--accent);border-color:var(--accent)}
+    .notice{background:#0c2031;border:1px solid #21435f;border-radius:16px;padding:13px 14px;margin:0 0 16px;color:#cbd9e6;font-size:13px;line-height:1.45}.notice strong{color:#fff}
+    .day{display:none}.day.active{display:block}.dayhead{display:flex;align-items:end;justify-content:space-between;margin:14px 2px 10px}.dayhead h2{margin:0;font-size:23px}.dayhead span{color:var(--muted);font-size:13px}
+    .event{display:grid;grid-template-columns:74px 1fr;gap:11px;padding:12px 0;border-top:1px solid var(--line)}.time{color:var(--accent);font-size:14px;font-weight:800;padding-top:2px}.event h3{margin:0 0 4px;font-size:16px}.event p{margin:0;color:var(--muted);line-height:1.45;font-size:14px}.event .meta{margin-top:6px;color:#d7e3ee}.tag{display:inline-block;border:1px solid #31516c;border-radius:999px;padding:3px 7px;font-size:11px;margin:7px 5px 0 0;color:#d6e4ef}.booked{border-color:#315f45;color:var(--accent2)}
+    .links{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.links a{font-size:12px;color:#bcecff;text-decoration:none;border-bottom:1px dotted #73b9d3}.footer{color:#70879b;font-size:12px;line-height:1.5;padding-top:22px}
+    dialog{border:1px solid var(--line);border-radius:18px;background:#102235;color:#fff;max-width:360px;width:calc(100% - 32px);padding:20px}dialog::backdrop{background:rgba(0,0,0,.6)}dialog h3{margin-top:0}dialog p,dialog li{color:#cbd9e6;line-height:1.5}dialog button{width:100%;margin-top:8px}
+    @media(min-width:600px){.hero h1{font-size:38px}.event{grid-template-columns:92px 1fr}.wrap{padding-left:22px;padding-right:22px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero"><div class="eyebrow">Offline trip reference</div><h1>Dublin → Edinburgh</h1><p>Aug 26 – Sep 2, 2026</p></header>
+  <nav class="topbar" id="nav"></nav>
+  <div class="notice"><strong>Privacy-safe copy.</strong> This public travel reference intentionally excludes booking codes, loyalty numbers, confirmation numbers, seat assignments, and other personal details from the source itinerary.</div>
+  <main id="days"></main>
+  <div class="footer">Built as a small progressive web app. Once opened online, the itinerary is cached so it can be reopened without a connection. Map links require connectivity.</div>
+</div>
+<dialog id="installDialog"><h3>Add to Home Screen</h3><p>On iPhone in Safari:</p><ol><li>Tap the <strong>Share</strong> button.</li><li>Choose <strong>Add to Home Screen</strong>.</li><li>Tap <strong>Add</strong>.</li></ol><p>After the first successful load, this itinerary can open offline.</p><button onclick="installDialog.close()">Got it</button></dialog>
+<script>
+const trip=[
+{date:'Wed Aug 26',short:'8/26',events:[
+['1:45 PM','Leave for CLT Airport','Uber to Charlotte Douglas.'],['4:20 PM','CLT → Chicago O’Hare','American Airlines AA536.'],['10:20 PM','ORD → Dublin','American Airlines AA208, overnight flight.']]},
+{date:'Thu Aug 27',short:'8/27',events:[
+['11:50 AM','Arrive Dublin','Land at Dublin Airport.'],['1:00 PM','Taxi to The Address Connolly','Amiens Street, Dublin.'],['1:30 PM','Hotel check-in','The Address Connolly.'],['3:00 PM','Taxi to Guinness Storehouse','St. James’s Gate.'],['3:15 PM','Guinness Storehouse tour','Tour visit.','booked'],['5:30 PM','Taxi back to hotel','Rest and get ready for dinner.'],['7:55 PM','Walk to D’Olier Street Restaurant','About 15 minutes from hotel.'],['8:10 PM','D’Olier Street Restaurant','Chef’s counter dinner.','booked']]},
+{date:'Fri Aug 28',short:'8/28',events:[
+['10:00 AM','Breakfast / easy morning','Golf-day start.'],['11:00 AM','Taxi to Jameson Golf Links','Portmarnock Resort & Jameson Golf Links.'],['11:30 AM','Arrive at golf resort','Golf and resort time.'],['2:48 PM','Estimated finish','May stay later for club amenities.'],['8:15 AM','Trinity College — Book of Kells','Guided Book of Kells Experience.','booked'],['10:30 AM','Trinity Trails Campus Tour','Meet at the Bell Tower; outdoor walking tour.','booked'],['11:15 AM','Optional: Grafton Street','Shopping and sightseeing.'],['2:30 PM','Optional: Merrion Square Pep Rally','Merrion Square Park.'],['5:00 PM','Old Mill Restaurant','Temple Bar dinner.','booked']]},
+{date:'Sat Aug 29',short:'8/29',events:[
+['10:00 AM','Slow morning','Sleep in and get ready.'],['11:15 AM','Fitzsimons Pub','Band & Spirit performance, Temple Bar.'],['12:00 PM','The Vintage Kitchen','Lunch on Poolbeg Street.','booked'],['1:00 PM','Pregame','Game-day events.'],['3:00 PM','Band marches to Aviva Stadium','Follow the game-day flow.'],['5:00 PM','Game at Aviva Stadium','Kickoff.'],['After','Post-game celebrations','Flexible evening.']]},
+{date:'Sun Aug 30',short:'8/30',events:[
+['9:30 AM','Taxi to Dublin Airport','Terminal 2.'],['11:40 AM','Dublin → Edinburgh','Flight to Edinburgh.'],['12:55 PM','Arrive Edinburgh','Taxi to Hilton Edinburgh Carlton.'],['2:00 PM','Hilton Edinburgh Carlton','Check in at 19 North Bridge.'],['3:00 PM','Royal Mile → Grassmarket','Walk from hotel; shopping and sightseeing.'],['3:30 PM','Vennel Viewpoint','Edinburgh Castle viewpoint.'],['3:45 PM','Victoria Street / West Bow','Explore the historic streets.'],['4:30 PM','Lawnmarket','Continue up the Royal Mile.'],['4:45 PM','Lady Stair’s Close','Short historic stop.'],['5:15 PM','Castlehill','Reach the upper Royal Mile.'],['5:30 PM','Casual pub dinner','Options: Ensign Ewart, Deacon Brodie’s, Whiski Bar & Restaurant, or The World’s End.']]},
+{date:'Mon Aug 31',short:'8/31',events:[
+['7:00 AM','Breakfast and get ready','Morning prep.'],['7:55 AM','Meet in Hilton lobby','Group meet-up.'],['8:00 AM','Private tour pickup','Day tour begins.']]},
+{date:'Tue Sep 1',short:'9/1',events:[
+['8:20 AM','Walk to The Edinburgh Larder','15 Blackfriars Street.'],['8:30 AM','Breakfast — Edinburgh Larder','Breakfast reservation.','booked'],['9:30 AM','Walk to Bakehouse Close','Outlander print-house filming location.'],['9:45 AM','Canongate Kirkyard','Historic kirkyard stop.'],['10:15 AM','Scottish Parliament','Free visit.'],['10:50 AM','Palace of Holyroodhouse','Palace visit.','booked'],['12:20 PM','Walk to St Margaret’s Loch','Enter Holyrood Park.'],['12:45 PM','St Anthony’s Chapel Ruins','Short scenic climb.'],['1:10 PM','Arthur’s Seat','Continue to the summit area.'],['1:55 PM','Walk toward Dunsapie Loch parking','Descend toward taxi pickup.'],['2:00 PM','Taxi to Hilton Edinburgh Carlton','Return to hotel.'],['2:50 PM','Walk to Palm Court, The Balmoral','About four minutes.'],['3:00 PM','Afternoon Tea — Palm Court','Smart casual.','booked'],['4:30 PM','Taxi to Water of Leith Weir','Dean Village area.'],['4:50 PM','Water of Leith walk','Walk toward St Vincent Street; pass Circus Lane.'],['6:00 PM','Taxi to Hilton','Return and reset for dinner.'],['7:45 PM','Taxi to Prestonfield House','Rhubarb at Prestonfield.'],['8:00 PM','Rhubarb — Salon Privée','Private room dinner for two.','booked'],['9:30 PM','Taxi back to Hilton','End of the day.']]},
+{date:'Wed Sep 2',short:'9/2',events:[
+['6:00 AM','Taxi to Edinburgh Airport','Depart Hilton early.'],['8:35 AM','Edinburgh → Dublin','Morning flight.'],['11:45 AM','Dublin → Charlotte','American Airlines AA725 nonstop.'],['3:05 PM','Arrive Charlotte','Home.']]}
+];
+const mapQuery=s=>`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(s)}`;
+const locationHints=['The Address Connolly','Guinness Storehouse','D’Olier Street Restaurant','Jameson Golf Links','Trinity College','Old Mill Restaurant','Fitzsimons Pub','The Vintage Kitchen','Aviva Stadium','Hilton Edinburgh Carlton','Grassmarket','Vennel Viewpoint','Victoria Street','Lawnmarket','Lady Stair’s Close','Castlehill','The Edinburgh Larder','Bakehouse Close','Canongate Kirkyard','Scottish Parliament','Palace of Holyroodhouse','St Margaret’s Loch','St Anthony’s Chapel Ruins','Arthur’s Seat','Dunsapie Loch','Palm Court, The Balmoral','Water of Leith Weir','Circus Lane','Rhubarb at Prestonfield House'];
+const nav=document.getElementById('nav'),days=document.getElementById('days');
+trip.forEach((d,i)=>{const b=document.createElement('button');b.className='pill'+(i===0?' active':'');b.textContent=d.short;b.onclick=()=>show(i);nav.appendChild(b);const sec=document.createElement('section');sec.className='day'+(i===0?' active':'');sec.innerHTML=`<div class="dayhead"><h2>${d.date}</h2><span>${d.events.length} stops</span></div>`+d.events.map(e=>{const loc=locationHints.find(x=>(e[1]+' '+e[2]).toLowerCase().includes(x.toLowerCase()));return `<article class="event"><div class="time">${e[0]}</div><div><h3>${e[1]}</h3><p>${e[2]}</p>${e[3]?'<span class="tag booked">Reserved</span>':''}${loc?`<div class="links"><a href="${mapQuery(loc)}" target="_blank" rel="noopener">Open in Maps ↗</a></div>`:''}</div></article>`}).join('');days.appendChild(sec)});
+const install=document.createElement('button');install.className='install';install.textContent='Add to Home';install.onclick=()=>installDialog.showModal();nav.appendChild(install);
+function show(i){[...document.querySelectorAll('.day')].forEach((x,j)=>x.classList.toggle('active',i===j));[...nav.querySelectorAll('.pill')].forEach((x,j)=>x.classList.toggle('active',i===j));window.scrollTo({top:0,behavior:'smooth'})}
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js'))}
+</script>
+</body>
+</html>
