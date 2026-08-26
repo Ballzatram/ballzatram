@@ -10,9 +10,7 @@ const CORE=[
   `./app-render.js?v=${VERSION}`,
   `./app-ui.js?v=${VERSION}`,
   './hero-art.svg',
-  './apple-touch-icon.png',
-  './app-icon-192.png',
-  './app-icon-512.png'
+  './app-icon-180.png'
 ];
 
 self.addEventListener('install',event=>{
