@@ -1,1 +1,30 @@
-const CACHE='private-trip-v3';const ASSETS=['./index.html','./manifest.webmanifest','./theme.css','./enhance.js','../icon.svg'];const inject=html=>{if(html.includes('theme.css'))return html;return html.replace('</head>','<link rel="stylesheet" href="./theme.css"></head>').replace('</body>','<script src="./enhance.js"></script></body>')};self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));self.addEventListener('activate',e=>e.waitUntil((async()=>{for(const k of await caches.keys())if(k!==CACHE)await caches.delete(k);await self.clients.claim()})()));self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;const u=new URL(e.request.url);const isPrivateNav=e.request.mode==='navigate'&&u.pathname.includes('/travel/ireland-scotland-2026/private');if(isPrivateNav){e.respondWith((async()=>{try{const r=await fetch('./index.html',{cache:'no-store'});const text=inject(await r.text());return new Response(text,{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}})}catch{const r=await caches.match('./index.html');if(!r)return new Response('Offline trip book unavailable',{status:503});return new Response(inject(await r.text()),{headers:{'Content-Type':'text/html; charset=utf-8'}})}})());return}e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request).then(resp=>{const copy=resp.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return resp}).catch(()=>caches.match('./index.html'))))});
+const CACHE='private-trip-v4-white';
+const VERSION='4';
+const ASSETS=['./index.html','./manifest.webmanifest','./theme.css?v='+VERSION,'./enhance.js?v='+VERSION,'../icon.svg'];
+const inject=html=>{
+  let out=html.replace(/<meta name="theme-color" content="[^"]*">/,'<meta name="theme-color" content="#ffffff">');
+  if(!out.includes('theme.css'))out=out.replace('</head>','<link rel="stylesheet" href="./theme.css?v='+VERSION+'"></head>');
+  if(!out.includes('enhance.js'))out=out.replace('</body>','<script src="./enhance.js?v='+VERSION+'"></script></body>');
+  return out;
+};
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{for(const key of await caches.keys())if(key!==CACHE)await caches.delete(key);await self.clients.claim()})()));
+self.addEventListener('fetch',event=>{
+  if(event.request.method!=='GET')return;
+  const url=new URL(event.request.url);
+  const isPrivateNavigation=event.request.mode==='navigate'&&url.pathname.includes('/travel/ireland-scotland-2026/private');
+  if(isPrivateNavigation){
+    event.respondWith((async()=>{
+      try{
+        const response=await fetch('./index.html',{cache:'no-store'});
+        return new Response(inject(await response.text()),{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
+      }catch{
+        const response=await caches.match('./index.html');
+        if(!response)return new Response('Offline trip book unavailable',{status:503});
+        return new Response(inject(await response.text()),{headers:{'Content-Type':'text/html; charset=utf-8'}});
+      }
+    })());
+    return;
+  }
+  event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request).then(response=>{const copy=response.clone();caches.open(CACHE).then(cache=>cache.put(event.request,copy));return response}).catch(()=>caches.match('./index.html'))));
+});
