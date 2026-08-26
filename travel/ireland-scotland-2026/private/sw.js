@@ -1,5 +1,5 @@
-const CACHE='private-trip-v10-fast-load';
-const VERSION='10';
+const CACHE='private-trip-v11-interaction-fix';
+const VERSION='11';
 const ASSETS=[
   './index.html',
   './manifest.webmanifest',
@@ -7,7 +7,6 @@ const ASSETS=[
   './polish.css?v='+VERSION,
   './vault-v2.js?v='+VERSION,
   './unlock-fix.js?v='+VERSION,
-  './performance-fix.js?v='+VERSION,
   './enhance.js?v='+VERSION,
   './navigation-fix.js?v='+VERSION,
   './hero-art.svg',
@@ -24,7 +23,7 @@ const inject=html=>{
     .replace(/<link rel="icon" href="[^"]*"(?: type="[^"]*")?\s*\/?>/g,'')
     .replace(/<link rel="apple-touch-icon" href="[^"]*"\s*\/?>/g,'');
   out=out.replace('</head>','<link rel="stylesheet" href="./theme.css?v='+VERSION+'"><link rel="stylesheet" href="./polish.css?v='+VERSION+'"><link rel="icon" href="./app-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./app-icon.svg"></head>');
-  out=out.replace('</body>','<script src="./vault-v2.js?v='+VERSION+'"></script><script src="./unlock-fix.js?v='+VERSION+'"></script><script src="./performance-fix.js?v='+VERSION+'"></script><script src="./enhance.js?v='+VERSION+'"></script><script src="./navigation-fix.js?v='+VERSION+'"></script></body>');
+  out=out.replace('</body>','<script src="./vault-v2.js?v='+VERSION+'"></script><script src="./unlock-fix.js?v='+VERSION+'"></script><script src="./enhance.js?v='+VERSION+'"></script><script src="./navigation-fix.js?v='+VERSION+'"></script></body>');
   return out;
 };
 
@@ -49,9 +48,6 @@ self.addEventListener('fetch',event=>{
     event.respondWith((async()=>{
       const cache=await caches.open(CACHE);
       const cached=await cache.match('./index.html');
-
-      // Return the local app shell immediately when available. Refresh it in
-      // the background instead of blocking the user on a network round trip.
       if(cached){
         event.waitUntil((async()=>{
           try{
@@ -61,7 +57,6 @@ self.addEventListener('fetch',event=>{
         })());
         return new Response(inject(await cached.text()),{headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':'no-store'}});
       }
-
       try{
         const response=await fetch('./index.html',{cache:'no-store'});
         if(response.ok)await cache.put('./index.html',response.clone());
@@ -73,11 +68,9 @@ self.addEventListener('fetch',event=>{
     return;
   }
 
-  event.respondWith(
-    caches.match(event.request).then(cached=>cached||fetch(event.request).then(response=>{
-      const copy=response.clone();
-      caches.open(CACHE).then(cache=>cache.put(event.request,copy));
-      return response;
-    }))
-  );
+  event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request).then(response=>{
+    const copy=response.clone();
+    caches.open(CACHE).then(cache=>cache.put(event.request,copy));
+    return response;
+  })));
 });
