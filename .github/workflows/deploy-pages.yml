@@ -2,7 +2,7 @@ name: Deploy site to GitHub Pages
 
 on:
   push:
-    branches: [ main, master ]
+    branches: [main, master]
   workflow_dispatch:
 
 permissions:
@@ -27,34 +27,71 @@ jobs:
       - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: Prepare artifact
+      - name: Validate private trip app
+        shell: bash
         run: |
+          set -euo pipefail
+          APP="travel/ireland-scotland-2026/private"
+
+          test -f "$APP/index.html"
+          test -f "$APP/manifest.webmanifest"
+          test -f "$APP/theme.css"
+          test -f "$APP/polish.css"
+          test -f "$APP/vault-v2.js"
+          test -f "$APP/app-core.js"
+          test -f "$APP/app-render.js"
+          test -f "$APP/app-ui.js"
+          test -f "$APP/sw.js"
+          test -f "$APP/hero-art.svg"
+          test -f "$APP/app-icon.svg"
+
+          test ! -e "$APP/enhance.js"
+          test ! -e "$APP/navigation-fix.js"
+          test ! -e "$APP/performance-fix.js"
+          test ! -e "$APP/unlock-fix.js"
+
+          node --check "$APP/vault-v2.js"
+          node --check "$APP/app-core.js"
+          node --check "$APP/app-render.js"
+          node --check "$APP/app-ui.js"
+          node --check "$APP/sw.js"
+
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          app = Path('travel/ireland-scotland-2026/private')
+          html = (app / 'index.html').read_text(encoding='utf-8')
+          sw = (app / 'sw.js').read_text(encoding='utf-8')
+          manifest = json.loads((app / 'manifest.webmanifest').read_text(encoding='utf-8'))
+
+          required_html = [
+              './vault-v2.js?v=12',
+              './app-core.js?v=12',
+              './app-render.js?v=12',
+              './app-ui.js?v=12',
+              './theme.css?v=12',
+              './polish.css?v=12',
+          ]
+          forbidden = ['enhance.js', 'navigation-fix.js', 'performance-fix.js', 'unlock-fix.js']
+
+          assert all(item in html for item in required_html), 'Final app modules are not all linked from index.html'
+          assert not any(item in html for item in forbidden), 'A retired patch script is still linked from index.html'
+          assert "private-trip-v${VERSION}-final" in sw, 'Unexpected service-worker cache version'
+          assert 'app-core.js' in sw and 'app-render.js' in sw and 'app-ui.js' in sw
+          assert manifest['display'] == 'standalone'
+          assert manifest['start_url'] == './'
+          print('Private trip static validation passed.')
+          PY
+
+      - name: Prepare artifact
+        shell: bash
+        run: |
+          set -euo pipefail
           mkdir -p _site
           cp -R index.html style.css script.js weather-bot.html weather-bot.js CNAME assets games tools econ-arcade docs travel _site/
           mkdir -p _site/ai-edit-factory
           cp ai-edit-factory/index.html ai-edit-factory/style.css _site/ai-edit-factory/
-
-          # Inject the private itinerary's latest visual layer into the deployed artifact
-          # so the first load is fully themed before its service worker takes control.
-          python - <<'PY'
-          from pathlib import Path
-          import re
-
-          page = Path('_site/travel/ireland-scotland-2026/private/index.html')
-          html = page.read_text(encoding='utf-8')
-          version = '6'
-          html = re.sub(r'<meta name="theme-color" content="[^"]*">', '<meta name="theme-color" content="#ffffff">', html)
-          html = re.sub(r'<meta name="apple-mobile-web-app-title" content="[^"]*">', '<meta name="apple-mobile-web-app-title" content="Celtic Kickoff">', html)
-          html = re.sub(r'<title>[^<]*</title>', '<title>Celtic Kickoff Tour — Private Trip</title>', html)
-          html = re.sub(r'<link rel="stylesheet" href="\./(?:theme|polish)\.css(?:\?v=[^"]*)?"\s*/?>', '', html)
-          html = re.sub(r'<script src="\./enhance\.js(?:\?v=[^"]*)?"></script>', '', html)
-          html = re.sub(r'<link rel="icon" href="[^"]*"(?: type="[^"]*")?\s*/?>', '', html)
-          html = re.sub(r'<link rel="apple-touch-icon" href="[^"]*"\s*/?>', '', html)
-          html = html.replace('</head>', f'<link rel="stylesheet" href="./theme.css?v={version}"><link rel="stylesheet" href="./polish.css?v={version}"><link rel="icon" href="./app-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./app-icon.svg"></head>')
-          html = html.replace('</body>', f'<script src="./enhance.js?v={version}"></script></body>')
-          page.write_text(html, encoding='utf-8')
-          PY
-
           touch _site/.nojekyll
 
       - name: Upload Pages artifact
