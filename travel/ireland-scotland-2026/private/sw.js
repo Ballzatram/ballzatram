@@ -1,4 +1,4 @@
-const VERSION='12';
+const VERSION='13';
 const CACHE=`private-trip-v${VERSION}-final`;
 const CORE=[
   './index.html',
@@ -10,7 +10,9 @@ const CORE=[
   `./app-render.js?v=${VERSION}`,
   `./app-ui.js?v=${VERSION}`,
   './hero-art.svg',
-  './app-icon.svg'
+  './apple-touch-icon.png',
+  './app-icon-192.png',
+  './app-icon-512.png'
 ];
 
 self.addEventListener('install',event=>{
