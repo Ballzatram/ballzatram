@@ -1,7 +1,7 @@
 {
-  "name": "Private Ireland + Scotland 2026",
-  "short_name": "Celtic Trip",
-  "description": "Encrypted Dublin and Edinburgh trip book with Apple Maps routes",
+  "name": "The Celtic Kickoff Tour — Dublin & Edinburgh 2026",
+  "short_name": "Celtic Kickoff",
+  "description": "Private offline Dublin, TCU game-day, and Edinburgh trip book with Apple Maps routes",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
@@ -9,7 +9,7 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "../icon.svg",
+      "src": "./app-icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
