@@ -13,12 +13,12 @@
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./app-icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="./app-icon.svg">
-  <link rel="stylesheet" href="./theme.css?v=12">
-  <link rel="stylesheet" href="./polish.css?v=12">
-  <script defer src="./vault-v2.js?v=12"></script>
-  <script defer src="./app-core.js?v=12"></script>
-  <script defer src="./app-render.js?v=12"></script>
-  <script defer src="./app-ui.js?v=12"></script>
+  <link rel="stylesheet" href="./theme.css?v=13">
+  <link rel="stylesheet" href="./polish.css?v=13">
+  <script defer src="./vault-v2.js?v=13"></script>
+  <script defer src="./app-core.js?v=13"></script>
+  <script defer src="./app-render.js?v=13"></script>
+  <script defer src="./app-ui.js?v=13"></script>
 </head>
 <body>
   <div class="wrap">
@@ -26,7 +26,7 @@
       <div class="card">
         <div class="badge">Private trip pass</div>
         <h1 id="unlockTitle">The Celtic Kickoff Tour</h1>
-        <p class="sub">Unlock your private Dublin, TCU game-day, and Edinburgh travel book — complete with reservations, visual routes, and Apple Maps directions.</p>
+        <p class="sub">Unlock this device once to open your private Dublin, TCU game-day, and Edinburgh travel book. After a successful unlock, future visits open automatically.</p>
         <div class="lock-stickers" aria-label="Trip themes">
           <span class="lock-sticker ireland">☘ Dublin</span>
           <span class="lock-sticker tcu">🏈 TCU in Ireland</span>
@@ -34,8 +34,7 @@
         </div>
         <label class="field-label" for="pw">Trip access key</label>
         <input id="pw" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" enterkeyhint="go" placeholder="Enter the private trip key">
-        <div class="trip-key-help">Capitalization, accidental spaces, and copied backticks are ignored.</div>
-        <label class="remember"><input type="checkbox" id="remember"> Remember this key on this device</label>
+        <div class="trip-key-help">Capitalization, accidental spaces, copied backticks, and alternate dash characters are ignored. This device will remember the trip automatically.</div>
         <button id="unlock" type="button">Open the trip book</button>
         <div class="err" id="err" role="alert" aria-live="polite"></div>
       </div>
@@ -85,14 +84,12 @@
 
       <div class="app-status-row" aria-live="polite">
         <div id="connectivity" class="connectivity-badge preparing"><span class="status-dot"></span><span class="status-copy">Preparing offline copy…</span></div>
-        <button id="lockTrip" class="quiet-action" type="button">Lock trip</button>
       </div>
 
       <nav class="nav" id="nav" aria-label="Trip days"></nav>
 
       <div class="toolbar">
         <button class="tool" type="button" id="install">Add trip to Home Screen</button>
-        <button class="tool" type="button" id="forget">Forget saved trip key</button>
       </div>
 
       <main id="days" aria-live="polite"></main>
