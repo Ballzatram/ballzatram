@@ -1,4 +1,5 @@
 {
+  "id": "./",
   "name": "The Celtic Kickoff Tour — Dublin & Edinburgh 2026",
   "short_name": "Celtic Kickoff",
   "description": "Private offline Dublin, TCU game-day, and Edinburgh trip book with Apple Maps routes",
@@ -9,9 +10,15 @@
   "theme_color": "#ffffff",
   "icons": [
     {
-      "src": "./app-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "./app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]
