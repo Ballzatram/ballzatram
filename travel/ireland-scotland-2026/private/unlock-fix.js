@@ -1,9 +1,37 @@
 (()=>{
-  const KEY_STATE_VERSION='celtic-kickoff-key-v2';
+  const KEY_STATE_VERSION='celtic-kickoff-key-v3';
   const normalizeKey=value=>String(value??'')
     .trim()
     .replace(/^`+|`+$/g,'')
-    .replace(/\s+/g,'');
+    .replace(/\s+/g,'')
+    .toLowerCase();
+
+  const b64=value=>Uint8Array.from(atob(value),character=>character.charCodeAt(0));
+  const decryptCurrentVault=async key=>{
+    const vault=globalThis.CELTIC_VAULT_V2;
+    if(!vault)throw new Error('Current trip vault has not loaded');
+    const sourceKey=await crypto.subtle.importKey(
+      'raw',
+      new TextEncoder().encode(key),
+      'PBKDF2',
+      false,
+      ['deriveKey']
+    );
+    const derivedKey=await crypto.subtle.deriveKey(
+      {name:'PBKDF2',salt:b64(vault.salt),iterations:vault.iterations,hash:'SHA-256'},
+      sourceKey,
+      {name:'AES-GCM',length:256},
+      false,
+      ['decrypt']
+    );
+    const packed=await crypto.subtle.decrypt(
+      {name:'AES-GCM',iv:b64(vault.iv)},
+      derivedKey,
+      b64(vault.ciphertext)
+    );
+    const stream=new Blob([packed]).stream().pipeThrough(new DecompressionStream('gzip'));
+    return JSON.parse(await new Response(stream).text());
+  };
 
   const getElements=()=>({
     input:document.getElementById('pw'),
@@ -37,8 +65,8 @@
 
     setBusy(unlockButton,true);
     try{
-      if(typeof decrypt!=='function'||typeof render!=='function')throw new Error('Trip decoder unavailable');
-      const data=await decrypt(key);
+      if(typeof render!=='function')throw new Error('Trip renderer unavailable');
+      const data=await decryptCurrentVault(key);
 
       if(remember?.checked){
         localStorage.setItem('trip-key',key);
@@ -59,7 +87,7 @@
     }catch(cause){
       localStorage.removeItem('trip-key');
       localStorage.removeItem('trip-key-version');
-      if(error)error.textContent='That key did not unlock this copy. Re-paste the full key with no extra characters.';
+      if(error)error.textContent='That key did not unlock this copy. Paste the current key and try again.';
       input.focus();
       input.select();
       console.warn('Trip unlock failed',cause);
@@ -77,9 +105,16 @@
     input.setAttribute('spellcheck','false');
     input.setAttribute('enterkeyhint','go');
 
-    // A saved key from an older cached build can make the current screen look
-    // broken before the user has a chance to enter the correct key. Clear it
-    // once when the key-handling version changes.
+    if(!document.querySelector('.trip-key-help')){
+      const help=document.createElement('div');
+      help.className='trip-key-help';
+      help.textContent='Capitalization and accidental spaces are ignored.';
+      help.style.cssText='margin:-7px 2px 12px;color:#77817b;font-size:11px;line-height:1.4';
+      input.insertAdjacentElement('afterend',help);
+    }
+
+    // Clear values saved by older encrypted builds before they can keep
+    // submitting the wrong key in the background.
     if(localStorage.getItem('trip-key-version')!==KEY_STATE_VERSION){
       localStorage.removeItem('trip-key');
       localStorage.setItem('trip-key-version',KEY_STATE_VERSION);
