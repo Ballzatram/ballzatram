@@ -1,1 +1,18 @@
-{"name":"Private Ireland + Scotland 2026","short_name":"Celtic Trip","description":"Encrypted Dublin and Edinburgh trip book with Apple Maps routing","start_url":"./","scope":"./","display":"standalone","background_color":"#efe7d4","theme_color":"#efe7d4","icons":[{"src":"../icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]}
+{
+  "name": "Private Ireland + Scotland 2026",
+  "short_name": "Celtic Trip",
+  "description": "Encrypted Dublin and Edinburgh trip book with Apple Maps routes",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "../icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
