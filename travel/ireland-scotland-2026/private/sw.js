@@ -1,9 +1,10 @@
-const CACHE='private-trip-v5-celtic-kickoff';
-const VERSION='5';
+const CACHE='private-trip-v6-celtic-kickoff';
+const VERSION='6';
 const ASSETS=[
   './index.html',
   './manifest.webmanifest',
   './theme.css?v='+VERSION,
+  './polish.css?v='+VERSION,
   './enhance.js?v='+VERSION,
   './hero-art.svg',
   './app-icon.svg'
@@ -14,11 +15,11 @@ const inject=html=>{
     .replace(/<meta name="theme-color" content="[^"]*">/,'<meta name="theme-color" content="#ffffff">')
     .replace(/<meta name="apple-mobile-web-app-title" content="[^"]*">/,'<meta name="apple-mobile-web-app-title" content="Celtic Kickoff">')
     .replace(/<title>[^<]*<\/title>/,'<title>Celtic Kickoff Tour — Private Trip</title>')
-    .replace(/<link rel="stylesheet" href="\.\/theme\.css(?:\?v=[^"]*)?"\s*\/?>/g,'')
+    .replace(/<link rel="stylesheet" href="\.\/(?:theme|polish)\.css(?:\?v=[^"]*)?"\s*\/?>/g,'')
     .replace(/<script src="\.\/enhance\.js(?:\?v=[^"]*)?"><\/script>/g,'')
     .replace(/<link rel="icon" href="[^"]*"(?: type="[^"]*")?\s*\/?>/g,'')
     .replace(/<link rel="apple-touch-icon" href="[^"]*"\s*\/?>/g,'');
-  out=out.replace('</head>','<link rel="stylesheet" href="./theme.css?v='+VERSION+'"><link rel="icon" href="./app-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./app-icon.svg"></head>');
+  out=out.replace('</head>','<link rel="stylesheet" href="./theme.css?v='+VERSION+'"><link rel="stylesheet" href="./polish.css?v='+VERSION+'"><link rel="icon" href="./app-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./app-icon.svg"></head>');
   out=out.replace('</body>','<script src="./enhance.js?v='+VERSION+'"></script></body>');
   return out;
 };

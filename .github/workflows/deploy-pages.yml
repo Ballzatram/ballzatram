@@ -34,24 +34,23 @@ jobs:
           mkdir -p _site/ai-edit-factory
           cp ai-edit-factory/index.html ai-edit-factory/style.css _site/ai-edit-factory/
 
-          # The private itinerary's original HTML contains only the encrypted data shell.
-          # Inject the latest visual layer into the deployed artifact so the first load is
-          # themed correctly even before its service worker has taken control.
+          # Inject the private itinerary's latest visual layer into the deployed artifact
+          # so the first load is fully themed before its service worker takes control.
           python - <<'PY'
           from pathlib import Path
           import re
 
           page = Path('_site/travel/ireland-scotland-2026/private/index.html')
           html = page.read_text(encoding='utf-8')
-          version = '5'
+          version = '6'
           html = re.sub(r'<meta name="theme-color" content="[^"]*">', '<meta name="theme-color" content="#ffffff">', html)
           html = re.sub(r'<meta name="apple-mobile-web-app-title" content="[^"]*">', '<meta name="apple-mobile-web-app-title" content="Celtic Kickoff">', html)
           html = re.sub(r'<title>[^<]*</title>', '<title>Celtic Kickoff Tour — Private Trip</title>', html)
-          html = re.sub(r'<link rel="stylesheet" href="\./theme\.css(?:\?v=[^"]*)?"\s*/?>', '', html)
+          html = re.sub(r'<link rel="stylesheet" href="\./(?:theme|polish)\.css(?:\?v=[^"]*)?"\s*/?>', '', html)
           html = re.sub(r'<script src="\./enhance\.js(?:\?v=[^"]*)?"></script>', '', html)
           html = re.sub(r'<link rel="icon" href="[^"]*"(?: type="[^"]*")?\s*/?>', '', html)
           html = re.sub(r'<link rel="apple-touch-icon" href="[^"]*"\s*/?>', '', html)
-          html = html.replace('</head>', f'<link rel="stylesheet" href="./theme.css?v={version}"><link rel="icon" href="./app-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./app-icon.svg"></head>')
+          html = html.replace('</head>', f'<link rel="stylesheet" href="./theme.css?v={version}"><link rel="stylesheet" href="./polish.css?v={version}"><link rel="icon" href="./app-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./app-icon.svg"></head>')
           html = html.replace('</body>', f'<script src="./enhance.js?v={version}"></script></body>')
           page.write_text(html, encoding='utf-8')
           PY
