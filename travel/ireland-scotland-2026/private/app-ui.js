@@ -188,9 +188,7 @@
     './theme.css?v=13',
     './polish.css?v=13',
     './hero-art.svg',
-    './apple-touch-icon.png',
-    './app-icon-192.png',
-    './app-icon-512.png'
+    './app-icon-180.png'
   ];
 
   const verifyOfflineCopy=async()=>{
