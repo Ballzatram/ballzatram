@@ -43,7 +43,7 @@ jobs:
           test -f "$APP/app-ui.js"
           test -f "$APP/sw.js"
           test -f "$APP/hero-art.svg"
-          test -f "$APP/app-icon.svg"
+          test -f "$APP/app-icon-180.png"
 
           test ! -e "$APP/enhance.js"
           test ! -e "$APP/navigation-fix.js"
@@ -59,29 +59,48 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import json
+          import struct
 
           app = Path('travel/ireland-scotland-2026/private')
           html = (app / 'index.html').read_text(encoding='utf-8')
+          core = (app / 'app-core.js').read_text(encoding='utf-8')
+          ui = (app / 'app-ui.js').read_text(encoding='utf-8')
           sw = (app / 'sw.js').read_text(encoding='utf-8')
           manifest = json.loads((app / 'manifest.webmanifest').read_text(encoding='utf-8'))
+          icon = (app / 'app-icon-180.png').read_bytes()
 
           required_html = [
-              './vault-v2.js?v=12',
-              './app-core.js?v=12',
-              './app-render.js?v=12',
-              './app-ui.js?v=12',
-              './theme.css?v=12',
-              './polish.css?v=12',
+              './vault-v2.js?v=13',
+              './app-core.js?v=13',
+              './app-render.js?v=13',
+              './app-ui.js?v=13',
+              './theme.css?v=13',
+              './polish.css?v=13',
+              './app-icon-180.png',
           ]
-          forbidden = ['enhance.js', 'navigation-fix.js', 'performance-fix.js', 'unlock-fix.js']
+          retired_scripts = ['enhance.js', 'navigation-fix.js', 'performance-fix.js', 'unlock-fix.js']
+          removed_controls = ['id="remember"', 'id="lockTrip"', 'id="forget"']
+          removed_code = ["byId('remember')", "byId('lockTrip')", "byId('forget')"]
 
-          assert all(item in html for item in required_html), 'Final app modules are not all linked from index.html'
-          assert not any(item in html for item in forbidden), 'A retired patch script is still linked from index.html'
-          assert "private-trip-v${VERSION}-final" in sw, 'Unexpected service-worker cache version'
-          assert 'app-core.js' in sw and 'app-render.js' in sw and 'app-ui.js' in sw
+          assert all(item in html for item in required_html), 'Final v13 app modules or icon are not all linked'
+          assert not any(item in html for item in retired_scripts), 'A retired patch script is still linked'
+          assert not any(item in html for item in removed_controls), 'A lock, forget, or remember control returned to the UI'
+          assert not any(item in ui for item in removed_code), 'Retired lock/forget handling remains in app-ui.js'
+          assert "VERSION='13'" in core and "VERSION='13'" in sw
+          assert "saved:'celtic-kickoff-key'" in core, 'Saved key name must remain stable across releases'
+          assert 'A.persistent.set(A.keys.saved,key)' in ui, 'Successful unlock must persist automatically'
+          assert "private-trip-v${VERSION}-final" in sw, 'Unexpected service-worker cache format'
+          assert './app-icon-180.png' in sw
+
+          assert icon[:8] == b'\x89PNG\r\n\x1a\n', 'Home Screen icon is not a PNG'
+          width, height = struct.unpack('>II', icon[16:24])
+          assert (width, height) == (180, 180), f'Unexpected icon size: {width}x{height}'
+
           assert manifest['display'] == 'standalone'
           assert manifest['start_url'] == './'
-          print('Private trip static validation passed.')
+          assert manifest['icons'][0]['src'] == './app-icon-180.png'
+          assert manifest['icons'][0]['sizes'] == '180x180'
+          print('Private trip v13 static validation passed.')
           PY
 
       - name: Prepare artifact
