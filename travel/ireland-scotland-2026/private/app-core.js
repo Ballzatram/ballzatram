@@ -1,6 +1,7 @@
 (()=>{
   'use strict';
-  const VERSION='13';
+  const VERSION='14';
+  const CREDENTIAL_VERSION='2';
   const makeStore=name=>{
     const memory=new Map();
     const native=()=>{try{return globalThis[name];}catch{return null;}};
@@ -53,7 +54,8 @@
 
   globalThis.CelticTripApp={
     VERSION,
-    keys:{saved:'celtic-kickoff-key',active:'celtic-kickoff-active-day'},
+    CREDENTIAL_VERSION,
+    keys:{saved:'celtic-kickoff-key',credential:'celtic-kickoff-credential-version',active:'celtic-kickoff-active-day'},
     legacy:{
       saved:['celtic-kickoff-key-v12','celtic-kickoff-key-v3','celtic-kickoff-key-v2','trip-key'],
       active:['celtic-kickoff-active-day-v12'],

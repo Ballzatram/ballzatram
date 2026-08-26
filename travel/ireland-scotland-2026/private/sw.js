@@ -1,4 +1,4 @@
-const VERSION='13';
+const VERSION='14';
 const CACHE=`private-trip-v${VERSION}-final`;
 const CORE=[
   './index.html',

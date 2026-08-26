@@ -59,6 +59,7 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           import json
+          import re
           import struct
 
           app = Path('travel/ireland-scotland-2026/private')
@@ -66,31 +67,40 @@ jobs:
           core = (app / 'app-core.js').read_text(encoding='utf-8')
           ui = (app / 'app-ui.js').read_text(encoding='utf-8')
           sw = (app / 'sw.js').read_text(encoding='utf-8')
+          vault = (app / 'vault-v2.js').read_text(encoding='utf-8')
           manifest = json.loads((app / 'manifest.webmanifest').read_text(encoding='utf-8'))
           icon = (app / 'app-icon-180.png').read_bytes()
 
           required_html = [
-              './vault-v2.js?v=13',
-              './app-core.js?v=13',
-              './app-render.js?v=13',
-              './app-ui.js?v=13',
-              './theme.css?v=13',
-              './polish.css?v=13',
+              './vault-v2.js?v=14',
+              './app-core.js?v=14',
+              './app-render.js?v=14',
+              './app-ui.js?v=14',
+              './theme.css?v=14',
+              './polish.css?v=14',
               './app-icon-180.png',
           ]
           retired_scripts = ['enhance.js', 'navigation-fix.js', 'performance-fix.js', 'unlock-fix.js']
           removed_controls = ['id="remember"', 'id="lockTrip"', 'id="forget"']
           removed_code = ["byId('remember')", "byId('lockTrip')", "byId('forget')"]
 
-          assert all(item in html for item in required_html), 'Final v13 app modules or icon are not all linked'
+          assert all(item in html for item in required_html), 'Final v14 app modules or icon are not all linked'
           assert not any(item in html for item in retired_scripts), 'A retired patch script is still linked'
           assert not any(item in html for item in removed_controls), 'A lock, forget, or remember control returned to the UI'
           assert not any(item in ui for item in removed_code), 'Retired lock/forget handling remains in app-ui.js'
-          assert "VERSION='13'" in core and "VERSION='13'" in sw
-          assert "saved:'celtic-kickoff-key'" in core, 'Saved key name must remain stable across releases'
+          assert "VERSION='14'" in core and "VERSION='14'" in sw
+          assert "CREDENTIAL_VERSION='2'" in core
+          assert "credential:'celtic-kickoff-credential-version'" in core
+          assert "saved:'celtic-kickoff-key'" in core, 'Saved key name must remain stable across ordinary releases'
           assert 'A.persistent.set(A.keys.saved,key)' in ui, 'Successful unlock must persist automatically'
+          assert 'A.persistent.set(A.keys.credential,A.CREDENTIAL_VERSION)' in ui
           assert "private-trip-v${VERSION}-final" in sw, 'Unexpected service-worker cache format'
           assert './app-icon-180.png' in sw
+          assert 'gofrogs!' not in vault + core + ui + sw + html, 'The access key must never be hardcoded in the public app'
+          assert re.fullmatch(
+              r'globalThis\.CELTIC_VAULT_V2=\{salt:"[A-Za-z0-9+/=]+",iv:"[A-Za-z0-9+/=]+",ciphertext:"[A-Za-z0-9+/=]+",iterations:250000\};\n?',
+              vault,
+          ), 'Encrypted vault format is invalid'
 
           assert icon[:8] == b'\x89PNG\r\n\x1a\n', 'Home Screen icon is not a PNG'
           width, height = struct.unpack('>II', icon[16:24])
@@ -100,7 +110,7 @@ jobs:
           assert manifest['start_url'] == './'
           assert manifest['icons'][0]['src'] == './app-icon-180.png'
           assert manifest['icons'][0]['sizes'] == '180x180'
-          print('Private trip v13 static validation passed.')
+          print('Private trip v14 static validation passed.')
           PY
 
       - name: Prepare artifact

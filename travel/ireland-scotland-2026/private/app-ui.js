@@ -105,6 +105,7 @@
     try{
       const trip=await A.decrypt(key);
       A.persistent.set(A.keys.saved,key);
+      A.persistent.set(A.keys.credential,A.CREDENTIAL_VERSION);
       A.renderTrip(trip);
       showApp();
     }catch(cause){
@@ -157,15 +158,15 @@
   };
 
   const migrateStoredState=()=>{
-    let saved=normalizeKey(A.persistent.get(A.keys.saved));
-    if(!saved){
-      for(const oldKey of A.legacy.saved||[]){
-        saved=normalizeKey(A.persistent.get(oldKey));
-        if(saved)break;
-      }
+    const credential=A.persistent.get(A.keys.credential);
+    if(credential!==A.CREDENTIAL_VERSION){
+      A.persistent.remove(A.keys.saved);
+      for(const oldKey of A.legacy.saved||[])A.persistent.remove(oldKey);
+      A.persistent.set(A.keys.credential,A.CREDENTIAL_VERSION);
     }
+
+    const saved=normalizeKey(A.persistent.get(A.keys.saved));
     if(saved)A.persistent.set(A.keys.saved,saved);
-    for(const oldKey of A.legacy.saved||[])A.persistent.remove(oldKey);
 
     if(!A.session.get(A.keys.active)){
       for(const oldKey of A.legacy.active||[]){
@@ -181,12 +182,12 @@
   const offlineAssets=[
     './index.html',
     './manifest.webmanifest',
-    './vault-v2.js?v=13',
-    './app-core.js?v=13',
-    './app-render.js?v=13',
-    './app-ui.js?v=13',
-    './theme.css?v=13',
-    './polish.css?v=13',
+    './vault-v2.js?v=14',
+    './app-core.js?v=14',
+    './app-render.js?v=14',
+    './app-ui.js?v=14',
+    './theme.css?v=14',
+    './polish.css?v=14',
     './hero-art.svg',
     './app-icon-180.png'
   ];
@@ -194,7 +195,7 @@
   const verifyOfflineCopy=async()=>{
     if(!('caches' in globalThis))return false;
     try{
-      const cache=await caches.open('private-trip-v13-final');
+      const cache=await caches.open('private-trip-v14-final');
       const matches=await Promise.all(offlineAssets.map(asset=>cache.match(asset)));
       return matches.every(Boolean);
     }catch{return false;}
