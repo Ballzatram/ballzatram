@@ -1,10 +1,11 @@
-const CACHE='private-trip-v7-stable-navigation';
-const VERSION='7';
+const CACHE='private-trip-v8-key-repair';
+const VERSION='8';
 const ASSETS=[
   './index.html',
   './manifest.webmanifest',
   './theme.css?v='+VERSION,
   './polish.css?v='+VERSION,
+  './unlock-fix.js?v='+VERSION,
   './enhance.js?v='+VERSION,
   './navigation-fix.js?v='+VERSION,
   './hero-art.svg',
@@ -17,11 +18,11 @@ const inject=html=>{
     .replace(/<meta name="apple-mobile-web-app-title" content="[^"]*">/,'<meta name="apple-mobile-web-app-title" content="Celtic Kickoff">')
     .replace(/<title>[^<]*<\/title>/,'<title>Celtic Kickoff Tour — Private Trip</title>')
     .replace(/<link rel="stylesheet" href="\.\/(?:theme|polish)\.css(?:\?v=[^"]*)?"\s*\/?>/g,'')
-    .replace(/<script src="\.\/(?:enhance|navigation-fix)\.js(?:\?v=[^"]*)?"><\/script>/g,'')
+    .replace(/<script src="\.\/(?:unlock-fix|enhance|navigation-fix)\.js(?:\?v=[^"]*)?"><\/script>/g,'')
     .replace(/<link rel="icon" href="[^"]*"(?: type="[^"]*")?\s*\/?>/g,'')
     .replace(/<link rel="apple-touch-icon" href="[^"]*"\s*\/?>/g,'');
   out=out.replace('</head>','<link rel="stylesheet" href="./theme.css?v='+VERSION+'"><link rel="stylesheet" href="./polish.css?v='+VERSION+'"><link rel="icon" href="./app-icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="./app-icon.svg"></head>');
-  out=out.replace('</body>','<script src="./enhance.js?v='+VERSION+'"></script><script src="./navigation-fix.js?v='+VERSION+'"></script></body>');
+  out=out.replace('</body>','<script src="./unlock-fix.js?v='+VERSION+'"></script><script src="./enhance.js?v='+VERSION+'"></script><script src="./navigation-fix.js?v='+VERSION+'"></script></body>');
   return out;
 };
 
