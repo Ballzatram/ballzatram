@@ -1,19 +1,171 @@
-const CURRICULUM=Object.keys(DATA),NAV=[...CURRICULUM,"Finished"],TOTAL=CURRICULUM.reduce((n,k)=>n+DATA[k].length,0),FINISHED_MAP=Object.fromEntries(PERSONAL_FINISHED.map(b=>[b[0],b]));
-let active=CURRICULUM[0],status={},coverCache={};try{status=JSON.parse(localStorage.getItem("ballzatram-reading-room")||"{}")}catch(e){}try{coverCache=JSON.parse(localStorage.getItem("ballzatram-cover-cache-v5")||"{}")}catch(e){}
-const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""),get=t=>status[slug(t)]||DEFAULTS[t]||(FINISHED_MAP[t]?"Read":"Unread");
+const CURRICULUM=Object.keys(DATA);
+const NAV=[...CURRICULUM,"Finished"];
+const TOTAL=CURRICULUM.reduce((n,k)=>n+DATA[k].length,0);
+const FINISHED_MAP=Object.fromEntries(PERSONAL_FINISHED.map(b=>[b[0],b]));
+
+const el={
+  tabs:document.getElementById("tabs"),
+  hero:document.getElementById("hero"),
+  shelfTitle:document.getElementById("shelfTitle"),
+  shelfBlurb:document.getElementById("shelfBlurb"),
+  shelfQuote:document.getElementById("shelfQuote"),
+  search:document.getElementById("search"),
+  shelfProgress:document.getElementById("shelfProgress"),
+  grid:document.getElementById("grid"),
+  readCount:document.getElementById("readCount"),
+  readingCount:document.getElementById("readingCount"),
+  totalCount:document.getElementById("totalCount"),
+  pct:document.getElementById("pct"),
+  meter:document.getElementById("meter"),
+  profile:document.getElementById("profile")
+};
+
+let active=CURRICULUM[0];
+let status={};
+let coverCache={};
+try{status=JSON.parse(localStorage.getItem("ballzatram-reading-room")||"{}")}catch(e){}
+try{coverCache=JSON.parse(localStorage.getItem("ballzatram-cover-cache-v6")||"{}")}catch(e){}
+
+const slug=s=>s.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"");
+const get=t=>status[slug(t)]||DEFAULTS[t]||(FINISHED_MAP[t]?"Read":"Unread");
+
 function themeFor(track){return track==="Finished"?FINISHED_THEME:THEMES[track]}
-function setTheme(track){const t=themeFor(track);document.documentElement.style.setProperty("--accent",t.accent);document.documentElement.style.setProperty("--accent2",t.accent2);document.documentElement.style.setProperty("--page",t.bg);document.documentElement.style.setProperty("--hero",t.hero);document.querySelector('meta[name="theme-color"]').content=t.bg;}
-function save(t,s){status[slug(t)]=s;localStorage.setItem("ballzatram-reading-room",JSON.stringify(status));render()}
-function finishedRows(){const seen=new Set(),out=[];PERSONAL_FINISHED.forEach(b=>{if(get(b[0])==="Read"&&!seen.has(b[0])){seen.add(b[0]);out.push(b)}});CURRICULUM.forEach(k=>DATA[k].forEach(b=>{if(get(b[0])==="Read"&&!seen.has(b[0])){seen.add(b[0]);out.push(b)}}));return out}
-function stats(){let r=0,g=0;CURRICULUM.forEach(k=>DATA[k].forEach(([t])=>{const s=get(t);if(s==="Read")r++;else if(s==="Reading")g++;}));const p=Math.round((r+g*.25)/TOTAL*100);readCount.textContent=finishedRows().length;readingCount.textContent=g;totalCount.textContent=TOTAL;pct.textContent=p+"%";meter.style.width=p+"%";profile.textContent=p<10?"Curious Generalist":p<25?"Building a World Model":p<45?"Systems-Minded Reader":p<70?"Interdisciplinary Operator":p<90?"Independent Scholar":"Walking Encyclopedia";}
-function tabButton(track){const b=document.createElement("button");b.className="tab"+(track===active?" active":"");b.type="button";b.dataset.track=track;b.style.setProperty("--tabAccent",themeFor(track).accent);b.innerHTML="<strong></strong><small></small>";b.querySelector("strong").textContent=track;if(track==="Finished")b.querySelector("small").textContent=finishedRows().length+" books";else b.querySelector("small").textContent=DATA[track].filter(([t])=>get(t)==="Read").length+"/30 read";return b;}
-function googleJsonp(title,author){return new Promise(resolve=>{const cb="gbooks_"+Math.random().toString(36).slice(2),script=document.createElement("script"),timer=setTimeout(()=>done(null),7000);function done(v){clearTimeout(timer);try{delete window[cb]}catch(e){}script.remove();resolve(v)}window[cb]=j=>{try{const items=j&&j.items||[];let best=null;for(const item of items){const v=item.volumeInfo||{},links=v.imageLinks||{};if(links.thumbnail||links.smallThumbnail){best=(links.extraLarge||links.large||links.medium||links.small||links.thumbnail||links.smallThumbnail).replace(/^http:/,"https:").replace("zoom=1","zoom=2");break;}}done(best)}catch(e){done(null)}};const q='intitle:"'+title+'" inauthor:"'+author.split("&")[0].trim()+'"';script.src="https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(q)+"&maxResults=5&callback="+cb;script.onerror=()=>done(null);document.head.append(script);});}
-async function openLibraryCover(title,author){try{const q=new URLSearchParams({title,author,limit:"5",fields:"cover_i,title,author_name"});const res=await fetch("https://openlibrary.org/search.json?"+q.toString(),{mode:"cors"});if(!res.ok)return null;const j=await res.json(),docs=j.docs||[];for(const d of docs){if(d.cover_i)return "https://covers.openlibrary.org/b/id/"+d.cover_i+"-L.jpg"}return null}catch(e){return null}}
-function validateImage(url){return new Promise(resolve=>{if(!url){resolve(null);return;}let settled=false;const probe=new Image(),timer=setTimeout(()=>finish(null),8000);function finish(v){if(settled)return;settled=true;clearTimeout(timer);probe.onload=null;probe.onerror=null;resolve(v)}probe.onload=()=>{const w=probe.naturalWidth||0,h=probe.naturalHeight||0;finish(w>=80&&h>=100?url:null)};probe.onerror=()=>finish(null);probe.src=url;if(probe.complete){setTimeout(()=>{const w=probe.naturalWidth||0,h=probe.naturalHeight||0;if(w>=80&&h>=100)finish(url)},0)}})}
-async function firstValidCover(title,author){const k=slug(title+"-"+author),candidates=[];if(typeof COVER_OVERRIDES!=="undefined"&&COVER_OVERRIDES[title])candidates.push(COVER_OVERRIDES[title]);if(coverCache[k])candidates.push(coverCache[k]);for(const url of candidates){const ok=await validateImage(url);if(ok)return ok;}const google=await googleJsonp(title,author),googleOk=await validateImage(google);if(googleOk){coverCache[k]=googleOk;try{localStorage.setItem("ballzatram-cover-cache-v5",JSON.stringify(coverCache))}catch(e){}return googleOk;}const open=await openLibraryCover(title,author),openOk=await validateImage(open);if(openOk){coverCache[k]=openOk;try{localStorage.setItem("ballzatram-cover-cache-v5",JSON.stringify(coverCache))}catch(e){}return openOk;}return null;}
-async function hydrateCover(img,title,author){const url=await firstValidCover(title,author);if(!url||!img.isConnected)return;img.onload=()=>{img.classList.add("loaded");img.closest(".coverWrap")?.classList.add("has-cover")};img.onerror=()=>{};img.src=url;}
-function bookCard([title,author],i){const s=get(title),article=document.createElement("article");article.className="book";const wrap=document.createElement("div");wrap.className="coverWrap";const fb=document.createElement("div");fb.className="fallback";fb.innerHTML="<div class='ft'></div><div class='fa'></div>";fb.querySelector(".ft").textContent=title;fb.querySelector(".fa").textContent=author;const img=document.createElement("img");img.className="cover";img.alt="Cover of "+title;img.decoding="async";const pill=document.createElement("span");pill.className="statusPill"+(s==="Read"?" read":"");pill.textContent=s;wrap.append(fb,img,pill);const meta=document.createElement("div");meta.className="bookMeta";const h=document.createElement("h3");h.textContent=title;const a=document.createElement("div");a.className="author";a.textContent=author;const states=document.createElement("div");states.className="states";["Unread","Reading","Read"].forEach(st=>{const b=document.createElement("button");b.type="button";b.className="state"+(s===st?" on":"");b.dataset.title=title;b.dataset.state=st;b.textContent=st;states.append(b);});meta.append(h,a,states);article.append(wrap,meta);setTimeout(()=>hydrateCover(img,title,author),Math.min(i,10)*100);return article;}
-function render(){setTheme(active);tabs.replaceChildren(...NAV.map(tabButton));const idx=NAV.indexOf(active),theme=themeFor(active),isFinished=active==="Finished";hero.dataset.glyph=theme.glyph;hero.querySelector(".kicker").textContent=isFinished?"Personal archive":"Shelf "+(idx+1)+" of "+CURRICULUM.length;shelfTitle.textContent=active;shelfBlurb.textContent=isFinished?FINISHED_BLURB:BLURBS[active];shelfQuote.textContent=theme.quote;const q=search.value.trim().toLowerCase(),source=isFinished?finishedRows():DATA[active],rows=source.filter(([t,a])=>(t+" "+a).toLowerCase().includes(q));grid.replaceChildren(...(rows.length?rows.map(bookCard):[Object.assign(document.createElement("div"),{className:"empty",textContent:"No books match that search."})]));if(isFinished)shelfProgress.innerHTML="<b>"+source.length+"</b> books finished";else shelfProgress.innerHTML="<b>"+DATA[active].filter(([t])=>get(t)==="Read").length+"</b> of 30 completed";stats();}
-tabs.addEventListener("click",e=>{const b=e.target.closest("button[data-track]");if(!b)return;active=b.dataset.track;search.value="";render();b.scrollIntoView({behavior:"smooth",inline:"center",block:"nearest"});});
-grid.addEventListener("click",e=>{const b=e.target.closest("button[data-state]");if(!b)return;save(b.dataset.title,b.dataset.state);});
-search.addEventListener("input",render);render();
+function setTheme(track){
+  const t=themeFor(track);
+  document.documentElement.style.setProperty("--accent",t.accent);
+  document.documentElement.style.setProperty("--accent2",t.accent2);
+  document.documentElement.style.setProperty("--page",t.bg);
+  document.documentElement.style.setProperty("--hero",t.hero);
+  const m=document.querySelector('meta[name="theme-color"]');
+  if(m)m.content=t.bg;
+}
+function save(t,s){
+  status[slug(t)]=s;
+  try{localStorage.setItem("ballzatram-reading-room",JSON.stringify(status))}catch(e){}
+  render();
+}
+function finishedRows(){
+  const seen=new Set(),out=[];
+  PERSONAL_FINISHED.forEach(b=>{if(get(b[0])==="Read"&&!seen.has(b[0])){seen.add(b[0]);out.push(b)}});
+  CURRICULUM.forEach(k=>DATA[k].forEach(b=>{if(get(b[0])==="Read"&&!seen.has(b[0])){seen.add(b[0]);out.push(b)}}));
+  return out;
+}
+function updateStats(){
+  let r=0,g=0;
+  CURRICULUM.forEach(k=>DATA[k].forEach(([t])=>{const s=get(t);if(s==="Read")r++;else if(s==="Reading")g++;}));
+  const p=Math.round((r+g*.25)/TOTAL*100);
+  el.readCount.textContent=finishedRows().length;
+  el.readingCount.textContent=g;
+  el.totalCount.textContent=TOTAL;
+  el.pct.textContent=p+"%";
+  el.meter.style.width=p+"%";
+  el.profile.textContent=p<10?"Curious Generalist":p<25?"Building a World Model":p<45?"Systems-Minded Reader":p<70?"Interdisciplinary Operator":p<90?"Independent Scholar":"Walking Encyclopedia";
+}
+function tabButton(track){
+  const b=document.createElement("button");
+  b.className="tab"+(track===active?" active":"");
+  b.type="button";
+  b.dataset.track=track;
+  b.style.setProperty("--tabAccent",themeFor(track).accent);
+  const strong=document.createElement("strong"),small=document.createElement("small");
+  strong.textContent=track;
+  small.textContent=track==="Finished"?finishedRows().length+" books":DATA[track].filter(([t])=>get(t)==="Read").length+"/30 read";
+  b.append(strong,small);
+  return b;
+}
+function googleJsonp(title,author){
+  return new Promise(resolve=>{
+    const cb="gbooks_"+Math.random().toString(36).slice(2);
+    const script=document.createElement("script");
+    let done=false;
+    const finish=v=>{if(done)return;done=true;clearTimeout(timer);try{delete window[cb]}catch(e){};if(script.parentNode)script.parentNode.removeChild(script);resolve(v)};
+    const timer=setTimeout(()=>finish(null),5000);
+    window[cb]=j=>{
+      try{
+        const items=(j&&j.items)||[];
+        for(const item of items){
+          const links=(item.volumeInfo&&item.volumeInfo.imageLinks)||{};
+          const u=links.large||links.medium||links.small||links.thumbnail||links.smallThumbnail;
+          if(u){finish(u.replace(/^http:/,"https:").replace("zoom=1","zoom=2"));return;}
+        }
+      }catch(e){}
+      finish(null);
+    };
+    const q='intitle:"'+title+'" inauthor:"'+author.split("&")[0].trim()+'"';
+    script.src="https://www.googleapis.com/books/v1/volumes?q="+encodeURIComponent(q)+"&maxResults=3&callback="+cb;
+    script.onerror=()=>finish(null);
+    document.head.appendChild(script);
+  });
+}
+async function openLibraryCover(title,author){
+  try{
+    const q=new URLSearchParams({title,author,limit:"3",fields:"cover_i"});
+    const res=await fetch("https://openlibrary.org/search.json?"+q.toString());
+    if(!res.ok)return null;
+    const j=await res.json();
+    const d=(j.docs||[]).find(x=>x.cover_i);
+    return d?"https://covers.openlibrary.org/b/id/"+d.cover_i+"-L.jpg":null;
+  }catch(e){return null}
+}
+async function resolveCover(title,author){
+  const k=slug(title+"-"+author);
+  if(typeof COVER_OVERRIDES!=="undefined"&&COVER_OVERRIDES[title])return COVER_OVERRIDES[title];
+  if(coverCache[k])return coverCache[k];
+  let url=await googleJsonp(title,author);
+  if(!url)url=await openLibraryCover(title,author);
+  if(url){coverCache[k]=url;try{localStorage.setItem("ballzatram-cover-cache-v6",JSON.stringify(coverCache))}catch(e){}}
+  return url;
+}
+function attachCover(img,title,author){
+  resolveCover(title,author).then(url=>{
+    if(!url||!img.isConnected)return;
+    img.onload=()=>{img.classList.add("loaded");};
+    img.onerror=()=>{img.classList.remove("loaded");};
+    img.src=url;
+  }).catch(()=>{});
+}
+function bookCard([title,author],i){
+  const s=get(title);
+  const article=document.createElement("article");article.className="book";
+  const wrap=document.createElement("div");wrap.className="coverWrap";
+  const fb=document.createElement("div");fb.className="fallback";
+  const ft=document.createElement("div");ft.className="ft";ft.textContent=title;
+  const fa=document.createElement("div");fa.className="fa";fa.textContent=author;
+  fb.append(ft,fa);
+  const img=document.createElement("img");img.className="cover";img.alt="Cover of "+title;img.loading="lazy";
+  const pill=document.createElement("span");pill.className="statusPill"+(s==="Read"?" read":"");pill.textContent=s;
+  wrap.append(fb,img,pill);
+  const meta=document.createElement("div");meta.className="bookMeta";
+  const h=document.createElement("h3");h.textContent=title;
+  const a=document.createElement("div");a.className="author";a.textContent=author;
+  const states=document.createElement("div");states.className="states";
+  ["Unread","Reading","Read"].forEach(st=>{const b=document.createElement("button");b.type="button";b.className="state"+(s===st?" on":"");b.dataset.title=title;b.dataset.state=st;b.textContent=st;states.append(b)});
+  meta.append(h,a,states);article.append(wrap,meta);
+  setTimeout(()=>attachCover(img,title,author),Math.min(i,10)*120);
+  return article;
+}
+function render(){
+  try{
+    setTheme(active);
+    el.tabs.replaceChildren(...NAV.map(tabButton));
+    const idx=NAV.indexOf(active),theme=themeFor(active),isFinished=active==="Finished";
+    el.hero.dataset.glyph=theme.glyph;
+    el.hero.querySelector(".kicker").textContent=isFinished?"Personal archive":"Shelf "+(idx+1)+" of "+CURRICULUM.length;
+    el.shelfTitle.textContent=active;
+    el.shelfBlurb.textContent=isFinished?FINISHED_BLURB:BLURBS[active];
+    el.shelfQuote.textContent=theme.quote;
+    const q=el.search.value.trim().toLowerCase();
+    const source=isFinished?finishedRows():DATA[active];
+    const rows=source.filter(([t,a])=>(t+" "+a).toLowerCase().includes(q));
+    el.grid.replaceChildren(...(rows.length?rows.map(bookCard):[Object.assign(document.createElement("div"),{className:"empty",textContent:"No books match that search."})]));
+    el.shelfProgress.innerHTML=isFinished?"<b>"+source.length+"</b> books finished":"<b>"+DATA[active].filter(([t])=>get(t)==="Read").length+"</b> of 30 completed";
+    updateStats();
+  }catch(err){
+    console.error("Reading Room render error",err);
+    if(el.grid)el.grid.innerHTML='<div class="empty">The library hit a loading error. Refresh once to retry.</div>';
+  }
+}
+el.tabs.addEventListener("click",e=>{const b=e.target.closest("button[data-track]");if(!b)return;active=b.dataset.track;el.search.value="";render();});
+el.grid.addEventListener("click",e=>{const b=e.target.closest("button[data-state]");if(!b)return;save(b.dataset.title,b.dataset.state);});
+el.search.addEventListener("input",render);
+render();
