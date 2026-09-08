@@ -22,13 +22,12 @@ for (const rows of Object.values(DATA)) for (const [title, author] of rows) seen
 for (const [title, author] of PERSONAL_FINISHED) seen.set(title, [title, author]);
 
 const slug = s => s.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 120);
-const sleep = ms => new Promise(r => setTimeout(r, ms));
+const request = (url, options={}) => fetch(url, { ...options, signal: AbortSignal.timeout(7000) });
 
 async function googleCandidate(title, author) {
   const q = `intitle:"${title}" inauthor:"${author.split('&')[0].trim()}"`;
-  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5`;
   try {
-    const r = await fetch(url, { headers: { 'User-Agent': 'Ballzatram-Reading-Room/1.0' } });
+    const r = await request(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(q)}&maxResults=5`, { headers: { 'User-Agent': 'Ballzatram-Reading-Room/1.0' } });
     if (!r.ok) return null;
     const j = await r.json();
     for (const item of j.items || []) {
@@ -43,7 +42,7 @@ async function googleCandidate(title, author) {
 async function openLibraryCandidate(title, author) {
   const qs = new URLSearchParams({ title, author, limit: '5', fields: 'cover_i,title,author_name' });
   try {
-    const r = await fetch(`https://openlibrary.org/search.json?${qs}`, { headers: { 'User-Agent': 'Ballzatram-Reading-Room/1.0' } });
+    const r = await request(`https://openlibrary.org/search.json?${qs}`, { headers: { 'User-Agent': 'Ballzatram-Reading-Room/1.0' } });
     if (!r.ok) return null;
     const j = await r.json();
     const d = (j.docs || []).find(x => x.cover_i);
@@ -55,7 +54,7 @@ async function openLibraryCandidate(title, author) {
 async function fetchImage(url) {
   if (!url) return null;
   try {
-    const r = await fetch(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 BallzatramReadingRoom/1.0' } });
+    const r = await request(url, { redirect: 'follow', headers: { 'User-Agent': 'Mozilla/5.0 BallzatramReadingRoom/1.0' } });
     if (!r.ok) return null;
     const type = r.headers.get('content-type') || '';
     if (!type.startsWith('image/')) return null;
@@ -73,14 +72,15 @@ function extFor(type) {
 }
 
 const manifest = {};
-let i = 0;
-for (const [title, author] of seen.values()) {
-  i++;
+const entries = [...seen.values()];
+let cursor = 0, completed = 0;
+
+async function processOne([title, author]) {
   const base = slug(title);
   const existing = fs.readdirSync(coversDir).find(f => f === `${base}.jpg` || f === `${base}.png` || f === `${base}.webp`);
   if (existing) {
     manifest[title] = `/internal/reading-room/covers/${existing}`;
-    continue;
+    return;
   }
   let candidate = await googleCandidate(title, author);
   let image = await fetchImage(candidate);
@@ -92,12 +92,22 @@ for (const [title, author] of seen.values()) {
     const file = `${base}.${extFor(image.type)}`;
     fs.writeFileSync(path.join(coversDir, file), image.buf);
     manifest[title] = `/internal/reading-room/covers/${file}`;
-    console.log(`[${i}/${seen.size}] saved ${title}`);
+    console.log(`saved ${title}`);
   } else {
-    console.log(`[${i}/${seen.size}] no cover ${title}`);
+    console.log(`no cover ${title}`);
   }
-  await sleep(80);
 }
 
+async function worker() {
+  while (true) {
+    const idx = cursor++;
+    if (idx >= entries.length) return;
+    await processOne(entries[idx]);
+    completed++;
+    if (completed % 10 === 0) console.log(`${completed}/${entries.length}`);
+  }
+}
+
+await Promise.all(Array.from({length: 8}, () => worker()));
 fs.writeFileSync(path.join(room, 'local-covers.js'), `const LOCAL_COVERS=${JSON.stringify(manifest, null, 2)};\n`);
 console.log(`Pinned ${Object.keys(manifest).length}/${seen.size} covers.`);
