@@ -1,0 +1,1 @@
+Reading Room uses a custom dark-library app icon for Add to Home Screen.
