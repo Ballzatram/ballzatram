@@ -32,12 +32,17 @@ function json(data, status, headers) {
 }
 
 function extractOutputText(payload) {
-  if (typeof payload?.output_text === "string") return payload.output_text;
+  if (typeof payload?.output_text === "string" && payload.output_text.trim()) {
+    return payload.output_text.trim();
+  }
 
   const pieces = [];
   for (const item of payload?.output || []) {
+    if (item?.type !== "message") continue;
     for (const content of item?.content || []) {
-      if (typeof content?.text === "string") pieces.push(content.text);
+      if (content?.type === "output_text" && typeof content?.text === "string") {
+        pieces.push(content.text);
+      }
     }
   }
   return pieces.join("\n").trim();
@@ -150,7 +155,8 @@ export default {
         model: env.OPENAI_MODEL || "gpt-5-mini",
         instructions,
         input: `Tool: ${tool}\n\nUser request:\n${prompt}\n\nStructured tool context:\n${contextText}`,
-        max_output_tokens: 900,
+        reasoning: { effort: "low" },
+        max_output_tokens: 1600,
         store: false,
       }),
     });
@@ -170,7 +176,21 @@ export default {
 
     const answer = extractOutputText(payload);
     if (!answer) {
-      return json({ error: "OpenAI returned no text output" }, 502, cors);
+      const reason = payload?.incomplete_details?.reason;
+      const usage = payload?.usage;
+      return json(
+        {
+          error: reason
+            ? `OpenAI response was incomplete (${reason}) before producing text.`
+            : "OpenAI returned no text output.",
+          openai_status: payload?.status || null,
+          response_id: payload?.id || null,
+          output_tokens: usage?.output_tokens ?? null,
+          reasoning_tokens: usage?.output_tokens_details?.reasoning_tokens ?? null,
+        },
+        502,
+        cors,
+      );
     }
 
     return json(
