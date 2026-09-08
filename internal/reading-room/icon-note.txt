@@ -1,0 +1,1 @@
+Binary app icon stored via Git object in subsequent commit.
