@@ -1,6 +1,7 @@
 const PERSONAL_FINISHED=[
   ["South","Ernest Shackleton"],
   ["The Gunslinger","Stephen King"],
+  ["The Drawing of the Three","Stephen King"],
   ["Fingerprints of the Gods","Graham Hancock"],
   ["Smart Money","Alex Duff"],
   ["An Unquiet Mind","Kay Redfield Jamison"],
@@ -23,5 +24,33 @@ const PERSONAL_FINISHED=[
   ["Economic Growth of the United States, 1790–1860","Douglass C. North"],
   ["The Lord of the Rings","J. R. R. Tolkien"]
 ];
+
+const PERSONAL_CATEGORIES={
+  "South":"General History",
+  "The Gunslinger":"Fiction",
+  "The Drawing of the Three":"Fiction",
+  "Fingerprints of the Gods":"General History",
+  "Smart Money":"Economics & Markets",
+  "An Unquiet Mind":"Power & Institutions",
+  "The Art of Peace":"Power & Institutions",
+  "Never Split the Difference":"Power & Institutions",
+  "The Millionaire Next Door":"Economics & Markets",
+  "It":"Fiction",
+  "Animal Farm":"Power & Institutions",
+  "Doctor Zhivago":"Fiction",
+  "Of Mice and Men":"Fiction",
+  "The Hobbit":"Fiction",
+  "The Godfather":"Fiction",
+  "1984":"Power & Institutions",
+  "Ulysses":"Fiction",
+  "The Count of Monte Cristo":"Fiction",
+  "The Art of War":"Power & Institutions",
+  "Den of Thieves":"Economics & Markets",
+  "A Random Walk Down Wall Street":"Economics & Markets",
+  "Noise":"Power & Institutions",
+  "Economic Growth of the United States, 1790–1860":"Economics & Markets",
+  "The Lord of the Rings":"Fiction"
+};
+
 const FINISHED_THEME={accent:"#e5bd72",accent2:"#6b4226",bg:"#100d0a",hero:"linear-gradient(135deg,#21170f,#4b301b 48%,#17110c)",glyph:"✓",quote:"The shelf that proves the miles already traveled."};
 const FINISHED_BLURB="Your actual reading history — books completed across fiction, history, economics, psychology, strategy and everything in between.";
