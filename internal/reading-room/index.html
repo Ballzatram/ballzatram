@@ -4,21 +4,36 @@
 <meta name="robots" content="noindex,nofollow,noarchive"><meta name="theme-color" content="#0b0c0d">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Reading Room">
-<link rel="apple-touch-icon" href="/internal/reading-room/app-icon.svg?v=8">
-<link rel="icon" type="image/svg+xml" href="/internal/reading-room/app-icon.svg?v=8">
-<link rel="manifest" href="/internal/reading-room/manifest.json?v=8">
-<link rel="stylesheet" href="/internal/reading-room/library.css?v=8">
+<link rel="apple-touch-icon" href="/internal/reading-room/app-icon.svg?v=9">
+<link rel="icon" type="image/svg+xml" href="/internal/reading-room/app-icon.svg?v=9">
+<link rel="manifest" href="/internal/reading-room/manifest.json?v=9">
+<link rel="stylesheet" href="/internal/reading-room/library.css?v=9">
 <title>The Reading Room · Ballzatram</title>
 </head><body><main class="wrap">
 <header class="mast"><div class="brand"><div class="eyebrow">Ballzatram · Private Collection</div><h1>The Reading Room</h1><p>A personal library for building a world model — history, power, markets, technology and fiction.</p></div>
-<div class="stats"><div class="statsTop"><div><div class="profileLabel">Reader profile</div><div id="profile">Curious Generalist</div></div><div id="pct">0%</div></div><div class="meter"><span id="meter"></span></div><div class="miniStats"><span><b id="readCount">0</b> finished</span><span><b id="readingCount">0</b> reading</span><span><b id="totalCount">180</b> curriculum</span></div></div></header>
+<div class="stats"><div class="statsTop"><div><div class="profileLabel">Reader profile</div><div id="profile">Reader in Progress</div></div><div id="pct">0.0%</div></div><div class="meter"><span id="meter"></span></div><div class="miniStats"><span><b id="readCount">0</b> finished</span><span><b id="readingCount">0</b> reading</span><span><b id="totalCount">0</b> library</span></div></div></header>
+
+<section class="readerModel" aria-label="Adaptive reader profile">
+  <div class="readerModelHead">
+    <div><div class="modelKicker">Adaptive reader model</div><h2 id="readerArchetype">Building your reader profile…</h2></div>
+    <div class="readerLevel"><span id="readerStage">Explorer</span><b id="readerExact">0 / 0 finished</b></div>
+  </div>
+  <p class="readerSummary" id="readerSummary"></p>
+  <div class="readerPath">
+    <div class="pathCard"><small>You’re becoming</small><strong id="readerBecoming"></strong></div>
+    <div class="pathCard"><small>Finish the library</small><strong id="readerDestination"></strong></div>
+    <div class="pathCard suggestion"><small>Suggested next</small><strong id="readerSuggestion"></strong><span id="readerSuggestionWhy"></span></div>
+  </div>
+  <div class="domainGrid" id="domainGrid"></div>
+</section>
+
 <nav class="tabs" id="tabs" aria-label="Reading shelves"></nav>
 <section class="hero" id="hero" data-glyph="◆"><div><div class="kicker">Shelf 1 of 7</div><h2 id="shelfTitle">Western History</h2><p id="shelfBlurb"></p></div><div class="quote" id="shelfQuote"></div></section>
 <div class="toolbar"><input class="search" id="search" placeholder="Search books, authors, or topics…" autocomplete="off"><div class="shelfProgress" id="shelfProgress"></div></div>
 <section class="library" id="grid"></section>
 </main>
-<script src="/internal/reading-room/books.js?v=8"></script>
-<script src="/internal/reading-room/finished.js?v=8"></script>
-<script src="/internal/reading-room/local-covers.js?v=8"></script>
-<script src="/internal/reading-room/app.js?v=8"></script>
+<script src="/internal/reading-room/books.js?v=9"></script>
+<script src="/internal/reading-room/finished.js?v=9"></script>
+<script src="/internal/reading-room/local-covers.js?v=9"></script>
+<script src="/internal/reading-room/app.js?v=9"></script>
 </body></html>
