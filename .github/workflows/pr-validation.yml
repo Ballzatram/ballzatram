@@ -66,6 +66,12 @@ jobs:
           find games econ-arcade tools -type f -name '*.js' -print0 | xargs -0 -n1 node --check
           node --check ai-bridge/worker.js
 
+      - name: Test Observatory domain and browser flows
+        run: |
+          npm ci --prefix tools/observatory --ignore-scripts
+          npm test --prefix tools/observatory
+          python -m unittest discover -s scripts/tests -v
+
       - name: Build frontend
         working-directory: frontend
         env:

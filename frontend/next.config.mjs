@@ -5,6 +5,7 @@ const nextConfig = {
   experimental: { typedRoutes: true, externalDir: true },
   async redirects() {
     return [
+      { source: "/observatory", destination: "/tools/observatory/index.html", permanent: false },
       {
         source: "/macro-board",
         destination: "/quant-library",

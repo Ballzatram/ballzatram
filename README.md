@@ -24,6 +24,13 @@ A June 2026 pass reduced the public surface back to a clearer launchpad:
 - Betting, newspaper, Stoney, Penitent, and culture pages remain findable but de-emphasized as archive or experimental routes.
 - Weather Desk stays paper/research only, with no live orders and no financial advice.
 
+## Observatory
+
+The [Observatory workbench](tools/observatory/index.html) brings bill text, version changes,
+congressional votes, sourced promise drafts, coverage mappings and portable investigation
+files together. It works on GitHub Pages and through the Next.js tool catalog, with pinned
+official records and clearly labeled draft analysis. See [usage and limitations](docs/observatory/WORKBENCH.md).
+
 ## Econ Arcade
 
 The May 2026 production polish pass added stronger public-site metadata, skip-link accessibility, a homepage mission panel, and an Econ Arcade learning contract that makes the curriculum explicit before users launch a game. Central Banker now includes setup learning objectives, an in-game policy notebook, and end-of-term concept debriefs so the macro game teaches inflation targeting, policy lags, financial stability, expectations, and central-bank credibility while preserving the playful Goblin Reserve loop.

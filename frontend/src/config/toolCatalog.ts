@@ -108,6 +108,18 @@ export const launchpadSections: LaunchpadSection[] = [
 
 export const toolCatalog: ToolCatalogItem[] = [
   {
+    id: "observatory",
+    name: "Observatory",
+    description: "Inspect bill text and version changes, search congressional votes, and trace sourced promises and coverage in a portable investigation.",
+    category: "featured",
+    status: "prototype",
+    href: "/tools/observatory/index.html",
+    readinessNote: "Pinned official records with draft interpretations; local research workspace, not a live congressional feed.",
+    backendRequired: false,
+    dataMode: "static",
+    featured: true,
+  },
+  {
     id: "parcel-intelligence",
     name: "Parcel Intelligence",
     description:

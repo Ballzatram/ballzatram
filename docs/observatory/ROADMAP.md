@@ -1,6 +1,6 @@
 # Implementation roadmap
 
-This is an acceptance-based sequence, not a delivery-time or revenue promise. All phases beyond the foundation remain unimplemented.
+This is an acceptance-based sequence, not a delivery-time or revenue promise. The browser workbench now implements draft workflows across Bill X-Ray, version comparison, congressional records, Promise Ledger, coverage mappings and export; see [WORKBENCH.md](WORKBENCH.md). This does not complete the reviewed publication or nationwide-data acceptance gates below.
 
 ## Phase 0 — preserve and validate the foundation
 

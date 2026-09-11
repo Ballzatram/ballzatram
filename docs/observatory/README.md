@@ -1,6 +1,8 @@
 # Ballzatram Observatory
 
-**Status: design and tested evidence-contract foundation, not a live investigative service.**
+**Status: working bill/congress research prototype plus tested evidence-contract foundation; not a live investigative service.**
+
+The browser workbench is implemented at `/tools/observatory/index.html`. See [workflows, import instructions, validation, and limits](WORKBENCH.md). The remaining sections describe the original foundation and broader product vision.
 
 Prepared September 8, 2026. Working product name, not a trademark determination. Osiris is the reasoning and educational layer; Ballzatram is the host platform.
 
@@ -36,7 +38,7 @@ The first product wedge is Bill X-Ray plus an evidence timeline. Build one trust
 - `demo_data/observatory/`: a synthetic example and its exact snapshot. It makes no allegation about any real person or law.
 - `backend/tests/test_observatory_models.py`: offline positive and negative tests, including publication gates and snapshot integrity.
 
-There is **no** ingestion adapter, database migration, UI route, live model call, automatic publication, payment integration, or deployment in this foundation. No existing game, reading-room, travel, or catalog route is changed.
+The original foundation below introduced no runtime routes. The subsequent workbench adds official XML import, a browser UI, catalog links, local drafts/export, and optional use of the existing AI bridge. It adds no automatic publication, database migration, or billing. See WORKBENCH.md for current scope.
 
 The contracts check structure, not truth, legal permission, genuine reviewer independence, or source authenticity. The future server must authenticate reviewers, enforce authorization, verify actual stored bytes and excerpts, and run the publication policy. A manually supplied `permitted` or `reviewed` field is not itself proof of permission or review. Generated JSON Schema also cannot replace the Python cross-record validators.
 

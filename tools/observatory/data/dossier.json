@@ -1,0 +1,3856 @@
+{
+  "schemaVersion": 1,
+  "id": "117-s-4524",
+  "mode": "draft",
+  "billLabel": "S. 4524 · 117th Congress",
+  "description": "Follow one bill from its original language to the enrolled text and the recorded congressional decisions.",
+  "selectionNote": "Selected for manageable length, two accessible official versions, and a complete House roll call. This single historical case is not a representative sample of Congress. Interpretive notes are drafts. Enrolled text is not the signed public-law artifact; enactment is recorded separately in BILLSTATUS.",
+  "sources": [
+    {
+      "id": "introduced",
+      "url": "https://www.govinfo.gov/content/pkg/BILLS-117s4524is/xml/BILLS-117s4524is.xml",
+      "path": "data/sources/introduced.xml",
+      "retrievedAt": "2026-09-11T23:22:25.067461+00:00",
+      "sha256": "5ace248da7b69ab1e58e97bce55cb7820e38b51e90a4c922d01d25f7943fae54",
+      "kind": "official_record",
+      "rights": "US federal government record; source attribution retained. No third-party reporting included."
+    },
+    {
+      "id": "enrolled",
+      "url": "https://www.govinfo.gov/content/pkg/BILLS-117s4524enr/xml/BILLS-117s4524enr.xml",
+      "path": "data/sources/enrolled.xml",
+      "retrievedAt": "2026-09-11T23:22:29.787104+00:00",
+      "sha256": "eb69e7eb6b2d8da2dafe85f0bdcbb0248fbff32966be68af2209526dc05140f0",
+      "kind": "official_record",
+      "rights": "US federal government record; source attribution retained. No third-party reporting included."
+    },
+    {
+      "id": "status",
+      "url": "https://www.govinfo.gov/bulkdata/BILLSTATUS/117/s/BILLSTATUS-117s4524.xml",
+      "path": "data/sources/status.xml",
+      "retrievedAt": "2026-09-11T23:22:39.720450+00:00",
+      "sha256": "d36043a59164d5a9ecb77db7f8315a6407fb17af333be84c9621cdb196fd28b4",
+      "kind": "official_record",
+      "rights": "US federal government record; source attribution retained. No third-party reporting included."
+    },
+    {
+      "id": "house-vote",
+      "url": "https://clerk.house.gov/evs/2022/roll480.xml",
+      "path": "data/sources/house-vote.xml",
+      "retrievedAt": "2026-09-11T23:22:34.862563+00:00",
+      "sha256": "a43504b5c7464ba02b53a392563606b3a5a8033da85d7f1d19cb3cfb6b3caec6",
+      "kind": "official_record",
+      "rights": "US federal government record; source attribution retained. No third-party reporting included."
+    }
+  ],
+  "versions": [
+    {
+      "id": "is",
+      "label": "Introduced in Senate",
+      "sourceId": "introduced",
+      "sections": [
+        {
+          "id": "section-1",
+          "number": "1",
+          "title": "Short title",
+          "locator": "H4EA0E64F53784F82B607CA67795EBC84",
+          "text": "1.\nShort title\nThis Act may be cited as the Speak Out Act.",
+          "sourceId": "introduced",
+          "analysis": "",
+          "tags": [],
+          "references": []
+        },
+        {
+          "id": "section-2",
+          "number": "2",
+          "title": "Findings",
+          "locator": "H8F3AC8F9D17F4521897B17272FA8AFB2",
+          "text": "2.\nFindings\nCongress finds the following:\n(1)\nSexual harassment and assault remain pervasive in the workplace and throughout civic society, affecting millions of Americans.\n(2)\nEighty-one percent of women and 43 percent of men have experienced some form of sexual harassment or assault throughout their lifetime.\n(3)\nOne in 3 women has faced sexual harassment in the workplace during her career, and an estimated 87 to 94 percent of those who experience sexual harassment never file a formal complaint.\n(4)\nSexual harassment in the workplace forces many women to leave their occupation or industry, or pass up opportunities for advancement.\n(5)\nIn order to combat sexual harassment and assault, it is essential that victims and survivors have the freedom to report and publicly disclose their abuse.\n(6)\nNondisclosure and nondisparagement provisions in agreements between employers and current, former, and prospective employees, and independent contractors, and between providers of goods and services and consumers, can perpetuate illegal conduct by silencing those who are survivors of illegal sexual harassment and assault or illegal retaliation, or have knowledge of such conduct, while shielding perpetrators and enabling them to continue their abuse.\n(7)\nProhibiting predispute nondisclosure and nondisparagement clauses will empower survivors to come forward, hold perpetrators accountable for abuse, improve transparency around illegal conduct, enable the pursuit of justice, and make workplaces safer and more productive for everyone.",
+          "sourceId": "introduced",
+          "analysis": "",
+          "tags": [],
+          "references": []
+        },
+        {
+          "id": "section-3",
+          "number": "3",
+          "title": "Definitions",
+          "locator": "HBFE33E3F5FFF4EB9B0AFC77F2C908EF2",
+          "text": "3.\nDefinitions\nIn this Act:\n(1)\nPredispute nondisclosure clause\nThe term predispute nondisclosure clause means a provision in a contract or agreement agreed to before a lawsuit is filed under Federal, State, or Tribal law that requires the parties to the contract or agreement not to disclose or discuss conduct, the existence of a settlement involving conduct, or information covered by the terms and conditions of the contract or agreement.\n(2)\nPredispute nondisparagement clause\nThe term predispute nondisparagement clause means a provision in a contract or agreement that requires 1 or more parties to the contract or agreement not to make a negative statement about another party that relates to the contract, agreement, claim, or case.\n(3)\nSexual assault dispute\nThe term sexual assault dispute means a dispute involving a nonconsensual sexual act or sexual contact, as such terms are defined in section 2246 of title 18, United States Code, or similar applicable Tribal or State law, including when the victim lacks capacity to consent.\n(4)\nSexual harassment dispute\nThe term sexual harassment dispute means a dispute relating to conduct that is alleged to constitute sexual harassment under applicable Federal, Tribal, or State law.",
+          "sourceId": "introduced",
+          "analysis": "",
+          "tags": [],
+          "references": []
+        },
+        {
+          "id": "section-4",
+          "number": "4",
+          "title": "Limitation on judicial enforceability of predispute nondisclosure and nondisparagement contract clauses relating to sexual assault disputes and sexual harassment disputes",
+          "locator": "HF7087F3F3AD94924A30A579337A88DDF",
+          "text": "4.\nLimitation on judicial enforceability of predispute nondisclosure and nondisparagement contract clauses relating to sexual assault disputes and sexual harassment disputes\n(a)\nIn general\nWith respect to a sexual assault dispute or sexual harassment dispute, no predispute nondisclosure clause or predispute nondisparagement clause shall be judicially enforceable in instances in which conduct is alleged to have violated Federal, Tribal, or State law.\n(b)\nContinued applicability of State law\nThis Act shall not be construed to supersede a provision of State law that establishes, implements, or continues in effect a requirement or prohibition except to the extent that such requirement or prohibition prevents the application of this Act.\n(c)\nContinued Applicability of Federal, State, and Tribal Law\nThis Act shall not be construed to supersede a provision of Federal, State, or Tribal law that governs the use of pseudonyms in the filing of claims involving sexual assault or sexual harassment disputes.\n(d)\nProtection of trade secrets and proprietary information\nNothing in this Act shall prohibit an employer and an employee from protecting trade secrets or proprietary information.",
+          "sourceId": "introduced",
+          "analysis": "",
+          "tags": [],
+          "references": []
+        },
+        {
+          "id": "section-5",
+          "number": "5",
+          "title": "Applicability",
+          "locator": "HFA3432D5397D4C31B53D7075BE8E2A32",
+          "text": "5.\nApplicability\nThis Act shall apply with respect to a claim that is filed under Federal, State, or Tribal law on or after the date of enactment of this Act.",
+          "sourceId": "introduced",
+          "analysis": "",
+          "tags": [],
+          "references": []
+        }
+      ],
+      "manifest": {
+        "sectionCount": 5,
+        "unaccountedBlocks": [],
+        "scope": "All XML section nodes; headings and incorporated laws are not legal-effect analysis."
+      },
+      "fullText": "1.\nShort title\nThis Act may be cited as the Speak Out Act.\n2.\nFindings\nCongress finds the following:\n(1)\nSexual harassment and assault remain pervasive in the workplace and throughout civic society, affecting millions of Americans.\n(2)\nEighty-one percent of women and 43 percent of men have experienced some form of sexual harassment or assault throughout their lifetime.\n(3)\nOne in 3 women has faced sexual harassment in the workplace during her career, and an estimated 87 to 94 percent of those who experience sexual harassment never file a formal complaint.\n(4)\nSexual harassment in the workplace forces many women to leave their occupation or industry, or pass up opportunities for advancement.\n(5)\nIn order to combat sexual harassment and assault, it is essential that victims and survivors have the freedom to report and publicly disclose their abuse.\n(6)\nNondisclosure and nondisparagement provisions in agreements between employers and current, former, and prospective employees, and independent contractors, and between providers of goods and services and consumers, can perpetuate illegal conduct by silencing those who are survivors of illegal sexual harassment and assault or illegal retaliation, or have knowledge of such conduct, while shielding perpetrators and enabling them to continue their abuse.\n(7)\nProhibiting predispute nondisclosure and nondisparagement clauses will empower survivors to come forward, hold perpetrators accountable for abuse, improve transparency around illegal conduct, enable the pursuit of justice, and make workplaces safer and more productive for everyone.\n3.\nDefinitions\nIn this Act:\n(1)\nPredispute nondisclosure clause\nThe term predispute nondisclosure clause means a provision in a contract or agreement agreed to before a lawsuit is filed under Federal, State, or Tribal law that requires the parties to the contract or agreement not to disclose or discuss conduct, the existence of a settlement involving conduct, or information covered by the terms and conditions of the contract or agreement.\n(2)\nPredispute nondisparagement clause\nThe term predispute nondisparagement clause means a provision in a contract or agreement that requires 1 or more parties to the contract or agreement not to make a negative statement about another party that relates to the contract, agreement, claim, or case.\n(3)\nSexual assault dispute\nThe term sexual assault dispute means a dispute involving a nonconsensual sexual act or sexual contact, as such terms are defined in section 2246 of title 18, United States Code, or similar applicable Tribal or State law, including when the victim lacks capacity to consent.\n(4)\nSexual harassment dispute\nThe term sexual harassment dispute means a dispute relating to conduct that is alleged to constitute sexual harassment under applicable Federal, Tribal, or State law.\n4.\nLimitation on judicial enforceability of predispute nondisclosure and nondisparagement contract clauses relating to sexual assault disputes and sexual harassment disputes\n(a)\nIn general\nWith respect to a sexual assault dispute or sexual harassment dispute, no predispute nondisclosure clause or predispute nondisparagement clause shall be judicially enforceable in instances in which conduct is alleged to have violated Federal, Tribal, or State law.\n(b)\nContinued applicability of State law\nThis Act shall not be construed to supersede a provision of State law that establishes, implements, or continues in effect a requirement or prohibition except to the extent that such requirement or prohibition prevents the application of this Act.\n(c)\nContinued Applicability of Federal, State, and Tribal Law\nThis Act shall not be construed to supersede a provision of Federal, State, or Tribal law that governs the use of pseudonyms in the filing of claims involving sexual assault or sexual harassment disputes.\n(d)\nProtection of trade secrets and proprietary information\nNothing in this Act shall prohibit an employer and an employee from protecting trade secrets or proprietary information.\n5.\nApplicability\nThis Act shall apply with respect to a claim that is filed under Federal, State, or Tribal law on or after the date of enactment of this Act."
+    },
+    {
+      "id": "enr",
+      "label": "Enrolled",
+      "sourceId": "enrolled",
+      "sections": [
+        {
+          "id": "section-1",
+          "number": "1",
+          "title": "Short title",
+          "locator": "id7d926eca-00c5-43bd-ab74-db025a37f6b2",
+          "text": "1.\nShort title\nThis Act may be cited as the Speak Out Act.",
+          "sourceId": "enrolled",
+          "analysis": "Names the measure the Speak Out Act.",
+          "tags": [
+            "Title"
+          ],
+          "references": []
+        },
+        {
+          "id": "section-2",
+          "number": "2",
+          "title": "Findings",
+          "locator": "idb42b6878-1fb8-413c-ac09-e23085babb42",
+          "text": "2.\nFindings\nCongress finds the following:\n(1)\nSexual harassment and assault remain pervasive in the workplace and throughout civic society, affecting millions of Americans.\n(2)\nEighty-one percent of women and 43 percent of men have experienced some form of sexual harassment or assault throughout their lifetime.\n(3)\nOne in 3 women has faced sexual harassment in the workplace during her career, and an estimated 87 to 94 percent of those who experience sexual harassment never file a formal complaint.\n(4)\nSexual harassment in the workplace forces many women to leave their occupation or industry, or pass up opportunities for advancement.\n(5)\nIn order to combat sexual harassment and assault, it is essential that victims and survivors have the freedom to report and publicly disclose their abuse.\n(6)\nNondisclosure and nondisparagement provisions in agreements between employers and current, former, and prospective employees, and independent contractors, and between providers of goods and services and consumers, can perpetuate illegal conduct by silencing those who are survivors of illegal sexual harassment and assault or illegal retaliation, or have knowledge of such conduct, while shielding perpetrators and enabling them to continue their abuse.\n(7)\nProhibiting nondisclosure and nondisparagement clauses will empower survivors to come forward, hold perpetrators accountable for abuse, improve transparency around illegal conduct, enable the pursuit of justice, and make workplaces safer and more productive for everyone.",
+          "sourceId": "enrolled",
+          "analysis": "Records Congress’s findings and policy rationale. Statistics here are statements in the bill, not independently validated measurements by this workbench.",
+          "tags": [
+            "Findings"
+          ],
+          "references": []
+        },
+        {
+          "id": "section-3",
+          "number": "3",
+          "title": "Definitions",
+          "locator": "idd571d8b2-e050-4adb-a1f1-4748b19a9cf1",
+          "text": "3.\nDefinitions\nIn this Act:\n(1)\nNondisclosure clause\nThe term nondisclosure clause means a provision in a contract or agreement that requires the parties to the contract or agreement not to disclose or discuss conduct, the existence of a settlement involving conduct, or information covered by the terms and conditions of the contract or agreement.\n(2)\nNondisparagement clause\nThe term nondisparagement clause means a provision in a contract or agreement that requires 1 or more parties to the contract or agreement not to make a negative statement about another party that relates to the contract, agreement, claim, or case.\n(3)\nSexual assault dispute\nThe term sexual assault dispute means a dispute involving a nonconsensual sexual act or sexual contact, as such terms are defined in section 2246 of title 18, United States Code, or similar applicable Tribal or State law, including when the victim lacks capacity to consent.\n(4)\nSexual harassment dispute\nThe term sexual harassment dispute means a dispute relating to conduct that is alleged to constitute sexual harassment under applicable Federal, Tribal, or State law.",
+          "sourceId": "enrolled",
+          "analysis": "Defines the covered clauses and disputes. Sexual assault refers to federal criminal definitions or similar Tribal or State law; sexual harassment depends on applicable law.",
+          "tags": [
+            "Definitions",
+            "Cross-references"
+          ],
+          "references": []
+        },
+        {
+          "id": "section-4",
+          "number": "4",
+          "title": "Limitation on judicial enforceability of nondisclosure and nondisparagement contract clauses relating to sexual assault disputes and sexual harassment disputes",
+          "locator": "id55c5cd13-1598-4182-acd6-79eb93968a82",
+          "text": "4.\nLimitation on judicial enforceability of nondisclosure and nondisparagement contract clauses relating to sexual assault disputes and sexual harassment disputes\n(a)\nIn general\nWith respect to a sexual assault dispute or sexual harassment dispute, no nondisclosure clause or nondisparagement clause agreed to before the dispute arises shall be judicially enforceable in instances in which conduct is alleged to have violated Federal, Tribal, or State law.\n(b)\nContinued applicability of State law\nNothing in this Act shall prohibit a State or locality from enforcing a provision of State law governing nondisclosure or nondisparagement clauses that is at least as protective of the right of an individual to speak freely, as provided by this Act.\n(c)\nContinued Applicability of Federal, State, and Tribal Law\nThis Act shall not be construed to supersede a provision of Federal, State, or Tribal Law that governs the use of pseudonyms in the filing of claims involving sexual assault or sexual harassment disputes.\n(d)\nProtection of trade secrets and proprietary information\nNothing in this Act shall prohibit an employer and an employee from protecting trade secrets or proprietary information.",
+          "sourceId": "enrolled",
+          "analysis": "Addresses judicial enforceability of covered clauses agreed to before a dispute arises. Preserves at-least-as-protective State or local rules, pseudonym provisions, and protection of trade secrets or proprietary information. This is not a blanket ban on every confidentiality agreement.",
+          "tags": [
+            "Enforceability",
+            "Exceptions"
+          ],
+          "references": []
+        },
+        {
+          "id": "section-5",
+          "number": "5",
+          "title": "Applicability",
+          "locator": "id422b5172-21be-4ada-85a8-c4817e35d7c6",
+          "text": "5.\nApplicability\nThis Act shall apply with respect to a claim that is filed under Federal, State, or Tribal law on or after the date of enactment of this Act.",
+          "sourceId": "enrolled",
+          "analysis": "Applies to claims filed under Federal, State, or Tribal law on or after enactment. The filing date and the timing of the agreement are different questions.",
+          "tags": [
+            "Timing"
+          ],
+          "references": []
+        }
+      ],
+      "manifest": {
+        "sectionCount": 5,
+        "unaccountedBlocks": [],
+        "scope": "All XML section nodes; headings and incorporated laws are not legal-effect analysis."
+      },
+      "fullText": "1.\nShort title\nThis Act may be cited as the Speak Out Act.\n2.\nFindings\nCongress finds the following:\n(1)\nSexual harassment and assault remain pervasive in the workplace and throughout civic society, affecting millions of Americans.\n(2)\nEighty-one percent of women and 43 percent of men have experienced some form of sexual harassment or assault throughout their lifetime.\n(3)\nOne in 3 women has faced sexual harassment in the workplace during her career, and an estimated 87 to 94 percent of those who experience sexual harassment never file a formal complaint.\n(4)\nSexual harassment in the workplace forces many women to leave their occupation or industry, or pass up opportunities for advancement.\n(5)\nIn order to combat sexual harassment and assault, it is essential that victims and survivors have the freedom to report and publicly disclose their abuse.\n(6)\nNondisclosure and nondisparagement provisions in agreements between employers and current, former, and prospective employees, and independent contractors, and between providers of goods and services and consumers, can perpetuate illegal conduct by silencing those who are survivors of illegal sexual harassment and assault or illegal retaliation, or have knowledge of such conduct, while shielding perpetrators and enabling them to continue their abuse.\n(7)\nProhibiting nondisclosure and nondisparagement clauses will empower survivors to come forward, hold perpetrators accountable for abuse, improve transparency around illegal conduct, enable the pursuit of justice, and make workplaces safer and more productive for everyone.\n3.\nDefinitions\nIn this Act:\n(1)\nNondisclosure clause\nThe term nondisclosure clause means a provision in a contract or agreement that requires the parties to the contract or agreement not to disclose or discuss conduct, the existence of a settlement involving conduct, or information covered by the terms and conditions of the contract or agreement.\n(2)\nNondisparagement clause\nThe term nondisparagement clause means a provision in a contract or agreement that requires 1 or more parties to the contract or agreement not to make a negative statement about another party that relates to the contract, agreement, claim, or case.\n(3)\nSexual assault dispute\nThe term sexual assault dispute means a dispute involving a nonconsensual sexual act or sexual contact, as such terms are defined in section 2246 of title 18, United States Code, or similar applicable Tribal or State law, including when the victim lacks capacity to consent.\n(4)\nSexual harassment dispute\nThe term sexual harassment dispute means a dispute relating to conduct that is alleged to constitute sexual harassment under applicable Federal, Tribal, or State law.\n4.\nLimitation on judicial enforceability of nondisclosure and nondisparagement contract clauses relating to sexual assault disputes and sexual harassment disputes\n(a)\nIn general\nWith respect to a sexual assault dispute or sexual harassment dispute, no nondisclosure clause or nondisparagement clause agreed to before the dispute arises shall be judicially enforceable in instances in which conduct is alleged to have violated Federal, Tribal, or State law.\n(b)\nContinued applicability of State law\nNothing in this Act shall prohibit a State or locality from enforcing a provision of State law governing nondisclosure or nondisparagement clauses that is at least as protective of the right of an individual to speak freely, as provided by this Act.\n(c)\nContinued Applicability of Federal, State, and Tribal Law\nThis Act shall not be construed to supersede a provision of Federal, State, or Tribal Law that governs the use of pseudonyms in the filing of claims involving sexual assault or sexual harassment disputes.\n(d)\nProtection of trade secrets and proprietary information\nNothing in this Act shall prohibit an employer and an employee from protecting trade secrets or proprietary information.\n5.\nApplicability\nThis Act shall apply with respect to a claim that is filed under Federal, State, or Tribal law on or after the date of enactment of this Act."
+    }
+  ],
+  "rollcall": {
+    "question": "On Passage",
+    "result": "Passed",
+    "date": "16-Nov-2022",
+    "roll": "480",
+    "sourceId": "house-vote",
+    "members": [
+      {
+        "id": "A000370",
+        "name": "Adams",
+        "party": "D",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000055",
+        "name": "Aderholt",
+        "party": "R",
+        "state": "AL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000371",
+        "name": "Aguilar",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000372",
+        "name": "Allen",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000376",
+        "name": "Allred",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000369",
+        "name": "Amodei",
+        "party": "R",
+        "state": "NV",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000377",
+        "name": "Armstrong",
+        "party": "R",
+        "state": "ND",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000375",
+        "name": "Arrington",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000148",
+        "name": "Auchincloss",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "A000378",
+        "name": "Axne",
+        "party": "D",
+        "state": "IA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001291",
+        "name": "Babin",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001298",
+        "name": "Bacon",
+        "party": "R",
+        "state": "NE",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001307",
+        "name": "Baird",
+        "party": "R",
+        "state": "IN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001306",
+        "name": "Balderson",
+        "party": "R",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001299",
+        "name": "Banks",
+        "party": "R",
+        "state": "IN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001282",
+        "name": "Barr",
+        "party": "R",
+        "state": "KY",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001300",
+        "name": "Barragán",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001270",
+        "name": "Bass",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001281",
+        "name": "Beatty",
+        "party": "D",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B000668",
+        "name": "Bentz",
+        "party": "R",
+        "state": "OR",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001287",
+        "name": "Bera",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001301",
+        "name": "Bergman",
+        "party": "R",
+        "state": "MI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001292",
+        "name": "Beyer",
+        "party": "D",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B000740",
+        "name": "Bice (OK)",
+        "party": "R",
+        "state": "OK",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001302",
+        "name": "Biggs",
+        "party": "R",
+        "state": "AZ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001257",
+        "name": "Bilirakis",
+        "party": "R",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B000490",
+        "name": "Bishop (GA)",
+        "party": "D",
+        "state": "GA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001311",
+        "name": "Bishop (NC)",
+        "party": "R",
+        "state": "NC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B000574",
+        "name": "Blumenauer",
+        "party": "D",
+        "state": "OR",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001303",
+        "name": "Blunt Rochester",
+        "party": "D",
+        "state": "DE",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B000825",
+        "name": "Boebert",
+        "party": "R",
+        "state": "CO",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001278",
+        "name": "Bonamici",
+        "party": "D",
+        "state": "OR",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001295",
+        "name": "Bost",
+        "party": "R",
+        "state": "IL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001312",
+        "name": "Bourdeaux",
+        "party": "D",
+        "state": "GA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001223",
+        "name": "Bowman",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001296",
+        "name": "Boyle, Brendan F.",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B000755",
+        "name": "Brady",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001274",
+        "name": "Brooks",
+        "party": "R",
+        "state": "AL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001304",
+        "name": "Brown (MD)",
+        "party": "D",
+        "state": "MD",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001313",
+        "name": "Brown (OH)",
+        "party": "D",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001285",
+        "name": "Brownley",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001260",
+        "name": "Buchanan",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001297",
+        "name": "Buck",
+        "party": "R",
+        "state": "CO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001275",
+        "name": "Bucshon",
+        "party": "R",
+        "state": "IN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001305",
+        "name": "Budd",
+        "party": "R",
+        "state": "NC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001309",
+        "name": "Burchett",
+        "party": "R",
+        "state": "TN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001248",
+        "name": "Burgess",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001224",
+        "name": "Bush",
+        "party": "D",
+        "state": "MO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001286",
+        "name": "Bustos",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "B001251",
+        "name": "Butterfield",
+        "party": "D",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C000059",
+        "name": "Calvert",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001039",
+        "name": "Cammack",
+        "party": "R",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001112",
+        "name": "Carbajal",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001097",
+        "name": "Cárdenas",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001126",
+        "name": "Carey",
+        "party": "R",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001054",
+        "name": "Carl",
+        "party": "R",
+        "state": "AL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001072",
+        "name": "Carson",
+        "party": "D",
+        "state": "IN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001103",
+        "name": "Carter (GA)",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001125",
+        "name": "Carter (LA)",
+        "party": "D",
+        "state": "LA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001051",
+        "name": "Carter (TX)",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001090",
+        "name": "Cartwright",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001055",
+        "name": "Case",
+        "party": "D",
+        "state": "HI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001117",
+        "name": "Casten",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001066",
+        "name": "Castor (FL)",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001091",
+        "name": "Castro (TX)",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001104",
+        "name": "Cawthorn",
+        "party": "R",
+        "state": "NC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C000266",
+        "name": "Chabot",
+        "party": "R",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001109",
+        "name": "Cheney",
+        "party": "R",
+        "state": "WY",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001127",
+        "name": "Cherfilus-McCormick",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001080",
+        "name": "Chu",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001084",
+        "name": "Cicilline",
+        "party": "D",
+        "state": "RI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001101",
+        "name": "Clark (MA)",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001067",
+        "name": "Clarke (NY)",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001061",
+        "name": "Cleaver",
+        "party": "D",
+        "state": "MO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001118",
+        "name": "Cline",
+        "party": "R",
+        "state": "VA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001115",
+        "name": "Cloud",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C000537",
+        "name": "Clyburn",
+        "party": "D",
+        "state": "SC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001116",
+        "name": "Clyde",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001068",
+        "name": "Cohen",
+        "party": "D",
+        "state": "TN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001053",
+        "name": "Cole",
+        "party": "R",
+        "state": "OK",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001108",
+        "name": "Comer",
+        "party": "R",
+        "state": "KY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001078",
+        "name": "Connolly",
+        "party": "D",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001128",
+        "name": "Conway",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C000754",
+        "name": "Cooper",
+        "party": "D",
+        "state": "TN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001110",
+        "name": "Correa",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001059",
+        "name": "Costa",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001069",
+        "name": "Courtney",
+        "party": "D",
+        "state": "CT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001119",
+        "name": "Craig",
+        "party": "D",
+        "state": "MN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001087",
+        "name": "Crawford",
+        "party": "R",
+        "state": "AR",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001120",
+        "name": "Crenshaw",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001121",
+        "name": "Crow",
+        "party": "D",
+        "state": "CO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001063",
+        "name": "Cuellar",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "C001114",
+        "name": "Curtis",
+        "party": "R",
+        "state": "UT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000629",
+        "name": "Davids (KS)",
+        "party": "D",
+        "state": "KS",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000626",
+        "name": "Davidson",
+        "party": "R",
+        "state": "OH",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000096",
+        "name": "Davis, Danny K.",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000619",
+        "name": "Davis, Rodney",
+        "party": "R",
+        "state": "IL",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000631",
+        "name": "Dean",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000191",
+        "name": "DeFazio",
+        "party": "D",
+        "state": "OR",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000197",
+        "name": "DeGette",
+        "party": "D",
+        "state": "CO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000216",
+        "name": "DeLauro",
+        "party": "D",
+        "state": "CT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000617",
+        "name": "DelBene",
+        "party": "D",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000627",
+        "name": "Demings",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000623",
+        "name": "DeSaulnier",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000616",
+        "name": "DesJarlais",
+        "party": "R",
+        "state": "TN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000600",
+        "name": "Diaz-Balart",
+        "party": "R",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000624",
+        "name": "Dingell",
+        "party": "D",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000399",
+        "name": "Doggett",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000032",
+        "name": "Donalds",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000482",
+        "name": "Doyle, Michael F.",
+        "party": "D",
+        "state": "PA",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000615",
+        "name": "Duncan",
+        "party": "R",
+        "state": "SC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "D000628",
+        "name": "Dunn",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "E000071",
+        "name": "Ellzey",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "E000294",
+        "name": "Emmer",
+        "party": "R",
+        "state": "MN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "E000299",
+        "name": "Escobar",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "E000215",
+        "name": "Eshoo",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "E000297",
+        "name": "Espaillat",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "E000298",
+        "name": "Estes",
+        "party": "R",
+        "state": "KS",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "E000296",
+        "name": "Evans",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000246",
+        "name": "Fallon",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000446",
+        "name": "Feenstra",
+        "party": "R",
+        "state": "IA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000465",
+        "name": "Ferguson",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000475",
+        "name": "Finstad",
+        "party": "R",
+        "state": "MN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000470",
+        "name": "Fischbach",
+        "party": "R",
+        "state": "MN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000471",
+        "name": "Fitzgerald",
+        "party": "R",
+        "state": "WI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000466",
+        "name": "Fitzpatrick",
+        "party": "R",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000459",
+        "name": "Fleischmann",
+        "party": "R",
+        "state": "TN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000468",
+        "name": "Fletcher",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000474",
+        "name": "Flood",
+        "party": "R",
+        "state": "NE",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000473",
+        "name": "Flores",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000454",
+        "name": "Foster",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000450",
+        "name": "Foxx",
+        "party": "R",
+        "state": "NC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000462",
+        "name": "Frankel, Lois",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000472",
+        "name": "Franklin, C. Scott",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "F000469",
+        "name": "Fulcher",
+        "party": "R",
+        "state": "ID",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000578",
+        "name": "Gaetz",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000579",
+        "name": "Gallagher",
+        "party": "R",
+        "state": "WI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000574",
+        "name": "Gallego",
+        "party": "D",
+        "state": "AZ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000559",
+        "name": "Garamendi",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000597",
+        "name": "Garbarino",
+        "party": "R",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000061",
+        "name": "Garcia (CA)",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000586",
+        "name": "García (IL)",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000587",
+        "name": "Garcia (TX)",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000563",
+        "name": "Gibbs",
+        "party": "R",
+        "state": "OH",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000593",
+        "name": "Gimenez",
+        "party": "R",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000552",
+        "name": "Gohmert",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000592",
+        "name": "Golden",
+        "party": "D",
+        "state": "ME",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000585",
+        "name": "Gomez",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000594",
+        "name": "Gonzales, Tony",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000588",
+        "name": "Gonzalez (OH)",
+        "party": "R",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000581",
+        "name": "Gonzalez, Vicente",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000595",
+        "name": "Good (VA)",
+        "party": "R",
+        "state": "VA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000589",
+        "name": "Gooden (TX)",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000565",
+        "name": "Gosar",
+        "party": "R",
+        "state": "AZ",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000583",
+        "name": "Gottheimer",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000377",
+        "name": "Granger",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000577",
+        "name": "Graves (LA)",
+        "party": "R",
+        "state": "LA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000546",
+        "name": "Graves (MO)",
+        "party": "R",
+        "state": "MO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000590",
+        "name": "Green (TN)",
+        "party": "R",
+        "state": "TN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000553",
+        "name": "Green, Al (TX)",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000596",
+        "name": "Greene (GA)",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000568",
+        "name": "Griffith",
+        "party": "R",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000551",
+        "name": "Grijalva",
+        "party": "D",
+        "state": "AZ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000576",
+        "name": "Grothman",
+        "party": "R",
+        "state": "WI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000591",
+        "name": "Guest",
+        "party": "R",
+        "state": "MS",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "G000558",
+        "name": "Guthrie",
+        "party": "R",
+        "state": "KY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001090",
+        "name": "Harder (CA)",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001052",
+        "name": "Harris",
+        "party": "R",
+        "state": "MD",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001086",
+        "name": "Harshbarger",
+        "party": "R",
+        "state": "TN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001053",
+        "name": "Hartzler",
+        "party": "R",
+        "state": "MO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001081",
+        "name": "Hayes",
+        "party": "D",
+        "state": "CT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001082",
+        "name": "Hern",
+        "party": "R",
+        "state": "OK",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001084",
+        "name": "Herrell",
+        "party": "R",
+        "state": "NM",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001056",
+        "name": "Herrera Beutler",
+        "party": "R",
+        "state": "WA",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001071",
+        "name": "Hice (GA)",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001077",
+        "name": "Higgins (LA)",
+        "party": "R",
+        "state": "LA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001038",
+        "name": "Higgins (NY)",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001072",
+        "name": "Hill",
+        "party": "R",
+        "state": "AR",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001047",
+        "name": "Himes",
+        "party": "D",
+        "state": "CT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001091",
+        "name": "Hinson",
+        "party": "R",
+        "state": "IA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001074",
+        "name": "Hollingsworth",
+        "party": "R",
+        "state": "IN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001066",
+        "name": "Horsford",
+        "party": "D",
+        "state": "NV",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001085",
+        "name": "Houlahan",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H000874",
+        "name": "Hoyer",
+        "party": "D",
+        "state": "MD",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001067",
+        "name": "Hudson",
+        "party": "R",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001068",
+        "name": "Huffman",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "H001058",
+        "name": "Huizenga",
+        "party": "R",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "I000056",
+        "name": "Issa",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000304",
+        "name": "Jackson",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000032",
+        "name": "Jackson Lee",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000305",
+        "name": "Jacobs (CA)",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000020",
+        "name": "Jacobs (NY)",
+        "party": "R",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000298",
+        "name": "Jayapal",
+        "party": "D",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000294",
+        "name": "Jeffries",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000288",
+        "name": "Johnson (GA)",
+        "party": "D",
+        "state": "GA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000299",
+        "name": "Johnson (LA)",
+        "party": "R",
+        "state": "LA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000292",
+        "name": "Johnson (OH)",
+        "party": "R",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000301",
+        "name": "Johnson (SD)",
+        "party": "R",
+        "state": "SD",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000126",
+        "name": "Johnson (TX)",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000306",
+        "name": "Jones",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000289",
+        "name": "Jordan",
+        "party": "R",
+        "state": "OH",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000295",
+        "name": "Joyce (OH)",
+        "party": "R",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "J000302",
+        "name": "Joyce (PA)",
+        "party": "R",
+        "state": "PA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000396",
+        "name": "Kahele",
+        "party": "D",
+        "state": "HI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000009",
+        "name": "Kaptur",
+        "party": "D",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000386",
+        "name": "Katko",
+        "party": "R",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000375",
+        "name": "Keating",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000395",
+        "name": "Keller",
+        "party": "R",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000385",
+        "name": "Kelly (IL)",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000388",
+        "name": "Kelly (MS)",
+        "party": "R",
+        "state": "MS",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000376",
+        "name": "Kelly (PA)",
+        "party": "R",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000389",
+        "name": "Khanna",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000380",
+        "name": "Kildee",
+        "party": "D",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000381",
+        "name": "Kilmer",
+        "party": "D",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000397",
+        "name": "Kim (CA)",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000394",
+        "name": "Kim (NJ)",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000188",
+        "name": "Kind",
+        "party": "D",
+        "state": "WI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000378",
+        "name": "Kinzinger",
+        "party": "R",
+        "state": "IL",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000368",
+        "name": "Kirkpatrick",
+        "party": "D",
+        "state": "AZ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000391",
+        "name": "Krishnamoorthi",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000382",
+        "name": "Kuster",
+        "party": "D",
+        "state": "NH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "K000392",
+        "name": "Kustoff",
+        "party": "R",
+        "state": "TN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000585",
+        "name": "LaHood",
+        "party": "R",
+        "state": "IL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000578",
+        "name": "LaMalfa",
+        "party": "R",
+        "state": "CA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000588",
+        "name": "Lamb",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000564",
+        "name": "Lamborn",
+        "party": "R",
+        "state": "CO",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000559",
+        "name": "Langevin",
+        "party": "D",
+        "state": "RI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000560",
+        "name": "Larsen (WA)",
+        "party": "D",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000557",
+        "name": "Larson (CT)",
+        "party": "D",
+        "state": "CT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000566",
+        "name": "Latta",
+        "party": "R",
+        "state": "OH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000266",
+        "name": "LaTurner",
+        "party": "R",
+        "state": "KS",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000581",
+        "name": "Lawrence",
+        "party": "D",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000586",
+        "name": "Lawson (FL)",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000551",
+        "name": "Lee (CA)",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000590",
+        "name": "Lee (NV)",
+        "party": "D",
+        "state": "NV",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000273",
+        "name": "Leger Fernandez",
+        "party": "D",
+        "state": "NM",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000589",
+        "name": "Lesko",
+        "party": "R",
+        "state": "AZ",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000595",
+        "name": "Letlow",
+        "party": "R",
+        "state": "LA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000593",
+        "name": "Levin (CA)",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000592",
+        "name": "Levin (MI)",
+        "party": "D",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000582",
+        "name": "Lieu",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000397",
+        "name": "Lofgren",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000576",
+        "name": "Long",
+        "party": "R",
+        "state": "MO",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000583",
+        "name": "Loudermilk",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000579",
+        "name": "Lowenthal",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000491",
+        "name": "Lucas",
+        "party": "R",
+        "state": "OK",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000569",
+        "name": "Luetkemeyer",
+        "party": "R",
+        "state": "MO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000591",
+        "name": "Luria",
+        "party": "D",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "L000562",
+        "name": "Lynch",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M000194",
+        "name": "Mace",
+        "party": "R",
+        "state": "SC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001203",
+        "name": "Malinowski",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M000317",
+        "name": "Malliotakis",
+        "party": "R",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M000087",
+        "name": "Maloney, Carolyn B.",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001185",
+        "name": "Maloney, Sean",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M000871",
+        "name": "Mann",
+        "party": "R",
+        "state": "KS",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001135",
+        "name": "Manning",
+        "party": "D",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001184",
+        "name": "Massie",
+        "party": "R",
+        "state": "KY",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001199",
+        "name": "Mast",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001163",
+        "name": "Matsui",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001208",
+        "name": "McBath",
+        "party": "D",
+        "state": "GA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001165",
+        "name": "McCarthy",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001157",
+        "name": "McCaul",
+        "party": "R",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001136",
+        "name": "McClain",
+        "party": "R",
+        "state": "MI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001177",
+        "name": "McClintock",
+        "party": "R",
+        "state": "CA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001143",
+        "name": "McCollum",
+        "party": "D",
+        "state": "MN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001200",
+        "name": "McEachin",
+        "party": "D",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M000312",
+        "name": "McGovern",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001156",
+        "name": "McHenry",
+        "party": "R",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001180",
+        "name": "McKinley",
+        "party": "R",
+        "state": "WV",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001166",
+        "name": "McNerney",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001137",
+        "name": "Meeks",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001186",
+        "name": "Meijer",
+        "party": "R",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001188",
+        "name": "Meng",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001204",
+        "name": "Meuser",
+        "party": "R",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M000687",
+        "name": "Mfume",
+        "party": "D",
+        "state": "MD",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001211",
+        "name": "Miller (IL)",
+        "party": "R",
+        "state": "IL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001205",
+        "name": "Miller (WV)",
+        "party": "R",
+        "state": "WV",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001215",
+        "name": "Miller-Meeks",
+        "party": "R",
+        "state": "IA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001194",
+        "name": "Moolenaar",
+        "party": "R",
+        "state": "MI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001195",
+        "name": "Mooney",
+        "party": "R",
+        "state": "WV",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001212",
+        "name": "Moore (AL)",
+        "party": "R",
+        "state": "AL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001213",
+        "name": "Moore (UT)",
+        "party": "R",
+        "state": "UT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001160",
+        "name": "Moore (WI)",
+        "party": "D",
+        "state": "WI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001206",
+        "name": "Morelle",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001196",
+        "name": "Moulton",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001214",
+        "name": "Mrvan",
+        "party": "D",
+        "state": "IN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001190",
+        "name": "Mullin",
+        "party": "R",
+        "state": "OK",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001202",
+        "name": "Murphy (FL)",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001210",
+        "name": "Murphy (NC)",
+        "party": "R",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000002",
+        "name": "Nadler",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000179",
+        "name": "Napolitano",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000015",
+        "name": "Neal",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000191",
+        "name": "Neguse",
+        "party": "D",
+        "state": "CO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000026",
+        "name": "Nehls",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000189",
+        "name": "Newhouse",
+        "party": "R",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000192",
+        "name": "Newman",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000188",
+        "name": "Norcross",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "N000190",
+        "name": "Norman",
+        "party": "R",
+        "state": "SC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "O000171",
+        "name": "O'Halleran",
+        "party": "D",
+        "state": "AZ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "O000019",
+        "name": "Obernolte",
+        "party": "R",
+        "state": "CA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "O000172",
+        "name": "Ocasio-Cortez",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "O000173",
+        "name": "Omar",
+        "party": "D",
+        "state": "MN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "O000086",
+        "name": "Owens",
+        "party": "R",
+        "state": "UT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000601",
+        "name": "Palazzo",
+        "party": "R",
+        "state": "MS",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000034",
+        "name": "Pallone",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000609",
+        "name": "Palmer",
+        "party": "R",
+        "state": "AL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000613",
+        "name": "Panetta",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000614",
+        "name": "Pappas",
+        "party": "D",
+        "state": "NH",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000096",
+        "name": "Pascrell",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000604",
+        "name": "Payne",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000619",
+        "name": "Peltola",
+        "party": "D",
+        "state": "AK",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000615",
+        "name": "Pence",
+        "party": "R",
+        "state": "IN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000593",
+        "name": "Perlmutter",
+        "party": "D",
+        "state": "CO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000605",
+        "name": "Perry",
+        "party": "R",
+        "state": "PA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000608",
+        "name": "Peters",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000048",
+        "name": "Pfluger",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000616",
+        "name": "Phillips",
+        "party": "D",
+        "state": "MN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000597",
+        "name": "Pingree",
+        "party": "D",
+        "state": "ME",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000607",
+        "name": "Pocan",
+        "party": "D",
+        "state": "WI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000618",
+        "name": "Porter",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000599",
+        "name": "Posey",
+        "party": "R",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000617",
+        "name": "Pressley",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "P000523",
+        "name": "Price (NC)",
+        "party": "D",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "Q000023",
+        "name": "Quigley",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000606",
+        "name": "Raskin",
+        "party": "D",
+        "state": "MD",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000610",
+        "name": "Reschenthaler",
+        "party": "R",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000602",
+        "name": "Rice (NY)",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000597",
+        "name": "Rice (SC)",
+        "party": "R",
+        "state": "SC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "M001159",
+        "name": "Rodgers (WA)",
+        "party": "R",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000575",
+        "name": "Rogers (AL)",
+        "party": "R",
+        "state": "AL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000395",
+        "name": "Rogers (KY)",
+        "party": "R",
+        "state": "KY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000612",
+        "name": "Rose",
+        "party": "R",
+        "state": "TN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000103",
+        "name": "Rosendale",
+        "party": "R",
+        "state": "MT",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000305",
+        "name": "Ross",
+        "party": "D",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000603",
+        "name": "Rouzer",
+        "party": "R",
+        "state": "NC",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000614",
+        "name": "Roy",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000486",
+        "name": "Roybal-Allard",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000599",
+        "name": "Ruiz",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000576",
+        "name": "Ruppersberger",
+        "party": "D",
+        "state": "MD",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000515",
+        "name": "Rush",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000609",
+        "name": "Rutherford",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000579",
+        "name": "Ryan (NY)",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "R000577",
+        "name": "Ryan (OH)",
+        "party": "D",
+        "state": "OH",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S000168",
+        "name": "Salazar",
+        "party": "R",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001156",
+        "name": "Sánchez",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001168",
+        "name": "Sarbanes",
+        "party": "D",
+        "state": "MD",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001176",
+        "name": "Scalise",
+        "party": "R",
+        "state": "LA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001205",
+        "name": "Scanlon",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001145",
+        "name": "Schakowsky",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001150",
+        "name": "Schiff",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001190",
+        "name": "Schneider",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001180",
+        "name": "Schrader",
+        "party": "D",
+        "state": "OR",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001216",
+        "name": "Schrier",
+        "party": "D",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001183",
+        "name": "Schweikert",
+        "party": "R",
+        "state": "AZ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S000185",
+        "name": "Scott (VA)",
+        "party": "D",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001189",
+        "name": "Scott, Austin",
+        "party": "R",
+        "state": "GA",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001157",
+        "name": "Scott, David",
+        "party": "D",
+        "state": "GA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001219",
+        "name": "Sempolinski",
+        "party": "R",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S000250",
+        "name": "Sessions",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001185",
+        "name": "Sewell",
+        "party": "D",
+        "state": "AL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S000344",
+        "name": "Sherman",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001207",
+        "name": "Sherrill",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001148",
+        "name": "Simpson",
+        "party": "R",
+        "state": "ID",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001165",
+        "name": "Sires",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001208",
+        "name": "Slotkin",
+        "party": "D",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001195",
+        "name": "Smith (MO)",
+        "party": "R",
+        "state": "MO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001172",
+        "name": "Smith (NE)",
+        "party": "R",
+        "state": "NE",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S000522",
+        "name": "Smith (NJ)",
+        "party": "R",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S000510",
+        "name": "Smith (WA)",
+        "party": "D",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001199",
+        "name": "Smucker",
+        "party": "R",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001200",
+        "name": "Soto",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001209",
+        "name": "Spanberger",
+        "party": "D",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S000929",
+        "name": "Spartz",
+        "party": "R",
+        "state": "IN",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001175",
+        "name": "Speier",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001218",
+        "name": "Stansbury",
+        "party": "D",
+        "state": "NM",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001211",
+        "name": "Stanton",
+        "party": "D",
+        "state": "AZ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001212",
+        "name": "Stauber",
+        "party": "R",
+        "state": "MN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001135",
+        "name": "Steel",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001196",
+        "name": "Stefanik",
+        "party": "R",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001213",
+        "name": "Steil",
+        "party": "R",
+        "state": "WI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001214",
+        "name": "Steube",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001215",
+        "name": "Stevens",
+        "party": "D",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001192",
+        "name": "Stewart",
+        "party": "R",
+        "state": "UT",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001159",
+        "name": "Strickland",
+        "party": "D",
+        "state": "WA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001201",
+        "name": "Suozzi",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "S001193",
+        "name": "Swalwell",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000472",
+        "name": "Takano",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000479",
+        "name": "Taylor",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000478",
+        "name": "Tenney",
+        "party": "R",
+        "state": "NY",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000460",
+        "name": "Thompson (CA)",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000193",
+        "name": "Thompson (MS)",
+        "party": "D",
+        "state": "MS",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000467",
+        "name": "Thompson (PA)",
+        "party": "R",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000165",
+        "name": "Tiffany",
+        "party": "R",
+        "state": "WI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000480",
+        "name": "Timmons",
+        "party": "R",
+        "state": "SC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000468",
+        "name": "Titus",
+        "party": "D",
+        "state": "NV",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000481",
+        "name": "Tlaib",
+        "party": "D",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000469",
+        "name": "Tonko",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000474",
+        "name": "Torres (CA)",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000486",
+        "name": "Torres (NY)",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000482",
+        "name": "Trahan",
+        "party": "D",
+        "state": "MA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000483",
+        "name": "Trone",
+        "party": "D",
+        "state": "MD",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "T000463",
+        "name": "Turner",
+        "party": "R",
+        "state": "OH",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "U000040",
+        "name": "Underwood",
+        "party": "D",
+        "state": "IL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "U000031",
+        "name": "Upton",
+        "party": "R",
+        "state": "MI",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "V000129",
+        "name": "Valadao",
+        "party": "R",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "V000133",
+        "name": "Van Drew",
+        "party": "R",
+        "state": "NJ",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "V000134",
+        "name": "Van Duyne",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "V000130",
+        "name": "Vargas",
+        "party": "D",
+        "state": "CA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "V000131",
+        "name": "Veasey",
+        "party": "D",
+        "state": "TX",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "V000081",
+        "name": "Velázquez",
+        "party": "D",
+        "state": "NY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000812",
+        "name": "Wagner",
+        "party": "R",
+        "state": "MO",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000798",
+        "name": "Walberg",
+        "party": "R",
+        "state": "MI",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000823",
+        "name": "Waltz",
+        "party": "R",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000797",
+        "name": "Wasserman Schultz",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000187",
+        "name": "Waters",
+        "party": "D",
+        "state": "CA",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000822",
+        "name": "Watson Coleman",
+        "party": "D",
+        "state": "NJ",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000814",
+        "name": "Weber (TX)",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000806",
+        "name": "Webster (FL)",
+        "party": "R",
+        "state": "FL",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000800",
+        "name": "Welch",
+        "party": "D",
+        "state": "VT",
+        "vote": "Not Voting",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000815",
+        "name": "Wenstrup",
+        "party": "R",
+        "state": "OH",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000821",
+        "name": "Westerman",
+        "party": "R",
+        "state": "AR",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000825",
+        "name": "Wexton",
+        "party": "D",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000826",
+        "name": "Wild",
+        "party": "D",
+        "state": "PA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000788",
+        "name": "Williams (GA)",
+        "party": "D",
+        "state": "GA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000816",
+        "name": "Williams (TX)",
+        "party": "R",
+        "state": "TX",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000808",
+        "name": "Wilson (FL)",
+        "party": "D",
+        "state": "FL",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000795",
+        "name": "Wilson (SC)",
+        "party": "R",
+        "state": "SC",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000804",
+        "name": "Wittman",
+        "party": "R",
+        "state": "VA",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "W000809",
+        "name": "Womack",
+        "party": "R",
+        "state": "AR",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "Y000067",
+        "name": "Yakym",
+        "party": "R",
+        "state": "IN",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "Y000062",
+        "name": "Yarmuth",
+        "party": "D",
+        "state": "KY",
+        "vote": "Yea",
+        "sourceId": "house-vote"
+      },
+      {
+        "id": "Z000017",
+        "name": "Zeldin",
+        "party": "R",
+        "state": "NY",
+        "vote": "Nay",
+        "sourceId": "house-vote"
+      }
+    ],
+    "totals": {
+      "Yea": 315,
+      "Nay": 109,
+      "Not Voting": 8
+    }
+  },
+  "title": "Speak Out Act",
+  "actions": [
+    {
+      "id": "action-25",
+      "date": "2022-07-13",
+      "text": "Read twice and referred to the Committee on the Judiciary.",
+      "type": "IntroReferral",
+      "sourceId": "status",
+      "locator": "bill/actions/item[25]"
+    },
+    {
+      "id": "action-26",
+      "date": "2022-07-13",
+      "text": "Introduced in Senate",
+      "type": "IntroReferral",
+      "sourceId": "status",
+      "locator": "bill/actions/item[26]"
+    },
+    {
+      "id": "action-24",
+      "date": "2022-09-15",
+      "text": "Committee on the Judiciary. Ordered to be reported with an amendment in the nature of a substitute favorably.",
+      "type": "Committee",
+      "sourceId": "status",
+      "locator": "bill/actions/item[24]"
+    },
+    {
+      "id": "action-21",
+      "date": "2022-09-20",
+      "text": "Placed on Senate Legislative Calendar under General Orders. Calendar No. 493.",
+      "type": "Calendars",
+      "sourceId": "status",
+      "locator": "bill/actions/item[21]"
+    },
+    {
+      "id": "action-22",
+      "date": "2022-09-20",
+      "text": "Committee on the Judiciary. Reported by Senator Durbin with an amendment in the nature of a substitute. Without written report.",
+      "type": "Committee",
+      "sourceId": "status",
+      "locator": "bill/actions/item[22]"
+    },
+    {
+      "id": "action-19",
+      "date": "2022-09-29",
+      "text": "Passed Senate with an amendment by Unanimous Consent. (consideration: CR S6050; text: CR S6050)",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[19]"
+    },
+    {
+      "id": "action-20",
+      "date": "2022-09-29",
+      "text": "Passed/agreed to in Senate: Passed Senate with an amendment by Unanimous Consent.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[20]"
+    },
+    {
+      "id": "action-16",
+      "date": "2022-09-30",
+      "text": "Held at the desk.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[16]"
+    },
+    {
+      "id": "action-17",
+      "date": "2022-09-30",
+      "text": "Received in the House.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[17]"
+    },
+    {
+      "id": "action-18",
+      "date": "2022-09-30",
+      "text": "Message on Senate action sent to the House.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[18]"
+    },
+    {
+      "id": "action-15",
+      "date": "2022-11-14",
+      "text": "Rules Committee Resolution H. Res. 1464 Reported to House. Rule provides for consideration of S. 4524 with 1 hour of general debate. Bill is closed to amendments. The resolution provides that any time through the legislative day of Nov. 18, 2022, the Speaker may entertain motions offered by the Majority Leader or a designee that the House suspend the rules with respect to multiple measures that were the object of motions to suspend the rules on the legislative day of November 14, 15, 16, 17, and 18, 2022, on which the yeas and nays were postponed. The resolution provides that H.Res. 1463 is hereby adopted and one motion to commit.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[15]"
+    },
+    {
+      "id": "action-14",
+      "date": "2022-11-15",
+      "text": "Rule H. Res. 1464 passed House.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[14]"
+    },
+    {
+      "id": "action-7",
+      "date": "2022-11-16",
+      "text": "Motion to reconsider laid on the table Agreed to without objection.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[7]"
+    },
+    {
+      "id": "action-8",
+      "date": "2022-11-16",
+      "text": "On passage Passed by the Yeas and Nays: 315 - 109 (Roll no. 480). (text: CR H8518)",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[8]"
+    },
+    {
+      "id": "action-9",
+      "date": "2022-11-16",
+      "text": "Passed/agreed to in House: On passage Passed by the Yeas and Nays: 315 - 109 (Roll no. 480).",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[9]"
+    },
+    {
+      "id": "action-10",
+      "date": "2022-11-16",
+      "text": "The previous question was ordered pursuant to the rule.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[10]"
+    },
+    {
+      "id": "action-11",
+      "date": "2022-11-16",
+      "text": "DEBATE - The House proceeded with one hour of debate on S. 4524.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[11]"
+    },
+    {
+      "id": "action-12",
+      "date": "2022-11-16",
+      "text": "Rule provides for consideration of S. 4524 with 1 hour of general debate. Bill is closed to amendments. The resolution provides that any time through the legislative day of Nov. 18, 2022, the Speaker may entertain motions offered by the Majority Leader or a designee that the House suspend the rules with respect to multiple measures that were the object of motions to suspend the rules on the legislative day of November 14, 15, 16, 17, and 18, 2022, on which the yeas and nays were postponed. The resolution provides that H.Res. 1463 is hereby adopted and one motion to commit.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[12]"
+    },
+    {
+      "id": "action-13",
+      "date": "2022-11-16",
+      "text": "Considered under the provisions of rule H. Res. 1464. (consideration: CR H8518-8525)",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[13]"
+    },
+    {
+      "id": "action-5",
+      "date": "2022-12-01",
+      "text": "Presented to President.",
+      "type": "Floor",
+      "sourceId": "status",
+      "locator": "bill/actions/item[5]"
+    },
+    {
+      "id": "action-1",
+      "date": "2022-12-07",
+      "text": "Became Public Law No: 117-224.",
+      "type": "President",
+      "sourceId": "status",
+      "locator": "bill/actions/item[1]"
+    },
+    {
+      "id": "action-3",
+      "date": "2022-12-07",
+      "text": "Signed by President.",
+      "type": "President",
+      "sourceId": "status",
+      "locator": "bill/actions/item[3]"
+    }
+  ],
+  "sponsors": [
+    {
+      "id": "G000555",
+      "name": "Sen. Gillibrand, Kirsten E. [D-NY]",
+      "party": "D",
+      "state": "NY"
+    }
+  ],
+  "publicLaws": [
+    "117-224"
+  ]
+}
