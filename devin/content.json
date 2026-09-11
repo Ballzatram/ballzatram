@@ -1,0 +1,270 @@
+{
+  "name": "Devin Gallemore",
+  "email": "devin.gallemore@gmail.com",
+  "location": "Charlotte, NC",
+  "positioning": "Quantitative AI · Agentic systems · Applied machine learning · Financial systems",
+  "summary": "Quantitative technology professional building AI-enabled financial systems at the intersection of agentic orchestration, applied machine learning, model validation, and enterprise risk. Experience spans fraud investigation workflows, anomaly detection, interest-rate research, and balance-sheet forecasting.",
+  "resumeSource": "Devin_Gallemore_Resume_DevinOS_v1.pdf, August 7, 2026. Public web adaptation; work descriptions are generalized and personal phone number is omitted.",
+  "experience": [
+    {
+      "company": "Wells Fargo",
+      "title": "Sr AVP — Quantitative Model Solutions Specialist",
+      "dates": "Jul 2024 – Present",
+      "summary": "Building agentic investigation workflows and applied machine-learning systems, with experience in anomaly detection, rates research, and model reliability.",
+      "bullets": [
+        "Develop Python-based orchestration for agentic fraud investigation workflows, including structured context, persistent state, conditional routing, specialized analysis, output aggregation, and human review.",
+        "Build anomaly-detection frameworks for high-dimensional commercial lending data using feature engineering, clustering, dimensionality reduction, and unsupervised learning.",
+        "Automate interest-rate analytics and prototype regime-aware anomaly research using economic data and statistical methods.",
+        "Design regression testing and monitoring for enterprise liquidity forecasting, cash-flow variances, and upstream data quality."
+      ]
+    },
+    {
+      "company": "Bank of America",
+      "title": "AVP — Quantitative Finance Analyst",
+      "dates": "May 2024 – Jul 2024",
+      "summary": "Supported production forecasting for liquidity, capital, and stress testing, with a focus on root-cause analysis and automated validation.",
+      "bullets": [
+        "Supported production balance-sheet forecasting for liquidity, capital, and stress testing in Unix/Linux environments.",
+        "Investigated data inputs, configuration logic, and system dependencies; automated validation steps."
+      ]
+    },
+    {
+      "company": "Bank of America",
+      "title": "AVP — Senior Asset Liability Analyst",
+      "dates": "Oct 2022 – May 2024",
+      "summary": "Owned stress testing and balance-sheet forecasting for HTM and BOLI portfolios, turning scenario analysis into decision support.",
+      "bullets": [
+        "Owned enterprise stress testing and balance-sheet forecasting for held-to-maturity and bank-owned life insurance portfolios.",
+        "Delivered scenario analysis to senior stakeholders and built Python/Unix automation for production forecasting workflows."
+      ]
+    }
+  ],
+  "skills": [
+    "Python",
+    "SQL",
+    "Agentic orchestration",
+    "Applied ML",
+    "Time series",
+    "FastAPI",
+    "TypeScript",
+    "Next.js",
+    "Git / GitHub",
+    "Unix / Linux",
+    "AWS S3",
+    "Dremio",
+    "Power BI"
+  ],
+  "education": [
+    {
+      "degree": "MS, Applied Economics",
+      "school": "University of Maryland",
+      "year": "2022"
+    },
+    {
+      "degree": "BS, Economics · Business Minor",
+      "school": "Texas Christian University",
+      "year": "2019"
+    }
+  ],
+  "leadership": [
+    "Treasurer — Illuminating Engineering Society, Charlotte",
+    "Polo Manager — Camden Polo Club"
+  ],
+  "projects": [
+    {
+      "name": "Quant Library",
+      "category": "Markets & data",
+      "status": "Backend prototype",
+      "description": "An explainable quantitative research workbench for market data, risk metrics, scenarios, and model comparison. The full application uses a Python/FastAPI backend and Next.js frontend.",
+      "url": "https://github.com/Ballzatram/ballzatram/blob/master/docs/quant-library-product-spec.md",
+      "link": "Read project brief",
+      "featured": "quant"
+    },
+    {
+      "name": "Parcel Intelligence",
+      "category": "AI & tools",
+      "status": "Prototype",
+      "description": "A land-research workflow for screening parcels, comparing shortlists, tracing sources, and drafting diligence questions. Browser fallback available; advanced synthesis requires a backend.",
+      "url": "https://ballzatram.com/tools/parcel/index.html",
+      "link": "Explore prototype",
+      "featured": "parcel"
+    },
+    {
+      "name": "Econ Arcade",
+      "category": "Games & learning",
+      "status": "Playable",
+      "description": "Economics learned through decisions: a collection of simulations about markets, incentives, monetary policy, and strategic behavior.",
+      "url": "https://ballzatram.com/econ-arcade/index.html",
+      "link": "Enter the arcade",
+      "featured": "econ"
+    },
+    {
+      "name": "Portfolio Lab",
+      "category": "Markets & data",
+      "status": "Browser tool",
+      "description": "Analyze uploaded historical prices for return, volatility, drawdown, concentration, correlations, and risk contribution, with calculations performed locally.",
+      "url": "https://ballzatram.com/tools/portfolio/index.html",
+      "link": "Open portfolio lab"
+    },
+    {
+      "name": "Scenario Stress Lab",
+      "category": "Markets & data",
+      "status": "Browser tool",
+      "description": "Translate macroeconomic shocks into portfolio factor sensitivities with explicit assumptions and stress scenarios.",
+      "url": "https://ballzatram.com/tools/scenario/index.html",
+      "link": "Run a scenario"
+    },
+    {
+      "name": "Macro Board (legacy)",
+      "category": "Markets & data",
+      "status": "Archived route",
+      "description": "An earlier macro dashboard concept, now retained as a compatibility route into Quant Library.",
+      "url": "https://github.com/Ballzatram/ballzatram/tree/master/frontend/src/app/macro-board",
+      "link": "View legacy route"
+    },
+    {
+      "name": "Weather Desk",
+      "category": "Markets & data",
+      "status": "Paper research",
+      "description": "A weather-market worksheet for settlement review, uncertainty, and capped sizing. The public worksheet does not place live orders.",
+      "url": "https://ballzatram.com/weather-bot.html",
+      "link": "Open worksheet"
+    },
+    {
+      "name": "Event Study",
+      "category": "Markets & data",
+      "status": "Application demo",
+      "description": "A research workflow for comparing market behavior around selected events, with event windows and analytical assumptions made explicit.",
+      "url": "https://github.com/Ballzatram/ballzatram/tree/master/frontend/src/app/event-study",
+      "link": "View implementation"
+    },
+    {
+      "name": "Model Compare",
+      "category": "Markets & data",
+      "status": "Application demo",
+      "description": "Compare analytical model choices, validation signals, and stability tradeoffs before drawing conclusions.",
+      "url": "https://github.com/Ballzatram/ballzatram/tree/master/frontend/src/app/model-compare",
+      "link": "View implementation"
+    },
+    {
+      "name": "Ballzatram AI Guide",
+      "category": "AI & tools",
+      "status": "Configured service",
+      "description": "An AI guide for saved portfolio, scenario, supply-and-demand, and report context. Model access requires a configured, protected AI bridge.",
+      "url": "https://ballzatram.com/tools/ai/index.html",
+      "link": "Explore AI guide"
+    },
+    {
+      "name": "Research Reports",
+      "category": "AI & tools",
+      "status": "Browser tool",
+      "description": "Turn saved analysis into editable Markdown reports that retain assumptions, provenance, caveats, and next checks.",
+      "url": "https://ballzatram.com/tools/reports/index.html",
+      "link": "Build a report"
+    },
+    {
+      "name": "AI Edit Factory",
+      "category": "AI & tools",
+      "status": "Backend prototype",
+      "description": "A short-form video editing workflow for owned or licensed media. Actual rendering requires the Python backend and media workers.",
+      "url": "https://ballzatram.com/ai-edit-factory/",
+      "link": "Explore editing workflow"
+    },
+    {
+      "name": "Supply & Demand Lab",
+      "category": "Games & learning",
+      "status": "Playable",
+      "description": "Explore equilibrium and welfare through taxes, price controls, shocks, predictions, and sandbox experiments.",
+      "url": "https://ballzatram.com/tools/supply-demand/index.html",
+      "link": "Open market lab"
+    },
+    {
+      "name": "Central Banker",
+      "category": "Games & learning",
+      "status": "Playable",
+      "description": "Take the chair of a fictional central bank and navigate inflation, policy lags, credibility, and financial stability.",
+      "url": "https://ballzatram.com/games/central-bank.html",
+      "link": "Take the chair"
+    },
+    {
+      "name": "Prisoner’s Dilemma Lab",
+      "category": "Games & learning",
+      "status": "Playable",
+      "description": "Experiment with cooperation and betrayal against repeated-game opponent archetypes, then inspect payoffs and strategy debriefs.",
+      "url": "https://ballzatram.com/econ-arcade/prisoners-dilemma.html",
+      "link": "Test a strategy"
+    },
+    {
+      "name": "Strategy Studio",
+      "category": "Games & learning",
+      "status": "Playable",
+      "description": "A game-theory learning studio spanning auctions, signaling, bargaining, rational choice, and mechanism design.",
+      "url": "https://ballzatram.com/econ-arcade/platform.html",
+      "link": "Open strategy studio"
+    },
+    {
+      "name": "Invisible Hands",
+      "category": "Games & learning",
+      "status": "Playable",
+      "description": "A market-clearing simulation exploring decentralized decisions, price signals, and policy feedback.",
+      "url": "https://ballzatram.com/econ-arcade/invisible-hands.html",
+      "link": "Run a market"
+    },
+    {
+      "name": "Stoney Bologna",
+      "category": "Creative experiments",
+      "status": "Playable prototype",
+      "description": "An absurd interactive-fiction experiment told through a fictional police blotter and branching decisions.",
+      "url": "https://ballzatram.com/games/stoney-bologna/index.html",
+      "link": "Play the story"
+    },
+    {
+      "name": "Penitent II",
+      "category": "Creative experiments",
+      "status": "Experimental",
+      "description": "A creative game world combining a playable manuscript, relic archive, hymns, and a rhythm-battle experiment.",
+      "url": "https://github.com/Ballzatram/ballzatram/tree/master/frontend/public/pntnt2",
+      "link": "Explore project source"
+    },
+    {
+      "name": "Story Engine",
+      "category": "Creative experiments",
+      "status": "Prototype",
+      "description": "Generated-story experiments exploring structured narrative workflows and editorial review.",
+      "url": "https://github.com/Ballzatram/ballzatram/blob/master/docs/story-engine.md",
+      "link": "Read architecture notes"
+    },
+    {
+      "name": "Ballzatram Observatory",
+      "category": "In development",
+      "status": "Planned foundation",
+      "description": "An institutional-accountability concept connecting congressional promises, bill provisions, legislative action, and comparative media coverage.",
+      "url": "https://github.com/Ballzatram/ballzatram/pull/162",
+      "link": "View foundation proposal"
+    },
+    {
+      "name": "Osiris",
+      "category": "In development",
+      "status": "Concept & exploration",
+      "description": "A persistent AI companion and learning vision: guide critical thinking through conversation, games, and experiences that grow with the learner.",
+      "url": null,
+      "link": null
+    },
+    {
+      "name": "Reading Room",
+      "category": "In development",
+      "status": "Personal prototype",
+      "description": "A reading companion exploring book tracking, recommendations, and a reader identity that develops as books are completed.",
+      "url": null,
+      "link": null
+    },
+    {
+      "name": "Lineage Storytelling",
+      "category": "In development",
+      "status": "Concept",
+      "description": "An Osiris concept connecting genealogical research and source-backed family graphs to historical narratives in a reader’s chosen style.",
+      "url": null,
+      "link": null
+    }
+  ]
+}
