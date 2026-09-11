@@ -93,3 +93,8 @@ jobs:
 
       - name: Validate lab readiness
         run: python scripts/validate_lab_readiness.py
+
+      - name: Validate personal portfolio
+        run: |
+          python scripts/validate_devin_portfolio.py
+          node --check devin/site.js
