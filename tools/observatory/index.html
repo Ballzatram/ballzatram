@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#172c26"><meta name="description" content="Read the bill. Follow the vote. Trace the evidence. A congressional research workbench from Ballzatram.">
+  <title>Observatory · Ballzatram</title><link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to workbench</a>
+<aside class="sidebar">
+  <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true">◎</span> BALLZATRAM</a>
+  <div class="sidebar-title">The<br>Observatory<span>.</span></div>
+  <p class="sidebar-sub">PUBLIC RECORDS.<br>BETTER QUESTIONS.</p>
+  <nav aria-label="Workbench">
+    <button data-tab="bill" aria-current="page"><span>01</span> Bill X-Ray</button>
+    <button data-tab="versions"><span>02</span> Version changes</button>
+    <button data-tab="congress"><span>03</span> Congress & votes</button>
+    <button data-tab="promises"><span>04</span> Promise Ledger</button>
+    <button data-tab="coverage"><span>05</span> Coverage lens</button>
+    <button data-tab="dossier"><span>06</span> My investigation</button>
+  </nav>
+  <div class="sidebar-foot"><span class="small-dot"></span> Evidence before conclusions<p>A Ballzatram + Osiris project</p><a href="../index.html">← All tools</a></div>
+</aside>
+<main id="main">
+  <header class="topbar"><span>RESEARCH DESK <span class="muted">/</span> CONGRESS</span><div><button id="import-button" class="quiet">Import case</button><input id="import-file" type="file" accept=".json,application/json" hidden><button id="export-button" class="primary">Export dossier ↗</button></div></header>
+  <div id="notice" role="status" aria-live="polite"></div>
+  <section class="hero"><div class="eyebrow">THE ACCOUNTABILITY WORKBENCH</div><h1>Read beyond<br>the headline<span>.</span></h1><p>What does the bill actually say? Who acted on it?<br>Follow the record, one piece of evidence at a time.</p></section>
+  <section class="case-bar" aria-label="Selected investigation"><div><span class="eyebrow">OPEN CASE</span><h2 id="case-title">Loading official-source case…</h2><p id="case-meta"></p></div><div class="case-badges"><span class="badge" id="mode-label">Research draft</span><button id="save-case" class="quiet">☆ Save investigation</button><button id="reference-case" class="quiet" hidden>Open reference case</button></div></section>
+  <section class="metrics" id="metrics" aria-label="Case scope"></section>
+  <section id="panel" tabindex="-1" aria-label="Selected workbench view"><p>Loading pinned records…</p></section>
+  <footer class="page-foot">Original records are linked throughout. Draft interpretations and your local research are labeled.<br>No automatic political scores. No live congressional feed.</footer>
+</main>
+<dialog id="evidence-dialog"><form method="dialog"><button class="close" aria-label="Close evidence">×</button></form><div id="evidence-body"></div></dialog>
+<noscript>This workbench needs JavaScript to inspect records. <a href="data/sources/enrolled.xml">Read the original enrolled bill XML.</a></noscript>
+<script type="module" src="app.mjs"></script>
+</body></html>

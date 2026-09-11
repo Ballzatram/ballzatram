@@ -1,0 +1,58 @@
+{
+  "schema_version": "0.1.0",
+  "id": "demo-bundle-001",
+  "mode": "demo",
+  "created_at": "2026-09-08T13:00:00Z",
+  "methodology_version": "observatory-0.1-draft",
+  "sources": [
+    {
+      "id": "demo-source-001",
+      "url": "https://observatory.invalid/synthetic-bill",
+      "retrieved_at": "2026-09-08T12:00:00Z",
+      "content_sha256": "06c7541afd81b3384c171f2111ff296d1a498d5a3b74a2ba49b69a45a0091678",
+      "source_kind": "synthetic",
+      "reuse_status": "permitted",
+      "rights_note": "Original synthetic test text; no third-party article or real allegation."
+    }
+  ],
+  "entities": [
+    {
+      "id": "demo-bill-001",
+      "kind": "bill",
+      "label": "SYNTHETIC Example Bill"
+    },
+    {
+      "id": "demo-provision-012",
+      "kind": "provision",
+      "label": "SYNTHETIC Section 12"
+    }
+  ],
+  "claims": [
+    {
+      "id": "demo-claim-001",
+      "subject_id": "demo-bill-001",
+      "predicate": "contains",
+      "object_id": "demo-provision-012",
+      "statement": "SYNTHETIC: the example bill contains a reporting-eligibility provision.",
+      "kind": "recorded_fact",
+      "evidence": [
+        {
+          "source_id": "demo-source-001",
+          "locator": "Synthetic fixture, Section 12",
+          "excerpt": "SYNTHETIC: Section 12 changes fictional reporting eligibility. No real bill is represented.",
+          "role": "supporting",
+          "verified_against_snapshot": false
+        }
+      ],
+      "confidence": "unassessed",
+      "limitations": [
+        "Synthetic example only. It describes no person, real bill, or verified finding."
+      ],
+      "counterevidence_search_note": null,
+      "review_state": "draft",
+      "reviewer_ids": [],
+      "reviewed_at": null,
+      "high_stakes": true
+    }
+  ]
+}
