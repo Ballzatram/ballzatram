@@ -54,7 +54,7 @@ Verified in this pass: 13 new static regression tests, 23 Observatory tests, 6 i
 
 ## Boundaries
 
-- Automated DOM tests exercise behavior, not pixel rendering. The development preview was inaccessible to the remote browser; it does not establish a visual or real-device acceptance test.
+- Automated DOM tests exercise behavior, not pixel rendering. The development preview was inaccessible to the remote browser. Post-deployment desktop-browser inspection covered the home, Start menu, search, Scenario Lab, Observatory, Portfolio Lab, and game controls; it identified nested legacy game colors, addressed in a focused contrast follow-up. Real-device mobile testing remains separate.
 - Existing game scenes retain their illustrations beneath the shared desktop controls. The encrypted trip app and printable resume have separate presentation requirements.
 - This is a UI, maintainability, dependency, and targeted input/storage audit, not a penetration test or certification of all financial/research models.
 - Backend test warnings about Pydantic's `model_` namespace and Starlette/AnyIO deprecation are pre-existing and non-fatal. Backend dependency migration is not bundled with the frontend upgrade.
