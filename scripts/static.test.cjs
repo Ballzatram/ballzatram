@@ -22,7 +22,7 @@ function page(file, prepare = () => {}) {
 }
 const visiblePrograms = document => [...document.querySelectorAll('.program95')].filter(card => !card.hidden);
 
-for (const file of ['index.html', 'tools/index.html', 'econ-arcade/index.html']) {
+for (const file of ['index.html']) {
   test(`${file}: search, category, and empty states preserve real links`, () => {
     const dom = page(file); const { document, Event } = dom.window;
     const search = document.getElementById('program-search');
@@ -51,8 +51,8 @@ test('Homepage is fully navigable before JavaScript runs', () => {
   dom.window.close();
 });
 
-test('Start menu resolves nested routes and supports Escape, outside click, and keyboard focus', () => {
-  const dom = page('tools/scenario/index.html'); const { document, KeyboardEvent, MouseEvent } = dom.window;
+test('Homepage Start menu supports Escape, outside click, and keyboard focus', () => {
+  const dom = page('index.html'); const { document, KeyboardEvent, MouseEvent } = dom.window;
   Object.defineProperty(document, 'currentScript', { value: document.querySelector('script[src$="shell.js"]'), configurable: true });
   dom.window.eval(fs.readFileSync(path.join(root, 'assets/win95/shell.js'), 'utf8'));
   const start = document.querySelector('.start95'); const menu = document.getElementById('start-menu95');
@@ -155,10 +155,10 @@ test('Arcade service worker preserves other apps’ caches and excludes unrelate
   const vm = require('node:vm'); const listeners = {}; const deleted = [];
   const self = { location: new URL('https://ballzatram.com/econ-arcade/play/sw.js'), addEventListener: (name, fn) => { listeners[name] = fn; } };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'econ-arcade/play/sw.js'), 'utf8'), {
-    self, URL, Response, caches: { keys: async () => ['private-trip-v14-final', 'econ-arcade-living-world-v2', 'econ-arcade-living-world-v3'], delete: async key => deleted.push(key) }
+    self, URL, Response, caches: { keys: async () => ['private-trip-v14-final', 'econ-arcade-living-world-v2', 'econ-arcade-living-world-v3', 'econ-arcade-living-world-v4'], delete: async key => deleted.push(key) }
   });
   let activation; listeners.activate({ waitUntil: promise => { activation = promise; } }); await activation;
-  assert.deepEqual(deleted, ['econ-arcade-living-world-v2']);
+  assert.deepEqual(deleted, ['econ-arcade-living-world-v2', 'econ-arcade-living-world-v3']);
   for (const url of ['https://example.com/data', 'https://ballzatram.com/travel/private', 'https://ballzatram.com/tools/ai/']) {
     let intercepted = false; listeners.fetch({ request: { url, method: 'GET' }, respondWith: () => { intercepted = true; } });
     assert.equal(intercepted, false);

@@ -2,7 +2,7 @@
 
 ## Windows 95 desktop
 
-The public site now uses a shared Windows 95 interface with a searchable program directory and Start menu. `data/public-programs.json` is the source for the static home, directory, and arcade pages; regenerate them with `python scripts/build_desktop.py`. The existing Next.js application has matching desktop navigation.
+Only the homepage uses the Windows 95 desktop, searchable program directory, and Start menu. Tools, games, the Observatory, the portfolio, and supporting pages retain their independent designs. `data/public-programs.json` generates the homepage with `python scripts/build_desktop.py`; the generator does not rewrite internal pages. Next.js likewise uses the desktop only at `/`, with its original application layout on other routes. Desktop CSS tokens and general element rules are scoped to the homepage.
 
 See [UI and code audit](docs/UI_CODE_AUDIT.md) for fixes, verification, and maintenance instructions. `python scripts/validate_public.py` builds and checks the exact GitHub Pages artifact before publication.
 

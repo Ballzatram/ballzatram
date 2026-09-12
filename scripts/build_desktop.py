@@ -1,4 +1,4 @@
-"""Generate the three static launch surfaces from the public program catalog."""
+"""Generate only the Windows 95 homepage from the public program catalog."""
 import json
 from html import escape
 from pathlib import Path
@@ -73,13 +73,7 @@ def build():
 <div class="bottom-grid95"><section class="window95">{title('Read me first.txt', 'book', '')}<div class="note95"><h2>Learn by getting your hands on it.</h2><p>Set interest rates. Test a strategy. Stress a portfolio. These programs turn questions into things you can actually try.</p><a href="econ-arcade/index.html">Find your first game →</a></div></section>
 <section class="window95">{title('From the workbench', 'bulb', '')}<div class="note95"><h2>Always a work in progress.</h2><p>Some programs are ready to play; others are experiments. Each one tells you where it stands. Have an idea for the next one?</p><a href="community.html">Visit the community →</a></div></section></div>{footer('')}</main></div>'''
     (ROOT / 'index.html').write_text(page(home, '', 'Your personal desktop'))
-    for path, heading, desc, selected in [
-        ('tools/index.html', 'All programs', 'Games, research tools, and experiments. Find something useful—or something unexpected.', items),
-        ('econ-arcade/index.html', 'Econ Arcade', 'Make a decision. See the consequences. Build your intuition for economics, markets, and strategy.', [i for i in items if i['category'] == 'Games']),
-    ]:
-        body = f'<main class="directory95" id="main"><section class="window95">{title(heading, "folder", "../")}<div class="directory-heading95"><p class="eyebrow95">Ballzatram program library</p><h1>{heading}</h1><p>{desc}</p></div></section>{explorer(selected, "../", "arcade" in path)}{footer("../")}</main>'
-        (ROOT / path).write_text(page(body, '../', heading))
-    print(f'Generated desktop, directory, and arcade from {len(items)} programs.')
+    print(f'Generated homepage from {len(items)} programs.')
 
 
 if __name__ == '__main__':
