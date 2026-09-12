@@ -28,8 +28,8 @@
     "href": "tools/observatory/index.html",
     "category": "Research",
     "icon": "book",
-    "status": "Prototype",
-    "description": "Inspect bills, compare versions, follow congressional votes, and trace the evidence."
+    "status": "Living tracker",
+    "description": "Find and follow bills, see official activity updates, and inspect the evidence."
   },
   {
     "title": "Portfolio Lab",

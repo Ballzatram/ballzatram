@@ -1,3 +1,4 @@
+import {createTracker} from './tracker.mjs';
 import {STORAGE_KEY, MAX_IMPORT, CONDUCT, OUTCOME, safeUrl, validateDossier, validateResearch, emptyResearch, parseImport, compareVersions, wordDiff, exportWorkspace, evidenceContext} from './core.mjs';
 const $ = id => document.getElementById(id);
 const esc = value => String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -6,7 +7,7 @@ const options = (values,selected) => values.map(v=>`<option value="${esc(v)}" ${
 const badge = (label,kind='') => `<span class="badge ${kind}">${esc(label)}</span>`;
 const panelHead = (title,description,extra='') => `<div class="view-head"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div>${extra}</div>`;
 const evidenceButton = (sourceId,locator,text,label='View evidence') => `<button data-evidence="${esc(sourceId)}" data-locator="${esc(locator)}" data-excerpt="${esc(text)}">${esc(label)} ↗</button>`;
-let dossier, reference, research, tab='bill', versionId, sectionId, beforeId, afterId;
+let dossier, reference, research, tab='tracker', versionId, sectionId, beforeId, afterId;
 let workspace={cases:{},activeId:null};
 let imported=false;
 let voteFilters={query:'',party:'All parties',state:'All states',vote:'All votes'};
@@ -17,35 +18,41 @@ function persist() {
   catch { notice('Changes are available in this tab, but this browser could not save them. Export the dossier to keep your work.'); return false; }
 }
 function version() { return dossier.versions.find(v=>v.id===versionId) || dossier.versions.at(-1); }
-function section() { return version().sections.find(s=>s.id===sectionId) || version().sections[0]; }
+function section() { return version()?.sections.find(s=>s.id===sectionId) || version()?.sections[0]; }
 function activate(d,r,isImport=false) {
   dossier=validateDossier(d); research=validateResearch(r,d); imported=isImport;
-  versionId=d.versions.at(-1).id;sectionId=version().sections[0].id;
-  beforeId=d.versions[0].id;afterId=d.versions.at(-1).id;
+  versionId=d.versions.at(-1)?.id;sectionId=version()?.sections[0]?.id;
+  beforeId=d.versions[0]?.id;afterId=d.versions.at(-1)?.id;
   voteFilters={query:'',party:'All parties',state:'All states',vote:'All votes'};
   renderShell(); render();
 }
 function renderShell() {
   $('case-title').textContent=dossier.title;
-  $('case-meta').textContent=`${dossier.billLabel} · ${dossier.publicLaws.length?'Public Law '+dossier.publicLaws.join(', '):'No enactment record in this case'} · Historical snapshot`;
-  $('mode-label').textContent=dossier.mode==='demo'?'SYNTHETIC DEMO':(imported?'Imported research draft':'Official records · draft analysis');
+  $('case-meta').textContent=`${dossier.billLabel} · ${dossier.publicLaws.length?'Public Law '+dossier.publicLaws.join(', '):'No enactment record in this case'} · ${dossier.tracker?'Record retrieved '+new Date(dossier.tracker.checkedAt).toLocaleString():'Historical snapshot'}`;
+  $('mode-label').textContent=dossier.mode==='demo'?'SYNTHETIC DEMO':(imported?'Imported research draft':dossier.tracker?'Automatically retrieved · draft analysis':'Official records · draft analysis');
   $('save-case').textContent=research.saved?'★ Investigation saved':'☆ Save investigation';
   $('reference-case').hidden=dossier.id===reference?.id;
-  const cards=[['SECTIONS',version().sections.length,'in selected version'],['BILL VERSIONS',dossier.versions.length,'exact artifacts retained'],['HOUSE RECORDS',dossier.rollcall?.members.length ?? '—',dossier.rollcall?'one recorded roll call':'no roll call imported'],['SOURCE SNAPSHOTS',dossier.sources.length,'with SHA-256 fingerprints']];
+  const follow=$('follow-current');follow.hidden=!dossier.tracker||!tracker.hasBill(dossier.tracker.billId);if(dossier.tracker){follow.dataset.followBill=dossier.tracker.billId;follow.textContent=tracker.isFollowed(dossier.tracker.billId)?'★ Following bill':'☆ Follow bill';}
+  const cards=[['SECTIONS',version()?.sections.length ?? '—','in selected version'],['BILL VERSIONS',dossier.versions.length,'exact artifacts retained'],['HOUSE RECORDS',dossier.rollcall?.members.length ?? '—',dossier.rollcall?'one recorded roll call':'no roll call imported'],['SOURCE SNAPSHOTS',dossier.sources.length,'with SHA-256 fingerprints']];
   $('metrics').innerHTML=cards.map(([title,value,sub])=>`<div class="metric"><span class="eyebrow">${title}</span><strong>${value}</strong><small>${sub}</small></div>`).join('');
 }
 function setTab(next,focus=false) {
-  tab=next;
+  tab=next;document.querySelector('main').classList.toggle('tracking',next==='tracker');
   document.querySelectorAll('[data-tab]').forEach(b=>b.dataset.tab===tab?b.setAttribute('aria-current','page'):b.removeAttribute('aria-current'));
   history.replaceState(null,'',`#${tab}`);render();
   if(focus)$('panel').focus();
 }
 function render() {
+  if(tab==='tracker'){tracker.render();return;}
   if(!dossier)return;
   ({bill:renderBill,versions:renderVersions,congress:renderCongress,promises:renderPromises,coverage:renderCoverage,dossier:renderDossier}[tab]||renderBill)();
 }
 function versionOptions(selected) { return dossier.versions.map(v=>`<option value="${esc(v.id)}" ${v.id===selected?'selected':''}>${esc(v.label)} (${esc(v.id.toUpperCase())})</option>`).join(''); }
 function renderBill() {
+  if(!version()){
+    $('panel').innerHTML=panelHead('Bill text is not available here yet','The activity record is available. Missing text is not an empty bill.')+`<div class="note">${esc(dossier.tracker?.textFailures?.length?'One or more bill text files could not be parsed or retrieved.':'No supported published XML text version was available at the last scan.')} <button id="open-activity">Read activity timeline →</button></div>${(dossier.tracker?.textVersions||[]).map(v=>`<p>${link(v.url,v.code.toUpperCase()+' · Original text')}</p>`).join('')}`;
+    $('open-activity').onclick=()=>setTab('congress');return;
+  }
   const v=version(),s=section();
   $('panel').innerHTML=panelHead('Bill X-Ray','Start with the words. Inspect every section, its boundaries, and the record behind it.',`<label class="controls">Bill version <select id="bill-version">${versionOptions(versionId)}</select></label>`)+`
   <div class="work-grid"><aside class="section-list" aria-label="Bill sections"><input class="section-search" id="section-search" placeholder="Find a section…" aria-label="Search sections">${v.sections.map(x=>`<button data-section="${esc(x.id)}" class="${s.id===x.id?'selected':''}" aria-pressed="${s.id===x.id}"><small>Section ${esc(x.number)}</small><strong>${esc(x.title)}</strong></button>`).join('')}</aside>
@@ -78,6 +85,7 @@ async function askOsiris() {
   } catch(error){output.textContent=`Could not get an answer: ${error.message}`;} finally{button.disabled=false;}
 }
 function renderVersions() {
+  if(!dossier.versions.length){renderBill();return;}
   const before=dossier.versions.find(v=>v.id===beforeId),after=dossier.versions.find(v=>v.id===afterId);
   const rows=compareVersions(before,after);
   $('panel').innerHTML=panelHead('The words that changed','Compare exact versions. Green adds wording; red removes it. This is a text comparison, not a complete legal-effect opinion.')+
@@ -91,7 +99,7 @@ function renderCongress() {
   const roll=dossier.rollcall;
   $('panel').innerHTML=panelHead('Congress & the record','Trace recorded actions and inspect individual House votes. A recorded decision does not establish motive or a campaign commitment.')+
   `<div class="note">${dossier.sponsors.map(s=>`${esc(s.name)} · Formal sponsor · ${esc(s.id)}`).join('<br>')||'No sponsor record imported.'}<br>Senate unanimous consent is a chamber action; it is not a recorded individual vote for every senator. Member affiliations below are from the historical roll call.</div>`+
-  (roll?`<article class="card"><div class="card-top"><span class="eyebrow">HOUSE ROLL CALL ${esc(roll.roll)} · ${esc(roll.date)}</span>${badge(roll.question)}</div><h3>${esc(roll.result)} · ${esc(dossier.title)}</h3><div class="vote-total">${Object.entries(roll.totals).map(([name,n])=>`<span><strong>${n}</strong>${esc(name)}</span>`).join('')}</div><div class="bar" aria-hidden="true">${Object.entries(roll.totals).map(([name,n])=>`<span class="${name==='Yea'?'yes':name==='Nay'?'no':'abstain'}" style="width:${100*n/roll.members.length}%"></span>`).join('')}</div><div class="controls"><input id="member-query" placeholder="Find a member or Bioguide ID…" aria-label="Search members" style="max-width:280px" value="${esc(voteFilters.query)}"><select id="party-filter" aria-label="Filter party">${options(['All parties',...new Set(roll.members.map(m=>m.party))],voteFilters.party)}</select><select id="state-filter" aria-label="Filter state">${options(['All states',...[...new Set(roll.members.map(m=>m.state))].sort()],voteFilters.state)}</select><select id="vote-filter" aria-label="Filter vote">${options(['All votes','Yea','Nay','Present','Not Voting'],voteFilters.vote)}</select></div><p id="vote-count" class="search-result" aria-live="polite"></p><div class="table-wrap"><table><thead><tr><th scope="col">MEMBER</th><th scope="col">PARTY / STATE</th><th scope="col">VOTE</th><th scope="col">RECORD</th></tr></thead><tbody id="member-rows"></tbody></table></div></article>`:'<div class="empty"><h3>No individual roll call imported.</h3><p>The action timeline remains available. Missing votes are not abstentions.</p></div>')+
+  (roll?`<article class="card"><div class="card-top"><span class="eyebrow">HOUSE ROLL CALL ${esc(roll.roll)} · ${esc(roll.date)}</span>${badge(roll.question)}</div><h3>${esc(roll.result)} · ${esc(dossier.title)}</h3><div class="vote-total">${Object.entries(roll.totals).map(([name,n])=>`<span><strong>${n}</strong>${esc(name)}</span>`).join('')}</div><div class="bar" aria-hidden="true">${Object.entries(roll.totals).map(([name,n])=>`<span class="${name==='Yea'?'yes':name==='Nay'?'no':'abstain'}" style="width:${100*n/roll.members.length}%"></span>`).join('')}</div><div class="controls"><input id="member-query" placeholder="Find a member or Bioguide ID…" aria-label="Search members" style="max-width:280px" value="${esc(voteFilters.query)}"><select id="party-filter" aria-label="Filter party">${options(['All parties',...new Set(roll.members.map(m=>m.party))],voteFilters.party)}</select><select id="state-filter" aria-label="Filter state">${options(['All states',...[...new Set(roll.members.map(m=>m.state))].sort()],voteFilters.state)}</select><select id="vote-filter" aria-label="Filter vote">${options(['All votes','Yea','Nay','Present','Not Voting'],voteFilters.vote)}</select></div><p id="vote-count" class="search-result" aria-live="polite"></p><div class="table-wrap"><table><thead><tr><th scope="col">MEMBER</th><th scope="col">PARTY / STATE</th><th scope="col">VOTE</th><th scope="col">RECORD</th></tr></thead><tbody id="member-rows"></tbody></table></div></article>`:'<div class="empty"><h3>No individual roll call loaded.</h3><p>The action timeline remains available. The official action record links the chamber decision. Missing individual votes are not abstentions.</p></div>')+
   `<details class="card" style="margin-top:20px" open><summary>Legislative timeline · ${dossier.actions.length} source records</summary><p class="muted">Exact date/text duplicates are collapsed. Related chamber and Library of Congress entries can describe the same event; this is not a count of distinct decisions.</p><ol class="timeline">${dossier.actions.map(a=>`<li><time>${esc(a.date)}</time><p>${esc(a.text)}</p>${evidenceButton(a.sourceId,a.locator,a.text,'Action source')}</li>`).join('')}</ol></details>`;
   if(roll){renderVotes();for(const [id,key] of [['member-query','query'],['party-filter','party'],['state-filter','state'],['vote-filter','vote']])$(id).addEventListener('input',e=>{voteFilters[key]=e.target.value;renderVotes();});}
 }
@@ -148,8 +156,9 @@ function download(name,content,type='application/json'){
 }
 function showEvidence(button){
   const source=dossier.sources.find(s=>s.id===button.dataset.evidence);if(!source)return;
-  const localPath=!imported && dossier.id===reference?.id && source.path===reference.sources.find(s=>s.id===source.id)?.path ? source.path:null;
-  $('evidence-body').innerHTML=`<div class="eyebrow">FOLLOW THE EVIDENCE</div><h2>${esc(source.id)}</h2><p class="evidence-link">${link(source.url,'Original source')}</p>${localPath?`<p><a href="${esc(localPath)}" download>Download pinned XML snapshot ↓</a></p>`:''}<h4>Locator</h4><p class="evidence-hash">${esc(button.dataset.locator)}</p>${button.dataset.excerpt?`<h4>Extracted text / selected record</h4><div class="original">${esc(button.dataset.excerpt)}</div>`:''}<p class="muted">Retrieved ${esc(source.retrievedAt)}</p><p class="evidence-hash">SHA-256<br>${esc(source.sha256)}</p><p>${esc(source.rights)}</p><div class="note">${imported?'Imported provenance has not been authenticated against the remote source.':'Original XML is pinned alongside this case; extracted formatting is normalized for reading.'} Interpretations remain research drafts.</div>`;
+  const livePath=!imported && dossier.tracker && /^live\/snapshots\/[a-f0-9]{64}\.xml$/.test(source.path||'')?source.path:null;
+  const localPath=livePath || (!imported && dossier.id===reference?.id && source.path===reference.sources.find(s=>s.id===source.id)?.path ? source.path:null);
+  $('evidence-body').innerHTML=`<div class="eyebrow">FOLLOW THE EVIDENCE</div><h2>${esc(source.id)}</h2><p class="evidence-link">${link(source.url,'Original source')}</p>${localPath?`<p><a href="${esc(localPath)}" download>Download source XML snapshot ↓</a></p>`:''}<h4>Locator</h4><p class="evidence-hash">${esc(button.dataset.locator)}</p>${button.dataset.excerpt?`<h4>Extracted text / selected record</h4><div class="original">${esc(button.dataset.excerpt)}</div>`:''}<p class="muted">Retrieved ${esc(source.retrievedAt)}</p><p class="evidence-hash">SHA-256<br>${esc(source.sha256)}</p><p>${esc(source.rights)}</p><div class="note">${imported?'Saved or imported provenance has not been authenticated against the remote source.':'Original XML is pinned alongside this case; extracted formatting is normalized for reading.'} Interpretations remain research drafts.</div>`;
   $('evidence-dialog').showModal();
 }
 function fillForm(form,record,multiKey){
@@ -186,7 +195,13 @@ async function init(){
     try{stored=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');if(stored){if(!stored.cases||typeof stored.cases!=='object')throw new Error('Invalid saved workspace');for(const item of Object.values(stored.cases)){validateDossier(item.dossier);validateResearch(item.research,item.dossier);}workspace=stored;}}catch{notice('Saved workspace could not be read. The pinned reference case is open; existing browser storage has not been erased.');}
     const active=workspace.cases[workspace.activeId];
     activate(active?.dossier||reference,active?.research||emptyResearch(),Boolean(active));
-    const hash=location.hash.slice(1);setTab(['bill','versions','congress','promises','coverage','dossier'].includes(hash)?hash:'bill');
+    const hash=location.hash.slice(1);setTab(['tracker','bill','versions','congress','promises','coverage','dossier'].includes(hash)?hash:'tracker');
   }catch(error){$('panel').innerHTML=`<div class="empty"><h3>The case could not be loaded.</h3><p>${esc(error.message)}</p><p>Reload the page or use Import case to open a saved Observatory JSON dossier.</p></div>`;$('case-title').textContent='Source unavailable';notice('The workbench has not substituted demo data for a failed source.');}
 }
-init();
+const tracker=createTracker({panel:$('panel'),onNotice:notice,isActive:()=>tab==='tracker',onFollowChange:()=>{if(dossier)renderShell();},onOpen:(next)=>{
+  const saved=workspace.cases[next.id];
+  activate(next,saved?.research||emptyResearch(),false);
+  setTab(next.versions.length?'bill':'congress',true);
+  notice('Official record loaded. Follow this bill to see future changes. Saved research stays attached to this exact snapshot.');
+}});
+init().finally(()=>tracker.refresh());

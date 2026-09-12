@@ -4,7 +4,7 @@ This is an acceptance-based sequence, not a delivery-time or revenue promise. Th
 
 ## Phase 0 — preserve and validate the foundation
 
-Included: product notes, all three original concepts, source registry, measurement codebook, architecture, independence policy, typed evidence contracts, and synthetic tests. No route or live collection is added.
+Included: product notes, all three original concepts, source registry, measurement codebook, architecture, independence policy, typed evidence contracts, and synthetic tests. That foundation phase added no route or live collection; the later workbench and living tracker are documented in WORKBENCH.md.
 
 Check the isolated tests in the repository's pinned dependency environment. They passed in the preparation environment, but pinned-version installation was unavailable. Do not describe local contract tests as an end-to-end or production validation.
 
@@ -44,7 +44,7 @@ Acceptance: no claim of a complete homicide census; no "silence" inferred from m
 
 ## Phase 6 — discovery, alerts, and workspaces
 
-Only after the preceding quality gates: research-priority suggestions, version-change alerts, saved investigations, collaborative annotations, licensed exports, and Osiris-guided lessons. Deploy monitoring as an explicit feature; it is not running now.
+Only after the preceding quality gates: research-priority suggestions, version-change alerts, saved investigations, collaborative annotations, licensed exports, and Osiris-guided lessons. Basic GPO bill monitoring and browser-local watchlists now run as an explicit feature. Wider coverage, delivered alerts, and collaborative workspaces remain future work.
 
 Validate pricing with paid pilots rather than projecting revenue from hypothetical subscription counts. Keep public findings, methodology, corrections, and subject responses separate from paid workflow conveniences. Honor the existing repository's no-live-billing policy until usefulness and readiness are established.
 

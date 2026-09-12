@@ -1,0 +1,596 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<billStatus>
+  <version>3.0.0</version>
+  <bill>
+    <number>1276</number>
+    <updateDate>2026-09-11T19:41:16Z</updateDate>
+    <updateDateIncludingText>2026-09-11T19:41:16Z</updateDateIncludingText>
+    <originChamber>House</originChamber>
+    <originChamberCode>H</originChamberCode>
+    <type>HR</type>
+    <introducedDate>2025-02-13</introducedDate>
+    <congress>119</congress>
+    <legislationUrl>https://www.congress.gov/bill/119th-congress/house-bill/1276</legislationUrl>
+    <constitutionalAuthorityStatementText><![CDATA[<pre>[Congressional Record Volume 171, Number 30 (Thursday, February 13, 2025)][House]From the Congressional Record Online through the Government Publishing Office [<a href="https://www.gpo.gov">www.gpo.gov</a>]By Mr. COMER:H.R. 1276.Congress has the power to enact this legislation pursuantto the following:Article 4, Section 3, Clause 2``The Congress shall have Power to dispose of and make allneedful Rules and Regulations respecting the Territory orother Property belonging to the United States; and nothing inthis Constitution shall be so construed as to Prejudice anyClaims of the United States, or of any particular State.''[Page H710]</pre>]]></constitutionalAuthorityStatementText>
+    <committees>
+      <item>
+        <systemCode>sseg00</systemCode>
+        <name>Energy and Natural Resources Committee</name>
+        <chamber>Senate</chamber>
+        <type>Standing</type>
+        <activities>
+          <item>
+            <name>Discharged From</name>
+            <date>2026-08-08T03:14:14Z</date>
+          </item>
+          <item>
+            <name>Markup By</name>
+            <date>2026-03-04T16:05:05Z</date>
+          </item>
+          <item>
+            <name>Referred To</name>
+            <date>2025-12-10T20:34:06Z</date>
+          </item>
+        </activities>
+      </item>
+      <item>
+        <systemCode>hsii00</systemCode>
+        <name>Natural Resources Committee</name>
+        <chamber>House</chamber>
+        <type>Standing</type>
+        <subcommittees>
+          <item>
+            <systemCode>hsii10</systemCode>
+            <name>Federal Lands Subcommittee</name>
+            <activities>
+              <item>
+                <name>Hearings By (subcommittee)</name>
+                <date>2025-04-29T17:43:41Z</date>
+              </item>
+              <item>
+                <name>Referred to</name>
+                <date>2025-04-23T14:41:45Z</date>
+              </item>
+            </activities>
+          </item>
+        </subcommittees>
+        <activities>
+          <item>
+            <name>Reported By</name>
+            <date>2025-09-15T18:22:41Z</date>
+          </item>
+          <item>
+            <name>Markup By</name>
+            <date>2025-07-23T16:28:14Z</date>
+          </item>
+          <item>
+            <name>Discharged from</name>
+            <date>2025-06-25T20:34:56Z</date>
+          </item>
+          <item>
+            <name>Referred To</name>
+            <date>2025-02-13T14:03:50Z</date>
+          </item>
+        </activities>
+      </item>
+    </committees>
+    <committeeReports>
+      <committeeReport>
+        <citation>H. Rept. 119-281</citation>
+      </committeeReport>
+    </committeeReports>
+    <relatedBills>
+      <item>
+        <title>A bill to remove restrictions from a parcel of land in Paducah, Kentucky.</title>
+        <congress>119</congress>
+        <number>601</number>
+        <type>S</type>
+        <latestAction>
+          <actionDate>2026-03-04</actionDate>
+          <text>Committee on Energy and Natural Resources. Ordered to be reported with an amendment in the nature of a substitute favorably.</text>
+        </latestAction>
+        <relationshipDetails>
+          <item>
+            <type>Identical bill</type>
+            <identifiedBy>CRS</identifiedBy>
+          </item>
+        </relationshipDetails>
+      </item>
+    </relatedBills>
+    <actions>
+      <item>
+        <actionDate>2026-09-11</actionDate>
+        <text>Signed by President.</text>
+        <type>President</type>
+        <actionCode>E30000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-09-11</actionDate>
+        <text>Signed by President.</text>
+        <type>BecameLaw</type>
+        <actionCode>36000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-09-03</actionDate>
+        <text>Presented to President.</text>
+        <type>Floor</type>
+        <actionCode>E20000</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-09-03</actionDate>
+        <text>Presented to President.</text>
+        <type>President</type>
+        <actionCode>28000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-08-10</actionDate>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Message on Senate action sent to the House.</text>
+        <type>Floor</type>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Passed Senate without amendment by Unanimous Consent. (consideration: CR S4551-4552)</text>
+        <type>Floor</type>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <text>Passed/agreed to in Senate: Passed Senate without amendment by Unanimous Consent.</text>
+        <type>Floor</type>
+        <actionCode>17000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <committees>
+          <item>
+            <systemCode>sseg00</systemCode>
+            <name>Energy and Natural Resources Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Senate Committee on Energy and Natural Resources discharged by Unanimous Consent.</text>
+        <type>Discharge</type>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <text>Senate Committee on Energy and Natural Resources discharged by Unanimous Consent.</text>
+        <type>Committee</type>
+        <actionCode>14500</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>sseg00</systemCode>
+            <name>Energy and Natural Resources Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2026-03-04</actionDate>
+        <committees>
+          <item>
+            <systemCode>sseg00</systemCode>
+            <name>Energy and Natural Resources Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Committee on Energy and Natural Resources. Ordered to be reported without amendment favorably.</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2025-12-10</actionDate>
+        <committees>
+          <item>
+            <systemCode>sseg00</systemCode>
+            <name>Energy and Natural Resources Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Received in the Senate and Read twice and referred to the Committee on Energy and Natural Resources.</text>
+        <type>IntroReferral</type>
+      </item>
+      <item>
+        <actionDate>2025-12-09</actionDate>
+        <actionTime>15:01:58</actionTime>
+        <text>Motion to reconsider laid on the table Agreed to without objection.</text>
+        <type>Floor</type>
+        <actionCode>H38310</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-12-09</actionDate>
+        <actionTime>15:01:55</actionTime>
+        <text>On motion to suspend the rules and pass the bill, as amended Agreed to by voice vote. (text: CR H5073)</text>
+        <type>Floor</type>
+        <actionCode>H37300</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-12-09</actionDate>
+        <actionTime>15:01:55</actionTime>
+        <text>Passed/agreed to in House: On motion to suspend the rules and pass the bill, as amended Agreed to by voice vote. (text: CR H5073)</text>
+        <type>Floor</type>
+        <actionCode>8000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-12-09</actionDate>
+        <actionTime>14:54:42</actionTime>
+        <text>DEBATE - The House proceeded with forty minutes of debate on H.R. 1276.</text>
+        <type>Floor</type>
+        <actionCode>H8D000</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-12-09</actionDate>
+        <actionTime>14:54:41</actionTime>
+        <text>Considered under suspension of the rules. (consideration: CR H5073-5074)</text>
+        <type>Floor</type>
+        <actionCode>H30000</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-12-09</actionDate>
+        <actionTime>14:54:20</actionTime>
+        <text>Mr. Westerman moved to suspend the rules and pass the bill, as amended.</text>
+        <type>Floor</type>
+        <actionCode>H30300</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-09-15</actionDate>
+        <text>Placed on the Union Calendar, Calendar No. 237.</text>
+        <type>Calendars</type>
+        <actionCode>H12410</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+        <calendarNumber>
+          <calendar>U00237</calendar>
+        </calendarNumber>
+      </item>
+      <item>
+        <actionDate>2025-09-15</actionDate>
+        <text>Reported (Amended) by the Committee on Natural Resources. H. Rept. 119-281.</text>
+        <type>Committee</type>
+        <actionCode>H12200</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>hsii00</systemCode>
+            <name>Natural Resources Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2025-09-15</actionDate>
+        <text>Reported (Amended) by the Committee on Natural Resources. H. Rept. 119-281.</text>
+        <type>Committee</type>
+        <actionCode>5000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>hsii00</systemCode>
+            <name>Natural Resources Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2025-07-23</actionDate>
+        <committees>
+          <item>
+            <systemCode>hsii00</systemCode>
+            <name>Natural Resources Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <code>1</code>
+          <name>House committee actions</name>
+        </sourceSystem>
+        <text>Ordered to be Reported (Amended) by Unanimous Consent.</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2025-07-23</actionDate>
+        <committees>
+          <item>
+            <systemCode>hsii00</systemCode>
+            <name>Natural Resources Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <code>1</code>
+          <name>House committee actions</name>
+        </sourceSystem>
+        <text>Committee Consideration and Mark-up Session Held</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2025-06-25</actionDate>
+        <committees>
+          <item>
+            <systemCode>hsii00</systemCode>
+            <name>Natural Resources Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <code>1</code>
+          <name>House committee actions</name>
+        </sourceSystem>
+        <text>Subcommittee on Federal Lands Discharged</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2025-04-29</actionDate>
+        <committees>
+          <item>
+            <systemCode>hsii10</systemCode>
+            <name>Federal Lands Subcommittee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <code>1</code>
+          <name>House committee actions</name>
+        </sourceSystem>
+        <text>Subcommittee Hearings Held</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2025-04-23</actionDate>
+        <committees>
+          <item>
+            <systemCode>hsii10</systemCode>
+            <name>Federal Lands Subcommittee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <code>1</code>
+          <name>House committee actions</name>
+        </sourceSystem>
+        <text>Referred to the Subcommittee on Federal Lands.</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2025-02-13</actionDate>
+        <text>Referred to the House Committee on Natural Resources.</text>
+        <type>IntroReferral</type>
+        <actionCode>H11100</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>hsii00</systemCode>
+            <name>Natural Resources Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2025-02-13</actionDate>
+        <text>Introduced in House</text>
+        <type>IntroReferral</type>
+        <actionCode>Intro-H</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-02-13</actionDate>
+        <text>Introduced in House</text>
+        <type>IntroReferral</type>
+        <actionCode>1000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+    </actions>
+    <sponsors>
+      <item>
+        <bioguideId>C001108</bioguideId>
+        <fullName>Rep. Comer, James [R-KY-1]</fullName>
+        <firstName>James</firstName>
+        <lastName>Comer</lastName>
+        <party>R</party>
+        <state>KY</state>
+        <district>1</district>
+        <isByRequest>N</isByRequest>
+      </item>
+    </sponsors>
+    <cboCostEstimates>
+      <item>
+        <pubDate>2025-09-26T20:07:00Z</pubDate>
+        <title>H.R. 1276, a bill to remove restrictions from a parcel of land in Paducah, Kentucky</title>
+        <url>https://www.cbo.gov/publication/61776</url>
+        <description>As reported by the House Committee on Natural Resources on September 15, 2025</description>
+      </item>
+      <item>
+        <pubDate>2026-04-13T15:28:00Z</pubDate>
+        <title>H.R. 1276, an act to remove restrictions from a parcel of land in Paducah, Kentucky</title>
+        <url>https://www.cbo.gov/publication/62329</url>
+        <description>As ordered reported by the Senate Committee on Energy and Natural Resources on March 4, 2026</description>
+      </item>
+    </cboCostEstimates>
+    <policyArea>
+      <name>Public Lands and Natural Resources</name>
+    </policyArea>
+    <subjects>
+      <legislativeSubjects>
+        <item>
+          <name>Kentucky</name>
+          <updateDate>2025-05-20T19:08:38Z</updateDate>
+        </item>
+        <item>
+          <name>Land transfers</name>
+          <updateDate>2025-05-20T19:08:50Z</updateDate>
+        </item>
+        <item>
+          <name>Land use and conservation</name>
+          <updateDate>2025-05-20T19:08:44Z</updateDate>
+        </item>
+      </legislativeSubjects>
+      <policyArea>
+        <name>Public Lands and Natural Resources</name>
+        <updateDate>2025-05-07T20:07:54Z</updateDate>
+      </policyArea>
+    </subjects>
+    <summaries>
+      <summary>
+        <versionCode>00</versionCode>
+        <actionDate>2025-02-13</actionDate>
+        <actionDesc>Introduced in House</actionDesc>
+        <updateDate>2025-12-05T15:23:06Z</updateDate>
+        <text><![CDATA[<p>This bill directs the Department of the Interior to remove all deed restrictions from approximately 3.62 acres located at 2956 Park Avenue, on the Paducah Memorial Army Reserve Center in&nbsp;Paducah, Kentucky. The restrictions include easements, exceptions, reservations, terms, conditions, and covenants described in the quitclaim deed that was executed on April 27, 2012. The deed conveyed land from Interior to the City of&nbsp;Paducah, Kentucky.</p>]]></text>
+      </summary>
+    </summaries>
+    <title>To remove restrictions from a parcel of land in Paducah, Kentucky.</title>
+    <titles>
+      <item>
+        <titleType>Display Title</titleType>
+        <titleTypeCode>45</titleTypeCode>
+        <title>To remove restrictions from a parcel of land in Paducah, Kentucky.</title>
+        <updateDate>2026-07-10T16:43:30Z</updateDate>
+      </item>
+      <item>
+        <titleType>Official Titles from EH (Engrossed in House) bill text</titleType>
+        <titleTypeCode>259</titleTypeCode>
+        <title>To remove restrictions from a parcel of land in Paducah, Kentucky.</title>
+        <updateDate>2025-12-11T03:53:20Z</updateDate>
+        <chamberCode>H</chamberCode>
+        <chamberName>House</chamberName>
+        <billTextVersionName>Engrossed in House</billTextVersionName>
+        <billTextVersionCode>EH</billTextVersionCode>
+      </item>
+      <item>
+        <titleType>Official Title as Introduced</titleType>
+        <titleTypeCode>6</titleTypeCode>
+        <title>To remove restrictions from a parcel of land in Paducah, Kentucky.</title>
+        <updateDate>2025-03-14T09:18:19Z</updateDate>
+        <billTextVersionName>Introduced in House</billTextVersionName>
+        <billTextVersionCode>IH</billTextVersionCode>
+      </item>
+    </titles>
+    <textVersions>
+      <item>
+        <type>Enrolled Bill</type>
+        <date/>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr1276enr/uslm/BILLS-119hr1276enr.xml</url>
+            <type>United States Legislative Markup</type>
+          </item>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr1276enr/xml/BILLS-119hr1276enr.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Referred in Senate</type>
+        <date>2025-12-10T05:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr1276rfs/xml/BILLS-119hr1276rfs.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Engrossed in House</type>
+        <date>2025-12-09T05:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr1276eh/xml/BILLS-119hr1276eh.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Reported in House</type>
+        <date>2025-09-15T04:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr1276rh/xml/BILLS-119hr1276rh.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Introduced in House</type>
+        <date>2025-02-13T05:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr1276ih/xml/BILLS-119hr1276ih.xml</url>
+          </item>
+        </formats>
+      </item>
+    </textVersions>
+    <latestAction>
+      <actionDate>2026-09-11</actionDate>
+      <text>Signed by President.</text>
+    </latestAction>
+  </bill>
+  <dublinCore xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:format>text/xml</dc:format>
+    <dc:language>EN</dc:language>
+    <dc:rights>Pursuant to Title 17 Section 105 of the United States Code, this file is not subject to copyright protection and is in the public domain.</dc:rights>
+    <dc:contributor>Congressional Research Service, Library of Congress</dc:contributor>
+    <dc:description>This file contains bill summaries and statuses for federal legislation. A bill summary describes the most significant provisions of a piece of legislation and details the effects the legislative text may have on current law and federal programs. Bill summaries are authored by the Congressional Research Service (CRS) of the Library of Congress. As stated in Public Law 91-510 (2 USC 166 (d)(6)), one of the duties of CRS is "to prepare summaries and digests of bills and resolutions of a public general nature introduced in the Senate or House of Representatives". For more information, refer to the User Guide that accompanies this file.</dc:description>
+  </dublinCore>
+</billStatus>

@@ -6,6 +6,45 @@ the Next.js catalog links to the same application through the existing tools
 symlink. Next.js also redirects `/observatory` to it. The current Pages workflow
 already packages `tools/`, so no second hosting service is needed.
 
+## Living bill tracker
+
+The default **Find & follow bills** view searches indexed current-Congress House and
+Senate bills by number, title, sponsor, or topic. Open a bill to read its official
+activity timeline and available text; select **Follow bill** to keep it in this
+browser's watchlist. Changed records are highlighted until opened. No upload or API
+key is needed. Following does not send email/push alerts or synchronize devices.
+
+The Pages workflow runs at minute 43 every four hours (UTC), and on deployments.
+`scripts/refresh_observatory.py` reads the official GPO BILLSTATUS sitemaps and
+retrieves up to 120 bill records per run, with a seven-minute request budget.
+Existing due records receive half the budget before new-record backfill. The page
+checks the published catalogue every five minutes while visible; **Check for
+updates** fetches it immediately. Hosting schedules and upstream updates can lag.
+
+This is a bounded, growing catalogue, not every bill. The committed bootstrap has
+24 official records. Coverage counts are shown; resolutions are excluded. GPO
+sitemap confirmation updates the activity check time for unchanged records without
+claiming that their source XML was newly retrieved. Records older than 12 hours or
+with failed refreshes are explicitly flagged. Failures retain the last good data.
+
+The build cache retains earlier snapshots and grows between deployments. If GitHub
+evicts the cache, coverage rebuilds from the committed bootstrap; an absent followed
+bill remains visible as unavailable. Browser-local notes are not a durable account.
+Exact detail and XML fingerprints are validated before publication, and the browser
+verifies the chosen detail against its catalogue. Saved research remains attached
+to the specific source snapshot, never silently remapped onto changed evidence.
+
+Latest two available supported XML versions are parsed; all discovered XML versions
+are linked. Missing, oversized, or unsupported text remains an explicit gap, with
+activity still readable. Live records do not yet import individual roll calls,
+campaign statements, or media articles. The historical reference case still has
+its verified House roll call. Human interpretations remain drafts.
+
+```bash
+python scripts/refresh_observatory.py --output /tmp/observatory-live --budget 120
+node tools/observatory/validate-live.mjs /tmp/observatory-live
+```
+
 ## Available workflows
 
 - **Bill X-Ray:** choose an exact version, search every parsed section, read original
@@ -63,7 +102,7 @@ individuals or third-party news articles. No claim is marked editorially reviewe
 Hashes identify bytes; they do not certify legal interpretation, authenticity of
 user imports, or actual reviewer independence.
 
-## Add another official bill
+## Optional manual import
 
 The importer uses the Python standard library and constructed GPO URLs; no API key
 or arbitrary remote URL input is required. It retains original XML and rejects
@@ -110,7 +149,7 @@ was blocked by the implementation environment's remote-preview access.
 
 ## Boundaries and next work
 
-No background collection, authenticated editorial review, cross-device account,
+No authenticated editorial review, cross-device account,
 public promise rankings, paid plans, lobbying joins, causal beneficiary estimates,
 media-silence metrics, or automatic publishing is running. Local notes are browser
 storage, not a private account or a durable team workspace. Public publication of
@@ -119,6 +158,5 @@ The existing strict EvidenceBundle publication contract is unchanged; this draft
 workbench uses its own versioned research envelope, never a publication bundle.
 
 Next: verified reference-law review; more bill artifacts and legal-reference
-resolution; curated original campaign statements and contrary actions; source
-refresh and monitored versions; authenticated collaborative review. Broader Media
+resolution; curated original campaign statements and contrary actions; wider catalogue coverage and individual roll-call retrieval; authenticated collaborative review. Broader Media
 Observatory and documented-interest research remain in the product roadmap.

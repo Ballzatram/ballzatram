@@ -34,8 +34,10 @@ A June 2026 pass reduced the public surface back to a clearer launchpad:
 
 The [Observatory workbench](tools/observatory/index.html) brings bill text, version changes,
 congressional votes, sourced promise drafts, coverage mappings and portable investigation
-files together. It works on GitHub Pages and through the Next.js tool catalog, with pinned
-official records and clearly labeled draft analysis. See [usage and limitations](docs/observatory/WORKBENCH.md).
+files together. Find and follow bills without uploading files: the Pages deployment scans
+official GPO sources every four hours and grows a searchable catalogue. Browser-local
+watchlists highlight changed records. Coverage and per-bill freshness stay visible,
+with pinned source snapshots and clearly labeled draft analysis. See [usage and limitations](docs/observatory/WORKBENCH.md).
 
 ## Econ Arcade
 

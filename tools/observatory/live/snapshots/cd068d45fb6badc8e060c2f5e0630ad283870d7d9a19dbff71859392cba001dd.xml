@@ -1,0 +1,771 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<billStatus>
+  <version>3.0.0</version>
+  <bill>
+    <number>5366</number>
+    <updateDate>2026-09-11T19:41:59Z</updateDate>
+    <updateDateIncludingText>2026-09-11T19:41:59Z</updateDateIncludingText>
+    <originChamber>House</originChamber>
+    <originChamberCode>H</originChamberCode>
+    <type>HR</type>
+    <introducedDate>2025-09-15</introducedDate>
+    <congress>119</congress>
+    <legislationUrl>https://www.congress.gov/bill/119th-congress/house-bill/5366</legislationUrl>
+    <constitutionalAuthorityStatementText><![CDATA[<pre>[Congressional Record Volume 171, Number 150 (Monday, September 15, 2025)][House]From the Congressional Record Online through the Government Publishing Office [<a href="https://www.gpo.gov">www.gpo.gov</a>]By Mr. STEUBE:H.R. 5366.Congress has the power to enact this legislation pursuantto the following:Article I Section 8[Page H4311]</pre>]]></constitutionalAuthorityStatementText>
+    <committees>
+      <item>
+        <systemCode>ssfi00</systemCode>
+        <name>Finance Committee</name>
+        <chamber>Senate</chamber>
+        <type>Standing</type>
+        <activities>
+          <item>
+            <name>Discharged From</name>
+            <date>2026-08-07T20:58:58Z</date>
+          </item>
+          <item>
+            <name>Referred To</name>
+            <date>2026-04-28T21:18:10Z</date>
+          </item>
+        </activities>
+      </item>
+      <item>
+        <systemCode>hswm00</systemCode>
+        <name>Ways and Means Committee</name>
+        <chamber>House</chamber>
+        <type>Standing</type>
+        <activities>
+          <item>
+            <name>Reported By</name>
+            <date>2026-04-09T16:08:27Z</date>
+          </item>
+          <item>
+            <name>Markup By</name>
+            <date>2026-03-25T15:02:00Z</date>
+          </item>
+          <item>
+            <name>Referred To</name>
+            <date>2025-09-15T16:01:25Z</date>
+          </item>
+        </activities>
+      </item>
+    </committees>
+    <committeeReports>
+      <committeeReport>
+        <citation>H. Rept. 119-605</citation>
+      </committeeReport>
+    </committeeReports>
+    <relatedBills>
+      <item>
+        <title>Protect Innocent Victims of Taxation After Fire Extension Act</title>
+        <congress>119</congress>
+        <number>5225</number>
+        <type>HR</type>
+        <latestAction>
+          <actionDate>2025-09-09</actionDate>
+          <text>Referred to the House Committee on Ways and Means.</text>
+        </latestAction>
+        <relationshipDetails>
+          <item>
+            <type>Related bill</type>
+            <identifiedBy>CRS</identifiedBy>
+          </item>
+        </relationshipDetails>
+      </item>
+      <item>
+        <title>Doug LaMalfa Protect Innocent Victims of Taxation After Fire Extension Act</title>
+        <congress>119</congress>
+        <number>7825</number>
+        <type>HR</type>
+        <latestAction>
+          <actionDate>2026-03-05</actionDate>
+          <text>Referred to the House Committee on Ways and Means.</text>
+        </latestAction>
+        <relationshipDetails>
+          <item>
+            <type>Related bill</type>
+            <identifiedBy>CRS</identifiedBy>
+          </item>
+        </relationshipDetails>
+      </item>
+      <item>
+        <title>Federal Disaster Tax Relief Act of 2025</title>
+        <congress>119</congress>
+        <number>2744</number>
+        <type>S</type>
+        <latestAction>
+          <actionDate>2025-09-09</actionDate>
+          <text>Read twice and referred to the Committee on Finance.</text>
+        </latestAction>
+        <relationshipDetails>
+          <item>
+            <type>Related bill</type>
+            <identifiedBy>CRS</identifiedBy>
+          </item>
+        </relationshipDetails>
+      </item>
+      <item>
+        <title>Protect Innocent Victims of Taxation After Fire Extension Act</title>
+        <congress>119</congress>
+        <number>3372</number>
+        <type>S</type>
+        <latestAction>
+          <actionDate>2025-12-04</actionDate>
+          <text>Read twice and referred to the Committee on Finance. (Sponsor introductory remarks on measure: CR S8514)</text>
+        </latestAction>
+        <relationshipDetails>
+          <item>
+            <type>Related bill</type>
+            <identifiedBy>CRS</identifiedBy>
+          </item>
+        </relationshipDetails>
+      </item>
+    </relatedBills>
+    <actions>
+      <item>
+        <actionDate>2026-09-11</actionDate>
+        <text>Signed by President.</text>
+        <type>President</type>
+        <actionCode>E30000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-09-11</actionDate>
+        <text>Signed by President.</text>
+        <type>BecameLaw</type>
+        <actionCode>36000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-09-03</actionDate>
+        <text>Presented to President.</text>
+        <type>Floor</type>
+        <actionCode>E20000</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-09-03</actionDate>
+        <text>Presented to President.</text>
+        <type>President</type>
+        <actionCode>28000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-08-10</actionDate>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Message on Senate action sent to the House.</text>
+        <type>Floor</type>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Passed Senate without amendment by Unanimous Consent. (consideration: CR S4547)</text>
+        <type>Floor</type>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <text>Passed/agreed to in Senate: Passed Senate without amendment by Unanimous Consent.</text>
+        <type>Floor</type>
+        <actionCode>17000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <committees>
+          <item>
+            <systemCode>ssfi00</systemCode>
+            <name>Finance Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Senate Committee on Finance discharged by Unanimous Consent.</text>
+        <type>Discharge</type>
+      </item>
+      <item>
+        <actionDate>2026-08-07</actionDate>
+        <text>Senate Committee on Finance discharged by Unanimous Consent.</text>
+        <type>Committee</type>
+        <actionCode>14500</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>ssfi00</systemCode>
+            <name>Finance Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2026-04-28</actionDate>
+        <committees>
+          <item>
+            <systemCode>ssfi00</systemCode>
+            <name>Finance Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <name>Senate</name>
+        </sourceSystem>
+        <text>Received in the Senate and Read twice and referred to the Committee on Finance.</text>
+        <type>IntroReferral</type>
+      </item>
+      <item>
+        <actionDate>2026-04-27</actionDate>
+        <actionTime>16:15:13</actionTime>
+        <text>Motion to reconsider laid on the table Agreed to without objection.</text>
+        <type>Floor</type>
+        <actionCode>H38310</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-04-27</actionDate>
+        <actionTime>16:15:09</actionTime>
+        <text>On motion to suspend the rules and pass the bill, as amended Agreed to by voice vote. (text: CR H3107-3108)</text>
+        <type>Floor</type>
+        <actionCode>H37300</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-04-27</actionDate>
+        <actionTime>16:15:09</actionTime>
+        <text>Passed/agreed to in House: On motion to suspend the rules and pass the bill, as amended Agreed to by voice vote. (text: CR H3107-3108)</text>
+        <type>Floor</type>
+        <actionCode>8000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-04-27</actionDate>
+        <actionTime>15:55:01</actionTime>
+        <text>DEBATE - The House proceeded with forty minutes of debate on H.R. 5366.</text>
+        <type>Floor</type>
+        <actionCode>H8D000</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-04-27</actionDate>
+        <actionTime>15:54:58</actionTime>
+        <text>Considered under suspension of the rules. (consideration: CR H3107-3110)</text>
+        <type>Floor</type>
+        <actionCode>H30000</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-04-27</actionDate>
+        <actionTime>15:54:41</actionTime>
+        <text>Mr. Smith (MO) moved to suspend the rules and pass the bill, as amended.</text>
+        <type>Floor</type>
+        <actionCode>H30300</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2026-04-09</actionDate>
+        <text>Placed on the Union Calendar, Calendar No. 525.</text>
+        <type>Calendars</type>
+        <actionCode>H12410</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+        <calendarNumber>
+          <calendar>U00525</calendar>
+        </calendarNumber>
+      </item>
+      <item>
+        <actionDate>2026-04-09</actionDate>
+        <text>Reported (Amended) by the Committee on Ways and Means. H. Rept. 119-605.</text>
+        <type>Committee</type>
+        <actionCode>H12200</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>hswm00</systemCode>
+            <name>Ways and Means Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2026-04-09</actionDate>
+        <text>Reported (Amended) by the Committee on Ways and Means. H. Rept. 119-605.</text>
+        <type>Committee</type>
+        <actionCode>5000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>hswm00</systemCode>
+            <name>Ways and Means Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2026-03-25</actionDate>
+        <committees>
+          <item>
+            <systemCode>hswm00</systemCode>
+            <name>Ways and Means Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <code>1</code>
+          <name>House committee actions</name>
+        </sourceSystem>
+        <text>Ordered to be Reported in the Nature of a Substitute by the Yeas and Nays: 43 - 0.</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2026-03-25</actionDate>
+        <committees>
+          <item>
+            <systemCode>hswm00</systemCode>
+            <name>Ways and Means Committee</name>
+          </item>
+        </committees>
+        <sourceSystem>
+          <code>1</code>
+          <name>House committee actions</name>
+        </sourceSystem>
+        <text>Committee Consideration and Mark-up Session Held</text>
+        <type>Committee</type>
+      </item>
+      <item>
+        <actionDate>2025-09-15</actionDate>
+        <text>Referred to the House Committee on Ways and Means.</text>
+        <type>IntroReferral</type>
+        <actionCode>H11100</actionCode>
+        <sourceSystem>
+          <code>2</code>
+          <name>House floor actions</name>
+        </sourceSystem>
+        <committees>
+          <item>
+            <systemCode>hswm00</systemCode>
+            <name>Ways and Means Committee</name>
+          </item>
+        </committees>
+      </item>
+      <item>
+        <actionDate>2025-09-15</actionDate>
+        <text>Introduced in House</text>
+        <type>IntroReferral</type>
+        <actionCode>Intro-H</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+      <item>
+        <actionDate>2025-09-15</actionDate>
+        <text>Introduced in House</text>
+        <type>IntroReferral</type>
+        <actionCode>1000</actionCode>
+        <sourceSystem>
+          <code>9</code>
+          <name>Library of Congress</name>
+        </sourceSystem>
+      </item>
+    </actions>
+    <sponsors>
+      <item>
+        <bioguideId>S001214</bioguideId>
+        <fullName>Rep. Steube, W. Gregory [R-FL-17]</fullName>
+        <firstName>W.</firstName>
+        <lastName>Steube</lastName>
+        <party>R</party>
+        <state>FL</state>
+        <middleName>Gregory</middleName>
+        <district>17</district>
+        <isByRequest>N</isByRequest>
+      </item>
+    </sponsors>
+    <cosponsors>
+      <item>
+        <bioguideId>T000460</bioguideId>
+        <fullName>Rep. Thompson, Mike [D-CA-4]</fullName>
+        <firstName>Mike</firstName>
+        <lastName>Thompson</lastName>
+        <party>D</party>
+        <state>CA</state>
+        <district>4</district>
+        <sponsorshipDate>2025-09-15</sponsorshipDate>
+        <isOriginalCosponsor>True</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>L000578</bioguideId>
+        <fullName>Rep. LaMalfa, Doug [R-CA-1]</fullName>
+        <firstName>Doug</firstName>
+        <lastName>LaMalfa</lastName>
+        <party>R</party>
+        <state>CA</state>
+        <district>1</district>
+        <sponsorshipDate>2025-09-15</sponsorshipDate>
+        <isOriginalCosponsor>True</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>P000613</bioguideId>
+        <fullName>Rep. Panetta, Jimmy [D-CA-19]</fullName>
+        <firstName>Jimmy</firstName>
+        <lastName>Panetta</lastName>
+        <party>D</party>
+        <state>CA</state>
+        <district>19</district>
+        <sponsorshipDate>2025-09-15</sponsorshipDate>
+        <isOriginalCosponsor>True</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>V000138</bioguideId>
+        <fullName>Rep. Vindman, Eugene Simon [D-VA-7]</fullName>
+        <firstName>Eugene</firstName>
+        <lastName>Vindman</lastName>
+        <party>D</party>
+        <state>VA</state>
+        <middleName>Simon</middleName>
+        <district>7</district>
+        <sponsorshipDate>2025-09-30</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>N000191</bioguideId>
+        <fullName>Rep. Neguse, Joe [D-CO-2]</fullName>
+        <firstName>Joe</firstName>
+        <lastName>Neguse</lastName>
+        <party>D</party>
+        <state>CO</state>
+        <district>2</district>
+        <sponsorshipDate>2025-10-08</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>M001241</bioguideId>
+        <fullName>Rep. Min, Dave [D-CA-47]</fullName>
+        <firstName>Dave</firstName>
+        <lastName>Min</lastName>
+        <party>D</party>
+        <state>CA</state>
+        <district>47</district>
+        <sponsorshipDate>2025-12-18</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>C001121</bioguideId>
+        <fullName>Rep. Crow, Jason [D-CO-6]</fullName>
+        <firstName>Jason</firstName>
+        <lastName>Crow</lastName>
+        <party>D</party>
+        <state>CO</state>
+        <district>6</district>
+        <sponsorshipDate>2025-12-18</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>T000487</bioguideId>
+        <fullName>Rep. Tokuda, Jill N. [D-HI-2]</fullName>
+        <firstName>Jill</firstName>
+        <lastName>Tokuda</lastName>
+        <party>D</party>
+        <state>HI</state>
+        <middleName>N.</middleName>
+        <district>2</district>
+        <sponsorshipDate>2026-01-08</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>D000032</bioguideId>
+        <fullName>Rep. Donalds, Byron [R-FL-19]</fullName>
+        <firstName>Byron</firstName>
+        <lastName>Donalds</lastName>
+        <party>R</party>
+        <state>FL</state>
+        <district>19</district>
+        <sponsorshipDate>2026-03-24</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>B001257</bioguideId>
+        <fullName>Rep. Bilirakis, Gus M. [R-FL-12]</fullName>
+        <firstName>Gus</firstName>
+        <lastName>Bilirakis</lastName>
+        <party>R</party>
+        <state>FL</state>
+        <middleName>M.</middleName>
+        <district>12</district>
+        <sponsorshipDate>2026-03-25</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>D000600</bioguideId>
+        <fullName>Rep. Diaz-Balart, Mario [R-FL-26]</fullName>
+        <firstName>Mario</firstName>
+        <lastName>Diaz-Balart</lastName>
+        <party>R</party>
+        <state>FL</state>
+        <district>26</district>
+        <sponsorshipDate>2026-03-25</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>M001160</bioguideId>
+        <fullName>Rep. Moore, Gwen [D-WI-4]</fullName>
+        <firstName>Gwen</firstName>
+        <lastName>Moore</lastName>
+        <party>D</party>
+        <state>WI</state>
+        <district>4</district>
+        <sponsorshipDate>2026-03-25</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>B001301</bioguideId>
+        <fullName>Rep. Bergman, Jack [R-MI-1]</fullName>
+        <firstName>Jack</firstName>
+        <lastName>Bergman</lastName>
+        <party>R</party>
+        <state>MI</state>
+        <district>1</district>
+        <sponsorshipDate>2026-04-09</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+      <item>
+        <bioguideId>W000795</bioguideId>
+        <fullName>Rep. Wilson, Joe [R-SC-2]</fullName>
+        <firstName>Joe</firstName>
+        <lastName>Wilson</lastName>
+        <party>R</party>
+        <state>SC</state>
+        <district>2</district>
+        <sponsorshipDate>2026-04-09</sponsorshipDate>
+        <isOriginalCosponsor>False</isOriginalCosponsor>
+      </item>
+    </cosponsors>
+    <cboCostEstimates>
+      <item>
+        <pubDate>2026-04-21T21:56:00Z</pubDate>
+        <title>H.R. 5366, Doug LaMalfa Federal Disaster Tax Relief Certainty Act</title>
+        <url>https://www.cbo.gov/publication/62372</url>
+        <description>As reported by the House Committee on Ways and Means on April 9, 2026</description>
+      </item>
+    </cboCostEstimates>
+    <policyArea>
+      <name>Taxation</name>
+    </policyArea>
+    <subjects>
+      <legislativeSubjects>
+        <item>
+          <name>Disaster relief and insurance</name>
+          <updateDate>2026-04-28T13:47:47Z</updateDate>
+        </item>
+        <item>
+          <name>Fires</name>
+          <updateDate>2026-04-28T13:47:33Z</updateDate>
+        </item>
+        <item>
+          <name>Forests, forestry, trees</name>
+          <updateDate>2026-04-28T13:47:40Z</updateDate>
+        </item>
+        <item>
+          <name>Income tax deductions</name>
+          <updateDate>2026-04-28T13:47:25Z</updateDate>
+        </item>
+        <item>
+          <name>Natural disasters</name>
+          <updateDate>2026-04-28T13:47:55Z</updateDate>
+        </item>
+      </legislativeSubjects>
+      <policyArea>
+        <name>Taxation</name>
+        <updateDate>2026-08-31T19:31:15Z</updateDate>
+      </policyArea>
+    </subjects>
+    <summaries>
+      <summary>
+        <versionCode>07</versionCode>
+        <actionDate>2026-04-09</actionDate>
+        <actionDesc>Reported to House</actionDesc>
+        <updateDate>2026-04-24T15:09:57Z</updateDate>
+        <text><![CDATA[<p><strong>Doug LaMalfa Federal Disaster Tax Relief Certainty Act</strong></p><p>This bill extends the federal tax deduction for qualified disaster-related personal casualty losses and the exclusion from gross income of qualified wildfire relief payments.</p><p>Under current law, unreimbursed personal casualty losses arising in a qualified disaster area (qualified disaster-related personal casualty losses) are deductible (as an itemized tax deduction or as part of the standard tax deduction) if such losses exceed $500 per casualty.  A <em>qualified disaster area</em> is an area with respect to which a major disaster has been declared during the period beginning in 2020 and ending 60 days after&nbsp;July 4, 2025, if the incident period begins on or after December 28, 2019, and on or before July 4, 2025.</p><p>The bill extends the federal tax deduction for qualified disaster-related personal casualty losses by defining a <em>qualified disaster area</em> as an area with respect to which a major disaster&nbsp;has been declared if the incident period&nbsp;begins on or after December 28, 2019, and before January 1, 2027.</p><p>The bill provides&nbsp;that the exclusion from gross income of qualified wildfire relief payments applies to such payments attributable to forest or range fires declared a federal disaster after 2014 and before 2027, regardless of when such payments are received. (Currently, qualified wildfire relief payments attributable to forest or range fires declared a federal disaster after 2014 and received after 2019 and before 2026 may be excluded from gross income.)</p><p>The bill also provides statutory authority for several related tax rules.</p>]]></text>
+      </summary>
+    </summaries>
+    <title>Doug LaMalfa Federal Disaster Tax Relief Certainty Act</title>
+    <titles>
+      <item>
+        <titleType>Short Titles from ENR (Enrolled) bill text</titleType>
+        <titleTypeCode>147</titleTypeCode>
+        <title>Doug LaMalfa Federal Disaster Tax Relief Certainty Act</title>
+        <updateDate>2026-08-11T05:53:23Z</updateDate>
+        <chamberCode>J</chamberCode>
+        <chamberName>Joint</chamberName>
+        <billTextVersionName>Enrolled Bill</billTextVersionName>
+        <billTextVersionCode>ENR</billTextVersionCode>
+      </item>
+      <item>
+        <titleType>Display Title</titleType>
+        <titleTypeCode>45</titleTypeCode>
+        <title>Doug LaMalfa Federal Disaster Tax Relief Certainty Act</title>
+        <updateDate>2026-07-17T23:40:46Z</updateDate>
+      </item>
+      <item>
+        <titleType>Short Titles from RFS (Referred to Senate) bill text</titleType>
+        <titleTypeCode>255</titleTypeCode>
+        <title>Doug LaMalfa Federal Disaster Tax Relief Certainty Act</title>
+        <updateDate>2026-05-01T06:53:28Z</updateDate>
+        <chamberCode>S</chamberCode>
+        <chamberName>Senate</chamberName>
+        <billTextVersionName>Referred in Senate</billTextVersionName>
+        <billTextVersionCode>RFS</billTextVersionCode>
+      </item>
+      <item>
+        <titleType>Official Titles from EH (Engrossed in House) bill text</titleType>
+        <titleTypeCode>259</titleTypeCode>
+        <title>To amend the Internal Revenue Code of 1986 to codify and extend the rules for personal casualty losses arising from major disasters and the rules for the exclusion from gross income of compensation for losses or damages resulting from certain wildfires.</title>
+        <updateDate>2026-04-29T05:08:27Z</updateDate>
+        <chamberCode>H</chamberCode>
+        <chamberName>House</chamberName>
+        <billTextVersionName>Engrossed in House</billTextVersionName>
+        <billTextVersionCode>EH</billTextVersionCode>
+      </item>
+      <item>
+        <titleType>Short Title(s) as Passed House</titleType>
+        <titleTypeCode>104</titleTypeCode>
+        <title>Doug LaMalfa Federal Disaster Tax Relief Certainty Act</title>
+        <updateDate>2026-04-29T05:08:27Z</updateDate>
+        <chamberCode>H</chamberCode>
+        <chamberName>House</chamberName>
+        <billTextVersionName>Engrossed in House</billTextVersionName>
+        <billTextVersionCode>EH</billTextVersionCode>
+      </item>
+      <item>
+        <titleType>Short Title(s) as Reported to House</titleType>
+        <titleTypeCode>102</titleTypeCode>
+        <title>Doug LaMalfa Federal Disaster Tax Relief Certainty Act</title>
+        <updateDate>2026-04-10T06:08:23Z</updateDate>
+        <chamberCode>H</chamberCode>
+        <chamberName>House</chamberName>
+        <billTextVersionName>Reported in House</billTextVersionName>
+        <billTextVersionCode>RH</billTextVersionCode>
+      </item>
+      <item>
+        <titleType>Short Title(s) as Introduced</titleType>
+        <titleTypeCode>101</titleTypeCode>
+        <title>Federal Disaster Tax Relief Act of 2025</title>
+        <updateDate>2025-11-26T05:23:19Z</updateDate>
+        <billTextVersionName>Introduced in House</billTextVersionName>
+        <billTextVersionCode>IH</billTextVersionCode>
+      </item>
+      <item>
+        <titleType>Official Title as Introduced</titleType>
+        <titleTypeCode>6</titleTypeCode>
+        <title>To amend the Internal Revenue Code of 1986 to codify and extend the rules for personal casualty losses arising from major disasters and the rules for the exclusion from gross income of compensation for losses or damages resulting from certain wildfires.</title>
+        <updateDate>2025-11-26T05:18:19Z</updateDate>
+        <billTextVersionName>Introduced in House</billTextVersionName>
+        <billTextVersionCode>IH</billTextVersionCode>
+      </item>
+    </titles>
+    <textVersions>
+      <item>
+        <type>Enrolled Bill</type>
+        <date/>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr5366enr/uslm/BILLS-119hr5366enr.xml</url>
+            <type>United States Legislative Markup</type>
+          </item>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr5366enr/xml/BILLS-119hr5366enr.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Referred in Senate</type>
+        <date>2026-04-28T04:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr5366rfs/xml/BILLS-119hr5366rfs.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Engrossed in House</type>
+        <date>2026-04-27T04:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr5366eh/xml/BILLS-119hr5366eh.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Reported in House</type>
+        <date>2026-04-09T04:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr5366rh/xml/BILLS-119hr5366rh.xml</url>
+          </item>
+        </formats>
+      </item>
+      <item>
+        <type>Introduced in House</type>
+        <date>2025-09-15T04:00:00Z</date>
+        <formats>
+          <item>
+            <url>https://www.govinfo.gov/content/pkg/BILLS-119hr5366ih/xml/BILLS-119hr5366ih.xml</url>
+          </item>
+        </formats>
+      </item>
+    </textVersions>
+    <latestAction>
+      <actionDate>2026-09-11</actionDate>
+      <text>Signed by President.</text>
+    </latestAction>
+  </bill>
+  <dublinCore xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:format>text/xml</dc:format>
+    <dc:language>EN</dc:language>
+    <dc:rights>Pursuant to Title 17 Section 105 of the United States Code, this file is not subject to copyright protection and is in the public domain.</dc:rights>
+    <dc:contributor>Congressional Research Service, Library of Congress</dc:contributor>
+    <dc:description>This file contains bill summaries and statuses for federal legislation. A bill summary describes the most significant provisions of a piece of legislation and details the effects the legislative text may have on current law and federal programs. Bill summaries are authored by the Congressional Research Service (CRS) of the Library of Congress. As stated in Public Law 91-510 (2 USC 166 (d)(6)), one of the duties of CRS is "to prepare summaries and digests of bills and resolutions of a public general nature introduced in the Senate or House of Representatives". For more information, refer to the User Guide that accompanies this file.</dc:description>
+  </dublinCore>
+</billStatus>

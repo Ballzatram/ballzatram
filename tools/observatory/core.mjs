@@ -12,9 +12,11 @@ const unique = (items, label) => {
   if (new Set(items.map(x => x.id)).size !== items.length) fail(`Duplicate ${label} IDs.`);
 };
 export function validateDossier(d) {
-  if (!d || d.schemaVersion !== 1 || (!text(d.id, 160) || ['__proto__','constructor','prototype'].includes(d.id)) || !text(d.title, 500) || !text(d.billLabel, 200)) fail('Unsupported dossier. Use a version 1 Observatory dossier.');
+  if (!d || d.schemaVersion !== 1 || (!text(d.id, 160) || ['__proto__','constructor','prototype'].includes(d.id)) || !text(d.title, 3000) || !text(d.billLabel, 200)) fail('Unsupported dossier. Use a version 1 Observatory dossier.');
   if (!['draft', 'demo'].includes(d.mode)) fail('Only draft or demo dossiers can be opened here.');
-  if (!Array.isArray(d.sources) || !d.sources.length || !Array.isArray(d.versions) || !d.versions.length) fail('Sources and bill versions are required.');
+  if (!Array.isArray(d.sources) || !d.sources.length || !Array.isArray(d.versions)) fail('Sources and bill versions are required.');
+  if (!d.versions.length && !d.tracker) fail('No bill text or tracked source record supplied.');
+  if (d.tracker && (!/^\d{3}-(hr|s)-[1-9]\d{0,4}$/.test(d.tracker.billId) || !Number.isFinite(Date.parse(d.tracker.checkedAt)) || !Array.isArray(d.tracker.textVersions) || !Array.isArray(d.tracker.textFailures))) fail('Invalid tracker provenance.');
   unique(d.sources, 'source'); unique(d.versions, 'version');
   for (const s of d.sources) {
     if (!text(s.id, 160) || !safeUrl(s.url) || !/^[a-f0-9]{64}$/.test(s.sha256) || !text(s.rights) || !text(s.retrievedAt, 100) || !Number.isFinite(Date.parse(s.retrievedAt))) fail('A source is missing a valid URL, hash, rights note, or retrieval time.');

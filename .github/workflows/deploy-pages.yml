@@ -4,6 +4,8 @@ on:
   push:
     branches: [main, master]
   workflow_dispatch:
+  schedule:
+    - cron: "43 */4 * * *"
 
 permissions:
   contents: read
@@ -16,6 +18,7 @@ concurrency:
 
 jobs:
   deploy:
+    timeout-minutes: 20
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -118,6 +121,30 @@ jobs:
         run: |
           set -euo pipefail
           python scripts/validate_public.py
+
+      - name: Restore last successful Observatory catalogue
+        uses: actions/cache/restore@v4
+        with:
+          path: .cache/observatory
+          key: observatory-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: observatory-v1-
+
+      - name: Refresh official bill activity
+        run: |
+          mkdir -p .cache/observatory
+          if [ ! -f .cache/observatory/index.json ]; then
+            cp -R tools/observatory/live/. .cache/observatory/
+          fi
+          python scripts/refresh_observatory.py --output .cache/observatory --budget 120
+          node tools/observatory/validate-live.mjs .cache/observatory
+          rm -rf _site/tools/observatory/live
+          cp -R .cache/observatory _site/tools/observatory/live
+
+      - name: Save Observatory catalogue for the next scan
+        uses: actions/cache/save@v4
+        with:
+          path: .cache/observatory
+          key: observatory-v1-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
