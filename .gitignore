@@ -12,3 +12,5 @@ frontend/tsconfig.tsbuildinfo
 backend/.venv*/
 backend/data/
 frontend/debug.log
+
+_site/

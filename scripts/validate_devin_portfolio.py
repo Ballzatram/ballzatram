@@ -54,7 +54,9 @@ def main():
                 target /= 'index.html'
             assert target.is_file(), f'Missing local destination: {link}'
     workflow = (ROOT / '.github/workflows/deploy-pages.yml').read_text()
-    assert 'travel devin _site/' in workflow, 'Portfolio must be included in Pages artifact'
+    assert 'scripts/validate_public.py' in workflow, 'Pages must validate its real artifact'
+    from build_public import PUBLIC_ENTRIES
+    assert 'devin' in PUBLIC_ENTRIES, 'Portfolio must be included in Pages artifact'
     assert 'href="devin/"' in (ROOT / 'index.html').read_text(), 'Missing homepage link'
     assert (ROOT / 'frontend/public/devin').resolve() == SITE, 'Next.js public link must point to portfolio'
     print('Portfolio links, generated content, no-JS collection, and deployment checks passed.')

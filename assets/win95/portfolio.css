@@ -1,0 +1,17 @@
+/* Screen-only desktop treatment; the standalone printable resume keeps its layout. */
+body { --paper:#fff; --white:#fff; --green:#000080; --line:#aaa; --accent:#ffff80; background:#008080; color:#161616; font-family:Tahoma,Verdana,sans-serif; }
+body > main.wrap { background:#fff; padding:0 28px; box-shadow:var(--raised); margin-top:24px; }
+.top { position:relative; background:#c0c0c0; box-shadow:var(--raised); border:0; }
+.top .header { min-height:64px; } .top a { color:#111; }
+.monogram, .button, .tag, .status, .project, .feature, .contact-inner, .profile-card, .filters button { border-radius:0; }
+.button, .filters button { background:#c0c0c0; color:#111; border:0; box-shadow:var(--raised); }
+.filters button[aria-pressed=true] { background:#ddd; box-shadow:var(--sunken); color:#000080; }
+h1,h2,h3,.hero h1,.hero h1 em,.card-bottom strong { font-family:Tahoma,Verdana,sans-serif; font-style:normal; letter-spacing:-.04em; }
+.hero h1 { font-size:clamp(38px,5vw,64px); color:#000080; }
+.hero { padding:40px 0; } .section { padding:40px 0; }
+.profile-card { background:#000080; border:3px solid #c0c0c0; box-shadow:var(--raised); }
+.feature, .project { border:1px solid #aaa; box-shadow:none; }
+.project-art { border-radius:0; }
+.search input { border:0; border-radius:0; box-shadow:var(--sunken); }
+.footer { color:white; } .footer a { color:white; }
+@media(max-width:650px) { body > main.wrap { width:calc(100% - 20px); padding:0 18px; } .hero h1 { font-size:38px; } }

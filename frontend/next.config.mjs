@@ -2,7 +2,8 @@ import path from "node:path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: { typedRoutes: true, externalDir: true },
+  typedRoutes: true,
+  experimental: { externalDir: true },
   async redirects() {
     return [
       { source: "/observatory", destination: "/tools/observatory/index.html", permanent: false },

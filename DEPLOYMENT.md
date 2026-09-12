@@ -22,7 +22,7 @@ Therefore:
 
 The workflow runs on pushes to `master` and may also be started manually.
 
-It publishes the selected static files into a Pages artifact and deploys that artifact to the `github-pages` environment.
+It runs `python scripts/validate_public.py`, which assembles the allowlisted files using `scripts/build_public.py` and checks local links/resources in that output. The verified artifact is then deployed to the `github-pages` environment. Add public files to the Python manifest instead of duplicating a shell copy list.
 
 Expected repository files:
 
