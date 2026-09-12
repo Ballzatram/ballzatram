@@ -1,6 +1,6 @@
 # Bring your own AI to Ballzatram
 
-Implemented in `/tools/ai/`, with the same workspace copied into the Next.js app at build/dev time. The homepage AI shortcut, saved lab context links, Congressional Accountability reading aid, and Next.js guide lead into it.
+Implemented in `/tools/ai/`, with the same workspace served by the Next.js app through its existing public-directory symlinks. The homepage AI shortcut, saved lab context links, Congressional Accountability reading aid, and Next.js guide lead into it.
 
 ## What visitors can do
 
@@ -45,7 +45,7 @@ Backend agent/parcel endpoints also stop inferring merely because `OPENAI_API_KE
 
 GitHub Pages publishes the workspace and shared client through the existing manifest and workflow. No new deployment credentials are needed for OpenRouter, manual handoff, or local preview. Direct provider keys require deploying the optional relay; see `ai-bridge/README.md`. The user must complete provider authorization themselves. No private account was linked or charged during development.
 
-The Next.js `predev`/`prebuild` script copies the canonical workspace/assets into ignored public build inputs, avoiding divergent source copies. On a separate Next.js origin, connections are separate and must be made on that origin.
+Next.js already links `frontend/public/tools` and `frontend/public/assets` to the canonical source directories. Both hosts serve the same workspace without copying or rewriting source files during a build. The home link uses `/`, the program directory is shared, and Privacy links to the canonical public policy. On a separate Next.js origin, connections are separate and must be made on that origin.
 
 Validation: `npm run test:static` in `frontend`, `npm test` in `tools/observatory`, frontend typecheck/build, backend tests, and the existing published-link/product guardrails. OAuth callback, paid inference, and relay cases use mocks; tests do not buy credits or invoke paid models. Live provider authorization and a paid completion remain user-account acceptance steps.
 
