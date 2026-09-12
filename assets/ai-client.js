@@ -5,6 +5,7 @@
   else root.BallzatramAI = client;
 })(typeof window === 'undefined' ? globalThis : window, function (root) {
   'use strict';
+  const subscription = typeof module === 'object' && module.exports ? require('./subscription-client.js') : root.BallzatramSubscription;
   const PREFS = 'ballzatram:ai-preferences:v2';
   const SESSION = 'ballzatram:ai-connection:v2';
   const PKCE = 'ballzatram:ai-pkce:v2';
@@ -32,7 +33,7 @@
   function normalizeSettings(value) {
     const v = value && typeof value === 'object' ? value : {};
     return {
-      mode: ['handoff', 'openrouter', 'native', 'demo'].includes(v.mode) ? v.mode : 'handoff',
+      mode: ['subscription', 'handoff', 'openrouter', 'native', 'demo'].includes(v.mode) ? v.mode : 'subscription',
       chat: Object.hasOwn(chats, v.chat) ? v.chat : 'chatgpt',
       model: typeof v.model === 'string' ? v.model.slice(0, 200) : '',
       provider: ['openai', 'anthropic'].includes(v.provider) ? v.provider : 'openai',
@@ -90,6 +91,7 @@
     return stored;
   }
   function isConnected(settings = getSettings()) {
+    if (settings.mode === 'subscription') return !!subscription?.connection()?.account;
     const c = connection();
     if (!c) return false;
     if (settings.mode === 'openrouter') return c.kind === 'openrouter' && c.endpoint === API;
@@ -218,6 +220,10 @@
   }
   async function ask(request, options = {}) {
     const r = prepare(request), settings = getSettings();
+    if (settings.mode === 'subscription') {
+      if (!subscription) throw new Error('The ChatGPT connection client is unavailable. Reload this page.');
+      return subscription.ask(r, options);
+    }
     if (settings.mode === 'handoff') return { kind: 'handoff', answer: handoff(r), model: chats[settings.chat].name };
     if (settings.mode === 'demo') return { kind: 'demo', model: 'Local preview', answer: `LOCAL PREVIEW · No model was called.\n\nYour question: ${r.prompt}\n\nSelected tool: ${r.tool}\nContext fields: ${Object.keys(r.context || {}).join(', ') || 'none'}\n\nA useful reading checklist:\n1. Identify the supplied facts and source.\n2. State the assumptions and missing evidence.\n3. Ask what would change your conclusion.\n\nThis is a fixed testing checklist, not an AI interpretation of your data.` };
     if (!isConnected(settings)) throw new Error('Connect your own account in AI settings. No site-funded fallback is available.');
@@ -237,7 +243,7 @@
   }
   function label() {
     const s = getSettings();
-    return s.mode === 'handoff' ? `Prepare for ${chats[s.chat].name}` : s.mode === 'demo' ? 'Run free local preview' : `Ask Osiris · ${s.mode === 'native' ? 'your API account' : 'your OpenRouter credits'}`;
+    return s.mode === 'subscription' ? 'Ask Osiris · your ChatGPT plan' : s.mode === 'handoff' ? `Prepare for ${chats[s.chat].name}` : s.mode === 'demo' ? 'Run free local preview' : `Ask Osiris · ${s.mode === 'native' ? 'your API account' : 'your OpenRouter credits'}`;
   }
   remove('localStorage', 'ballzatram:ai-bridge-settings:v1');
   expireConnection();

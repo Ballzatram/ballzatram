@@ -1,0 +1,10 @@
+{$OSIRIS_DOMAIN} {
+    # No request-body, Authorization, device-code, or access logging.
+    reverse_proxy osiris:8788 {
+        flush_interval -1
+        transport http {
+            response_header_timeout 35s
+            read_timeout 180s
+        }
+    }
+}

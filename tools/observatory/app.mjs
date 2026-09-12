@@ -83,7 +83,7 @@ function renderBill() {
   <div class="tags">${s.tags.map(x=>badge(x)).join('')}</div>
   ${s.analysis?`<h4>Example reading note ${badge('Draft interpretation · not reviewed','amber')}</h4><p>${esc(s.analysis)}</p>`:'<p class="muted">No interpretation supplied for this version. Read the original wording below.</p>'}
   <h4>What the text says</h4><div class="original">${esc(s.text)}</div><div class="card-actions">${evidenceButton(s.sourceId,s.locator,s.text)}<button id="compare-section">Compare versions →</button></div>
-  <details class="osiris"><summary>Read this section with your AI</summary><p class="muted">Which words define the scope? What exception changes the reading? Which missing record would change your conclusion?</p><label for="osiris-question">Ask about this section</label><textarea id="osiris-question" maxlength="2500" rows="3">Explain this section in plain English. Cite its exact wording and identify what it does not establish.</textarea><p class="muted">Prepare this section and your question for the AI workspace. Choose your chat app or your own model account there. Responses remain draft notes.</p><button id="ask-osiris">Prepare with Osiris</button> <a href="../ai/index.html">AI settings</a><p id="osiris-answer" class="answer" aria-live="polite"></p><a id="osiris-continue" href="../ai/index.html?context=prepared" hidden>Choose AI &amp; review question →</a></details>
+  <details class="osiris"><summary>Read this section with your AI</summary><p class="muted">Which words define the scope? What exception changes the reading? Which missing record would change your conclusion?</p><label for="osiris-question">Ask about this section</label><textarea id="osiris-question" maxlength="2500" rows="3">Explain this section in plain English. Cite its exact wording and identify what it does not establish.</textarea><p class="muted">Review this section and your question in Osiris, connect your ChatGPT account, and get an answer here. Private pilot; responses remain draft notes.</p><button id="ask-osiris">Ask Osiris here</button> <a href="../ai/index.html">AI settings</a><p id="osiris-answer" class="answer" aria-live="polite"></p><a id="osiris-continue" href="../ai/index.html?context=prepared" hidden>Choose AI &amp; review question →</a></details>
   <details class="osiris"><summary>Parsing & missing context</summary><p>${v.manifest.sectionCount} section nodes accounted for. ${v.manifest.unaccountedBlocks.length} additional body blocks flagged.</p><p>${esc(v.manifest.scope)}</p>${v.manifest.unaccountedBlocks.map(x=>`<div class="original">${esc(x)}</div>`).join('')}<p>Text completeness is not legal completeness. Incorporated law, regulations, judicial decisions, actual authorship and effects require additional records.</p>${s.references.length?`<h4>Structured cross-references (unresolved)</h4>${s.references.map(x=>`<p>${esc(x)}</p>`).join('')}`:'<p>No structured cross-reference elements were extracted. Plain-text references may still exist.</p>'}</details>
   </article></div>`;
   $('bill-version').onchange=e=>{versionId=e.target.value;sectionId=version().sections[0].id;renderShell();renderBill();};
@@ -96,9 +96,8 @@ function askOsiris() {
   $('osiris-continue').hidden=true;
   try {
     const request={tool:'observatory',prompt:$('osiris-question').value,context:evidenceContext(dossier,version(),section())};
-    if(!window.BallzatramAI.stageRequest(request))throw new Error('Tab storage is unavailable. Open AI settings and copy the section there.');
-    output.textContent='Question prepared with only this section and its source. Nothing has been sent to an AI provider. Review it in the AI workspace before continuing.';
-    $('osiris-continue').hidden=false;
+    window.OsirisPanel.open(request);
+    output.textContent='Review this section and its source in Osiris. Nothing has been sent to an AI provider; connect and confirm in the panel when ready.';
   }catch(error){output.textContent=error.message;}
 }
 

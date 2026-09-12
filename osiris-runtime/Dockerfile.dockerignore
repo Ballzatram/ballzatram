@@ -1,0 +1,10 @@
+**
+!assets/
+!assets/ai-features.js
+!osiris-runtime/
+!osiris-runtime/package.json
+!osiris-runtime/package-lock.json
+!osiris-runtime/server.mjs
+!osiris-runtime/codex.mjs
+!osiris-runtime/scripts/
+!osiris-runtime/scripts/check-runtime.mjs
