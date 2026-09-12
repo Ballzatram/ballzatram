@@ -71,3 +71,16 @@ body.retro-app { background:var(--desktop); color:var(--ink); font-family:var(--
 .observatory95 .original { background:#fff; color:#222; box-shadow:var(--sunken); }
 .observatory95 .page-foot { color:#444; }
 @media(max-width:760px) { .observatory95 .sidebar { position:static; width:auto; margin:12px; padding:16px; } .observatory95 .sidebar nav { margin:0; padding:4px; } .observatory95 .sidebar-title { margin-top:10px; } .observatory95 main { margin:12px; padding:14px; } }
+/* Legacy game widgets have their own nested text colors and unnamed panels. */
+.retro-app { --text:#161616; --accent:#000080; --cyan:#000080; }
+.retro-app button :is(strong,span,small) { color:inherit; }
+.retro-app :is(.cb-brand,.curriculum-brief h3) { color:#000080; text-shadow:none; }
+.retro-app :is(.mode-card.active,.chunky.active,.action-button.selected) { outline:2px dotted #000080; outline-offset:-5px; }
+.retro-app .lab-grid > article,
+.retro-app :is(.score-card,.curriculum-brief article,.ending-debrief,.curriculum-card,.architecture-grid article) { background:var(--face); color:#161616; border:0; border-radius:0; box-shadow:var(--raised); }
+.retro-app .lab-grid > article :is(p,small,span,.axis),
+.retro-app :is(.curriculum-brief,.ending-debrief,.curriculum-card,.architecture-grid,.score-card,.notebook,.advisor-box) :is(p,small,span,dt,dd) { color:#333; }
+.retro-app :is(.round-outcome,.axis,.insight-stack > div,.notebook dl > div) { background:#eee; color:#333; border:0; border-radius:0; box-shadow:var(--sunken); }
+.retro-app .intro-panel::after { display:none; }
+.retro-app :is(.lab-header,.market-header) :is(div,span) { color:white; }
+.retro-app #resetButton { border:0; border-radius:0; background:var(--face); color:black; box-shadow:var(--raised); }
