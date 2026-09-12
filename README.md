@@ -77,13 +77,13 @@ NEXT_PUBLIC_API_BASE=http://localhost:8000/api npm run dev
 - `NEXT_PUBLIC_API_BASE` (frontend backend URL)
 - Future connectors (FRED/BLS) should add `FRED_API_KEY`, `BLS_API_KEY`.
 
-## AI workflow agent
-Quant Library and the Next.js tool pages include a page-aware Ballzatram AI workflow agent. The backend exposes `/api/agent/processes`, `/api/agent/chat`, and `/api/agent/history/{conversation_id}`. No billing routes are exposed during the product-quality pass; do not wire checkout or entitlement gates until the tools are consistently useful.
+## Bring your own AI
 
-Set these optional backend environment variables to enable production integrations:
-- `OPENAI_API_KEY`: when present, `/api/agent/chat` calls OpenAI's Responses API; without it the service returns a deterministic development response.
-- `OPENAI_AGENT_MODEL`: model override for the agent, defaulting to `gpt-4.1-mini`.
-- Future entitlement checks should be added after the core workflows are production-ready. Keep secrets server-side only.
+Open `/tools/ai/` to use your ChatGPT/Claude/Gemini app, link OpenRouter for in-site answers with your own credits, or test the flow with a free local preview. The advanced option accepts a direct OpenAI/Anthropic API key through a user-operated relay. See [the architecture and setup guide](docs/bring-your-own-ai.md).
+
+The public site has no operator-funded model fallback. Next.js guide questions go to the same AI workspace. Backend agent/parcel requests use deterministic fallback unless the visitor explicitly supplies a user OpenAI API key in the Authorization header; an `OPENAI_API_KEY` environment variable does not enable paid requests. The optional `OPENAI_AGENT_MODEL` controls the backend agent model only.
+
+No billing routes, checkout, or entitlement gates are added by this integration. Provider accounts and their limits control model usage.
 
 ## Lab Pass / monetization readiness
 

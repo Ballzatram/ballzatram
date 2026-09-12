@@ -3,11 +3,13 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
+    "predev": "node ../scripts/sync-ai-workspace.cjs",
+    "prebuild": "node ../scripts/sync-ai-workspace.cjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next typegen && tsc --noEmit",
-    "test:static": "node --test ../scripts/static.test.cjs"
+    "test:static": "node --test ../scripts/static.test.cjs ../scripts/ai.test.cjs ../scripts/ai-bridge.test.mjs"
   },
   "dependencies": {
     "next": "15.5.24",

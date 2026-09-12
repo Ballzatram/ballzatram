@@ -83,7 +83,7 @@ function renderBill() {
   <div class="tags">${s.tags.map(x=>badge(x)).join('')}</div>
   ${s.analysis?`<h4>Example reading note ${badge('Draft interpretation · not reviewed','amber')}</h4><p>${esc(s.analysis)}</p>`:'<p class="muted">No interpretation supplied for this version. Read the original wording below.</p>'}
   <h4>What the text says</h4><div class="original">${esc(s.text)}</div><div class="card-actions">${evidenceButton(s.sourceId,s.locator,s.text)}<button id="compare-section">Compare versions →</button></div>
-  <details class="osiris"><summary>Optional AI reading aid · setup required</summary><p class="muted">Which words define the scope? What exception changes the reading? Which missing record would change your conclusion?</p><label for="osiris-question">Ask about this section</label><textarea id="osiris-question" maxlength="2500" rows="3">Explain this section in plain English. Cite its exact wording and identify what it does not establish.</textarea><p class="muted">Asking sends this section and question through your configured Ballzatram AI bridge. Responses remain draft notes.</p><button id="ask-osiris">Ask Osiris</button> <a href="../ai/index.html">AI settings</a><p id="osiris-answer" class="answer" aria-live="polite"></p></details>
+  <details class="osiris"><summary>Read this section with your AI</summary><p class="muted">Which words define the scope? What exception changes the reading? Which missing record would change your conclusion?</p><label for="osiris-question">Ask about this section</label><textarea id="osiris-question" maxlength="2500" rows="3">Explain this section in plain English. Cite its exact wording and identify what it does not establish.</textarea><p class="muted">Prepare this section and your question for the AI workspace. Choose your chat app or your own model account there. Responses remain draft notes.</p><button id="ask-osiris">Prepare with Osiris</button> <a href="../ai/index.html">AI settings</a><p id="osiris-answer" class="answer" aria-live="polite"></p><a id="osiris-continue" href="../ai/index.html?context=prepared" hidden>Choose AI &amp; review question →</a></details>
   <details class="osiris"><summary>Parsing & missing context</summary><p>${v.manifest.sectionCount} section nodes accounted for. ${v.manifest.unaccountedBlocks.length} additional body blocks flagged.</p><p>${esc(v.manifest.scope)}</p>${v.manifest.unaccountedBlocks.map(x=>`<div class="original">${esc(x)}</div>`).join('')}<p>Text completeness is not legal completeness. Incorporated law, regulations, judicial decisions, actual authorship and effects require additional records.</p>${s.references.length?`<h4>Structured cross-references (unresolved)</h4>${s.references.map(x=>`<p>${esc(x)}</p>`).join('')}`:'<p>No structured cross-reference elements were extracted. Plain-text references may still exist.</p>'}</details>
   </article></div>`;
   $('bill-version').onchange=e=>{versionId=e.target.value;sectionId=version().sections[0].id;renderShell();renderBill();};
@@ -91,22 +91,17 @@ function renderBill() {
   $('compare-section').onclick=()=>setTab('versions',true);
   $('ask-osiris').onclick=askOsiris;
 }
-async function askOsiris() {
-  const output=$('osiris-answer'),button=$('ask-osiris');
-  const question=$('osiris-question').value.trim();
-  if(!question){output.textContent='Enter a question first.';return;}
-  let settings;
-  try { settings=JSON.parse(localStorage.getItem('ballzatram:ai-bridge-settings:v1')||'{}'); } catch { settings={}; }
-  if(!safeUrl(settings.url)||!settings.token){output.textContent='Configure an HTTPS bridge URL and access token in AI settings first. The bill workbench works without an AI connection.';return;}
-  const current=evidenceContext(dossier,version(),section());
-  button.disabled=true;output.textContent='Reading the selected evidence…';
+function askOsiris() {
+  const output=$('osiris-answer');
+  $('osiris-continue').hidden=true;
   try {
-    const response=await fetch(`${settings.url.replace(/\/$/,'')}/v1/assist`,{method:'POST',headers:{'content-type':'application/json',authorization:`Bearer ${settings.token}`},body:JSON.stringify({tool:'observatory',prompt:question,context:current}),signal:AbortSignal.timeout(45000)});
-    const data=await response.json();if(!response.ok)throw new Error(data.error||`Bridge returned ${response.status}`);
-    if(typeof data.answer!=='string')throw new Error('Bridge returned no answer.');
-    output.textContent=`DRAFT · Check every claim against the source\n\n${data.answer}`;
-  } catch(error){output.textContent=`Could not get an answer: ${error.message}`;} finally{button.disabled=false;}
+    const request={tool:'observatory',prompt:$('osiris-question').value,context:evidenceContext(dossier,version(),section())};
+    if(!window.BallzatramAI.stageRequest(request))throw new Error('Tab storage is unavailable. Open AI settings and copy the section there.');
+    output.textContent='Question prepared with only this section and its source. Nothing has been sent to an AI provider. Review it in the AI workspace before continuing.';
+    $('osiris-continue').hidden=false;
+  }catch(error){output.textContent=error.message;}
 }
+
 function renderVersions() {
   if(!dossier.versions.length){renderBill();return;}
   if(dossier.versions.length===1){$('panel').innerHTML=panelHead('Only one version is available','A comparison needs two different texts. No change has been inferred.')+'<button class="primary" data-tab="bill">Read the available text →</button>';return;}
