@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { Layout } from "@/components/Layout";
 import { pageMetadata, siteMetadataBase } from "@/lib/pageMetadata";
 import "./globals.css";
+import "../../../assets/win95/theme.css";
+import "../../../assets/win95/desktop.css";
+import "./windows95.css";
 
 export const metadata: Metadata = {
   metadataBase: siteMetadataBase,

@@ -1,0 +1,138 @@
+[
+  {
+    "title": "Econ Arcade",
+    "href": "econ-arcade/index.html",
+    "category": "Games",
+    "icon": "game",
+    "status": "Playable",
+    "description": "Economics through choices, experiments, and a little friendly competition."
+  },
+  {
+    "title": "Central Banker",
+    "href": "games/central-bank.html",
+    "category": "Games",
+    "icon": "chart",
+    "status": "Playable",
+    "description": "Take the chair. Balance inflation, jobs, and the unexpected."
+  },
+  {
+    "title": "Prisoner\u2019s Dilemma",
+    "href": "econ-arcade/prisoners-dilemma.html",
+    "category": "Games",
+    "icon": "game",
+    "status": "Playable",
+    "description": "Cooperate or defect? Discover what it takes to build trust."
+  },
+  {
+    "title": "The Observatory",
+    "href": "tools/observatory/index.html",
+    "category": "Research",
+    "icon": "book",
+    "status": "Prototype",
+    "description": "Inspect bills, compare versions, follow congressional votes, and trace the evidence."
+  },
+  {
+    "title": "Portfolio Lab",
+    "href": "tools/portfolio/index.html",
+    "category": "Research",
+    "icon": "chart",
+    "status": "Local data",
+    "description": "Bring your price history. Explore returns, risk, and correlations."
+  },
+  {
+    "title": "Scenario Stress Lab",
+    "href": "tools/scenario/index.html",
+    "category": "Research",
+    "icon": "chart",
+    "status": "Browser tool",
+    "description": "Turn the macro dials and see how a portfolio might respond."
+  },
+  {
+    "title": "Supply & Demand",
+    "href": "tools/supply-demand/index.html",
+    "category": "Games",
+    "icon": "chart",
+    "status": "Playable",
+    "description": "Move a market. Test price controls, taxes, and economic shocks."
+  },
+  {
+    "title": "Strategy Studio",
+    "href": "econ-arcade/platform.html",
+    "category": "Games",
+    "icon": "game",
+    "status": "Playable",
+    "description": "Explore bargaining, auctions, incentives, and game theory."
+  },
+  {
+    "title": "Invisible Hands",
+    "href": "econ-arcade/invisible-hands.html",
+    "category": "Games",
+    "icon": "game",
+    "status": "Playable",
+    "description": "Find equilibrium in a market of changing supply and demand."
+  },
+  {
+    "title": "Osiris Adaptive Arcade",
+    "href": "econ-arcade/play/",
+    "category": "Games",
+    "icon": "bulb",
+    "status": "Playtest",
+    "description": "A learning experiment that selects challenges as you play."
+  },
+  {
+    "title": "Reports",
+    "href": "tools/reports/index.html",
+    "category": "Research",
+    "icon": "book",
+    "status": "Browser tool",
+    "description": "Turn saved lab runs into a report you can edit and download."
+  },
+  {
+    "title": "Parcel Intelligence",
+    "href": "tools/parcel/index.html",
+    "category": "Research",
+    "icon": "folder",
+    "status": "Prototype",
+    "description": "Explore land research leads, sources, and due diligence."
+  },
+  {
+    "title": "Weather Desk",
+    "href": "weather-bot.html",
+    "category": "Research",
+    "icon": "chart",
+    "status": "Paper mode",
+    "description": "A weather-market worksheet for research and paper scenarios."
+  },
+  {
+    "title": "Ballzatram AI",
+    "href": "tools/ai/index.html",
+    "category": "Experiments",
+    "icon": "bulb",
+    "status": "Setup needed",
+    "description": "Ask questions about your saved labs using your configured AI bridge."
+  },
+  {
+    "title": "Stoney Bologna",
+    "href": "games/stoney-bologna/index.html",
+    "category": "Games",
+    "icon": "game",
+    "status": "Playable",
+    "description": "A very unqualified police chief. A very questionable adventure."
+  },
+  {
+    "title": "AI Edit Factory",
+    "href": "ai-edit-factory/index.html",
+    "category": "Experiments",
+    "icon": "folder",
+    "status": "Backend needed",
+    "description": "Explore the video-editing workspace. Rendering requires the local setup."
+  },
+  {
+    "title": "Devin\u2019s Portfolio",
+    "href": "devin/",
+    "category": "About",
+    "icon": "person",
+    "status": "Portfolio",
+    "description": "The person behind the programs: experience, projects, and what\u2019s next."
+  }
+]

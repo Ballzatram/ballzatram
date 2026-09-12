@@ -1,0 +1,63 @@
+.desktop95 { max-width: 1440px; margin: 0 auto; padding: 28px 28px 80px; display: grid; grid-template-columns: 100px minmax(0, 1fr); gap: 32px; align-items: start; }
+.shortcuts95 { display: grid; gap: 24px; padding-top: 15px; }
+.shortcuts95 a { display: grid; justify-items: center; gap: 7px; color: white; text-align: center; text-decoration: none; font-size: 12px; text-shadow: 1px 1px #004040; }
+.shortcuts95 a:hover span { background: var(--navy); }
+.shortcuts95 .icon95 { width: 40px; height: 40px; }
+.desktop-main95 { min-width:0; display:grid; gap:24px; }
+.desktop-topline95 { display:flex; justify-content:space-between; align-items:center; gap:16px; color:#fff; font-size:12px; letter-spacing:.06em; }
+.desktop-topline95 a { color:#fff; text-decoration:none; }
+.welcome-content95 { display:grid; grid-template-columns:minmax(0, 1.5fr) minmax(220px,.8fr); }
+.welcome-copy95 { padding:clamp(20px,3vw,40px); background:#fff; }
+.eyebrow95 { margin:0 0 12px; font-size:11px; font-weight:bold; letter-spacing:.12em; text-transform:uppercase; color:#555; }
+.welcome-copy95 h1 { margin:0 0 14px; font:700 clamp(34px,4.8vw,62px)/1.06 var(--ui-font); letter-spacing:-.055em; color:#000080; }
+.welcome-copy95 h1 span { display:block; color:#111; }
+.welcome-copy95 p:not(.eyebrow95) { max-width:510px; margin:0 0 24px; line-height:1.7; font-size:14px; color:#444; }
+.welcome-actions95 { display:flex; gap:12px; flex-wrap:wrap; }
+.welcome-art95 { background:#000080; color:white; display:grid; align-content:center; justify-items:center; text-align:center; gap:18px; padding:24px; overflow:hidden; background-image:radial-gradient(#3939a2 1px, transparent 1px); background-size:4px 4px; }
+.welcome-art95 .icon95 { width:124px; height:124px; filter:drop-shadow(8px 8px 0 #00004d); }
+.welcome-art95 strong { font-size:22px; letter-spacing:-1px; }
+.welcome-art95 span { display:block; font:11px/1.8 monospace; color:#d4d4ff; }
+.statusbar95 { display:flex; gap:3px; padding-top:3px; font-size:11px; }
+.statusbar95 span { padding:4px 8px; box-shadow:inset 1px 1px #808080,inset -1px -1px white; }
+.statusbar95 span:first-child { flex:1; }
+.explorer-menu95 { display:flex; gap:18px; padding:7px 10px; border-bottom:1px solid #808080; font-size:12px; }
+.explorer-menu95 a { text-decoration:none; color:#111; }
+.toolbar95 { display:flex; gap:12px; align-items:center; flex-wrap:wrap; padding:10px; }
+.search95 { display:flex; align-items:center; gap:10px; margin-left:auto; }
+.search95 input { width:220px; max-width:100%; padding:7px 9px; border:0; background:white; color:#111; box-shadow:var(--sunken); }
+.filter95 { display:flex; flex-wrap:wrap; gap:4px; }
+.filter95 .btn95 { font-size:12px; min-height:34px; padding:6px 10px; }
+.explorer-body95 { display:grid; grid-template-columns:180px minmax(0,1fr); gap:3px; }
+.explorer-sidebar95 { padding:18px 14px; background:#eee; box-shadow:var(--sunken); font-size:12px; }
+.explorer-sidebar95 .icon95 { width:48px; height:48px; margin-bottom:10px; }
+.explorer-sidebar95 h2 { font-size:18px; margin:0 0 10px; }
+.explorer-sidebar95 p { color:#555; line-height:1.7; }
+.explorer-sidebar95 hr { border:0; border-top:1px solid #bbb; margin:20px 0; }
+.explorer-sidebar95 a { display:block; margin:10px 0; }
+.programs95 { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0; background:white; padding:4px; box-shadow:var(--sunken); align-content:start; }
+.program95 { position:relative; min-width:0; display:flex; flex-direction:column; align-items:flex-start; padding:20px 16px 16px; border:1px solid #e4e4e4; margin:-1px 0 0 -1px; }
+.program95:hover { background:#f0f4fb; }
+.program95 .program-top95 { display:flex; align-items:center; width:100%; justify-content:space-between; gap:6px; }
+.tag95 { padding:2px 5px; border:1px solid #ccc; background:#f6f6f6; font:10px/1.4 var(--ui-font); color:#555; }
+.program95 h3 { margin:12px 0 6px; font-size:14px; line-height:1.3; }
+.program95 h3 a { color:#000080; text-decoration:none; }
+.program95 h3 a::after { content:''; position:absolute; inset:0; }
+.program95:focus-within { outline:2px dotted #000080; outline-offset:-4px; }
+.program95 p { margin:0 0 16px; font-size:12px; color:#555; line-height:1.6; }
+.program95 .program-category95 { font-size:10px; color:#686868; margin-top:auto; text-transform:uppercase; letter-spacing:.07em; }
+.empty95 { padding:32px; background:white; grid-column:1/-1; }
+.bottom-grid95 { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+.note95 { padding:22px; background:#ffffdc; min-height:160px; }
+.note95 h2 { margin:0 0 10px; font-size:18px; }
+.note95 p { margin:0 0 12px; color:#444; font-size:12px; line-height:1.7; }
+.footer95 { display:flex; gap:16px; flex-wrap:wrap; justify-content:space-between; color:#e2ffff; font-size:11px; }
+.footer95 nav { display:flex; flex-wrap:wrap; gap:14px; }
+.footer95 a { color:#fff; }
+.directory95 { width:min(1250px,100%); margin:auto; padding:28px 24px 80px; display:grid; gap:24px; }
+.directory-heading95 { padding:24px; background:white; }
+.directory-heading95 h1 { margin:0 0 12px; font-size:34px; color:#000080; letter-spacing:-1px; }
+.directory-heading95 p { margin:0; max-width:740px; color:#444; }
+@media(min-width:1450px) { .desktop95 { padding-top:45px; } }
+@media(max-width:1100px) { .desktop95 { gap:20px; padding:20px 18px 80px; grid-template-columns:80px minmax(0,1fr); } .programs95 { grid-template-columns:repeat(2,minmax(0,1fr)); } .explorer-sidebar95 { display:none; } .explorer-body95 { grid-template-columns:1fr; } .welcome-copy95 { padding:26px; } }
+@media(max-width:700px) { .desktop95 { display:block; padding:14px 10px 80px; } .shortcuts95 { display:flex; justify-content:space-around; gap:12px; padding:0 0 18px; } .shortcuts95 a { font-size:10px; max-width:72px; } .shortcuts95 .icon95 { width:32px; height:32px; } .shortcuts95 a:nth-child(n+5) { display:none; } .desktop-main95 { gap:18px; } .desktop-topline95 { font-size:10px; } .welcome-content95 { grid-template-columns:1fr; } .welcome-art95 { display:none; } .welcome-copy95 { padding:24px 20px; } .welcome-copy95 h1 { font-size:40px; } .bottom-grid95 { grid-template-columns:1fr; gap:18px; } .toolbar95 { align-items:stretch; } .search95 { width:100%; margin:0; } .search95 input { width:100%; } .search95 label { flex-shrink:0; } .filter95 .btn95 { min-height:40px; } .directory95 { padding:14px 10px 80px; } .statusbar95 span:last-child { display:none; } .program95 { padding:16px 12px; } .tag95 { font-size:9px; } .footer95 { line-height:1.8; } }
+@media(max-width:370px) { .programs95 { grid-template-columns:1fr; } .welcome-actions95 { flex-direction:column; } }

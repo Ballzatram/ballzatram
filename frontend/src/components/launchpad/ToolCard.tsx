@@ -24,10 +24,6 @@ function badgeClass(status: ToolCatalogItem["status"]) {
   }
 }
 
-function routeLabel(href: string) {
-  return href.replace(/\/$/, "") || "/";
-}
-
 export function ToolCard({ tool, compact = false }: { tool: ToolCatalogItem; compact?: boolean }) {
   const facts = [
     categoryLabels[tool.category],
@@ -69,14 +65,14 @@ export function ToolCard({ tool, compact = false }: { tool: ToolCatalogItem; com
           href={tool.href as Route}
           className="border border-[#111816] bg-[#111816] px-3 py-2 text-white transition hover:bg-[#284236]"
         >
-          Open {routeLabel(tool.href)}
+          Open {tool.name}
         </Link>
         {tool.secondaryHref ? (
           <Link
             href={tool.secondaryHref as Route}
             className="border border-[#96a097] px-3 py-2 text-[#1d2b25] transition hover:border-[#111816] hover:bg-[#eff5ec]"
           >
-            Also {routeLabel(tool.secondaryHref)}
+            Open browser version
           </Link>
         ) : null}
         {tool.docsHref ? (

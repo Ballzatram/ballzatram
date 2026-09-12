@@ -43,10 +43,11 @@ function parseCsv(text) {
   if (lines.length < 3) throw new Error("CSV needs a header and at least two price rows.");
   const parseLine = (line) => line.split(",").map((value) => value.trim().replace(/^"|"$/g, ""));
   const headers = parseLine(lines[0]).map((header) => header.trim());
+  if (new Set(headers.map(header => header.toUpperCase())).size !== headers.length) throw new Error("CSV column names must be unique.");
   if (headers.length < 2) throw new Error("CSV needs date plus at least one price column.");
   const rows = lines.slice(1).map((line) => {
     const values = parseLine(line);
-    const row = { date: values[0] };
+    const row = Object.assign(Object.create(null), { date: values[0] });
     headers.slice(1).forEach((header, index) => { row[header.toUpperCase()] = Number(values[index + 1]); });
     return row;
   }).filter((row) => row.date);
@@ -169,11 +170,11 @@ function analyze(parsed) {
     ]
   };
 
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(result)); } catch {}
-  renderResult(result);
+  const saved = BallzatramStorage.write(STORAGE_KEY, result);
+  renderResult(result, saved);
 }
 
-function renderResult(result) {
+function renderResult(result, saved) {
   $("emptyState").hidden = true; $("resultsContent").hidden = false;
   $("sourceBadge").textContent = result.sourceMode === "demo" ? "Synthetic demo data" : "Local CSV";
   $("windowBadge").textContent = `${result.startDate} → ${result.endDate}`;
@@ -189,11 +190,11 @@ function renderResult(result) {
   $("observations").textContent = result.observations;
   $("startDate").textContent = result.startDate;
   $("endDate").textContent = result.endDate;
-  $("holdingRows").innerHTML = result.holdings.map((holding) => `<tr><td><strong>${holding.symbol}</strong></td><td>${pct(holding.normalizedWeight)}</td><td>${pct(holding.cumulativeReturn)}</td><td>${pct(holding.annualizedVolatility)}</td><td>${pct(holding.riskContribution)}</td></tr>`).join("");
+  $("holdingRows").innerHTML = result.holdings.map((holding) => `<tr><td><strong>${escapeAttr(holding.symbol)}</strong></td><td>${pct(holding.normalizedWeight)}</td><td>${pct(holding.cumulativeReturn)}</td><td>${pct(holding.annualizedVolatility)}</td><td>${pct(holding.riskContribution)}</td></tr>`).join("");
   const cols = result.correlationMatrix.columns;
-  $("correlationTable").innerHTML = `<thead><tr><th></th>${cols.map((col) => `<th>${col}</th>`).join("")}</tr></thead><tbody>${cols.map((rowName, i) => `<tr><th>${rowName}</th>${result.correlationMatrix.matrix[i].map((value) => `<td>${num(value, 2)}</td>`).join("")}</tr>`).join("")}</tbody>`;
-  $("warnings").innerHTML = result.warnings.map((warning) => `• ${warning}`).join("<br>");
-  $("inputStatus").textContent = `Analyzed ${result.observations} daily return observations. Saved locally for Reports.`;
+  $("correlationTable").innerHTML = `<thead><tr><th></th>${cols.map((col) => `<th>${escapeAttr(col)}</th>`).join("")}</tr></thead><tbody>${cols.map((rowName, i) => `<tr><th>${escapeAttr(rowName)}</th>${result.correlationMatrix.matrix[i].map((value) => `<td>${num(value, 2)}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  $("warnings").innerHTML = result.warnings.map((warning) => `• ${escapeAttr(warning)}`).join("<br>");
+  $("inputStatus").textContent = `Analyzed ${result.observations} daily return observations. ${saved ? "Saved locally for Reports." : "Storage is unavailable; this run is not saved."}`;
 }
 
 function makeDemoCsv(days = 260) {

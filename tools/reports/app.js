@@ -1,10 +1,12 @@
 const STORAGE_KEYS = {
+  portfolio: "ballzatram:portfolio-pages-last-run:v1",
   scenario: "ballzatram:scenario-pages-last-run:v1",
   supplyDemand: "ballzatram:supply-demand-last-run:v1",
   draft: "ballzatram:pages-report-draft:v1"
 };
 
 const sourceMeta = {
+  portfolio: { label: "Portfolio Lab", color: "cyan" },
   scenario: { label: "Scenario Stress Lab", color: "violet" },
   supplyDemand: { label: "Supply & Demand Lab", color: "green" }
 };
@@ -14,18 +16,47 @@ let sections = [];
 let markdown = "";
 
 const $ = (id) => document.getElementById(id);
-const pct = (value, digits = 1) => `${(Number(value) * 100).toFixed(digits)}%`;
-const num = (value, digits = 1) => Number(value).toFixed(digits);
+const pct = (value, digits = 1) => value == null || !Number.isFinite(Number(value)) ? "—" : `${(Number(value) * 100).toFixed(digits)}%`;
+const num = (value, digits = 1) => value == null || !Number.isFinite(Number(value)) ? "—" : Number(value).toFixed(digits);
 
-function safeParse(raw) {
-  if (!raw) return null;
-  try { return JSON.parse(raw); } catch { return null; }
-}
+
+
+  function portfolioToReportSection(run) {
+    const metrics = run.metrics || {};
+    const top = Array.isArray(run.holdings) ? run.holdings.slice().sort((a, b) => b.normalizedWeight - a.normalizedWeight)[0] : null;
+    return {
+      id: `portfolio-${run.savedAt || Date.now()}`,
+      sourceKind: "portfolio",
+      title: "Portfolio Lab",
+      createdAt: run.savedAt || new Date().toISOString(),
+      findings: [
+        `Portfolio cumulative return: ${pct(metrics.cumulativeReturn)}; annualized return: ${pct(metrics.annualizedReturn)}.`,
+        `Annualized volatility: ${pct(metrics.annualizedVolatility)}; max drawdown: ${pct(metrics.maxDrawdown)}.`,
+        metrics.betaVsBenchmark != null ? `Beta versus ${run.request?.benchmark || "benchmark"}: ${num(metrics.betaVsBenchmark, 3)}; correlation: ${num(metrics.correlationVsBenchmark, 3)}.` : "Benchmark-relative beta/correlation were not available for this run.",
+        `Top holding weight: ${pct(metrics.topHoldingWeight)}; effective positions: ${num(metrics.effectivePositions, 1)}${top ? `; largest holding: ${top.symbol} at ${pct(top.normalizedWeight)}` : ""}.`
+      ],
+      assumptions: [
+        "Portfolio weights are normalized across the supplied holdings.",
+        "Volatility, covariance, beta, correlation, drawdown, and risk contribution are estimated from the supplied historical price series.",
+        "Historical relationships are descriptive and are not forecasts."
+      ],
+      provenance: [
+        `Saved browser run: ${run.savedAt || "unknown time"}.`,
+        `Data mode: ${run.sourceMode === "demo" ? "synthetic demo data" : "user-supplied local CSV"}.`,
+        `Window: ${run.startDate || "unknown"} to ${run.endDate || "unknown"}; ${run.observations ?? "unknown"} return observations.`,
+        `Holdings: ${(run.request?.holdings || []).map((holding) => `${holding.symbol}=${holding.weight}`).join(", ") || "not recorded"}.`
+      ],
+      warnings: Array.isArray(run.warnings) ? run.warnings : ["Portfolio analysis is historical/descriptive, not investment advice."]
+    };
+  }
+
 
 function readSources() {
-  const scenario = safeParse(localStorage.getItem(STORAGE_KEYS.scenario));
-  const supplyDemand = safeParse(localStorage.getItem(STORAGE_KEYS.supplyDemand));
+  const scenario = BallzatramStorage.read(STORAGE_KEYS.scenario);
+  const supplyDemand = BallzatramStorage.read(STORAGE_KEYS.supplyDemand);
   availableSources = {};
+  const portfolio = BallzatramStorage.read(STORAGE_KEYS.portfolio);
+  if (portfolio?.metrics && Array.isArray(portfolio.holdings)) availableSources.portfolio = portfolioToReportSection(portfolio);
   if (scenario?.portfolio_return_shock != null) availableSources.scenario = scenarioToSection(scenario);
   if (supplyDemand?.result) availableSources.supplyDemand = supplyDemandToSection(supplyDemand);
 }
@@ -84,14 +115,20 @@ function supplyDemandToSection(run) {
 }
 
 function restoreDraft() {
-  const draft = safeParse(localStorage.getItem(STORAGE_KEYS.draft));
+  const draft = BallzatramStorage.read(STORAGE_KEYS.draft);
   if (!draft) return;
   if (draft.title) $("reportTitle").value = draft.title;
   if (draft.openingNote) $("openingNote").value = draft.openingNote;
-  if (Array.isArray(draft.sections)) sections = draft.sections;
+  if (Array.isArray(draft.sections)) sections = draft.sections.filter(section =>
+    section && Object.hasOwn(sourceMeta, section.sourceKind) && typeof section.title === 'string' &&
+    ['findings', 'provenance', 'assumptions', 'warnings'].every(key => Array.isArray(section[key]) && section[key].every(item => typeof item === 'string'))
+  );
 }
 
 function saveDraft() {
+  markdown = "";
+  $("copyButton").disabled = true;
+  $("downloadButton").disabled = true;
   try {
     localStorage.setItem(STORAGE_KEYS.draft, JSON.stringify({
       title: $("reportTitle").value,
@@ -103,7 +140,7 @@ function saveDraft() {
 }
 
 function renderSources() {
-  const kinds = ["scenario", "supplyDemand"];
+  const kinds = Object.keys(sourceMeta);
   $("sourceList").innerHTML = kinds.map((kind) => {
     const source = availableSources[kind];
     const added = sections.some((section) => section.sourceKind === kind);
@@ -133,7 +170,7 @@ function renderSections() {
   $("sectionList").innerHTML = sections.map((section, index) => `
     <article class="report-section" data-index="${index}">
       <div class="section-toolbar">
-        <span class="source-chip">${sourceMeta[section.sourceKind]?.label || section.sourceKind}</span>
+        <span class="source-chip">${escapeText(sourceMeta[section.sourceKind]?.label || section.sourceKind)}</span>
         <div class="move-buttons">
           <button data-move="up" ${index === 0 ? "disabled" : ""}>↑</button>
           <button data-move="down" ${index === sections.length - 1 ? "disabled" : ""}>↓</button>
@@ -196,11 +233,11 @@ function generate() {
     $("markdownPreview").textContent = "Add at least one saved lab run before generating the report.";
     return;
   }
+  saveDraft();
   markdown = buildMarkdown();
   $("markdownPreview").textContent = markdown;
   $("copyButton").disabled = false;
   $("downloadButton").disabled = false;
-  saveDraft();
 }
 
 async function copyMarkdown() {

@@ -12,22 +12,23 @@ import {
 import type { Story, StoryBodySection } from "@/types/story";
 
 type StoryPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
 export function generateStaticParams() {
   return demoStories.map((story) => ({ slug: getStorySlug(story) }));
 }
 
-export function generateMetadata({ params }: StoryPageProps): Metadata {
-  const story = getStoryBySlug(params.slug);
+export async function generateMetadata({ params }: StoryPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const story = getStoryBySlug(slug);
   if (!story) {
     return pageMetadata({
       title: "Story Not Found | Ballzatram Daily",
       description: "This Ballzatram Daily story file is missing or has not been published.",
-      path: `/stories/${params.slug}`,
+      path: `/stories/${slug}`,
       noIndex: true,
       type: "article",
     });
@@ -35,7 +36,7 @@ export function generateMetadata({ params }: StoryPageProps): Metadata {
   return pageMetadata({
     title: `${story.title} | Ballzatram Daily`,
     description: story.dek,
-    path: `/stories/${params.slug}`,
+    path: `/stories/${slug}`,
     type: "article",
   });
 }
@@ -85,8 +86,9 @@ function CaveatBox({ story }: { story: Story }) {
   );
 }
 
-export default function StoryDetailPage({ params }: StoryPageProps) {
-  const story = getStoryBySlug(params.slug);
+export default async function StoryDetailPage({ params }: StoryPageProps) {
+  const { slug } = await params;
+  const story = getStoryBySlug(slug);
   if (!story) notFound();
   const department = departmentById[story.departmentId];
 

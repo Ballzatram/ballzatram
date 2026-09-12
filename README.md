@@ -1,5 +1,11 @@
 # Ballzatram
 
+## Windows 95 desktop
+
+The public site now uses a shared Windows 95 interface with a searchable program directory and Start menu. `data/public-programs.json` is the source for the static home, directory, and arcade pages; regenerate them with `python scripts/build_desktop.py`. The existing Next.js application has matching desktop navigation.
+
+See [UI and code audit](docs/UI_CODE_AUDIT.md) for fixes, verification, and maintenance instructions. `python scripts/validate_public.py` builds and checks the exact GitHub Pages artifact before publication.
+
 Ballzatram is a clean launchpad for useful AI-guided workbenches, simulations, games, and strange little tools.
 
 The public site is intentionally simple:
@@ -13,11 +19,11 @@ The public site is intentionally simple:
 
 No checkout, billing, auth, entitlement, live trading, or paid-access implementation is part of this reset.
 
-## Public launchpad reset
+## Earlier launchpad foundation
 
 A June 2026 pass reduced the public surface back to a clearer launchpad:
 
-- `frontend/src/config/toolCatalog.ts` is the typed source of truth for public tool cards, status labels, readiness notes, backend requirements, and route inventory.
+- `frontend/src/config/toolCatalog.ts` is the typed source of truth for the separate Next.js application’s tool cards, status labels, readiness notes, backend requirements, and route inventory.
 - The homepage now groups tools by use case instead of leading with Ballzatram Daily or a newspaper-first concept.
 - Land, Markets, Games, Creative / AI Lab, Culture, and Archive pages now reuse the same catalog labels.
 - Quant Library remains the primary markets route; Macro Board is a legacy redirect.
@@ -35,7 +41,7 @@ official records and clearly labeled draft analysis. See [usage and limitations]
 
 The May 2026 production polish pass added stronger public-site metadata, skip-link accessibility, a homepage mission panel, and an Econ Arcade learning contract that makes the curriculum explicit before users launch a game. Central Banker now includes setup learning objectives, an in-game policy notebook, and end-of-term concept debriefs so the macro game teaches inflation targeting, policy lags, financial stability, expectations, and central-bank credibility while preserving the playful Goblin Reserve loop.
 
-The Next.js Econ Arcade page now has a dedicated **Playable launch bay** so all currently runnable economics experiences are visible from one UI instead of being mixed into locked roadmap cards. It includes the Next.js Supply & Demand Lab, the Next.js Invisible Hands: Steel Crisis systems simulator, the static Invisible Hands market-clearing game, Central Banker, Prisoner's Dilemma Lab, Strategy Studio, and Quant Library. Planned modules such as Signal vs Noise and Tariff Lab remain visible in the complete registry with roadmap labels, not hidden. The `frontend/public` symlinks expose the existing static `econ-arcade`, `games`, `tools`, and `docs` folders to the Next.js dev/build server so these launch links return real pages instead of dead routes.
+The Next.js Econ Arcade page now has a dedicated **Playable launch bay** so all currently runnable economics experiences are visible from one UI instead of being mixed into locked roadmap cards. It includes the Next.js Supply & Demand Lab, the Next.js Invisible Hands: Steel Crisis systems simulator, the static Invisible Hands market-clearing game, Central Banker, Prisoner's Dilemma Lab, Strategy Studio, and Quant Library. Planned modules such as Signal vs Noise and Tariff Lab remain visible in the complete registry with roadmap labels, not hidden. The `frontend/public` symlinks expose the existing static `econ-arcade`, `games`, `tools`, and asset folders to the Next.js dev/build server so these launch links return real pages instead of dead routes.
 
 The static homepage now links to `econ-arcade/index.html`, a dedicated strategy-learning menu for economics games and macro tools. `econ-arcade/platform.html` now provides the curriculum-wide Strategy Studio covering rational choice, static games, dynamic games, incomplete information, auctions, signaling, bargaining, and mechanism design with multiple playable concept engines. The first full standalone game theory module is `econ-arcade/prisoners-dilemma.html`, which implements a repeated Prisoner’s Dilemma lab with AI opponent archetypes, a live payoff matrix, a cooperation trace, and educational debriefs. Dependency-free Node API foundations for Prisoner’s Dilemma and the broader scenario catalog live in `econ-arcade/backend/`. The product/architecture blueprint lives in `docs/game-theory-platform.md`, Prisma schema in `prisma/schema.prisma`, and shared simulation contracts in `packages/sim-core/src/types.ts`.
 
@@ -60,7 +66,7 @@ uvicorn app.main:app --reload --port 8000
 ### Frontend
 ```bash
 cd frontend
-npm install
+npm ci
 NEXT_PUBLIC_API_BASE=http://localhost:8000/api npm run dev
 ```
 

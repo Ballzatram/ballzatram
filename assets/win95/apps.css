@@ -1,0 +1,73 @@
+/* Explicit adapters for existing app layouts; simulation scenes keep their artwork. */
+body.retro-app { background:var(--desktop); color:var(--ink); font-family:var(--ui-font); }
+.retro-app :is(h1,h2,h3,h4,p,label,button,input,select,textarea,a,small,summary) { font-family:var(--ui-font); text-shadow:none; letter-spacing:normal; }
+.retro-app :is(h1,h2,h3,h4) { color:var(--ink); text-transform:none; line-height:1.2; }
+.retro-app h1 { font-size:clamp(28px,4vw,44px); }
+.retro-app h2 { font-size:22px; }
+.retro-app h3 { font-size:17px; }
+.retro-app :is(.hero,.lab-hero,.report-hero,.intro-panel,.hero-panel,.studio-hero,.panel,.lab-panel,.lab-card,.card,.control-panel,.control-strip,.market-board,.curriculum-panel,.worlds-panel,.simulation-shell,.architecture-panel,.sim-workbench,.visual-card,.cb-header,.setup-panel,.briefing-room,.ending-card,.dashboard,.lower-panels > section,.stage-topbar,.debrief-card,.report-section,.source-card,.module-card,.capstone-card,.world-detail) { background:var(--face); color:var(--ink); border:0; border-radius:0; box-shadow:var(--raised); }
+.retro-app :is(.hero,.lab-hero,.report-hero,.intro-panel,.hero-panel,.studio-hero) { padding:24px; margin-bottom:20px; }
+.retro-app :is(.hero,.lab-hero,.report-hero,.intro-panel,.hero-panel,.studio-hero) h1 { color:var(--navy); }
+.retro-app :is(.hero,.lab-hero,.report-hero,.intro-panel,.hero-panel,.studio-hero,.panel,.lab-card,.control-panel,.card,.briefing-room,.setup-panel,.source-card) :is(p,small,.helper,.sub) { color:#444; font-weight:normal; }
+.retro-app :is(.kicker,.lab-kicker,.card-label,.panel-label,.eyebrow,.section-heading,.metric-label,.metric-foot,.helper,.matrix-note,.round-outcome,.outcome-text,.engine-brief) { color:#444; font-weight:normal; }
+.retro-app :is(.metric,.metric-card,.metric-grid article,.compare-grid > div,.score-grid > div,.stat-grid > div,.brief,.advisor-box,.lesson-card,.notebook,.event-log,.terms-card,.empty-state,.metric-stack,.visualization,.matrix-cell,.payoff-cell,.world-copy,.control-grid,.sim-selector,.debrief-grid article) { background:#fff; color:var(--ink); border:0; border-radius:0; box-shadow:var(--sunken); }
+.retro-app :is(.metric-grid,.compare-grid,.score-grid,.stat-grid,.metric) :is(span,strong,.metric-value) { color:var(--ink); }
+.retro-app :is(.boundary,.boundary-card,.scenario-caveat,.tool-contract,.ai-note,.brief--accent) { background:#ffffdc; color:#333; border:1px solid #808080; border-radius:0; box-shadow:none; }
+.retro-app :is(.badges span,.lab-badges span,.source-badge,.state-pill,.tag-row span,.quarter-pill,.badges,.chip) { background:#eee; color:#333; border:1px solid #808080; border-radius:0; text-transform:none; }
+.retro-app :is(button,.primary-button,.secondary-button,.small-button,.file-button,.back-link,.primary-action,.secondary-action,.action-button,.text-button,.mini-button,.cta,.ghost,.lab-card > a,.lab-top > a,.report-nav a,.top-nav a,.lab-nav a,.cb-nav a,.lab-header a,.market-header a,.studio-header a) { background:var(--face); color:black; border:0; border-radius:0; box-shadow:var(--raised); min-height:38px; padding:8px 12px; text-decoration:none; font-weight:normal; text-transform:none; }
+.retro-app button:hover:not(:disabled) { background:#ddd; }
+.retro-app :is(button.active,button.selected,button[aria-pressed=true],button:active) { background:#ddd; color:#000080; box-shadow:var(--sunken); }
+.retro-app button:disabled { color:#666; }
+.retro-app :is(input,select,textarea):not([type=range]):not([type=checkbox]):not([type=radio]) { border:0; border-radius:0; background:white; color:black; box-shadow:var(--sunken); padding:10px; font-weight:normal; }
+.retro-app input[type=range] { accent-color:#000080; }
+.retro-app input[type=checkbox] { accent-color:#000080; }
+.retro-app .file-button { position:relative; }
+.retro-app .file-button input[type=file] { display:block; position:absolute; opacity:0; inset:0; cursor:pointer; width:100%; }
+.retro-app .file-button:focus-within { outline:2px dotted #000080; }
+.retro-app :is(.text-link,.panel a:not([class]),.boundary a) { color:var(--navy); }
+.retro-app :is(.lab-top img,.cb-brand img) { width:150px; filter:none; }
+.retro-app :is(table,.table-wrap) { background:#fff; color:black; }
+.retro-app th { background:#ddd; color:black; } .retro-app :is(th,td) { border-color:#bbb; }
+.retro-app :is(.lab-header,.market-header,.studio-header) { gap:12px; flex-wrap:wrap; }
+.retro-app :is(.payoff-cell.active,.matrix-cell.active) { background:#000080; color:white; }
+.retro-app .hidden { display:none; }
+.retro-app :is(.hero-grid,.hero-stage,.hero-metrics .orbit) { display:none; }
+.retro-app .lab-section > h2 { color:white; }
+.retro-app .lab-card p { font-weight:normal; }
+@media(max-width:700px) { .retro-app :is(.lab-grid,.control-grid,.sim-layout,.market-grid) { grid-template-columns:minmax(0,1fr); } .retro-app :is(.lab-shell,.studio-shell,.market-shell,.cb-shell,.app) { padding:12px; } .retro-app :is(.hero,.lab-hero,.report-hero,.intro-panel,.hero-panel,.studio-hero) { padding:18px; } }
+.retro-app :is(.grid > aside,.grid > section,main > header:not([class])) { background:var(--face); color:black; border:0; border-radius:0; box-shadow:var(--raised); }
+.retro-app .grid > section article { color:#111; }
+/* Osiris playtest controls share the desktop while scenes retain their illustrations. */
+.adaptive95 { --muted:#555; --gold:#604800; --cyan:#000080; }
+.adaptive95 .sky { display:none; }
+.adaptive95 .topbar { background:#c0c0c0; box-shadow:var(--raised); padding:8px; backdrop-filter:none; }
+.adaptive95 :is(.world-hero,.dialogue,.mission-card,.osiris-card,.story-panel,.decision-card,.consequence,.reflection,.opponent-card,.district,.note-item,.discovery,.prediction,.stats span) { background:#c0c0c0; color:#111; border:0; border-radius:0; box-shadow:var(--raised); }
+.adaptive95 .world-hero::after, .adaptive95 .moon { display:none; }
+.adaptive95 :is(.world-hero,.dialogue,.mission-card,.story-panel,.consequence,.district,.discovery,.prediction,.stats) :is(p,strong,small,h2) { color:#333; }
+.adaptive95 .scene h1 { color:white; }
+.adaptive95 .world-hero h1 { font-family:var(--ui-font); font-size:42px; color:#000080; }
+.adaptive95 .notebook { background:white; color:#111; border-radius:0; }
+.adaptive95 footer, .adaptive95 footer a { color:white; }
+.retro-app .start95 { font-weight:bold; }
+.retro-app :is(.stoney-hero,.case-file,.meter-board,.stoney-notice,.blotter-teaser,.blotter-game,.dispatch-log) { border:0; border-radius:0; background:var(--face); box-shadow:var(--raised); color:#111; }
+.retro-app .stoney-sky { background:var(--desktop); }
+.retro-app :is(.stoney-hero,.case-file,.meter-board,.stoney-notice) :is(h1,h2,p) { color:#111; }
+.edit-factory95 :is(.topbar,.hero,.panel,.workspace-panel,.studio-card) { border-radius:0; background:var(--face); color:#111; box-shadow:var(--raised); }
+.edit-factory95 { --text:#161616; --muted:#555; --line:#808080; --panel:#c0c0c0; --panel-strong:#ddd; --blue:#000080; --green:#006000; --violet:#800080; --shadow:none; --bg:#008080; }
+.edit-factory95 :is(.hero-studio,.render-card,.rail,.recipe-card,.export-card,.upload-box,.asset-tile,.render-summary,.phone-preview) { background:var(--face); border:0; border-radius:0; box-shadow:var(--raised); }
+.edit-factory95 :is(.primary-link,.secondary-link,.subtle-button) { background:var(--face); color:black; border:0; border-radius:0; box-shadow:var(--raised); }
+.edit-factory95 .hero-copy h1 { font-size:clamp(28px,4vw,44px); color:#000080; }
+.observatory95 { --serif:var(--ui-font); --sans:var(--ui-font); --paper:#fff; --panel:#fff; --line:#aaa; --green:#000080; --mint:#e8e8e8; }
+.observatory95 .sidebar { top:43px; bottom:48px; width:230px; padding:22px 16px; background:#c0c0c0; color:#111; box-shadow:var(--raised); }
+.observatory95 .sidebar-title { padding:10px; margin-top:20px; font-size:30px; background:#000080; color:white; }
+.observatory95 :is(.sidebar-sub,.sidebar-foot,.sidebar-foot p) { color:#444; }
+.observatory95 .sidebar nav button { color:#111; background:#c0c0c0; box-shadow:var(--raised); border-radius:0; }
+.observatory95 .sidebar nav button span { color:inherit; }
+.observatory95 .sidebar nav button[aria-current] { background:#000080; color:white; }
+.observatory95 main { margin-left:230px; padding:16px 28px; background:#e8e8e8; }
+.observatory95 .hero > p { position:static; max-width:none; }
+.observatory95 .topbar { height:auto; min-height:60px; }
+.observatory95 :is(.case-bar,.section-list,.metrics,.note,dialog) { border-radius:0; background:#c0c0c0; padding:16px; box-shadow:var(--raised); }
+.observatory95 .original { background:#fff; color:#222; box-shadow:var(--sunken); }
+.observatory95 .page-foot { color:#444; }
+@media(max-width:760px) { .observatory95 .sidebar { position:static; width:auto; margin:12px; padding:16px; } .observatory95 .sidebar nav { margin:0; padding:4px; } .observatory95 .sidebar-title { margin-top:10px; } .observatory95 main { margin:12px; padding:14px; } }

@@ -1,192 +1,112 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <meta name="description" content="Ballzatram is an independent workshop for useful machines, playable experiments, quantitative tools, and strange ideas." />
-  <meta name="theme-color" content="#0589d1" />
-  <title>Ballzatram | The Workshop</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="stylesheet" href="mobile-home.css" />
-</head>
-
-<body>
-  <a class="skip-link" href="#front-page">Skip to front page</a>
-  <div class="sky" id="sky">
-    <header class="site-header">
-      <a class="brand-logo" href="./index.html" aria-label="Ballzatram home">
-        <img src="assets/title.png" alt="Ballzatram" />
-      </a>
-
-      <nav class="nav-panel" aria-label="Main navigation">
-        <a href="tools/index.html">Lab</a>
-        <span></span>
-        <a href="games/stoney-bologna/index.html">Blotter</a>
-        <span></span>
-        <a href="lab-pass.html">Lab Pass</a>
-        <span></span>
-        <a href="community.html">Community</a>
-        <span></span>
-        <a href="devin/">About Devin</a>
-      </nav>
-    </header>
-
-    <main class="homepage-main newspaper-home">
-      <section class="paper-masthead" aria-labelledby="homeHeroTitle">
-        <div class="paper-masthead__copy">
-          <p class="eyebrow">Independent lab // useful machines // strange ideas</p>
-
-          <h1 id="homeHeroTitle" class="paper-nameplate">
-            <img src="assets/title.png" alt="Ballzatram" />
-          </h1>
-
-          <p class="paper-subtitle">
-            A workshop for quantitative tools, AI experiments, simulations, games, and whatever deserves to exist next.
-          </p>
-
-          <div class="issue-strip" aria-label="Site status">
-            <span>Independent</span>
-            <span>Experimental</span>
-            <span>Built in public</span>
-          </div>
-
-          <div class="headline-rule"></div>
-
-          <p class="hero-text">
-            Ballzatram is a living laboratory. The front page keeps the useful, playable, and actively developed work easy to find while everything else stays out of the way.
-          </p>
-
-          <div class="trust-row" aria-label="Site quality markers">
-            <span>Active work labeled clearly</span>
-            <span>Experimental by design</span>
-            <span>No fake certainty</span>
-          </div>
-
-          <div class="hero-actions">
-            <a class="primary-button" href="tools/index.html">Open the Lab Directory</a>
-            <a class="secondary-button" href="games/stoney-bologna/index.html">Open Police Blotter</a>
-          </div>
-        </div>
-
-        <div class="ballzatram paper-rocketeer">
-          <img src="assets/ballzatram.png" alt="Ballzatram rocketeer flying with guitar" />
-        </div>
-      </section>
-
-      <section class="mission-panel editorial-standards" aria-labelledby="missionTitle">
-        <p class="eyebrow">How the lab works</p>
-        <h2 id="missionTitle">Build useful things. Label the rough edges.</h2>
-        <div class="mission-grid mission-grid--compact">
-          <article>
-            <strong>Status</strong>
-            <span>Every active machine is labeled so you can tell what is usable, experimental, or still being built.</span>
-          </article>
-          <article>
-            <strong>Caveats</strong>
-            <span>Analytical tools keep uncertainty visible. Games stay games. Prototypes do not pretend to be finished products.</span>
-          </article>
-        </div>
-      </section>
-
-      <section class="front-page-section" id="front-page" aria-labelledby="frontPageTitle">
-        <div class="category-heading">
-          <p class="eyebrow">Active work</p>
-          <h2 id="frontPageTitle">Inside the Hangar</h2>
-        </div>
-
-        <div class="front-page-grid" aria-label="Active Ballzatram projects">
-          <article class="lead-dispatch">
-            <span class="dispatch-stamp">Workshop note</span>
-            <h2>The lab is getting sharper.</h2>
-            <p>
-              Ballzatram is moving away from a pile of experiments and toward a connected product: analyze something, understand the risk, stress it, and turn the work into something reusable.
-            </p>
-          </article>
-
-          <article class="classified-note">
-            <span class="dispatch-stamp">Now building</span>
-            <h3>Better machines, fewer distractions.</h3>
-            <p>Stock analysis, portfolio risk, scenarios, reports, economic games, parcel diligence, and whatever earns a permanent place next.</p>
-          </article>
-
-          <article class="dispatch-card dispatch-card--parcel">
-            <div class="dispatch-card__topline">
-              <span class="dispatch-label">Land & Diligence</span>
-              <span class="tool-status experimental">Active Prototype</span>
-            </div>
-            <h2>Parcel</h2>
-            <p class="byline">Property intelligence</p>
-            <p>
-              A due-diligence machine for parcels, zoning questions, development ideas, caveats, and broker follow-ups.
-            </p>
-            <a href="tools/parcel/index.html">Launch Parcel</a>
-          </article>
-
-          <article class="dispatch-card dispatch-card--macro">
-            <div class="dispatch-card__topline">
-              <span class="dispatch-label">Markets & Risk</span>
-              <span class="tool-status experimental">Browser Lab Live</span>
-            </div>
-            <h2>Scenario Stress Lab</h2>
-            <p class="byline">V3 factor model → now Pages-native</p>
-            <p>
-              Run the current macro factor sensitivity model directly in your browser with no backend, API key, or hosting bill.
-            </p>
-            <a href="tools/scenario/index.html">Run Scenario Lab</a>
-          </article>
-
-          <article class="dispatch-card dispatch-card--stoney">
-            <div class="dispatch-card__topline">
-              <span class="dispatch-label">Playable Experiment</span>
-              <span class="tool-status live">Live</span>
-            </div>
-            <h2>Stoney Bologna&rsquo;s Bullshit Simulator 7</h2>
-            <p class="byline">Yuma dispatch, mall desk</p>
-            <p>
-              Yuma&rsquo;s least-qualified police chief attempts to bluff through a hostage crisis without letting the cameras realize he has no idea what he is doing.
-            </p>
-            <a href="games/stoney-bologna/index.html">Play the Blotter</a>
-          </article>
-
-          <article class="dispatch-card dispatch-card--observatory">
-            <div class="dispatch-card__topline"><span class="dispatch-label">Public Records</span><span class="tool-status">Prototype</span></div>
-            <h2>The Observatory</h2>
-            <p class="byline">Read beyond the headline</p>
-            <p>Inspect bills, compare the wording, search congressional votes, and trace promises back to their evidence. Official records, clearly labeled research drafts.</p>
-            <a href="tools/observatory/index.html">Open the Observatory</a>
-          </article>
-
-          <article class="dispatch-card dispatch-card--arcade">
-            <div class="dispatch-card__topline">
-              <span class="dispatch-label">Learning Arcade</span>
-              <span class="tool-status live">Playable</span>
-            </div>
-            <h2>Econ Arcade</h2>
-            <p class="byline">Economics through decisions</p>
-            <p>
-              Interactive economics games covering markets, incentives, strategic behavior, monetary policy, and economic systems.
-            </p>
-            <a href="econ-arcade/index.html">Open Econ Arcade</a>
-          </article>
-        </div>
-      </section>
-    </main>
-
-    <footer class="site-footer">
-      <nav class="footer-links" aria-label="Footer navigation">
-        <a href="tools/index.html">Lab Directory</a>
-        <a href="devin/">Devin’s Portfolio</a>
-        <a href="lab-pass.html">Lab Pass</a>
-        <a href="community.html">Community</a>
-        <a href="privacy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-      </nav>
-      <p>Built in the hangar. Filed with caveats.</p>
-    </footer>
-  </div>
-
-  <script src="script.js"></script>
-</body>
-
-</html>
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#008080"><meta name="description" content="An independent desktop for curious minds. Explore economics games, research tools, AI experiments, and projects by Devin Gallemore.">
+<title>Your personal desktop | Ballzatram</title>
+<link rel="stylesheet" href="assets/win95/theme.css"><link rel="stylesheet" href="assets/win95/desktop.css">
+<script defer src="assets/win95/shell.js"></script><script defer src="assets/win95/explorer.js"></script>
+</head><body class="has-desktop95"><a class="skip-link" href="#main">Skip to content</a>
+<div class="desktop95"><nav class="shortcuts95" aria-label="Desktop shortcuts"><a href="tools/index.html"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#computer"></use></svg><span>My Programs</span></a><a href="econ-arcade/index.html"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#game"></use></svg><span>Econ Arcade</span></a><a href="tools/portfolio/index.html"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#chart"></use></svg><span>Research Labs</span></a><a href="devin/"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#person"></use></svg><span>Devin’s Portfolio</span></a><a href="tools/ai/index.html"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#bulb"></use></svg><span>AI Guide</span></a></nav>
+<main class="desktop-main95" id="main"><div class="desktop-topline95"><span>BALLZATRAM / PERSONAL DESKTOP</span><a href="devin/">A work in curiosity ↗</a></div>
+<section class="window95" aria-labelledby="welcome-title"><div class="title95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#computer"></use></svg><span class="window-label">Welcome to Ballzatram</span></div>
+<div class="welcome-content95"><div class="welcome-copy95"><p class="eyebrow95">A playground for curious minds</p><h1 id="welcome-title">Big ideas.<span>Small programs.</span></h1><p>Part laboratory. Part arcade. A collection of things I’m building to make economics, research, and a few odd ideas worth exploring.</p><div class="welcome-actions95"><a class="btn95 primary" href="#programs">Explore programs →</a><a class="btn95" href="devin/">Meet the creator</a></div></div>
+<div class="welcome-art95" aria-hidden="true"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#computer"></use></svg><div><strong>Ballzatram 95</strong><span>PERSONAL EXPERIMENTS SYSTEM<br>Ready when you are.</span></div></div></div>
+<div class="statusbar95"><span>Welcome. Make yourself at home.</span><span>Est. with curiosity</span></div></section>
+<section class="window95" id="programs" aria-label="Program directory">
+      <div class="title95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#folder"></use></svg><span class="window-label">Program Explorer</span></div>
+      <nav class="explorer-menu95" aria-label="Explorer navigation"><a href="index.html">Desktop</a><a href="tools/index.html">All programs</a><a href="devin/">About the creator</a></nav>
+      <div class="toolbar95" data-enhanced hidden>
+        <div class="filter95" role="group" aria-label="Filter programs"><button class="btn95" type="button" data-filter="all" aria-pressed="true">All programs</button><button class="btn95" type="button" data-filter="About" aria-pressed="false">About</button><button class="btn95" type="button" data-filter="Experiments" aria-pressed="false">Experiments</button><button class="btn95" type="button" data-filter="Games" aria-pressed="false">Games</button><button class="btn95" type="button" data-filter="Research" aria-pressed="false">Research</button></div>
+        <div class="search95"><label for="program-search">Find:</label><input id="program-search" type="search" placeholder="Search programs…" autocomplete="off"></div>
+      </div>
+      <div class="explorer-body95"><aside class="explorer-sidebar95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#folder"></use></svg><h2>Your next rabbit hole.</h2><p>Open a program. Try something. See where it takes you.</p><hr><strong>Quick access</strong><a href="econ-arcade/index.html">Games &amp; simulations</a><a href="tools/portfolio/index.html">Portfolio Lab</a><a href="devin/">Devin’s portfolio</a><hr><p>One click to open.<br>No installation needed.</p></aside>
+      <div class="programs95"><article class="program95" data-category="Games" data-search="Econ Arcade Economics through choices, experiments, and a little friendly competition. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#game"></use></svg><span class="tag95">Playable</span></div>
+          <h3><a href="econ-arcade/index.html">Econ Arcade</a></h3>
+          <p>Economics through choices, experiments, and a little friendly competition.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Games" data-search="Central Banker Take the chair. Balance inflation, jobs, and the unexpected. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#chart"></use></svg><span class="tag95">Playable</span></div>
+          <h3><a href="games/central-bank.html">Central Banker</a></h3>
+          <p>Take the chair. Balance inflation, jobs, and the unexpected.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Games" data-search="Prisoner’s Dilemma Cooperate or defect? Discover what it takes to build trust. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#game"></use></svg><span class="tag95">Playable</span></div>
+          <h3><a href="econ-arcade/prisoners-dilemma.html">Prisoner’s Dilemma</a></h3>
+          <p>Cooperate or defect? Discover what it takes to build trust.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Research" data-search="The Observatory Inspect bills, compare versions, follow congressional votes, and trace the evidence. Research">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#book"></use></svg><span class="tag95">Prototype</span></div>
+          <h3><a href="tools/observatory/index.html">The Observatory</a></h3>
+          <p>Inspect bills, compare versions, follow congressional votes, and trace the evidence.</p><span class="program-category95">Research</span>
+        </article>
+<article class="program95" data-category="Research" data-search="Portfolio Lab Bring your price history. Explore returns, risk, and correlations. Research">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#chart"></use></svg><span class="tag95">Local data</span></div>
+          <h3><a href="tools/portfolio/index.html">Portfolio Lab</a></h3>
+          <p>Bring your price history. Explore returns, risk, and correlations.</p><span class="program-category95">Research</span>
+        </article>
+<article class="program95" data-category="Research" data-search="Scenario Stress Lab Turn the macro dials and see how a portfolio might respond. Research">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#chart"></use></svg><span class="tag95">Browser tool</span></div>
+          <h3><a href="tools/scenario/index.html">Scenario Stress Lab</a></h3>
+          <p>Turn the macro dials and see how a portfolio might respond.</p><span class="program-category95">Research</span>
+        </article>
+<article class="program95" data-category="Games" data-search="Supply &amp; Demand Move a market. Test price controls, taxes, and economic shocks. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#chart"></use></svg><span class="tag95">Playable</span></div>
+          <h3><a href="tools/supply-demand/index.html">Supply &amp; Demand</a></h3>
+          <p>Move a market. Test price controls, taxes, and economic shocks.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Games" data-search="Strategy Studio Explore bargaining, auctions, incentives, and game theory. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#game"></use></svg><span class="tag95">Playable</span></div>
+          <h3><a href="econ-arcade/platform.html">Strategy Studio</a></h3>
+          <p>Explore bargaining, auctions, incentives, and game theory.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Games" data-search="Invisible Hands Find equilibrium in a market of changing supply and demand. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#game"></use></svg><span class="tag95">Playable</span></div>
+          <h3><a href="econ-arcade/invisible-hands.html">Invisible Hands</a></h3>
+          <p>Find equilibrium in a market of changing supply and demand.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Games" data-search="Osiris Adaptive Arcade A learning experiment that selects challenges as you play. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#bulb"></use></svg><span class="tag95">Playtest</span></div>
+          <h3><a href="econ-arcade/play/">Osiris Adaptive Arcade</a></h3>
+          <p>A learning experiment that selects challenges as you play.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Research" data-search="Reports Turn saved lab runs into a report you can edit and download. Research">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#book"></use></svg><span class="tag95">Browser tool</span></div>
+          <h3><a href="tools/reports/index.html">Reports</a></h3>
+          <p>Turn saved lab runs into a report you can edit and download.</p><span class="program-category95">Research</span>
+        </article>
+<article class="program95" data-category="Research" data-search="Parcel Intelligence Explore land research leads, sources, and due diligence. Research">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#folder"></use></svg><span class="tag95">Prototype</span></div>
+          <h3><a href="tools/parcel/index.html">Parcel Intelligence</a></h3>
+          <p>Explore land research leads, sources, and due diligence.</p><span class="program-category95">Research</span>
+        </article>
+<article class="program95" data-category="Research" data-search="Weather Desk A weather-market worksheet for research and paper scenarios. Research">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#chart"></use></svg><span class="tag95">Paper mode</span></div>
+          <h3><a href="weather-bot.html">Weather Desk</a></h3>
+          <p>A weather-market worksheet for research and paper scenarios.</p><span class="program-category95">Research</span>
+        </article>
+<article class="program95" data-category="Experiments" data-search="Ballzatram AI Ask questions about your saved labs using your configured AI bridge. Experiments">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#bulb"></use></svg><span class="tag95">Setup needed</span></div>
+          <h3><a href="tools/ai/index.html">Ballzatram AI</a></h3>
+          <p>Ask questions about your saved labs using your configured AI bridge.</p><span class="program-category95">Experiments</span>
+        </article>
+<article class="program95" data-category="Games" data-search="Stoney Bologna A very unqualified police chief. A very questionable adventure. Games">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#game"></use></svg><span class="tag95">Playable</span></div>
+          <h3><a href="games/stoney-bologna/index.html">Stoney Bologna</a></h3>
+          <p>A very unqualified police chief. A very questionable adventure.</p><span class="program-category95">Games</span>
+        </article>
+<article class="program95" data-category="Experiments" data-search="AI Edit Factory Explore the video-editing workspace. Rendering requires the local setup. Experiments">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#folder"></use></svg><span class="tag95">Backend needed</span></div>
+          <h3><a href="ai-edit-factory/index.html">AI Edit Factory</a></h3>
+          <p>Explore the video-editing workspace. Rendering requires the local setup.</p><span class="program-category95">Experiments</span>
+        </article>
+<article class="program95" data-category="About" data-search="Devin’s Portfolio The person behind the programs: experience, projects, and what’s next. About">
+          <div class="program-top95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#person"></use></svg><span class="tag95">Portfolio</span></div>
+          <h3><a href="devin/">Devin’s Portfolio</a></h3>
+          <p>The person behind the programs: experience, projects, and what’s next.</p><span class="program-category95">About</span>
+        </article><p class="empty95" id="no-programs" hidden>No programs found. Try another search or choose All programs.</p></div></div>
+      <div class="statusbar95"><span id="program-count" role="status">17 programs</span><span>Ballzatram · personal laboratory</span></div>
+    </section>
+<div class="bottom-grid95"><section class="window95"><div class="title95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#book"></use></svg><span class="window-label">Read me first.txt</span></div><div class="note95"><h2>Learn by getting your hands on it.</h2><p>Set interest rates. Test a strategy. Stress a portfolio. These programs turn questions into things you can actually try.</p><a href="econ-arcade/index.html">Find your first game →</a></div></section>
+<section class="window95"><div class="title95"><svg class="icon95" aria-hidden="true"><use href="assets/win95/icons.svg#bulb"></use></svg><span class="window-label">From the workbench</span></div><div class="note95"><h2>Always a work in progress.</h2><p>Some programs are ready to play; others are experiments. Each one tells you where it stands. Have an idea for the next one?</p><a href="community.html">Visit the community →</a></div></section></div><footer class="footer95"><span>Built by Devin Gallemore. Curiosity comes standard.</span><nav aria-label="Footer"><a href="lab-pass.html">Lab Pass</a><a href="community.html">Community</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></footer></main></div>
+</body></html>

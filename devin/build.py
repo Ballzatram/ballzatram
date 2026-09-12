@@ -71,6 +71,7 @@ html = head('Devin Gallemore | Quantitative AI & Engineering', 'The work of Devi
 <section id="contact" class="contact" aria-labelledby="contact-title"><div class="contact-inner"><div><h2 id="contact-title">Have a problem worth solving?</h2><p>Let’s talk about quantitative systems, AI workflows, or an idea that needs to become a working product.</p></div><a class="button" href="mailto:{email}">Get in touch <span aria-hidden="true">↗</span></a></div></section>
 </main><footer class="wrap footer"><span>Devin Gallemore · A personal corner of Ballzatram.</span><nav aria-label="Footer navigation"><a href="./resume.html">Resume</a><a href="https://github.com/Ballzatram">GitHub</a><a href="mailto:{email}">Email</a></nav></footer></body></html>
 '''
+html = html.replace('</head>', '<link rel="stylesheet" href="../assets/win95/theme.css" media="screen"><link rel="stylesheet" href="../assets/win95/portfolio.css" media="screen"><script defer src="../assets/win95/shell.js"></script></head>')
 (ROOT / 'index.html').write_text(html)
 
 resume = head('Devin Gallemore | Resume', data['positioning']) + f'''

@@ -35,7 +35,7 @@ function renderInputs() {
 
 function readShocks() {
   return Object.fromEntries(
-    [...document.querySelectorAll("[data-factor]")].map((input) => [input.dataset.factor, Number(input.value)])
+    [...document.querySelectorAll("[data-factor]")].map((input) => [input.dataset.factor, input.value.trim() === "" ? NaN : Number(input.value)])
   );
 }
 
@@ -61,6 +61,7 @@ function runScenario() {
   const shocks = readShocks();
   const invalid = Object.values(shocks).some((value) => !Number.isFinite(value) || value < -5 || value > 5);
   if (invalid) {
+    clearResults();
     drivers.innerHTML = "<p><strong>Check the inputs:</strong> every shock must be numeric and between -5 and +5.</p>";
     return;
   }

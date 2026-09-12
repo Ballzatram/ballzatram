@@ -3,117 +3,59 @@
 import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AgentWidget } from "@/components/AgentWidget";
-import { SkyLayer } from "@/components/SkyLayer";
 import { workflows } from "@/lib/workflows";
 
+const macroRoutes = new Set(["/quant-library", "/macro-board", ...workflows.map(workflow => `/${workflow.slug}`)]);
+const navigation = [
+  { label: "Desktop", href: "/" },
+  { label: "Parcel", href: "/land" },
+  { label: "Quant Library", href: "/quant-library" },
+  { label: "Games", href: "/arcade" },
+  { label: "AI Lab", href: "/laboratory" },
+  { label: "Archive", href: "/archive" },
+] as const;
+
 export function Layout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const currentPath = pathname ?? "/";
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const macroRoutes = new Set(["/quant-library", "/macro-board", ...workflows.map((workflow) => `/${workflow.slug}`)]);
-  const isMacroRoute = macroRoutes.has(currentPath);
-  const isPenitent = currentPath.startsWith("/penitent");
-  const isHome = currentPath === "/";
-  const isMarketsRoute = currentPath === "/markets" || isMacroRoute;
-  const isLandRoute = currentPath === "/land" || currentPath.startsWith("/tools/parcel");
-  const isGamesRoute = currentPath.startsWith("/arcade") || currentPath.startsWith("/econ-arcade") || currentPath.startsWith("/games");
-  const isLaboratoryRoute =
-    currentPath === "/laboratory" ||
-    currentPath.startsWith("/ai-edit-factory") ||
-    currentPath.startsWith("/internal/generated-stories");
-  const isArchiveRoute =
-    currentPath === "/archive" ||
-    currentPath === "/daily" ||
-    currentPath === "/culture" ||
-    currentPath.startsWith("/penitent") ||
-    currentPath.startsWith("/pntnt2") ||
-    currentPath.startsWith("/stoney-baologna") ||
-    currentPath.startsWith("/bettors-corner") ||
-    currentPath.startsWith("/betting") ||
-    currentPath.startsWith("/internal/product-architecture");
-  const primaryNav = [
-    { label: "Home", href: "/" as Route, active: currentPath === "/" },
-    { label: "Parcel", href: "/land" as Route, active: isLandRoute },
-    { label: "Quant Library", href: "/quant-library" as Route, active: isMarketsRoute },
-    { label: "Games", href: "/arcade" as Route, active: isGamesRoute },
-    { label: "AI Lab", href: "/laboratory" as Route, active: isLaboratoryRoute },
-    { label: "Archive", href: "/archive" as Route, active: isArchiveRoute },
-  ];
-
+  const currentPath = usePathname() ?? "/";
+  const [menuOpen, setMenuOpen] = useState(false);
+  const startRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLElement>(null);
   useEffect(() => {
-    setMobileNavOpen(false);
-  }, [currentPath]);
+    const closeOutside = (event: MouseEvent) => {
+      if (!menuRef.current?.contains(event.target as Node) && !startRef.current?.contains(event.target as Node)) setMenuOpen(false);
+    };
+    document.addEventListener("click", closeOutside);
+    return () => document.removeEventListener("click", closeOutside);
+  }, []);
+  const isMacroRoute = macroRoutes.has(currentPath);
+  useEffect(() => { setMenuOpen(false); }, [currentPath]);
 
-  if (isPenitent) {
-    return <>{children}</>;
-  }
+  // The standalone narrative game owns its full-screen presentation.
+  if (currentPath.startsWith("/penitent")) return <>{children}</>;
 
   return (
-    <div
-      className={`ballzatram-site-shell min-h-dvh ${isHome ? "ballzatram-site-shell--sky" : "text-[#f8ead1]"} ${isLandRoute ? "ballzatram-site-shell--land" : ""}`}
-    >
-      {isHome ? <SkyLayer /> : null}
+    <div className="retro-next min-h-dvh">
       <a className="skip-link" href="#site-content">Skip to content</a>
-      <header className={`ballzatram-site-header ${isHome ? "ballzatram-site-header--sky" : ""} ${isLandRoute ? "ballzatram-site-header--land" : ""}`}>
-        <div className="ballzatram-site-header__inner">
-          <div className="ballzatram-site-header__brand">
-            {isLandRoute ? (
-              <Link href={"/land" as Route} className="ballzatram-product-mark" aria-label="Parcel home">
-                Parcel
-              </Link>
-            ) : (
-              <Link href={"/" as Route} className="ballzatram-logo-link" aria-label="Ballzatram home">
-                <img src="/assets/title.png" alt="Ballzatram" />
-              </Link>
-            )}
-            {isLandRoute ? (
-              <div className="ballzatram-site-header__product">
-                <span>Evaluator Workspace</span>
-                <b>Ballzatram</b>
-              </div>
-            ) : (
-              <p>AI-guided workbenches, simulations, games, and odd tools</p>
-            )}
-          </div>
-          <button
-            type="button"
-            className="ballzatram-mobile-nav-toggle"
-            aria-expanded={mobileNavOpen}
-            aria-controls="ballzatram-main-nav"
-            onClick={() => setMobileNavOpen((open) => !open)}
-          >
-            <span>{mobileNavOpen ? "Close menu" : "Open menu"}</span>
-          </button>
-          <nav
-            id="ballzatram-main-nav"
-            className={`ballzatram-main-nav ${mobileNavOpen ? "is-open" : ""}`}
-            aria-label="Ballzatram sections"
-          >
-            {primaryNav.map((item) => (
-              <Link key={item.href} href={item.href} aria-current={item.active ? "page" : undefined}>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-        </div>
-        {isMacroRoute ? (
-          <nav className="ballzatram-workflow-nav" aria-label="Quant Library instruments">
-            <Link href={"/quant-library" as Route} aria-current={currentPath === "/quant-library" ? "page" : undefined}>
-              Quant Library
-            </Link>
-            {workflows.filter((workflow) => workflow.slug !== "dashboard").map((workflow) => {
-              const href = `/${workflow.slug}` as Route;
-              return <Link key={href} href={href} aria-current={currentPath === href ? "page" : undefined}>{workflow.navLabel}</Link>;
-            })}
-          </nav>
-        ) : null}
+      <header className="next-header95 window95">
+        <div className="title95"><span className="window-label">Ballzatram 95 — Personal laboratory</span></div>
+        <nav className="next-nav95" aria-label="Ballzatram sections">
+          {navigation.map(item => <Link key={item.href} href={item.href as Route} aria-current={currentPath === item.href ? "page" : undefined}>{item.label}</Link>)}
+        </nav>
+        {isMacroRoute && <nav className="next-workflows95" aria-label="Quant Library instruments">
+          {workflows.filter(workflow => workflow.slug !== "dashboard").map(workflow => <Link key={workflow.slug} href={`/${workflow.slug}` as Route} aria-current={currentPath === `/${workflow.slug}` ? "page" : undefined}>{workflow.navLabel}</Link>)}
+        </nav>}
       </header>
-      <main id="site-content" className={isMacroRoute || currentPath.startsWith("/econ-arcade") ? "mx-auto w-full max-w-7xl px-4 py-5 pb-28 sm:px-6 lg:px-8" : ""}>
-        {children}
-      </main>
-      {isMacroRoute ? <AgentWidget /> : null}
+      <main id="site-content" className="next-main95">{children}</main>
+      {isMacroRoute && <AgentWidget />}
+      <nav className="taskbar95" aria-label="Desktop taskbar">
+        <button ref={startRef} className="btn95 start95" type="button" aria-expanded={menuOpen} aria-controls="next-start95" onClick={() => setMenuOpen(!menuOpen)} onKeyDown={event => { if (event.key === "Escape") setMenuOpen(false); }}>Start</button>
+        <Link className="btn95 task95" href={"/" as Route}>Ballzatram</Link><span className="tray95">Personal laboratory</span>
+      </nav>
+      <nav ref={menuRef} hidden={!menuOpen} id="next-start95" className="start-menu95" aria-label="Start menu" onKeyDown={event => { if (event.key === "Escape") { setMenuOpen(false); startRef.current?.focus(); } }}>
+        {navigation.map(item => <Link key={item.href} href={item.href as Route} onClick={() => setMenuOpen(false)}>{item.label}</Link>)}
+      </nav>
     </div>
   );
 }
