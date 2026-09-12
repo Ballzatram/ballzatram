@@ -56,7 +56,7 @@ export function freshness(bill,time=Date.now()) {
 }
 export function filterBills(bills,{query='',chamber='All chambers',status='All stages',followedOnly=false}={},watch={bills:[]}) {
   const ids=new Set(watch.bills.map(x=>x.id));
-  const normalize=s=>s.toLowerCase().replace(/[.]/g,'').replace(/\s+/g,' ').trim();
+  const normalize=s=>s.toLowerCase().replace(/[.]/g,'').replace(/\b(hr|s)[ -]*(\d+)\b/g,'$1 $2').replace(/\s+/g,' ').trim();
   const terms=normalize(query).split(' ').filter(Boolean);
   return bills.filter(b=>{
     const search=normalize(`${b.title} ${b.billLabel} ${b.topic} ${b.sponsor} ${b.id}`);

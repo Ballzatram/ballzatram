@@ -2,7 +2,7 @@
 
 ## Windows 95 desktop
 
-Only the homepage uses the Windows 95 desktop, searchable program directory, and Start menu. Tools, games, the Observatory, the portfolio, and supporting pages retain their independent designs. `data/public-programs.json` generates the homepage with `python scripts/build_desktop.py`; the generator does not rewrite internal pages. Next.js likewise uses the desktop only at `/`, with its original application layout on other routes. Desktop CSS tokens and general element rules are scoped to the homepage.
+Only the homepage uses the Windows 95 desktop, searchable program directory, and Start menu. Tools, games, Congressional Accountability, the portfolio, and supporting pages retain their independent designs. `data/public-programs.json` generates the homepage with `python scripts/build_desktop.py`; the generator does not rewrite internal pages. Next.js likewise uses the desktop only at `/`, with its original application layout on other routes. Desktop CSS tokens and general element rules are scoped to the homepage.
 
 See [UI and code audit](docs/UI_CODE_AUDIT.md) for fixes, verification, and maintenance instructions. `python scripts/validate_public.py` builds and checks the exact GitHub Pages artifact before publication.
 
@@ -30,14 +30,15 @@ A June 2026 pass reduced the public surface back to a clearer launchpad:
 - Betting, newspaper, Stoney, Penitent, and culture pages remain findable but de-emphasized as archive or experimental routes.
 - Weather Desk stays paper/research only, with no live orders and no financial advice.
 
-## Observatory
+## Congressional Accountability
 
-The [Observatory workbench](tools/observatory/index.html) brings bill text, version changes,
+The [Congressional Accountability](tools/observatory/index.html) brings bill text, version changes,
 congressional votes, sourced promise drafts, coverage mappings and portable investigation
 files together. Find and follow bills without uploading files: the Pages deployment scans
 official GPO sources every four hours and grows a searchable catalogue. Browser-local
 watchlists highlight changed records. Coverage and per-bill freshness stay visible,
-with pinned source snapshots and clearly labeled draft analysis. See [usage and limitations](docs/observatory/WORKBENCH.md).
+with pinned source snapshots and clearly labeled personal drafts. The citizen guide distinguishes
+official records, historical examples, saved snapshots, and missing evidence. See [usage and limitations](docs/observatory/WORKBENCH.md).
 
 ## Econ Arcade
 

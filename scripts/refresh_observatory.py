@@ -15,7 +15,7 @@ import time
 import urllib.error
 import urllib.request
 from urllib.parse import urlsplit
-from import_observatory_bill import parse_xml, parse_bill, parse_status, source_record, VERSIONS
+from import_observatory_bill import parse_xml, parse_bill, parse_status, source_record
 
 SOURCE_ROOT = 'https://www.govinfo.gov'
 NS = {'s': 'http://www.sitemaps.org/schemas/sitemap/0.9'}
@@ -98,7 +98,7 @@ def select_records(found, previous, budget, timestamp):
         old = previous.get(key)
         if not old:
             unseen.append(candidate)
-        elif old.get('sourceModifiedAt') != candidate['modified'] or old.get('health') != 'ok' or datetime.fromisoformat(old['checkedAt']) < cutoff:
+        elif old.get('parserRevision') != 2 or old.get('sourceModifiedAt') != candidate['modified'] or old.get('health') != 'ok' or datetime.fromisoformat(old['checkedAt']) < cutoff:
             due.append(candidate)
     due.sort(key=lambda x: previous[x['id']]['checkedAt'])
     unseen.sort(key=lambda x: (x['modified'], x['id']), reverse=True)
@@ -140,8 +140,6 @@ def build_record(candidate, output, fetch=official_fetch):
         raise ValueError('Source bill identity does not match the requested bill')
     metadata = parse_status(raw)
     timestamp = now()
-    fingerprint = hashlib.sha256(raw).hexdigest()
-    snapshot_id = f'{identifier}@{fingerprint[:16]}'
     snapshots = output / 'snapshots'
     snapshots.mkdir(parents=True, exist_ok=True)
     def snapshot(content, source_id, url):
@@ -179,6 +177,10 @@ def build_record(candidate, output, fetch=official_fetch):
     latest_action = {'date': latest.findtext('actionDate', '') if latest is not None else '',
                      'text': latest.findtext('text', '') if latest is not None else ''}
     stage = bill_stage(bill, metadata)
+    # A text artifact can arrive or change without a new BILLSTATUS body. Include
+    # every retained source in identity so notes never move to different evidence.
+    fingerprint = hashlib.sha256(json.dumps(['evidence-v2', *sorted([x['id'], x['sha256']] for x in sources)], separators=(',', ':')).encode()).hexdigest()
+    snapshot_id = f'{identifier}@{fingerprint[:16]}'
     tracker = {'billId': identifier, 'checkedAt': timestamp, 'sourceUpdatedAt': bill.findtext('updateDateIncludingText') or bill.findtext('updateDate'),
                'latestAction': latest_action, 'status': stage, 'textFailures': text_failures, 'textVersions': text_items}
     dossier = {'schemaVersion': 1, 'id': snapshot_id, 'mode': 'draft', 'billLabel': f'{"H.R." if kind == "hr" else "S."} {number} · {congress}th Congress',
@@ -186,14 +188,19 @@ def build_record(candidate, output, fetch=official_fetch):
                'selectionNote': 'Discovered through the current-Congress GPO sitemap. Catalogue coverage grows through bounded refreshes; this is not an exhaustive or politically representative sample. Latest two supported XML text versions are parsed where available. Missing text is not an empty bill.',
                'sources': sources, 'versions': versions, 'rollcall': None, 'tracker': tracker, **metadata}
     detail_path = f'bills/{snapshot_id.replace("@", "-")}.json'
-    write_json(output / detail_path, dossier)
+    detail_file = output / detail_path
+    if len(json.dumps(dossier, ensure_ascii=False, separators=(',', ':')).encode()) > 3_800_000:
+        raise ValueError('Record exceeds the interactive file limit; keep the previous successful record')
+    # The same evidence identity must always retain the same published bytes.
+    if not detail_file.exists():
+        write_json(detail_file, dossier)
     record = {'id': identifier, 'title': metadata['title'], 'billLabel': dossier['billLabel'], 'congress': int(congress), 'number': int(number),
               'chamber': 'House' if kind == 'hr' else 'Senate', 'topic': bill.findtext('policyArea/name') or 'Not classified',
               'sponsor': metadata['sponsors'][0]['name'] if metadata['sponsors'] else 'Not listed',
               'status': stage, 'latestAction': latest_action, 'sourceUrl': candidate['url'], 'sourceModifiedAt': candidate['modified'],
               'sourceUpdatedAt': tracker['sourceUpdatedAt'], 'checkedAt': timestamp, 'activityCheckedAt': timestamp, 'fingerprint': fingerprint,
               'detailPath': detail_path, 'detailSha256': hashlib.sha256((output/detail_path).read_bytes()).hexdigest(),
-              'actionCount': len(metadata['actions']), 'textVersionCount': len(text_items), 'parsedVersionCount': len(versions), 'health': 'ok'}
+              'parserRevision': 2, 'actionCount': len(metadata['actions']), 'textVersionCount': len(text_items), 'parsedVersionCount': len(versions), 'health': 'ok'}
     return record
 
 

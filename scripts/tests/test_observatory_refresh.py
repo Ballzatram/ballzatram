@@ -24,6 +24,19 @@ def fake_fetch(url):
     raise AssertionError('Unexpected request: '+url)
 
 class RefreshTests(unittest.TestCase):
+    def test_new_text_changes_identity_and_preserves_existing_snapshot(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path=Path(temp); candidate={'id':'119-hr-7','url':XML_URL,'modified':MODIFIED}
+            first=build_record(candidate,path,fake_fetch);before=(path/first['detailPath']).read_bytes()
+            second=build_record(candidate,path,fake_fetch)
+            self.assertEqual(first['fingerprint'],second['fingerprint'])
+            self.assertEqual(before,(path/second['detailPath']).read_bytes())
+            def amended(url):
+                return BILL.replace(b'no real law',b'changed synthetic words') if url==TEXT_URL else fake_fetch(url)
+            third=build_record(candidate,path,amended)
+            self.assertNotEqual(first['fingerprint'],third['fingerprint'])
+            self.assertEqual(before,(path/first['detailPath']).read_bytes())
+
     def test_presidential_signature_precedes_pending_public_law_number(self):
         metadata={'publicLaws':[], 'actions':[{'text':'Presented to President.'},{'text':'Signed by President.'}]}
         self.assertEqual(bill_stage(None,metadata),'Signed by President')
@@ -95,7 +108,7 @@ class RefreshTests(unittest.TestCase):
                 build_record({'id':'119-hr-8','url':XML_URL,'modified':MODIFIED},Path(temp),fake_fetch)
 
     def test_existing_monitoring_cannot_be_starved_by_new_records(self):
-        previous={'119-hr-1':{'checkedAt':'2026-09-01T00:00:00+00:00','sourceModifiedAt':'old'}}
+        previous={'119-hr-1':{'parserRevision':2,'checkedAt':'2026-09-01T00:00:00+00:00','sourceModifiedAt':'old'}}
         found={f'119-hr-{n}':{'id':f'119-hr-{n}','url':'unused','modified':MODIFIED} for n in range(1,100)}
         selected=select_records(found,previous,4,'2026-09-12T00:00:00+00:00')
         self.assertEqual(len(selected),4);self.assertIn('119-hr-1',[x['id'] for x in selected])
