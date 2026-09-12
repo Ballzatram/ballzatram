@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const AI = window.BallzatramAI;
+  const Subscription = window.BallzatramSubscription;
   const $ = id => document.getElementById(id);
   const RUN_KEYS = { portfolio: 'ballzatram:portfolio-pages-last-run:v1', scenario: 'ballzatram:scenario-pages-last-run:v1', supplyDemand: 'ballzatram:supply-demand-last-run:v1', report: 'ballzatram:pages-report-draft:v1' };
   let settings = AI.getSettings(), catalogue = [], controller, activeRequest = 0;
@@ -9,14 +10,16 @@
   function persist() { AI.saveSettings(settings); }
   function setMode(mode) {
     if (controller) controller.abort();
-    settings.mode = mode; persist(); $('consent').checked = false; renderMode();
+    controller = null; activeRequest++; $('askButton').disabled = false; $('cancelButton').hidden = true;
+    settings.mode = mode; persist(); $('consent').checked = false; $('subscriptionConsent').checked = false; renderMode();
   }
   function renderMode() {
     document.querySelectorAll('[data-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.mode === settings.mode)));
-    for (const mode of ['handoff', 'openrouter', 'demo']) $(`${mode}Panel`).hidden = settings.mode !== mode;
+    for (const mode of ['subscription', 'handoff', 'openrouter', 'demo']) $(`${mode}Panel`).hidden = settings.mode !== mode;
     $('nativeDetails').open = settings.mode === 'native';
     const paid = ['native', 'openrouter'].includes(settings.mode);
     $('paidControls').hidden = !paid;
+    $('subscriptionControls').hidden = settings.mode !== 'subscription';
     $('askButton').textContent = AI.label();
     $('resultHint').textContent = settings.mode === 'handoff' ? 'Prepare a prompt, copy it, then open your chat app and paste it there.' : settings.mode === 'demo' ? 'A fixed local checklist. No model calls and no token charges.' : 'An answer appears here after you explicitly send a question using your own account.';
     $('consentText').textContent = settings.mode === 'native' ? `Send this question and context through ${settings.bridgeUrl || 'my relay'} to ${settings.provider}, using my API key.` : 'Send this question and context to OpenRouter and the selected model provider, using my credits.';
@@ -25,7 +28,12 @@
     $('testConnection').disabled = !AI.isConnected();
     if (settings.mode === 'openrouter' && !AI.isConnected()) status('Connect your OpenRouter account to get in-site answers.');
     else if (settings.mode === 'native' && !AI.isConnected()) status('Enter a matching API key for this relay and provider.');
-    else status(paid ? 'Connected for this tab. Each request uses your own account.' : settings.mode === 'demo' ? 'Local preview selected. No external requests.' : `Ready to prepare a question for ${name}.`);
+    else if (settings.mode === 'subscription') {
+      const c = Subscription.connection();
+      $('subscriptionStatus').textContent = c?.account ? `Connected: ${c.account.email || 'your ChatGPT account'} · ${c.account.planType}. Model: ${Subscription.settings().model || 'choose in connection settings'}.` : 'Private pilot: start your connection service, then connect your ChatGPT account. This website alone cannot run Codex.';
+      $('connectSubscription').textContent = c?.account ? 'Account & model settings' : 'Connect ChatGPT';
+      status(c?.account ? 'Connected. Review this question and context before sending.' : 'ChatGPT is not connected yet. Open Connect ChatGPT to set up this pilot.');
+    } else status(paid ? 'Connected for this tab. Each request uses your own account.' : settings.mode === 'demo' ? 'Local preview selected. No external requests.' : `Ready to prepare a question for ${name}.`);
   }
   function selectedRequest() {
     const kind = $('contextSelect').value;
@@ -41,6 +49,7 @@
   }
   function renderContext() {
     $('consent').checked = false;
+    $('subscriptionConsent').checked = false;
     try {
       const request = selectedRequest();
       const safe = AI.prepare({ ...request, prompt: request.prompt.trim() || 'Context preview' });
@@ -75,15 +84,19 @@
   async function ask(event) {
     event.preventDefault();
     if (controller) return;
+    const id = ++activeRequest;
+    let activeController;
     $('handoffActions').hidden = true; $('usage').textContent = '';
     try {
       const request = AI.prepare(selectedRequest());
       if (['openrouter', 'native'].includes(settings.mode) && !$('consent').checked) throw new Error('Confirm the selected data and account before sending.');
-      const mode = settings.mode, id = ++activeRequest;
-      controller = new AbortController(); $('askButton').disabled = true;
-      $('cancelButton').hidden = !['openrouter', 'native'].includes(mode);
+      if (settings.mode === 'subscription' && !$('subscriptionConsent').checked) throw new Error('Confirm the selected context and ChatGPT account before sending.');
+      const mode = settings.mode;
+      activeController = new AbortController(); controller = activeController; $('askButton').disabled = true;
+      $('cancelButton').hidden = !['subscription', 'openrouter', 'native'].includes(mode);
       $('answer').textContent = mode === 'handoff' ? 'Preparing…' : mode === 'demo' ? 'Loading local preview…' : 'Waiting for your selected model…';
-      const result = await AI.ask(request, { signal: controller.signal });
+      let streamed = '';
+      const result = await AI.ask(request, { signal: activeController.signal, consent: $('subscriptionConsent').checked, responseLength: $('subscriptionLength').value, onDelta: delta => { streamed += delta; if (id === activeRequest) $('answer').textContent = streamed; } });
       if (id !== activeRequest) return;
       $('resultLabel').textContent = result.model;
       if (result.kind === 'handoff') {
@@ -93,11 +106,14 @@
         $('answer').textContent = result.answer;
         if (result.kind === 'answer') {
           const u = result.usage || {};
-          $('usage').textContent = `${result.truncated ? 'Response reached the length limit. ' : ''}Billed to your ${mode === 'native' ? 'API' : 'OpenRouter'} account.${Number.isFinite(u.total_tokens) ? ` Provider-reported tokens: ${u.total_tokens}.` : ''}${Number.isFinite(u.cost) ? ` Reported cost: $${u.cost.toFixed(6)}.` : ' Check provider activity for final usage.'}`;
+          $('usage').textContent = `${result.truncated ? 'Response reached the length limit. ' : ''}${mode === 'subscription' ? 'Uses your ChatGPT plan’s Codex allowance.' : `Billed to your ${mode === 'native' ? 'API' : 'OpenRouter'} account.`}${Number.isFinite(u.total_tokens) ? ` Provider-reported tokens: ${u.total_tokens}.` : ''}${Number.isFinite(u.cost) ? ` Reported cost: $${u.cost.toFixed(6)}.` : ' Check provider activity for final usage.'}`;
         }
       }
-    } catch (error) { $('answer').textContent = error.message; }
-    finally { controller = null; $('askButton').disabled = false; $('cancelButton').hidden = true; }
+    } catch (error) { if (id === activeRequest) $('answer').textContent = error.message; }
+    finally {
+      if (controller === activeController) controller = null;
+      if (id === activeRequest) { $('askButton').disabled = false; $('cancelButton').hidden = true; $('subscriptionConsent').checked = false; }
+    }
   }
   $('chatProvider').value = settings.chat; $('nativeProvider').value = settings.provider;
   $('nativeModel').value = settings.nativeModel; $('bridgeUrl').value = settings.bridgeUrl; $('maxTokens').value = settings.maxTokens;
@@ -108,7 +124,11 @@
   document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => setMode(button.dataset.mode)));
   $('chatProvider').onchange = () => { settings.chat = $('chatProvider').value; persist(); renderMode(); };
   $('contextSelect').onchange = () => { if ($('contextSelect').value === 'prepared' && staged) $('prompt').value = staged.prompt; renderContext(); };
-  $('prompt').oninput = () => { $('consent').checked = false; };
+  $('prompt').oninput = () => { $('consent').checked = false; $('subscriptionConsent').checked = false; };
+  $('subscriptionLength').onchange = () => { $('subscriptionConsent').checked = false; };
+  $('connectSubscription').onclick = () => window.OsirisPanel.open({ tool: 'general', prompt: '', context: {} }, { connectionOnly: true });
+  $('disconnectSubscription').onclick = async () => { controller?.abort(); const removed = await Subscription.disconnect(); renderMode(); status(removed ? 'ChatGPT disconnected from this session.' : 'Disconnected locally. The service session expires automatically after inactivity.'); };
+  window.addEventListener('ballzatram:ai-connection-change', () => { settings = AI.getSettings(); $('subscriptionConsent').checked = false; renderMode(); });
   $('model').onchange = () => { settings.model = $('model').value; persist(); $('consent').checked = false; pricing(); };
   $('freeOnly').onchange = () => { renderModels(); $('consent').checked = false; };
   $('maxTokens').onchange = () => { settings.maxTokens = Number($('maxTokens').value); persist(); $('consent').checked = false; };

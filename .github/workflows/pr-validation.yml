@@ -13,6 +13,29 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  subscription-runtime:
+    name: Subscription runtime protocol and isolation
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: osiris-runtime/package-lock.json
+      - name: Install pinned Codex runtime
+        run: npm ci --prefix osiris-runtime --ignore-scripts
+      - name: Test authentication, context boundaries, and cancellation
+        run: npm test --prefix osiris-runtime
+      - name: Check real runtime without sign-in or generation
+        run: npm run check:runtime --prefix osiris-runtime
+      - name: Verify private runtime container
+        run: |
+          docker build -t osiris-runtime:test -f osiris-runtime/Dockerfile .
+          docker run --rm --read-only --cap-drop=ALL --security-opt no-new-privileges --pids-limit=128 --memory=1g --tmpfs /tmp:rw,nosuid,nodev,noexec,size=256m,mode=0700,uid=1000,gid=1000 osiris-runtime:test node scripts/check-runtime.mjs
+          docker run --rm -e OSIRIS_DOMAIN=osiris.example.test -v "$PWD/osiris-runtime/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2-alpine caddy adapt --config /etc/caddy/Caddyfile --validate > /dev/null
+
   backend:
     name: Backend tests
     runs-on: ubuntu-latest

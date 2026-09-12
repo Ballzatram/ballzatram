@@ -3,7 +3,7 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
 import { api, AgentProcess } from "@/lib/api";
-import AI from "../../../assets/ai-client.js";
+import OsirisPanel from "../../../assets/ai-panel.js";
 
 export function AgentWidget() {
   const pathname = usePathname();
@@ -12,7 +12,7 @@ export function AgentWidget() {
   const [processes, setProcesses] = useState<Record<string, AgentProcess[]>>({});
   const [selectedProcess, setSelectedProcess] = useState("");
   const [input, setInput] = useState("");
-  const [status, setStatus] = useState("Prepare a question, then choose your own AI in the workspace.");
+  const [status, setStatus] = useState("Review your question and connect ChatGPT in the Osiris panel. Answers stay on this page.");
 
   useEffect(() => {
     api.agentProcesses().then(res => setProcesses(res.processes)).catch(() => {
@@ -24,12 +24,10 @@ export function AgentWidget() {
 
   function prepare(message = input) {
     try {
-      const saved = AI.stageRequest({
-        tool: pageId, prompt: message,
+      OsirisPanel.open({
+        tool: "page-guide", prompt: message,
         context: { page: pageId, workflow: activeProcess ?? null, dataBoundary: "Only this page name and workflow are included. No live metrics or page contents were collected." }
       });
-      if (!saved) throw new Error("Allow tab storage to transfer this question, or open AI settings and paste your question there.");
-      window.location.assign("/tools/ai/index.html?context=prepared");
     } catch (error) { setStatus(error instanceof Error ? error.message : "Could not prepare this question."); }
   }
   function submit(event: FormEvent<HTMLFormElement>) { event.preventDefault(); prepare(); }
@@ -45,8 +43,8 @@ export function AgentWidget() {
           <label className="block text-sm text-slate-300">Workflow outcome<select className="mt-1 w-full rounded-lg border border-slate-700 bg-slate-900 p-2 text-white" value={activeProcess.id} onChange={e => setSelectedProcess(e.target.value)}>{pageProcesses.map(p => <option key={p.id} value={p.id}>{p.outcome}</option>)}</select></label>
           <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-sm text-slate-200"><ol className="list-decimal space-y-1 pl-5">{activeProcess.steps.map(step => <li key={step}>{step}</li>)}</ol><button className="mt-3 rounded-lg border border-emerald-300/40 px-3 py-2 text-emerald-200" onClick={() => prepare(activeProcess.starter_prompt)}>Prepare a starting question</button></div>
         </> : null}
-        <form onSubmit={submit} className="space-y-3"><label className="block text-sm text-slate-300">Your question<textarea className="mt-2 min-h-24 w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm text-white" maxLength={4000} placeholder="What should I explore or challenge here?" value={input} onChange={e => setInput(e.target.value)} /></label><p className="text-xs text-slate-400" role="status">{status}</p><button className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60" disabled={!input.trim()}>Review in AI workspace →</button></form>
-        <p className="text-xs leading-5 text-slate-400">Use your ChatGPT or Claude app, connect your own model account, or test with a free local preview. No model request happens until you choose.</p><a className="text-sm text-emerald-200 underline" href="/tools/ai/index.html">AI connection settings</a>
+        <form onSubmit={submit} className="space-y-3"><label className="block text-sm text-slate-300">Your question<textarea className="mt-2 min-h-24 w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm text-white" maxLength={4000} placeholder="What should I explore or challenge here?" value={input} onChange={e => setInput(e.target.value)} /></label><p className="text-xs text-slate-400" role="status">{status}</p><button className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60" disabled={!input.trim()}>Open Osiris here</button></form>
+        <p className="text-xs leading-5 text-slate-400">Private ChatGPT pilot. Only the page name and selected workflow are shared; the guide cannot see your charts or uploaded data automatically.</p><a className="text-sm text-emerald-200 underline" href="/tools/ai/projects.html">Project AI setup</a>
       </div>
     </section> : <button className="ml-auto flex items-center gap-3 rounded-full border border-emerald-300/40 bg-slate-950 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-xl" onClick={() => setOpen(true)}>Ask Osiris <span aria-hidden="true">↗</span></button>}
   </div>;

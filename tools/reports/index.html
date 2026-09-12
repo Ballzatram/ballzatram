@@ -7,7 +7,7 @@
   <meta name="description" content="Compose a local Ballzatram report from browser-native lab runs and download it as Markdown." />
   <title>Reports | Ballzatram</title>
   <link rel="stylesheet" href="styles.css" />
-</head>
+<link rel="stylesheet" href="../../assets/ai-panel.css?v=subscription-1"></head>
 <body>
   <main class="report-shell">
     <nav class="report-nav" aria-label="Report navigation">
@@ -65,11 +65,11 @@
 
         <section class="boundary">
           <strong>Report boundary</strong>
-          <p>This tool only summarizes data already stored by Ballzatram browser labs plus text you type here. It does not call AI, fetch new facts, or create unsupported research conclusions.</p>
+          <p>This tool only summarizes data already stored by Ballzatram browser labs plus text you type here. The report builder does not call AI or fetch new facts. The separate Ask Osiris action can explain the selected saved draft after your review; it does not change the report.</p>
         </section>
       </section>
     </div>
-  </main>
+  <section class="osiris-launch" aria-label="Ask Osiris about this result"><button type="button" data-osiris-feature="report" data-osiris-context-key="ballzatram:pages-report-draft:v1">Ask Osiris about this result</button><p>Review your saved result and get an explanation here using your connected ChatGPT account. Private pilot.</p><p data-osiris-launch-status role="status"></p></section></main>
   <script src="../../assets/storage.js"></script><script src="app.js"></script>
-</body>
+<script src="../../assets/ai-config.js?v=subscription-1"></script><script src="../../assets/ai-features.js?v=subscription-1"></script><script src="../../assets/subscription-client.js?v=subscription-1"></script><script src="../../assets/ai-client.js?v=subscription-1"></script><script src="../../assets/ai-panel.js?v=subscription-1"></script></body>
 </html>

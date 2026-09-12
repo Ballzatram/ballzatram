@@ -79,9 +79,9 @@ NEXT_PUBLIC_API_BASE=http://localhost:8000/api npm run dev
 
 ## Bring your own AI
 
-Open `/tools/ai/` to use your ChatGPT/Claude/Gemini app, link OpenRouter for in-site answers with your own credits, or test the flow with a free local preview. The advanced option accepts a direct OpenAI/Anthropic API key through a user-operated relay. See [the architecture and setup guide](docs/bring-your-own-ai.md).
+Open `/tools/ai/` to connect ChatGPT through the new private Codex pilot, link OpenRouter with your own credits, or use a free local preview. ChatGPT responses stay in the project through a shared Osiris panel. The subscription pilot requires a separately hosted [Osiris runtime](osiris-runtime/README.md); publishing GitHub Pages alone does not activate it. Manual ChatGPT/Claude/Gemini handoff and the advanced direct API relay remain available. See [the architecture guide](docs/bring-your-own-ai.md) and [project configuration inventory](docs/ai-project-configuration.md).
 
-The public site has no operator-funded model fallback. Next.js guide questions go to the same AI workspace. Backend agent/parcel requests use deterministic fallback unless the visitor explicitly supplies a user OpenAI API key in the Authorization header; an `OPENAI_API_KEY` environment variable does not enable paid requests. The optional `OPENAI_AGENT_MODEL` controls the backend agent model only.
+The public site has no operator-funded model fallback. The Next.js guide opens the same assistant panel in place, with workflow metadata only. Backend agent/parcel requests use deterministic fallback unless the visitor explicitly supplies a user OpenAI API key in the Authorization header; an `OPENAI_API_KEY` environment variable does not enable paid requests. The optional `OPENAI_AGENT_MODEL` controls the backend agent model only. Connecting an account does not automatically integrate every project's data or actions; the inventory records those remaining decisions.
 
 No billing routes, checkout, or entitlement gates are added by this integration. Provider accounts and their limits control model usage.
 

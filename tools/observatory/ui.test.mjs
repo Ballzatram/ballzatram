@@ -19,6 +19,7 @@ async function mount(saved=null,{storageFailure=false,sourceFailure=false,live=f
   if(storageFailure)dom.window.Storage.prototype.setItem=()=>{throw new Error('Quota exceeded');};
   dom.window.HTMLElement.prototype.scrollIntoView=()=>{};dom.window.scrollTo=()=>{};
   dom.window.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};
+  dom.window.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
   globalThis.fetch=async url=>{
     requests.push(url);
     if(url==='./live/index.json')return {ok:live,status:live?200:503,json:async()=>structuredClone(catalogue)};
@@ -27,7 +28,7 @@ async function mount(saved=null,{storageFailure=false,sourceFailure=false,live=f
   };
   URL.createObjectURL=blob=>{downloads.push(blob);return 'blob:testing';};URL.revokeObjectURL=()=>{};
   dom.window.HTMLAnchorElement.prototype.click=function(){};
-  dom.window.eval(readFileSync(new URL('../../assets/ai-client.js',import.meta.url),'utf8'));
+  for(const file of ['ai-features.js','subscription-client.js','ai-client.js','ai-panel.js'])dom.window.eval(readFileSync(new URL(`../../assets/${file}`,import.meta.url),'utf8'));
   await import(`./app.mjs?test=${++mountNumber}`);await flush();
 }
 const click=selector=>{const el=document.querySelector(selector);assert.ok(el,`Missing ${selector}`);el.click();};
@@ -59,7 +60,13 @@ test('workbench interactions, drafts, import/export and reload',async()=>{
   await mount(saved);nav('saved');click('[data-open-case]');nav('promises');assert.equal(document.querySelectorAll('.promise').length,1);nav('dossier');assert.equal(document.querySelector('#case-notes').value,'SYNTHETIC test notebook. Keep uncertainty visible.');
   await importCase(exported);assert.match(text(),/Imported file · sources not verified here/);nav('coverage');assert.match(text(),/SYNTHETIC test headline/);
   const oldTitle=document.querySelector('#case-title').textContent;await importCase('{broken');assert.match(document.querySelector('#notice').textContent,/Import failed/);assert.equal(document.querySelector('#case-title').textContent,oldTitle);
-  nav('bill');click('[data-section="section-4"]');document.querySelector('.osiris').open=true;click('#ask-osiris');await flush();assert.match(document.querySelector('#osiris-answer').textContent,/Nothing has been sent/);assert.equal(document.querySelector('#osiris-continue').hidden,false);assert.equal(dom.window.BallzatramAI.preparedRequest().tool,'observatory');
+  nav('bill');click('[data-section="section-4"]');document.querySelector('.osiris').open=true;
+  const requestCount=requests.length,workbenchUrl=location.href;
+  click('#ask-osiris');await flush();assert.match(document.querySelector('#osiris-answer').textContent,/Nothing has been sent/);
+  assert.equal(document.querySelector('.osiris-dialog').open,true);
+  assert.match(document.querySelector('[data-osiris="context"]').textContent,/before the dispute arises/);
+  assert.doesNotMatch(document.querySelector('[data-osiris="context"]').textContent,/SYNTHETIC test notebook|SYNTHETIC test headline/);
+  assert.equal(location.href,workbenchUrl);assert.equal(requests.length,requestCount);
   assert.deepEqual(errors,[]);dom.window.close();
 });
 

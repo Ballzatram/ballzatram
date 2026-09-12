@@ -19,11 +19,17 @@ function mount({ url = 'https://ballzatram.com/tools/ai/index.html', prepare = (
   const dom = new JSDOM(ui ? fs.readFileSync(path.join(root, 'tools/ai/index.html'), 'utf8') : '<!doctype html>', { url, runScripts: 'outside-only' });
   Object.defineProperty(dom.window, 'crypto', { value: webcrypto });
   dom.window.TextEncoder = TextEncoder;
+  dom.window.TextDecoder = TextDecoder;
+  dom.window.ReadableStream = ReadableStream;
   dom.window.AbortController = AbortController;
   dom.window.AbortSignal = AbortSignal;
+  dom.window.HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };
+  dom.window.HTMLDialogElement.prototype.close = function () { this.removeAttribute('open'); };
   dom.window.fetch = async () => { throw new Error('Unexpected network request'); };
   prepare(dom.window);
+  for (const file of ['ai-features.js', 'subscription-client.js']) dom.window.eval(fs.readFileSync(path.join(root, 'assets', file), 'utf8'));
   dom.window.eval(client);
+  dom.window.eval(fs.readFileSync(path.join(root, 'assets/ai-panel.js'), 'utf8'));
   if (ui) {
     dom.window.eval(fs.readFileSync(path.join(root, 'assets/storage.js'), 'utf8'));
     dom.window.eval(fs.readFileSync(path.join(root, 'tools/ai/app.js'), 'utf8'));
@@ -37,6 +43,7 @@ function connect(win, extras = {}) {
 
 test('handoff and local preview make no requests and exclude settings and credentials', async () => {
   const dom = mount(); const AI = dom.window.BallzatramAI;
+  AI.saveSettings({ mode: 'handoff' });
   const data = { ...request, context: { ...request.context, access_token: 'secret', nested: { apiKey: 'secret', fact: 'kept' }, settings: { key: 'secret' } } };
   const prepared = await AI.ask(data);
   assert.equal(prepared.kind, 'handoff'); assert.match(prepared.answer, /Selected evidence only/); assert.match(prepared.answer, /kept/); assert.doesNotMatch(prepared.answer, /secret/);
@@ -128,6 +135,7 @@ test('connection check and model catalogue never generate tokens', async () => {
 
 test('UI handoff has an explicit copy step and opens a bare chat URL without transmitting data', async () => {
   const dom = mount({ ui: true }); const d = dom.window.document;
+  d.querySelector('[data-mode="handoff"]').click();
   d.getElementById('prompt').value = 'PRIVATE question <script>alert(1)</script>';
   d.getElementById('askButton').click(); await flush();
   assert.equal(d.getElementById('handoffActions').hidden, false); assert.match(d.getElementById('handoffText').value, /PRIVATE question/);
@@ -153,4 +161,118 @@ test('prepared tool context survives sign-in staging without collecting other la
   dom.window.localStorage.setItem('another-lab', JSON.stringify({ private: 'unselected' }));
   assert.equal(AI.stageRequest(request), true); assert.equal(AI.preparedRequest().context.section, '3');
   assert.doesNotMatch(JSON.stringify(AI.preparedRequest()), /unselected/); dom.window.close();
+});
+
+const SUB_PREFS = 'ballzatram:subscription-settings:v1', SUB_SESSION = 'ballzatram:subscription-session:v1';
+const service = 'https://osiris.example', token = 'a'.repeat(43), accessCode = 'b'.repeat(43);
+const account = { type: 'chatgpt', email: 'synthetic@example.test', planType: 'plus' };
+const login = () => ({ verificationUrl: 'https://auth.openai.com/codex/device', userCode: 'TEST-ONLY', expiresAt: Date.now() + 60000 });
+function subscriptionSession(w, signedIn = true) {
+  w.localStorage.setItem(SUB_PREFS, JSON.stringify({ endpoint: service, model: 'test-model' }));
+  w.sessionStorage.setItem(SUB_SESSION, JSON.stringify({ token, endpoint: service, expiresAt: Date.now() + 60000, account: signedIn ? account : null }));
+}
+function streamResponse(events) {
+  const text = events.map(([event, data]) => `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`).join('');
+  return new Response(text, { headers: { 'Content-Type': 'text/event-stream' } });
+}
+
+test('subscription is the default and never substitutes an API account or manual handoff', async () => {
+  const dom = mount();
+  connect(dom.window);
+  dom.window.BallzatramAI.saveSettings({ mode: 'subscription' });
+  assert.equal(dom.window.BallzatramAI.isConnected(), false);
+  await assert.rejects(dom.window.BallzatramAI.ask(request, { consent: true }), /Connect and sign in/);
+  dom.window.close();
+  const fresh = mount({ ui: true });
+  assert.equal(fresh.window.BallzatramAI.getSettings().mode, 'subscription');
+  fresh.window.document.getElementById('connectSubscription').click();
+  assert.equal(fresh.window.document.querySelector('.osiris-dialog').open, true);
+  assert.equal(fresh.window.document.querySelector('[data-osiris="form"]').hidden, true);
+  fresh.window.close();
+});
+
+test('ChatGPT device connection makes no generation call; sending requires consent and streams plain text', async () => {
+  const calls = [];
+  const dom = mount({ prepare: w => { w.fetch = async (url, options) => {
+    calls.push([url, options]);
+    if (url.endsWith('/health')) return ok({ service: 'osiris-subscription', protocol: 3, billing: 'user-chatgpt-only' });
+    if (url.endsWith('/v1/session')) return ok(options.method === 'DELETE' ? {} : { token, expiresAt: Date.now() + 60000 });
+    if (url.endsWith('/v1/login')) return ok(login());
+    if (url.endsWith('/v1/account')) return ok({ account });
+    if (url.endsWith('/v1/models')) return ok({ models: [{ id: 'test-model', name: 'Test model', isDefault: true }] });
+    assert.equal(url, service + '/v1/assist');
+    return streamResponse([['delta', { text: '<img src=x> Draft' }], ['done', { kind: 'answer', answer: '<img src=x> Draft answer', model: 'test-model', billing: 'chatgpt-subscription', usage: { total_tokens: 12 } }]]);
+  }; } });
+  const sub = dom.window.BallzatramSubscription;
+  sub.configure({ endpoint: service });
+  assert.equal((await sub.connect(accessCode)).userCode, 'TEST-ONLY');
+  await sub.status(); const rows = await sub.models(); sub.configure({ endpoint: service, model: rows[0].id });
+  assert.equal(calls.some(([url]) => url.endsWith('/assist')), false);
+  assert.doesNotMatch(dom.window.localStorage.getItem(SUB_PREFS), new RegExp(token + '|' + accessCode));
+  await assert.rejects(dom.window.BallzatramAI.ask(request), /confirm/);
+  let delta = '';
+  const result = await dom.window.BallzatramAI.ask({ ...request, context: { ...request.context, apiKey: 'never-send' } }, { consent: true, responseLength: 'short', onDelta: text => { delta += text; } });
+  assert.match(result.answer, /<img/); assert.match(delta, /Draft/);
+  const [, options] = calls.find(([url]) => url.endsWith('/assist'));
+  assert.equal(options.headers.Authorization, `Bearer ${token}`);
+  assert.equal(options.credentials, 'omit'); assert.equal(options.redirect, 'error');
+  const body = JSON.parse(options.body); assert.equal(body.model, 'test-model'); assert.equal(body.responseLength, 'short'); assert.equal(body.consent, true);
+  assert.doesNotMatch(options.body, /never-send|accessCode|apiKey/);
+  assert.equal(await sub.disconnect(), true); assert.equal(sub.connection(), null); assert.equal(dom.window.sessionStorage.getItem(SUB_SESSION), null);
+  dom.window.close();
+});
+
+test('unexpected provider sign-in addresses are rejected and the new service session is removed', async () => {
+  const calls = [];
+  const dom = mount({ prepare: w => { w.fetch = async (url, options) => {
+    calls.push([url, options.method]);
+    if (url.endsWith('/health')) return ok({ service: 'osiris-subscription', protocol: 3, billing: 'user-chatgpt-only' });
+    if (url.endsWith('/session')) return ok({ token, expiresAt: Date.now() + 60000 });
+    return ok({ ...login(), verificationUrl: 'https://attacker.example/openai' });
+  }; } });
+  const sub = dom.window.BallzatramSubscription; sub.configure({ endpoint: service });
+  await assert.rejects(sub.connect(accessCode), /unexpected sign-in/);
+  assert.equal(sub.connection(), null); assert.deepEqual(calls.at(-1), [service + '/v1/session', 'DELETE']);
+  assert.equal(calls.some(([url]) => url.includes('attacker')), false); dom.window.close();
+});
+
+test('disconnect during setup cannot restore an old session or send its code to a changed service', async () => {
+  let finishSession; const calls = [];
+  const dom = mount({ prepare: w => { w.fetch = async (url, options) => {
+    calls.push([url, options]);
+    if (url.endsWith('/health')) return ok({ service: 'osiris-subscription', protocol: 3, billing: 'user-chatgpt-only' });
+    if (options.method === 'DELETE') return ok({});
+    return new Promise(resolve => { finishSession = resolve; });
+  }; } });
+  const sub = dom.window.BallzatramSubscription; sub.configure({ endpoint: service });
+  const pending = sub.connect(accessCode); await flush();
+  await sub.disconnect(); sub.configure({ endpoint: 'https://other.example' });
+  finishSession(ok({ token, expiresAt: Date.now() + 60000 }));
+  await assert.rejects(pending, /cancelled/);
+  assert.equal(sub.connection(), null); assert.equal(calls.some(([url]) => url.includes('other.example')), false);
+  assert.equal(calls.at(-1)[1].method, 'DELETE'); dom.window.close();
+});
+
+test('native panel stays in its project, sends only reviewed context, and renders provider HTML as text', async () => {
+  const calls = [];
+  const dom = mount({ url: 'https://ballzatram.com/tools/scenario/index.html', prepare: w => {
+    subscriptionSession(w); w.localStorage.setItem('another-lab', 'UNSELECTED PRIVATE DATA');
+    w.fetch = async (url, options) => {
+      calls.push([url, options]);
+      if (url.endsWith('/account')) return ok({ account });
+      if (url.endsWith('/models')) return ok({ models: [{ id: 'test-model', name: '<img src=x> Model', isDefault: true }] });
+      return streamResponse([['delta', { text: '<script>fake()</script>' }], ['done', { answer: '<script>fake()</script> answer', model: 'test-model', billing: 'chatgpt-subscription' }]]);
+    };
+  } });
+  const d = dom.window.document, selector = name => d.querySelector(`[data-osiris="${name}"]`);
+  dom.window.OsirisPanel.open({ tool: 'scenario', prompt: 'Explain these assumptions.', context: { scenario: 'Selected scenario', apiKey: 'excluded-secret' } });
+  await flush(); await flush();
+  assert.equal(calls.some(([url]) => url.endsWith('/assist')), false);
+  selector('ask').click(); await flush(); assert.match(selector('status').textContent, /confirm/);
+  selector('consent').checked = true; selector('ask').click(); await flush(); await flush();
+  assert.match(selector('answer').textContent, /<script>/); assert.equal(selector('answer').querySelector('script'), null); assert.equal(selector('model').querySelector('img'), null);
+  const body = calls.find(([url]) => url.endsWith('/assist'))[1].body;
+  assert.match(body, /Selected scenario/); assert.doesNotMatch(body, /UNSELECTED|excluded-secret/);
+  assert.equal(dom.window.location.pathname, '/tools/scenario/index.html');
+  assert.equal(selector('consent').checked, false); selector('close').click(); assert.equal(d.querySelector('.osiris-dialog').open, false); dom.window.close();
 });

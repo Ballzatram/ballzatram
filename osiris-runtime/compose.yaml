@@ -1,0 +1,34 @@
+services:
+  osiris:
+    build:
+      context: ..
+      dockerfile: osiris-runtime/Dockerfile
+    init: true
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 1g
+    cpus: 1
+    tmpfs:
+      - /tmp:rw,nosuid,nodev,noexec,size=256m,mode=0700,uid=1000,gid=1000
+    environment:
+      OSIRIS_ALLOWED_ORIGINS: ${OSIRIS_ALLOWED_ORIGINS:?Set exact allowed website origins}
+      OSIRIS_PILOT_CODES: ${OSIRIS_PILOT_CODES:?Generate a private access code first}
+    expose: [8788]
+    stop_grace_period: 30s
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      OSIRIS_DOMAIN: ${OSIRIS_DOMAIN:?Set a domain pointing to this host}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [osiris]
+volumes:
+  caddy_data:
+  caddy_config:
