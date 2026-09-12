@@ -34,6 +34,7 @@ test('search and watchlist filters work together',()=>{
   const list=followBill(empty(),bill);
   assert.equal(filterBills(catalogue.bills,{followedOnly:true},list).length,1);
   assert.ok(filterBills(catalogue.bills,{query:bill.billLabel.split(' · ')[0]}).some(x=>x.id===bill.id));
+  assert.ok(filterBills(catalogue.bills,{query:bill.billLabel.split(' · ')[0].replace(/[. ]/g,'')}).some(x=>x.id===bill.id));
   assert.equal(filterBills(catalogue.bills,{chamber:bill.chamber==='House'?'Senate':'House',followedOnly:true},list).length,0);
 });
 
@@ -51,7 +52,7 @@ test('live UI discovers, searches, follows, reloads and opens a verified bill wi
   };
   const controller=createTracker({panel:document.querySelector('#panel'),onOpen:d=>{opened=d;},onNotice:m=>notices.push(m),isActive:()=>true});
   t.after(()=>controller.destroy());
-  await controller.refresh();assert.equal(document.querySelectorAll('.tracker-bill').length,24);
+  await controller.refresh();assert.equal(document.querySelectorAll('.tracker-bill').length,20);
   document.querySelector(`[data-follow-bill="${bill.id}"]`).click();
   assert.equal(JSON.parse(localStorage.getItem(WATCH_KEY)).bills.length,1);
   document.querySelector('#watch-bills').click();assert.equal(document.querySelectorAll('.tracker-bill').length,1);

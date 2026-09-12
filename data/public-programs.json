@@ -24,12 +24,12 @@
     "description": "Cooperate or defect? Discover what it takes to build trust."
   },
   {
-    "title": "The Observatory",
+    "title": "Congressional Accountability",
     "href": "tools/observatory/index.html",
     "category": "Research",
     "icon": "book",
-    "status": "Living tracker",
-    "description": "Find and follow bills, see official activity updates, and inspect the evidence."
+    "status": "Public beta",
+    "description": "Follow bills, inspect official records, and compare promises with actions."
   },
   {
     "title": "Portfolio Lab",

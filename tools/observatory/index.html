@@ -2,35 +2,40 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#172c26"><meta name="description" content="Read the bill. Follow the vote. Trace the evidence. A congressional research workbench from Ballzatram.">
-  <title>Observatory · Ballzatram</title><link rel="stylesheet" href="styles.css"></head>
+  <meta name="theme-color" content="#1d1c1a"><meta name="description" content="Follow bills. Check the record. Compare promises with actions. Congressional Accountability is an independent citizen project from Ballzatram.">
+  <title>Congressional Accountability · Ballzatram</title><link rel="stylesheet" href="styles.css">
+</head>
 <body>
-<a class="skip" href="#main">Skip to workbench</a>
+<a class="skip" href="#main">Skip to content</a>
 <aside class="sidebar">
-  <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true">◎</span> BALLZATRAM</a>
-  <div class="sidebar-title">The<br>Observatory<span>.</span></div>
-  <p class="sidebar-sub">PUBLIC RECORDS.<br>BETTER QUESTIONS.</p>
-  <nav aria-label="Workbench">
-    <button data-tab="tracker" aria-current="page"><span>↻</span> Find & follow bills</button>
-    <button data-tab="bill"><span>01</span> Bill X-Ray</button>
-    <button data-tab="versions"><span>02</span> Version changes</button>
-    <button data-tab="congress"><span>03</span> Congress & votes</button>
-    <button data-tab="promises"><span>04</span> Promise Ledger</button>
-    <button data-tab="coverage"><span>05</span> Coverage lens</button>
-    <button data-tab="dossier"><span>06</span> My investigation</button>
+  <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true">CA</span><span>A BALLZATRAM PROJECT</span></a>
+  <div class="sidebar-title">Congressional<br><em>Accountability.</em></div>
+  <p class="sidebar-sub">THE RECORD. IN FULL.</p>
+  <nav aria-label="Main navigation">
+    <button data-tab="tracker" aria-current="page"><span>01</span> Find & follow bills</button>
+    <button data-tab="saved"><span>02</span> Saved research</button>
+    <button data-tab="guide"><span>?</span> How to use this</button>
   </nav>
-  <div class="sidebar-foot"><span class="small-dot"></span> Evidence before conclusions<p>A Ballzatram + Osiris project</p><a href="../index.html">← All tools</a></div>
+  <nav id="case-nav" aria-label="Selected bill" hidden>
+    <p class="nav-label">YOUR SELECTED BILL</p>
+    <button data-tab="overview">Overview</button>
+    <button data-tab="bill">Bill X-Ray</button>
+    <button data-tab="versions">What changed</button>
+    <button data-tab="congress">People & actions</button>
+    <button data-tab="promises">My comparisons</button>
+    <button data-tab="dossier">My notebook</button>
+  </nav>
+  <div class="sidebar-foot"><p>Independent citizen project.<br>Not a government service.</p><a href="../index.html">← All Ballzatram tools</a></div>
 </aside>
-<main id="main">
-  <header class="topbar"><span>RESEARCH DESK <span class="muted">/</span> CONGRESS</span><div><button id="import-button" class="quiet">Import case</button><input id="import-file" type="file" accept=".json,application/json" hidden><button id="export-button" class="primary">Export dossier ↗</button></div></header>
+<main id="main" class="tracking">
+  <header class="topbar"><span>PUBLIC RECORDS <span class="topbar-divider">/</span> PUBLIC INTEREST</span><button class="quiet" data-tab="guide">How this works ↗</button></header>
   <div id="notice" role="status" aria-live="polite"></div>
-  <section class="hero"><div class="eyebrow">THE ACCOUNTABILITY WORKBENCH</div><h1>Read beyond<br>the headline<span>.</span></h1><p>What does the bill actually say? Who acted on it?<br>Follow the record, one piece of evidence at a time.</p></section>
-  <section class="case-bar" aria-label="Selected investigation"><div><span class="eyebrow">OPEN CASE</span><h2 id="case-title">Loading official-source case…</h2><p id="case-meta"></p></div><div class="case-badges"><span class="badge" id="mode-label">Research draft</span><button id="follow-current" class="quiet" hidden>☆ Follow bill</button><button id="save-case" class="quiet">☆ Save investigation</button><button id="reference-case" class="quiet" hidden>Open reference case</button></div></section>
-  <section class="metrics" id="metrics" aria-label="Case scope"></section>
-  <section id="panel" tabindex="-1" aria-label="Selected workbench view"><p>Loading pinned records…</p></section>
-  <footer class="page-foot">Original records are linked throughout. Draft interpretations and your local research are labeled.<br>Bill records refresh automatically from official sources. Check times and coverage limits are shown in the tracker.</footer>
+  <section class="case-bar" aria-label="Selected bill" hidden><div><span class="badge" id="mode-label"></span><h1 id="case-title"></h1><p id="case-meta"></p></div><div class="case-badges"><button id="follow-current" class="primary" hidden>Follow bill</button><button id="share-bill" class="quiet" hidden>Copy bill link</button><button id="save-case" class="quiet">Save to notebook</button></div></section>
+  <section id="panel" tabindex="-1" aria-label="Selected workbench view"><p>Loading the official bill catalogue…</p></section>
+  <footer class="page-foot"><strong>Congressional Accountability</strong><span>Independent research tools by Ballzatram.</span><button class="quiet" data-tab="guide">Sources, coverage & corrections</button></footer>
 </main>
-<dialog id="evidence-dialog"><form method="dialog"><button class="close" aria-label="Close evidence">×</button></form><div id="evidence-body"></div></dialog>
-<noscript>This workbench needs JavaScript to inspect records. <a href="data/sources/enrolled.xml">Read the original enrolled bill XML.</a></noscript>
+<input id="import-file" type="file" accept=".json,application/json" hidden>
+<dialog id="evidence-dialog" aria-labelledby="evidence-title"><form method="dialog"><button class="close" aria-label="Close evidence">×</button></form><div id="evidence-body"></div></dialog>
+<noscript><p>This tracker needs JavaScript. You can still <a href="https://www.congress.gov/">read legislation on Congress.gov</a>.</p></noscript>
 <script type="module" src="app.mjs"></script>
 </body></html>

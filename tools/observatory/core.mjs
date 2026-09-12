@@ -12,7 +12,7 @@ const unique = (items, label) => {
   if (new Set(items.map(x => x.id)).size !== items.length) fail(`Duplicate ${label} IDs.`);
 };
 export function validateDossier(d) {
-  if (!d || d.schemaVersion !== 1 || (!text(d.id, 160) || ['__proto__','constructor','prototype'].includes(d.id)) || !text(d.title, 3000) || !text(d.billLabel, 200)) fail('Unsupported dossier. Use a version 1 Observatory dossier.');
+  if (!d || d.schemaVersion !== 1 || (!text(d.id, 160) || ['__proto__','constructor','prototype'].includes(d.id)) || !text(d.title, 3000) || !text(d.billLabel, 200)) fail('Unsupported dossier. Use a version 1 research file.');
   if (!['draft', 'demo'].includes(d.mode)) fail('Only draft or demo dossiers can be opened here.');
   if (!Array.isArray(d.sources) || !d.sources.length || !Array.isArray(d.versions)) fail('Sources and bill versions are required.');
   if (!d.versions.length && !d.tracker) fail('No bill text or tracked source record supplied.');
@@ -55,7 +55,15 @@ export function validateResearch(research, dossier) {
   for (const p of research.promises) {
     if (![p.id,p.person,p.quote,p.context,p.interpretation,p.opportunity,p.explanation,p.date].every(x => text(x,10000)) || !safeUrl(p.url) || !Number.isFinite(Date.parse(p.date)) || !CONDUCT.includes(p.conduct) || !OUTCOME.includes(p.outcome) || !Array.isArray(p.actionIds) || !p.actionIds.every(id => actionIds.has(id))) fail('A promise is missing context, assessment, or valid evidence.');
     if (p.memberId && !dossier.rollcall?.members.some(m => m.id === p.memberId)) fail('Promise references an unknown member.');
-    if (!['Pending','No observed opportunity','Ambiguous'].includes(p.conduct) && !p.actionIds.length && !p.memberId) fail('An action assessment needs a linked action or member roll call.');
+    if(p.assessmentVersion===2){
+      const judgment=!['Pending','No observed opportunity','Ambiguous'].includes(p.conduct);
+      if(p.memberId&&!p.identityConfirmed)fail('Confirm that the selected voter is the person who made the promise.');
+      if(judgment&&!p.memberId&&!safeUrl(p.actionEvidenceUrl))fail('Add a member-specific action source. Bill-level activity alone cannot establish this person’s conduct.');
+      if(!['Unknown','Pending'].includes(p.outcome)&&!safeUrl(p.outcomeEvidenceUrl))fail('Add outcome evidence or leave the result Unknown or Pending.');
+      for(const key of ['actionEvidenceUrl','outcomeEvidenceUrl'])if(p[key]&&!safeUrl(p[key]))fail('Evidence sources must be valid HTTPS links.');
+    }
+
+    if (!['Pending','No observed opportunity','Ambiguous'].includes(p.conduct) && !p.actionIds.length && !p.memberId && !(p.assessmentVersion===2&&safeUrl(p.actionEvidenceUrl))) fail('An action assessment needs a linked action or member roll call.');
   }
   for (const c of research.coverage) if (![c.id,c.title,c.date,c.note].every(x=>text(x,10000)) || !safeUrl(c.url) || !Number.isFinite(Date.parse(c.date)) || !['Headline','Article body','Official statement'].includes(c.kind) || !Array.isArray(c.sectionKeys) || !c.sectionKeys.every(k => sectionKeys.has(k))) fail('Invalid coverage mapping.');
   return research;
@@ -95,7 +103,9 @@ export function wordDiff(a, b) {
 }
 export function exportWorkspace(dossier,research) {
   validateDossier(dossier); validateResearch(research,dossier);
-  return JSON.stringify({format:'ballzatram-observatory', exportedAt:new Date().toISOString(), warning:'Research draft. No authenticated editorial review. Source hashes identify snapshots; imports are not independently authenticated.',dossier,research},null,2);
+  const exported=JSON.stringify({format:'ballzatram-observatory', exportedAt:new Date().toISOString(), warning:'Research draft. No authenticated editorial review. Source hashes identify snapshots; imports are not independently authenticated.',dossier,research});
+  if(new TextEncoder().encode(exported).byteLength>MAX_IMPORT)fail('Research file exceeds the 4 MB limit. Download a reading brief from My notebook instead.');
+  return exported;
 }
 export function evidenceContext(dossier,version,section) {
   const source = dossier.sources.find(s=>s.id===section.sourceId);

@@ -66,3 +66,17 @@ test('Osiris only receives selected evidence, bounded text, and no workspace cre
   const v=fixture.versions[1],s=structuredClone(v.sections[0]);s.text='x'.repeat(18000);
   const context=evidenceContext(fixture,v,s);assert.equal(context.section.text.length,15000);assert.match(context.scope,/truncated/);assert.ok(!('research' in context));assert.ok(!('token' in context));
 });
+
+test('new promise comparisons require individual conduct, identity and outcome evidence',()=>{
+  const p={...promise(),assessmentVersion:2,conduct:'Aligned action',actionIds:[fixture.actions[0].id]};
+  const r={...emptyResearch(),promises:[p]};
+  assert.throws(()=>validateResearch(r,fixture),/member-specific action source/);
+  p.memberId=fixture.rollcall.members[0].id;
+  assert.throws(()=>validateResearch(r,fixture),/Confirm.*selected voter/);
+  p.identityConfirmed=true;validateResearch(r,fixture);
+  p.outcome='Achieved';assert.throws(()=>validateResearch(r,fixture),/outcome evidence/);
+  p.outcomeEvidenceUrl='javascript:alert(1)';assert.throws(()=>validateResearch(r,fixture));
+  p.outcomeEvidenceUrl='https://example.org/synthetic-outcome';validateResearch(r,fixture);
+  p.memberId='';p.actionEvidenceUrl='https://example.org/synthetic-individual-action';validateResearch(r,fixture);
+  assert.equal(p.conduct,'Aligned action');assert.equal(p.outcome,'Achieved');
+});

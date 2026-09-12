@@ -1,6 +1,6 @@
-# Ballzatram Observatory
+# Congressional Accountability
 
-**Status: working bill/congress research prototype plus tested evidence-contract foundation; not a live investigative service.**
+**Status: public beta with scheduled official bill updates and personal research tools. No reviewed promise ratings or automatic investigative findings.**
 
 The browser workbench is implemented at `/tools/observatory/index.html`. See [workflows, import instructions, validation, and limits](WORKBENCH.md). The remaining sections describe the original foundation and broader product vision.
 

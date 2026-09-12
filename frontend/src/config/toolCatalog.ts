@@ -109,12 +109,12 @@ export const launchpadSections: LaunchpadSection[] = [
 export const toolCatalog: ToolCatalogItem[] = [
   {
     id: "observatory",
-    name: "Observatory",
-    description: "Inspect bill text and version changes, search congressional votes, and trace sourced promises and coverage in a portable investigation.",
+    name: "Congressional Accountability",
+    description: "Follow bills, inspect official records, and build your own sourced comparisons of promises and actions.",
     category: "featured",
     status: "prototype",
     href: "/tools/observatory/index.html",
-    readinessNote: "Pinned official records with draft interpretations; local research workspace, not a live congressional feed.",
+    readinessNote: "Public beta: scheduled official bill updates, partial coverage, and browser-local research. Personal assessments are unreviewed drafts.",
     backendRequired: false,
     dataMode: "static",
     featured: true,

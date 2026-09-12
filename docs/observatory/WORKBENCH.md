@@ -1,10 +1,42 @@
-# Observatory workbench
+# Congressional Accountability — citizen workbench
 
 The first usable bill and congressional-accountability application lives at
 `/tools/observatory/index.html`. The static homepage and Lab Directory link to it;
 the Next.js catalog links to the same application through the existing tools
 symlink. Next.js also redirects `/observatory` to it. The current Pages workflow
 already packages `tools/`, so no second hosting service is needed.
+
+## Citizen experience
+
+The public name is **Congressional Accountability**. The existing `/tools/observatory/`
+URL, storage keys, and export format remain compatible. The homepage and Next.js
+catalogue use the new name. The design uses charcoal, parchment, burgundy, and muted
+gold, with an explicit independent-project label and no official agency branding.
+
+Start with **Find & follow bills**. No historical case loads automatically. Open a
+bill to see an overview, sponsor, latest action, original source, and evidence gaps.
+Selected-bill navigation then reveals **Bill X-Ray**, **What changed**, **People &
+actions**, **My comparisons**, and **My notebook**. Shared bill links open the latest
+published record. Browser Back/Forward returns to the corresponding view.
+
+**How to use this** explains sources, draft labels, monitoring, missing evidence,
+corrections, and privacy. The real 2022 Speak Out Act example is explicitly opt-in.
+**Saved research** opens local snapshots without presenting them as fresh records.
+Research on older evidence remains available when a live record changes identity.
+
+Promise comparisons use three fieldsets: original promise and context; individual
+conduct and opportunity; policy outcome and contrary evidence. A new conduct
+judgment requires a member-specific source or a confirmed linked individual vote.
+Outcome judgments require their own source. Legislative events alone do not prove
+an individual's conduct. Legacy drafts remain readable and are labeled as needing
+the updated evidence fields. No browser form grants independent editorial review.
+Unfinished forms survive navigation within the tab; save before a reload.
+
+Imports, exports, headline comparisons, and optional AI are secondary research tools.
+They are available from the notebook or guide. Records and personal interpretation
+have distinct labels, and unavailable text/votes/comparisons never imply zero activity.
+
+See [the launch review](LAUNCH_REVIEW.md) for the code findings and checks.
 
 ## Living bill tracker
 
@@ -117,7 +149,7 @@ python scripts/import_observatory_bill.py \
   --output /tmp/my-bill-case
 ```
 
-Open the resulting `dossier.json` with **Import case**. The dossier carries parsed
+Open the resulting `dossier.json` with **Import a research file** in Saved research. The dossier carries parsed
 text and source fingerprints. Keep the adjacent `sources/` folder separately for
 byte-for-byte reproduction; JSON does not embed raw XML. The browser does not fetch
 or trust a local snapshot path from an imported file. The generic importer imports
@@ -146,8 +178,7 @@ checks, alongside the repository's existing backend/frontend gates. The simulate
 DOM tests exercise source inspection, section changes, vote filtering, promise
 creation/editing, coverage mapping, local persistence/reload, export/import, hostile
 markup, unavailable sources, failed browser storage and missing AI setup. They do
-not certify visual layout or cross-browser behavior. Visual browser verification
-was blocked by the implementation environment's remote-preview access.
+not certify visual layout or cross-browser behavior. Remote local-preview access is unavailable; final browser verification is performed on the deployed public site.
 
 ## Boundaries and next work
 
