@@ -61,7 +61,7 @@ Backend agent/parcel endpoints also stop inferring merely because `OPENAI_API_KE
 
 GitHub Pages publishes the workspace and shared client through the existing manifest and workflow. No new deployment credentials are needed for OpenRouter, manual handoff, or local preview. Direct provider keys require deploying the optional relay; see `ai-bridge/README.md`. The user must complete provider authorization themselves. No private account was linked or charged during development.
 
-ChatGPT subscription access needs the [separate runtime and TLS setup](../osiris-runtime/README.md). Node/Docker configuration and an acceptance checklist are provided. The Docker recipe has not been executed in this workspace. The public frontend intentionally has no service address preconfigured.
+ChatGPT subscription access needs the [separate runtime and TLS setup](../osiris-runtime/README.md). Node/Docker configuration and an acceptance checklist are provided. CI verified the runtime container and TLS proxy configuration; no live host or user account has been activated. The public frontend intentionally has no service address preconfigured.
 
 Next.js already links `frontend/public/tools` and `frontend/public/assets` to the canonical source directories. Both hosts serve the same workspace without copying or rewriting source files during a build. The home link uses `/`, the program directory is shared, and Privacy links to the canonical public policy. On a separate Next.js origin, connections are separate and must be made on that origin.
 

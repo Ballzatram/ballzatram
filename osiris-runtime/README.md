@@ -33,7 +33,7 @@ docker compose run --rm --no-deps osiris node scripts/check-runtime.mjs
 docker compose up -d
 ```
 
-The smoke check must pass **inside the deployment environment** before inviting anyone. Docker is not installed in the development workspace, so the container recipe itself has not been executed here. The same pinned binary and configuration passed the local Node smoke check without signing in or generating an answer.
+The smoke check must pass **inside the deployment environment** before inviting anyone. CI has built this image, run the real Codex smoke check inside its restricted container, and validated the Caddy configuration. The local Node smoke check also passed. These checks stay signed out and do not generate an answer; they do not validate a deployed hostname or user entitlement.
 
 Verify `https://YOUR_HOST/health` returns protocol `3`, service `osiris-subscription`, and billing `user-chatgpt-only`. Health verifies HTTP availability, not account access or generation. Never expose Codex's own app-server port, mount a personal Codex home, inject provider keys, or enable request-body/Authorization logging at a reverse proxy.
 

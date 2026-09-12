@@ -276,3 +276,23 @@ test('native panel stays in its project, sends only reviewed context, and render
   assert.equal(dom.window.location.pathname, '/tools/scenario/index.html');
   assert.equal(selector('consent').checked, false); selector('close').click(); assert.equal(d.querySelector('.osiris-dialog').open, false); dom.window.close();
 });
+
+test('disconnect during an answer stops it and leaves the native panel usable for a new connection', async () => {
+  let aborted = false;
+  const dom = mount({ prepare: w => {
+    subscriptionSession(w);
+    w.fetch = async (url, options) => {
+      if (url.endsWith('/account')) return ok({ account });
+      if (url.endsWith('/models')) return ok({ models: [{ id: 'test-model', name: 'Test model', isDefault: true }] });
+      if (options.method === 'DELETE') return ok({});
+      return new Promise((resolve, reject) => options.signal.addEventListener('abort', () => { aborted = true; const error = new Error('Aborted'); error.name = 'AbortError'; reject(error); }, { once: true }));
+    };
+  } });
+  const selector = name => dom.window.document.querySelector(`[data-osiris="${name}"]`);
+  dom.window.OsirisPanel.open(request); await flush(); await flush();
+  selector('consent').checked = true; selector('ask').click(); await flush(); assert.equal(selector('ask').disabled, true);
+  selector('disconnect').click(); await flush(); await flush();
+  assert.equal(aborted, true); assert.equal(dom.window.BallzatramSubscription.connection(), null);
+  assert.equal(selector('ask').disabled, false); assert.equal(selector('cancel').hidden, true); assert.equal(selector('login').hidden, true);
+  assert.match(selector('status').textContent, /Disconnected/); dom.window.close();
+});

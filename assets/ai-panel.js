@@ -49,7 +49,9 @@
     $('question').oninput = () => { $('consent').checked = false; };
     $('length').onchange = () => { $('consent').checked = false; };
     $('disconnect').onclick = async () => {
-      generation++; stopPolling(); controller?.abort();
+      generation++; stopPolling(); controller?.abort(); controller = null;
+      $('ask').disabled = Features?.get(request?.tool)?.enabled === false; $('cancel').hidden = true;
+      $('connect').disabled = false; $('login').hidden = true; $('consent').checked = false;
       const removed = await Subscription.disconnect(); renderAccount();
       message(removed ? 'Disconnected. The service ended this session and cleared its temporary credentials.' : 'Disconnected in this tab. The service could not be reached; its session will expire after inactivity or its four-hour limit.');
     };
