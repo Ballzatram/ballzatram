@@ -132,22 +132,22 @@ test('AI guide blocks invalid URLs and empty context without making a request', 
   const dom = page('tools/ai/index.html', win => { win.fetch = async () => { requests++; throw new Error('unexpected'); }; });
   const { document } = dom.window;
   document.getElementById('bridgeUrl').value = 'http://example.com';
-  document.getElementById('accessToken').value = 'test-token';
-  document.getElementById('saveSettings').click();
+  document.getElementById('nativeKey').value = 'sk-proj-synthetic-user-test-key'; document.getElementById('nativeModel').value = 'test-model';
+  document.getElementById('saveNative').click();
   assert.match(document.getElementById('status').textContent, /HTTPS/);
-  document.getElementById('bridgeUrl').value = 'https://example.com'; document.getElementById('saveSettings').click();
-  document.getElementById('prompt').value = 'Explain this'; document.getElementById('askButton').click();
+  document.getElementById('bridgeUrl').value = 'https://example.com'; document.getElementById('saveNative').click();
+  document.getElementById('contextSelect').value = 'portfolio'; document.getElementById('prompt').value = 'Explain this'; document.getElementById('askButton').click();
   await Promise.resolve();
   assert.match(document.getElementById('answer').textContent, /No saved context/);
   assert.equal(requests, 0);
   dom.window.close();
 });
 
-test('AI guide handles blocked storage on startup and saves session-only settings', () => {
-  const dom = page('tools/ai/index.html', win => Object.defineProperty(win, 'localStorage', { get() { throw new Error('blocked'); } }));
+test('AI guide handles blocked storage on startup and saves memory-only credentials', () => {
+  const dom = page('tools/ai/index.html', win => { Object.defineProperty(win, 'localStorage', { get() { throw new Error('blocked'); } }); Object.defineProperty(win, 'sessionStorage', { get() { throw new Error('blocked'); } }); });
   const { document } = dom.window;
-  document.getElementById('bridgeUrl').value = 'https://example.com'; document.getElementById('accessToken').value = 'test-token';
-  document.getElementById('saveSettings').click(); assert.match(document.getElementById('status').textContent, /session only/);
+  document.getElementById('bridgeUrl').value = 'https://example.com'; document.getElementById('nativeKey').value = 'sk-proj-synthetic-user-test-key'; document.getElementById('nativeModel').value = 'test-model';
+  document.getElementById('saveNative').click(); assert.match(document.getElementById('status').textContent, /this page only/);
   dom.window.close();
 });
 

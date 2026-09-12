@@ -11,7 +11,7 @@ from uuid import uuid4
 
 from app.models.schemas import AgentMessage, AgentProcess
 
-MODEL = os.getenv("OPENAI_AGENT_MODEL", "gpt-4.1-mini")
+MODEL = (os.getenv("OPENAI_AGENT_MODEL") or "gpt-4.1-mini")
 
 TOOL_OUTPUT_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -278,7 +278,7 @@ def _fallback_answer(page_id: str, process: AgentProcess, message: str) -> str:
         f"End result: {process.outcome}\n\n"
         f"Based on your request - {message!r} - start with: "
         f"1) {process.steps[0]}, 2) {process.steps[1]}, 3) {process.steps[2]}. "
-        "Configure OPENAI_API_KEY to replace this deterministic development response with a live OpenAI response."
+        "This is a deterministic local guide. Connect your own model in the AI workspace for a live response."
     )
 
 
@@ -331,7 +331,7 @@ def _coerce_tool_output(raw: Any, page_id: str, process: AgentProcess, message: 
     return fallback
 
 
-def chat(page_id: str, process_id: Optional[str], message: str, conversation_id: Optional[str]) -> dict:
+def chat(page_id: str, process_id: Optional[str], message: str, conversation_id: Optional[str], *, api_key: str | None = None) -> dict:
     # TODO: Add plan and entitlement checks here after paid-tool packaging exists.
     _load_history()
     normalized_page = normalize_page_id(page_id)
@@ -340,15 +340,17 @@ def chat(page_id: str, process_id: Optional[str], message: str, conversation_id:
     history = _HISTORY.setdefault(cid, [])
     history.append(AgentMessage(role="user", content=message, created_at=datetime.now(timezone.utc)))
 
-    if os.getenv("OPENAI_API_KEY"):
+    if api_key:
         from openai import OpenAI
 
-        client = OpenAI()
+        client = OpenAI(api_key=api_key, max_retries=0, timeout=45)
         transcript = [f"{m.role}: {m.content}" for m in history[-10:]]
         try:
             # TODO: Stream lifecycle events to the UI after partial card rendering is supported.
             response = client.responses.create(
                 model=MODEL,
+                max_output_tokens=2400,
+                store=False,
                 instructions=build_instructions(normalized_page, process),
                 input="\n".join(transcript),
                 text={
@@ -361,9 +363,9 @@ def chat(page_id: str, process_id: Optional[str], message: str, conversation_id:
                 },
             )
             structured_output = _coerce_tool_output(json.loads(response.output_text), normalized_page, process, message)
-        except Exception as exc:
+        except Exception:
             structured_output = _fallback_output(normalized_page, process, message)
-            structured_output["summary"] = f"The live model response could not be rendered as structured cards: {exc}"
+            structured_output["summary"] = "Your model request failed or could not be rendered as structured cards. A local fallback is shown. Check your provider activity before retrying."
             structured_output["status"] = "partial_success"
     else:
         structured_output = _fallback_output(normalized_page, process, message)

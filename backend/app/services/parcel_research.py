@@ -9,7 +9,7 @@ from urllib.parse import urlparse
 
 from app.models.schemas import ParcelResearchRequest, ParcelResearchResponse
 
-MODEL = os.getenv("OPENAI_PARCEL_MODEL", os.getenv("OPENAI_AGENT_MODEL", "gpt-4.1-mini"))
+MODEL = os.getenv("OPENAI_PARCEL_MODEL", (os.getenv("OPENAI_AGENT_MODEL") or "gpt-4.1-mini"))
 
 PARCEL_RESPONSE_JSON_SCHEMA: dict[str, Any] = {
     "type": "object",
@@ -694,15 +694,15 @@ def _run_parcel_tool(name: str, req: ParcelResearchRequest, analysis: dict[str, 
     return {"status": "skipped", "note": f"Unknown Parcel tool requested: {name}"}
 
 
-def build_parcel_research(req: ParcelResearchRequest) -> dict[str, Any]:
+def build_parcel_research(req: ParcelResearchRequest, *, api_key: str | None = None) -> dict[str, Any]:
     fallback = _fallback(req)
-    if not os.getenv("OPENAI_API_KEY"):
+    if not api_key:
         return fallback
 
     try:
         from openai import OpenAI
 
-        client = OpenAI()
+        client = OpenAI(api_key=api_key, max_retries=0, timeout=45)
         analysis = _tool_analysis(req)
         tool_prompt = {
             "task": "Decide which Parcel tool outputs are needed before final suitability synthesis.",
@@ -712,6 +712,8 @@ def build_parcel_research(req: ParcelResearchRequest) -> dict[str, Any]:
         }
         tool_response = client.responses.create(
             model=MODEL,
+            max_output_tokens=1200,
+            store=False,
             instructions=_instructions(),
             input=json.dumps(tool_prompt, indent=2),
             tools=PARCEL_TOOL_DEFINITIONS,
@@ -739,6 +741,8 @@ def build_parcel_research(req: ParcelResearchRequest) -> dict[str, Any]:
         }
         response = client.responses.create(
             model=MODEL,
+            max_output_tokens=4000,
+            store=False,
             instructions=_instructions(),
             input=tool_input
             + [
@@ -769,5 +773,5 @@ def build_parcel_research(req: ParcelResearchRequest) -> dict[str, Any]:
             ]
         )
         return ParcelResearchResponse(**parsed).model_dump(mode="json")
-    except Exception as exc:  # noqa: BLE001 - API fallback must stay resilient.
-        return _fallback(req, f"Live AI synthesis failed and deterministic fallback was returned: {exc}")
+    except Exception:  # Do not return upstream errors that may echo credentials or inputs.
+        return _fallback(req, "Your AI request failed. A deterministic fallback was returned. Check provider activity before retrying.")

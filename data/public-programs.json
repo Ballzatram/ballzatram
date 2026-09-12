@@ -16,7 +16,7 @@
     "description": "Take the chair. Balance inflation, jobs, and the unexpected."
   },
   {
-    "title": "Prisoner\u2019s Dilemma",
+    "title": "Prisoner’s Dilemma",
     "href": "econ-arcade/prisoners-dilemma.html",
     "category": "Games",
     "icon": "game",
@@ -104,12 +104,12 @@
     "description": "A weather-market worksheet for research and paper scenarios."
   },
   {
-    "title": "Ballzatram AI",
+    "title": "Osiris · Your AI",
     "href": "tools/ai/index.html",
     "category": "Experiments",
     "icon": "bulb",
-    "status": "Setup needed",
-    "description": "Ask questions about your saved labs using your configured AI bridge."
+    "status": "Bring your AI",
+    "description": "Use your chat app, connect your own models, or explore with a free local preview."
   },
   {
     "title": "Stoney Bologna",
@@ -128,11 +128,11 @@
     "description": "Explore the video-editing workspace. Rendering requires the local setup."
   },
   {
-    "title": "Devin\u2019s Portfolio",
+    "title": "Devin’s Portfolio",
     "href": "devin/",
     "category": "About",
     "icon": "person",
     "status": "Portfolio",
-    "description": "The person behind the programs: experience, projects, and what\u2019s next."
+    "description": "The person behind the programs: experience, projects, and what’s next."
   }
 ]

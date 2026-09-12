@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
+from app.api.ai_credentials import user_openai_key
 
 from app.models.schemas import (
     AgentChatRequest,
@@ -19,9 +20,9 @@ def list_processes() -> dict:
 
 
 @router.post("/chat", response_model=AgentChatResponse)
-def agent_chat(req: AgentChatRequest) -> dict:
+def agent_chat(req: AgentChatRequest, api_key: str | None = Depends(user_openai_key)) -> dict:
     try:
-        return chat(req.page_id, req.process_id, req.message, req.conversation_id)
+        return chat(req.page_id, req.process_id, req.message, req.conversation_id, api_key=api_key)
     except PermissionError as exc:
         raise HTTPException(status_code=402, detail=str(exc)) from exc
     except Exception as exc:
