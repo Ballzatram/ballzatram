@@ -17,7 +17,9 @@ key is needed. Following does not send email/push alerts or synchronize devices.
 The Pages workflow runs at minute 43 every four hours (UTC), and on deployments.
 `scripts/refresh_observatory.py` reads the official GPO BILLSTATUS sitemaps and
 retrieves up to 120 bill records per run, with a seven-minute request budget.
-Existing due records receive half the budget before new-record backfill. The page
+The refreshed artifact publishes after the legacy branch Pages build finishes,
+so the bootstrap cannot overwrite scanned data. Existing due records receive half
+the budget before new-record backfill. The page
 checks the published catalogue every five minutes while visible; **Check for
 updates** fetches it immediately. Hosting schedules and upstream updates can lag.
 
