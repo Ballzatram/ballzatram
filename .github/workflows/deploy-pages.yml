@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -126,8 +127,8 @@ jobs:
         uses: actions/cache/restore@v4
         with:
           path: .cache/observatory
-          key: observatory-v1-${{ github.run_id }}-${{ github.run_attempt }}
-          restore-keys: observatory-v1-
+          key: observatory-v2-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: observatory-v2-
 
       - name: Refresh official bill activity
         run: |
@@ -144,12 +145,18 @@ jobs:
         uses: actions/cache/save@v4
         with:
           path: .cache/observatory
-          key: observatory-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          key: observatory-v2-${{ github.run_id }}-${{ github.run_attempt }}
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: _site
+
+      - name: Wait for the branch Pages build before publishing refreshed data
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/wait_for_branch_pages.py
 
       - name: Deploy to GitHub Pages
         id: deployment

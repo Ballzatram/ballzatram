@@ -111,6 +111,8 @@ def bill_stage(bill, metadata):
     if metadata['publicLaws']:
         return 'Became law'
     actions = [a['text'].lower() for a in metadata['actions']]
+    if any(a.strip().rstrip('.') == 'signed by president' for a in actions):
+        return 'Signed by President'
     if any('vetoed by president' in a for a in actions):
         return 'Vetoed'
     if any('presented to president' in a for a in actions):

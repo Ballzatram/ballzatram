@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from refresh_observatory import discover, refresh, select_records, build_record, current_congress
+from refresh_observatory import discover, refresh, select_records, build_record, current_congress, bill_stage
 
 XML_URL='https://www.govinfo.gov/bulkdata/BILLSTATUS/119/hr/BILLSTATUS-119hr7.xml'
 TEXT_URL='https://www.govinfo.gov/content/pkg/BILLS-119hr7ih/xml/BILLS-119hr7ih.xml'
@@ -24,6 +24,12 @@ def fake_fetch(url):
     raise AssertionError('Unexpected request: '+url)
 
 class RefreshTests(unittest.TestCase):
+    def test_presidential_signature_precedes_pending_public_law_number(self):
+        metadata={'publicLaws':[], 'actions':[{'text':'Presented to President.'},{'text':'Signed by President.'}]}
+        self.assertEqual(bill_stage(None,metadata),'Signed by President')
+        metadata['publicLaws']=['119-123']
+        self.assertEqual(bill_stage(None,metadata),'Became law')
+
     def test_discovery_allowlist_and_no_arbitrary_url_fetch(self):
         found,errors,_=discover(119,fake_fetch)
         self.assertEqual(list(found),['119-hr-7'])
