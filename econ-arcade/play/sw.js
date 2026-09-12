@@ -1,6 +1,6 @@
 const PREFIX = 'econ-arcade-living-world-';
-const CACHE = `${PREFIX}v3`;
-const ASSETS = ['./', './index.html', './world.css', './world.js', './manifest.webmanifest', '../../assets/win95/theme.css', '../../assets/win95/apps.css', '../../assets/win95/shell.js', '../../assets/win95/icons.svg'];
+const CACHE = `${PREFIX}v4`;
+const ASSETS = ['./', './index.html', './world.css', './world.js', './manifest.webmanifest'];
 const SHARED = new Set(ASSETS.map(asset => new URL(asset, self.location.href).href));
 
 self.addEventListener('install', event => {

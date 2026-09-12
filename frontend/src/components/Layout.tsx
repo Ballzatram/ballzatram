@@ -4,10 +4,8 @@ import Link from "next/link";
 import type { Route } from "next";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { AgentWidget } from "@/components/AgentWidget";
-import { workflows } from "@/lib/workflows";
+import { AppLayout } from "@/components/AppLayout";
 
-const macroRoutes = new Set(["/quant-library", "/macro-board", ...workflows.map(workflow => `/${workflow.slug}`)]);
 const navigation = [
   { label: "Desktop", href: "/" },
   { label: "Parcel", href: "/land" },
@@ -19,6 +17,11 @@ const navigation = [
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const currentPath = usePathname() ?? "/";
+  return currentPath === "/" ? <DesktopLayout>{children}</DesktopLayout> : <AppLayout>{children}</AppLayout>;
+}
+
+function DesktopLayout({ children }: { children: React.ReactNode }) {
+  const currentPath = usePathname() ?? "/";
   const [menuOpen, setMenuOpen] = useState(false);
   const startRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLElement>(null);
@@ -29,11 +32,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
     document.addEventListener("click", closeOutside);
     return () => document.removeEventListener("click", closeOutside);
   }, []);
-  const isMacroRoute = macroRoutes.has(currentPath);
   useEffect(() => { setMenuOpen(false); }, [currentPath]);
-
-  // The standalone narrative game owns its full-screen presentation.
-  if (currentPath.startsWith("/penitent")) return <>{children}</>;
 
   return (
     <div className="retro-next min-h-dvh">
@@ -43,12 +42,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <nav className="next-nav95" aria-label="Ballzatram sections">
           {navigation.map(item => <Link key={item.href} href={item.href as Route} aria-current={currentPath === item.href ? "page" : undefined}>{item.label}</Link>)}
         </nav>
-        {isMacroRoute && <nav className="next-workflows95" aria-label="Quant Library instruments">
-          {workflows.filter(workflow => workflow.slug !== "dashboard").map(workflow => <Link key={workflow.slug} href={`/${workflow.slug}` as Route} aria-current={currentPath === `/${workflow.slug}` ? "page" : undefined}>{workflow.navLabel}</Link>)}
-        </nav>}
       </header>
       <main id="site-content" className="next-main95">{children}</main>
-      {isMacroRoute && <AgentWidget />}
       <nav className="taskbar95" aria-label="Desktop taskbar">
         <button ref={startRef} className="btn95 start95" type="button" aria-expanded={menuOpen} aria-controls="next-start95" onClick={() => setMenuOpen(!menuOpen)} onKeyDown={event => { if (event.key === "Escape") setMenuOpen(false); }}>Start</button>
         <Link className="btn95 task95" href={"/" as Route}>Ballzatram</Link><span className="tray95">Personal laboratory</span>

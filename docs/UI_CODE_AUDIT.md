@@ -2,21 +2,21 @@
 
 ## What changed
 
-The public GitHub Pages site now uses a Windows 95 desktop: teal background, navy window title bars, beveled gray controls, original pixel-style SVG icons, desktop shortcuts, and a keyboard-accessible Start menu. Home, the program directory, and Econ Arcade are generated from `data/public-programs.json`. All program links remain available without JavaScript; search and category filters progressively enhance those pages.
+The public GitHub Pages site now uses a Windows 95 desktop: teal background, navy window title bars, beveled gray controls, original pixel-style SVG icons, desktop shortcuts, and a keyboard-accessible Start menu. Only the homepage is generated from `data/public-programs.json`. All program links remain available without JavaScript; search and category filters progressively enhance those pages.
 
-Individual browser labs, games, the Observatory, and the portfolio share the desktop styling. The portfolio's printable resume retains its independent print layout. The encrypted travel application is preserved. Game rules, economic models, source snapshots, and saved-data keys are preserved.
+Following the requested design refinement, only the homepage uses desktop styling. Individual browser labs, games, the Observatory, the portfolio, and both internal directories retain their original styles. The portfolio's printable resume retains its independent print layout. The encrypted travel application is preserved. Game rules, economic models, source snapshots, and saved-data keys are preserved.
 
-The Next.js application has matching navigation and launchpad styling. It remains a separate, backend-dependent application; GitHub Pages does not host its server routes.
+The Next.js homepage has matching desktop navigation and launchpad styling; other routes retain the original application layout. It remains a separate, backend-dependent application; GitHub Pages does not host its server routes.
 
 ## Audit findings and fixes
 
 | Finding | Fix |
 | --- | --- |
-| Multiple competing homepage styles and a perpetual cloud animation | Replaced the homepage and removed `mobile-home.css`, both cloud scripts, and the unused React SkyLayer. Shared styling is in `assets/win95/`. |
+| Multiple competing homepage styles and a perpetual cloud animation | Replaced the homepage and removed `mobile-home.css`, both cloud scripts, and the unused React SkyLayer. Homepage styling is in `assets/win95/`; `style.css` retains the original styles needed by supporting pages. |
 | Next.js public files had stale copies of game code and multi-megabyte images | Replaced copies with repository-relative symlinks to the canonical files. Updated the Docker build to preserve that directory layout. |
 | Linked legal/community pages and their data/scripts were missing from the Pages artifact | Added an explicit public deployment manifest and validate links against the assembled artifact in CI and before deployment. |
 | Browser MacroBoard links pointed at a missing directory | Added a compatibility redirect to Portfolio Lab. Removed misleading references to the unhosted `/land` route from the static Parcel page. |
-| Program names, routes, and descriptions drifted between static menus | One catalog generates the three public entry points; the newly merged Observatory is included. |
+| Program names, routes, and descriptions drifted between static menus | One catalog drives the complete homepage program explorer, including the Observatory; independent directories retain their original designs. |
 | Portfolio symbols and benchmark text could become HTML in results | Escape user-supplied text in holdings, correlations, and warnings. Regression coverage includes HTML payloads. Duplicate CSV headers are rejected. |
 | Blocked storage or corrupt drafts could stop Reports and AI from loading | Added guarded JSON storage access and draft shape validation. Session-only AI settings and unsaved portfolio runs are clearly reported. Existing storage keys are retained. |
 | Portfolio reporting replaced `renderAll` at runtime | Integrated the source into the normal report-source registry and removed the monkey-patch script. |
@@ -62,4 +62,8 @@ Verified in this pass: 13 new static regression tests, 23 Observatory tests, 6 i
 
 ## Maintaining the site
 
-Edit the public program catalog, then run `python scripts/build_desktop.py` and commit all three generated HTML pages. Edit shared controls/tokens in `assets/win95/theme.css`, desktop layout in `desktop.css`, and existing-app adapters in `apps.css`. Keep selectors scoped to the affected app rather than adding global `!important` overrides. Use `scripts/build_public.py` as the authoritative Pages file manifest. Preserve cache prefixes and storage keys when making later changes.
+Edit the public program catalog, then run `python scripts/build_desktop.py` and commit the generated homepage. Edit homepage controls/tokens in `assets/win95/theme.css` and desktop layout in `desktop.css`. Internal pages own their styles; the removed app-wide desktop adapters must not be reintroduced. The publication validator rejects desktop asset imports on internal pages. Keep selectors scoped to the affected app rather than adding global `!important` overrides. Use `scripts/build_public.py` as the authoritative Pages file manifest. Preserve cache prefixes and storage keys when making later changes.
+
+## Homepage-only refinement
+
+Removed injected Windows 95 CSS, taskbars, and body classes from internal pages; restored the original Arcade and Lab Directory, legacy supporting-page stylesheet, Observatory fonts, and application navigation. Functional audit fixes remain in place. The offline arcade cache advances to v4 so installed copies receive the restored shell. Run the static tests, public artifact validation, portfolio validation, and frontend build to verify this refinement.
