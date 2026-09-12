@@ -75,6 +75,7 @@ jobs:
         run: |
           npm ci --prefix tools/observatory --ignore-scripts
           npm test --prefix tools/observatory
+          node tools/observatory/validate-live.mjs
           python -m unittest discover -s scripts/tests -v
 
       - name: Build frontend

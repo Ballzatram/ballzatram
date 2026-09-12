@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="billres.xsl"?>
+<!DOCTYPE bill PUBLIC "-//US Congress//DTDs/bill.dtd//EN" "bill.dtd">
+<bill bill-stage="Introduced-in-House" dms-id="H4B31C91AFCF14DCAAB7B951D25DE19B3" public-private="public" key="H" bill-type="olc"><metadata xmlns:dc="http://purl.org/dc/elements/1.1/">
+<dublinCore>
+<dc:title>119 HR 10346 IH: Stop China’s Exploitation of Congolese Children and Adult Forced Labor through Cobalt Mining Act</dc:title>
+<dc:publisher>U.S. House of Representatives</dc:publisher>
+<dc:date>2026-09-10</dc:date>
+<dc:format>text/xml</dc:format>
+<dc:language>EN</dc:language>
+<dc:rights>Pursuant to Title 17 Section 105 of the United States Code, this file is not subject to copyright protection and is in the public domain.</dc:rights>
+</dublinCore>
+</metadata>
+<form>
+<distribution-code display="yes">I</distribution-code><congress display="yes">119th CONGRESS</congress><session display="yes">2d Session</session><legis-num display="yes">H. R. 10346</legis-num><current-chamber>IN THE HOUSE OF REPRESENTATIVES</current-chamber><action display="yes"><action-date date="20260910">September 10, 2026</action-date><action-desc><sponsor name-id="S000522">Mr. Smith of New Jersey</sponsor> introduced the following bill; which was referred to the <committee-name committee-id="HWM00">Committee on Ways and Means</committee-name></action-desc></action><legis-type>A BILL</legis-type><official-title display="yes">To ensure that goods made using or containing cobalt extracted or processed with the use of child or forced labor in the Democratic Republic of the Congo do not enter the United States market.</official-title></form><legis-body id="HCA0C42C9542646D3BF17B149BA96A744" style="OLC"> 
+<section id="H2D164C37DE8E495B9109EDCD0D6AAFD2" section-type="section-one" commented="no"><enum>1.</enum><header>Short title</header><text display-inline="no-display-inline">This Act may be cited as the <quote><short-title>Stop China’s Exploitation of Congolese Children and Adult Forced Labor through Cobalt Mining Act</short-title></quote>.</text></section> <section id="H86C7C7333F87496FA1CA3D2886A034DE"><enum>2.</enum><header>Findings</header><text display-inline="no-display-inline">Congress makes the following findings:</text> 
+<paragraph id="H25C6EB469CD9453D9DCEFA5D4A8947F3"><enum>(1)</enum><text>Cobalt is an essential component of most lithium-ion batteries, which are key components in many smartphones, laptops, and electric vehicles, among other electronic devices. According to the International Energy Agency (IEA), worldwide demand is expected to increase over 1,000 percent for lithium and 600 percent for cobalt by 2040, as demands for alternative energy systems and battery storage are expected to grow significantly during this period.</text></paragraph> <paragraph id="HD756A249EADF48C192BA05917677659D"><enum>(2)</enum><text>More than one-half of the world’s cobalt resources are in the DRC, which supplied approximately 73 percent of the global cobalt mine production in 2025.</text></paragraph> 
+<paragraph id="HA4CC5E30E362470CB24F78E2EF3261A2"><enum>(3)</enum><text>Fifteen of the DRC’s 19 cobalt mines are reportedly owned wholly or in part by companies located in the People’s Republic of China.</text></paragraph> <paragraph id="H75C0346031E24B389610F25A2396E079"><enum>(4)</enum><text>Numerous analysts report significant concerns with forced labor, including forced or indentured child labor, in the DRC mining industry. Militias in the DRC engage in these illicit mining activities to finance and sustain themselves.</text></paragraph> 
+<paragraph id="H3250860F578B488483E8FCAD465A3907"><enum>(5)</enum><text>Approximately 15 to 30 percent of cobalt produced in the DRC comes from artisanal and small-scale mining. An estimated 255,000 miners work in artisanal and small-scale mining in the DRC, of whom at least 40,000 are children.</text></paragraph> <paragraph id="H486A375EFF22459A81ED4D76B389AA45"><enum>(6)</enum><text>Section 307 of the Tariff Act of 1930 (<external-xref legal-doc="usc" parsable-cite="usc/19/1307">19 U.S.C. 1307</external-xref>) states that it is illegal to import into the United States <quote>goods, wares, articles, and merchandise mined, produced, or manufactured wholly or in part</quote> by forced labor, including forced or indentured child labor. Such merchandise is subject to exclusion or seizure and may lead to criminal investigation of the importer.</text></paragraph></section> 
+<section id="HDC8915A870E6482D9A87CCE7921A55A5"><enum>3.</enum><header>Investigation</header> 
+<subsection id="HA5AD2AD7CE6D4E2CAD7E510EA67F4C1F"><enum>(a)</enum><header>In general</header><text display-inline="yes-display-inline">Not later than 180 days after the date of the enactment of this Act, the Forced Labor Enforcement Task Force, established under section 741 of the United States-Mexico-Canada Agreement Implementation Act (<external-xref legal-doc="usc" parsable-cite="usc/19/4682">19 U.S.C. 4682</external-xref>), in consultation with the heads of other relevant Federal agencies, shall complete and submit to the appropriate congressional committees the results of an investigation into the alleged use of forced labor in the cobalt mining industry of the DRC that—</text> <paragraph id="H7DF1CD6082E94211BDE6B21C9DF2C6D8"><enum>(1)</enum><text>contains a strategy for the United States Government to effectively enforce section 307 of the Tariff Act of 1930 (<external-xref legal-doc="usc" parsable-cite="usc/19/1307">19 U.S.C. 1307</external-xref>) to prevent the importation into the United States of cobalt mined by forced labor that includes measures that—</text> 
+<subparagraph id="H683EB587E98B4A45A6598C41B81328E9"><enum>(A)</enum><text>can trace the origin of goods and offer greater supply chain transparency relating to cobalt from the DRC; and</text></subparagraph> <subparagraph id="H9572DFD5CD8D4E6FB71203A496E9DAE3"><enum>(B)</enum><text>ensure that cobalt mined by forced labor does not enter the United States;</text></subparagraph></paragraph> 
+<paragraph id="H9F318CE2D1AE49B59ECB04E0D6DA7D85"><enum>(2)</enum><text>contains a strategy to ensure that cobalt mined by forced labor does not enter the United States market as goods imported from third countries; and</text></paragraph> <paragraph id="H5996140F1248485C8046257B4D940758"><enum>(3)</enum><text>contains a strategy to ensure that cobalt mined by forced labor and denied entry to the United States market does not later enter the United States market.</text></paragraph></subsection> 
+<subsection id="H36443CC967E043D18534D47CAFB08E08">
+                <enum>(b)</enum>
+                <header>Matters To be included</header>
+ <text>The investigation required by subsection (a) shall include the following:</text>
+                <paragraph id="HC48853428E7B44D58C0CA7D3082A56E7">
+                    <enum>(1)</enum>
+ <text>A list of—</text> <subparagraph id="HDC32C0D616FF40A3A793B54ED69440F0"> <enum>(A)</enum> <text>entities in the DRC that potentially mine or process cobalt using forced labor; and</text>
+                    </subparagraph>
+                    <subparagraph id="HD73810F1414A4462AF6BB16B2E054447">
+                        <enum>(B)</enum>
+ <text display-inline="yes-display-inline">categories of downstream products that include cobalt mined in the DRC and are, therefore, identified as priority sectors for enforcement under section 307 of the Tariff Act of 1930 (<external-xref legal-doc="usc" parsable-cite="usc/19/1307">19 U.S.C. 1307</external-xref>).</text>
+                    </subparagraph>
+                </paragraph>
+                <paragraph id="HEED5B6C7B17946B5B292BD71DEA2A0D8">
+                    <enum>(2)</enum>
+ <text>Recommendations for efforts, initiatives, and tools and technologies to be adopted to ensure that U.S. Customs and Border Protection can accurately identify and trace cobalt mined by forced labor in the DRC.</text>
+                </paragraph>
+                <paragraph id="H98D052A02FA54EDBA25A058F057CE65C">
+                    <enum>(3)</enum>
+ <text>A description of how the list of entities required by subparagraph (A) of paragraph (1) shall be regularly updated and reported to the appropriate congressional committees.</text>
+                </paragraph>
+                <paragraph id="H24D2C8B3754246C9B1FE2A59F12BC73B">
+                    <enum>(4)</enum>
+ <text>A strategy to coordinate and collaborate with appropriate nongovernmental organizations and private sector entities to implement the enforcement strategy for cobalt mined with forced labor and to create and update the list of entities required in subparagraph (A) of paragraph (1).</text>
+                </paragraph>
+            </subsection> 
+<subsection id="HDDCFC53D270A4BAD84EA47C5C424B76C"><enum>(c)</enum><header>Form</header><text>The report required by subsection (a) and any publicly published updates described by subsection (d) shall be submitted in unclassified form, but may include a classified annex, if necessary.</text></subsection> <subsection id="H1B0A03B6741049958A92B429C1DBAAFD"><enum>(d)</enum><header>Updates</header><text display-inline="yes-display-inline">After the submission of the strategy required by subsection (a), the Forced Labor Enforcement Task Force shall provide briefings to the appropriate congressional committees on a semiannual basis and, as applicable, on—</text> 
+<paragraph id="H45DC655DAB5646E78E37E81D4BA5082F"><enum>(1)</enum><text>any updates to the strategy required by subsection (a);</text></paragraph> <paragraph id="HFBEB828CBB6E4DEDB533107ED28FB5AB"><enum>(2)</enum><text>any additional actions taken to prevent the importation of cobalt mined with forced labor, including actions described in this Act; and</text></paragraph> 
+<paragraph id="HEE14D2AE48824D3A8986B9A9AC0969D1"><enum>(3)</enum><text>any action U.S. Customs and Border Protection has taken to enforce section 307 of the Tariff Act of 1930 (<external-xref legal-doc="usc" parsable-cite="usc/19/1307">19 U.S.C. 1307</external-xref>) with respect to cobalt mined in the DRC.</text></paragraph></subsection> <subsection id="HD4E0564076514E8793ABB5C3FDC6E8F6"><enum>(e)</enum><header>Sunset</header><text>This section shall cease to have effect on the earlier of—</text> 
+<paragraph id="HF008BD7884684B8B83D803605DE72ABC"><enum>(1)</enum><text>the date that is 8 years after the date of the enactment of this Act; or</text></paragraph> <paragraph id="HB95C79A20307469585C4F932272B0215"><enum>(2)</enum><text>the date on which the President submits to the appropriate congressional committees a determination that forced labor in the DRC mining industry has ended.</text></paragraph></subsection></section> 
+<section id="HBC1CBC0E4F29444A99EE0A6D55D45FC3"><enum>4.</enum><header>Definitions</header><text display-inline="no-display-inline">In this Act:</text> <paragraph id="H7C738109B04A478EAD7C47EB9D7E10C5"> <enum>(1)</enum> <header>Appropriate congressional committees</header> <text>The term <quote>appropriate congressional committees</quote> means—</text>
+                <subparagraph id="HCD37045952A54574A3C66362256D75F5">
+                    <enum>(A)</enum>
+ <text>the Committee on Ways and Means of the House of Representatives; and</text>
+                </subparagraph>
+                <subparagraph id="HC8B062307F2D4F1E82FCA5766839EF4A">
+                    <enum>(B)</enum>
+ <text>the Committee on Finance of the Senate.</text> </subparagraph> </paragraph> <paragraph id="H73E837B12753435C85DE2F5AFB6FEA82"> <enum>(2)</enum> <header>Artisanal and small-scale mining</header> <text>The term <quote>artisanal and small-scale mining</quote>—</text>
+                <subparagraph id="HFC08C69CF9034EFEAB26031DFAA837BE">
+                    <enum>(A)</enum>
+ <text>means mining with minimal to no mechanization; and</text> </subparagraph> <subparagraph id="H535FA0587D7B4D2FBA1255C20AB4CF65"> <enum>(B)</enum> <text>includes the use of intensive hand tools.</text>
+                </subparagraph>
+            </paragraph> 
+<paragraph id="HDF60FB21867A4F3686AD8A83A8D92C19">
+                <enum>(3)</enum>
+                <header>DRC</header>
+ <text>The term <quote>DRC</quote> means the Democratic Republic of the Congo.</text> </paragraph> <paragraph id="H9C1A5B5E5919438D950BE5E1B45C2E4D"> <enum>(4)</enum> <header>Forced labor</header> <text>The term <quote>forced labor</quote> has the meaning given that term in section 307 of the Tariff Act of 1930 (<external-xref legal-doc="usc" parsable-cite="usc/19/1307">19 U.S.C. 1307</external-xref>).</text>
+            </paragraph></section> 
+</legis-body></bill>
+

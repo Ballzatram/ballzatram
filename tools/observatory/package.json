@@ -2,6 +2,6 @@
   "name": "ballzatram-observatory-tests",
   "private": true,
   "type": "module",
-  "scripts": { "test": "node --test core.test.mjs ui.test.mjs" },
+  "scripts": { "test": "node --test core.test.mjs ui.test.mjs tracker.test.mjs" },
   "devDependencies": { "jsdom": "26.1.0" }
 }
