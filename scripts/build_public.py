@@ -7,6 +7,7 @@ PUBLIC_ENTRIES = (
     'index.html', 'style.css', 'weather-bot.html', 'weather-bot.js',
     'lab-pass.html', 'community.html', 'privacy.html', 'terms.html', 'lab.js',
     'CNAME', 'assets', 'data', 'games', 'tools', 'econ-arcade', 'docs', 'travel', 'devin',
+    'internal/reading-room',
 )
 
 
