@@ -29,6 +29,10 @@ class Page(HTMLParser):
 def validate():
     output = build()
     failures = []
+    # Unlisted apps have no public links to catch an accidental deployment omission.
+    for entry in ('internal/reading-room/index.html',):
+        if not (output / entry).is_file():
+            failures.append(f'Required unlisted page: missing {entry}')
     # Existing encrypted trip application has a separate deployment validation gate.
     pages = [p for p in output.rglob('*.html') if 'travel' not in p.relative_to(output).parts]
     for path in pages:
