@@ -17,8 +17,7 @@ DigitalOcean is no longer an active Ballzatram hosting target.
 
 ## Connect the domain
 
-Set the GitHub custom domain before adding the DNS records. This change replaces
-`ballzatram.com` as this repository's primary Pages domain.
+Set `dgallemore.com` as the GitHub custom domain before adding the DNS records.
 
 1. Open [the repository's Pages settings](https://github.com/Ballzatram/ballzatram/settings/pages).
 2. Set **Custom domain** to `dgallemore.com` and save. Keep the publishing source
@@ -60,13 +59,7 @@ curl -I https://www.dgallemore.com/
 are the authoritative reference. Account-level domain verification is also
 available through GitHub's Pages settings using a GitHub-issued TXT record.
 
-## Existing addresses and saved data
-
-GitHub Pages supports one primary custom domain per site. The old
-`ballzatram.com` custom domain does not automatically become a redirect. If it
-should continue working, its DNS/hosting needs a separate redirect to
-`https://dgallemore.com` that preserves the path and query string and supports
-HTTPS. Do not claim that redirect exists until it is configured and tested.
+## Saved data during the domain change
 
 Browser storage and installed web apps are scoped to the old origin. Reading
 progress, saved lab runs, and trip unlock state do not automatically transfer to
@@ -106,10 +99,11 @@ service deployment and verified through `/health` and an MCP client. Follow
 [the service activation steps](osiris-tools/README.md) and verify supported hosts
 and devices before advertising an installed consumer integration.
 
-The MCP service and optional API relay allow both the new domain and the old
-one during migration. Existing hosted services need their updated code/config
-redeployed before the new origin works. The advanced private Codex runtime uses
-its own `OSIRIS_ALLOWED_ORIGINS` setting; the example now uses the new domain.
+The MCP service and optional API relay use `https://dgallemore.com` and
+`https://www.dgallemore.com` as their website origins. Existing hosted services
+need their updated code/config redeployed before the new origin works. The
+advanced private Codex runtime uses its own `OSIRIS_ALLOWED_ORIGINS` setting;
+the example uses these same website origins.
 No model provider credentials or AI-service DNS records are created by this change.
 
 ## Full-stack application

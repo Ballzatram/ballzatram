@@ -4,6 +4,8 @@ Date: 2026-06-01
 Branch audited: `codex/ballzatram-newspaper-front-page`  
 Latest local commit observed: `6f7b797 Refactor homepage into Ballzatram newspaper`
 
+Hosting note, 2026-09-14: This audit describes the June deployment state. See [the current deployment guide](../DEPLOYMENT.md) for the GitHub Pages setup at `dgallemore.com`.
+
 Status note, 2026-06-02: Quant Library implementation details in this audit are historical. The old static `tools/macroboard` predecessor and `backend/app/services/macro_board.py` have since been retired; current Quant Library route/API behavior lives in `frontend/src/app/quant-library/page.tsx`, `frontend/src/components/quant-library/QuantLibraryPrimitives.tsx`, and `backend/app/services/quant_library.py`.
 
 ## Scope
@@ -146,7 +148,7 @@ Current documented production setup is DigitalOcean, not Vercel/Cloudflare/Supab
   - `caddy`: HTTPS reverse proxy on ports 80/443.
 - `deploy/caddy/Caddyfile` sends `/api/*` to backend and everything else to frontend. It blocks source-tree paths such as `/backend/*`, `/frontend/*`, `/ai-edit-factory/*`, `/.git/*`.
 - `DEPLOYMENT.md` states AI Edit Factory is retired from production and root Ballzatram is the production stack.
-- `.github/workflows/deploy-pages.yml` still deploys the root static site to GitHub Pages and includes `CNAME` for `ballzatram.com`.
+- `.github/workflows/deploy-pages.yml` still deploys the root static site to GitHub Pages and includes `CNAME` for the then-current custom domain.
 - `.github/workflows/update-parcel.yml` runs the Parcel data update pipeline daily and commits output files.
 
 No `vercel.json`, `wrangler.toml`, Supabase config, or Sentry config was found in the repo.
@@ -154,7 +156,7 @@ No `vercel.json`, `wrangler.toml`, Supabase config, or Sentry config was found i
 ## Risks And Unknowns
 
 - There are two active public-site surfaces: root static and Next. They have overlapping but different routes, copy, links, and static assets. This increases drift risk.
-- GitHub Pages deployment still exists with `CNAME=ballzatram.com`, while `DEPLOYMENT.md` says production is DigitalOcean/Caddy. DNS/source-of-truth should be confirmed before future public changes.
+- GitHub Pages deployment still exists with a custom-domain `CNAME`, while `DEPLOYMENT.md` says production is DigitalOcean/Caddy. DNS/source-of-truth should be confirmed before future public changes.
 - `frontend/public/tools` is a git symlink to `../../tools` (`120000` in git), but on this Windows checkout it appears as a plain file containing `../../tools`. That can make `/tools/parcel/index.html` fail in local Next development even though Linux production may behave differently.
 - Static root links to `/penitent`, which is a Next route and likely broken on static GitHub Pages.
 - Frontend has no committed `package-lock.json`; Docker uses `npm install` instead of `npm ci`, so frontend production builds are not fully reproducible.
@@ -297,7 +299,7 @@ docker compose up --build
 
 ## Deployment Considerations
 
-- Confirm whether `ballzatram.com` should be served by DigitalOcean/Caddy only, or whether GitHub Pages remains an intentional public/static channel.
+- Confirm whether the public site should be served by DigitalOcean/Caddy only, or whether GitHub Pages remains an intentional public/static channel.
 - Production FastAPI secrets belong in `.env.production` on the server or GitHub deployment secrets, not browser/static files.
 - `NEXT_PUBLIC_API_BASE=/api` is correct for Caddy same-origin production.
 - `OPENAI_API_KEY`, `OPENAI_AGENT_MODEL`, `FRED_API_KEY`, and any future provider keys should remain server-side.

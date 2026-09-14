@@ -74,7 +74,7 @@ test('HTTP rejects untrusted origins, malformed bodies, batches and oversized st
   assert.equal((await handle(new Request(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{' }))).status, 400);
   assert.equal((await handle(new Request(url, { method: 'DELETE' }))).status, 405);
   assert.equal((await handle(new Request(url, { method: 'POST', headers: { 'Content-Type': 'application/json-wrong' }, body: '{}' }))).status, 415);
-  for (const origin of ['https://dgallemore.com', 'https://www.dgallemore.com', 'https://ballzatram.com', 'https://www.ballzatram.com']) {
+  for (const origin of ['https://dgallemore.com', 'https://www.dgallemore.com']) {
     const response = await rpc({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { Origin: origin });
     assert.equal(response.status, 200);
     assert.equal(response.headers.get('Access-Control-Allow-Origin'), origin);

@@ -30,7 +30,7 @@ def test_production_compose_declares_backed_site_stack() -> None:
 def test_caddy_serves_launchpad_and_routes_ai_edit_to_api() -> None:
     caddyfile = (ROOT / "deploy/caddy/Caddyfile").read_text()
 
-    assert "ballzatram.com" in caddyfile
+    assert "dgallemore.com" in caddyfile
     assert "root * /srv/ballzatram" in caddyfile
     assert "@api path /api/*" in caddyfile
     assert "@media path /media/*" in caddyfile
@@ -61,7 +61,7 @@ def test_production_env_example_and_verify_script_cover_diagnostics() -> None:
         "REDIS_URL=redis://redis:6379/0",
         "AIEF_BASE_DIR=/app",
         "AIEF_DB_PATH=/app/data/ai_edit_factory.sqlite3",
-        "CORS_ORIGINS=https://ballzatram.com",
+        "CORS_ORIGINS=https://dgallemore.com",
         "ALLOW_YOUTUBE_DOWNLOADS=false",
         "MAX_UPLOAD_MB=750",
     ]:
@@ -84,10 +84,10 @@ def test_production_env_example_and_verify_script_cover_diagnostics() -> None:
 def test_deployment_docs_make_static_preview_non_production() -> None:
     docs = (ROOT / "docs/DEPLOYMENT.md").read_text()
 
-    assert "https://ballzatram.com/api/diagnostics" in docs
+    assert "https://dgallemore.com/api/diagnostics" in docs
     assert "Static-only hosting of AI Edit is preview-only" in docs
     assert "docker compose -f docker-compose.prod.yml up -d --build" in docs
-    assert "./scripts/verify_production.sh https://ballzatram.com" in docs
+    assert "./scripts/verify_production.sh https://dgallemore.com" in docs
     assert "backend settings, API-origin fields, diagnostics panels, or debug controls" in docs
 
 

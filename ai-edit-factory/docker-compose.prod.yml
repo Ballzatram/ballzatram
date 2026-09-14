@@ -20,7 +20,7 @@ services:
       AIEF_BASE_DIR: ${AIEF_BASE_DIR:-/app}
       AIEF_DB_PATH: ${AIEF_DB_PATH:-/app/data/ai_edit_factory.sqlite3}
       APP_MODE: ${APP_MODE:-production}
-      CORS_ORIGINS: ${CORS_ORIGINS:-https://ballzatram.com}
+      CORS_ORIGINS: ${CORS_ORIGINS:-https://dgallemore.com}
       ALLOW_YOUTUBE_DOWNLOADS: ${ALLOW_YOUTUBE_DOWNLOADS:-false}
       MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-750}
     working_dir: /app/backend

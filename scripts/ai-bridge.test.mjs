@@ -40,7 +40,7 @@ test('relay enforces actual body size without Content-Length, provider, origin a
   for (const origin of ['https://attacker.example', 'https://dgallemore.com.attacker.example']) {
     assert.equal((await worker.fetch(make(body, { Origin: origin }), env)).status, 403);
   }
-  for (const origin of ['https://dgallemore.com', 'https://www.dgallemore.com', 'https://ballzatram.com', 'https://www.ballzatram.com']) {
+  for (const origin of ['https://dgallemore.com', 'https://www.dgallemore.com']) {
     const response = await worker.fetch(new Request('https://relay.example/v2/assist', { method: 'OPTIONS', headers: { Origin: origin } }), env);
     assert.equal(response.status, 204);
     assert.equal(response.headers.get('Access-Control-Allow-Origin'), origin);
