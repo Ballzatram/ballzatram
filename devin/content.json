@@ -85,7 +85,7 @@
       "category": "AI & tools",
       "status": "Prototype",
       "description": "A land-research workflow for screening parcels, comparing shortlists, tracing sources, and drafting diligence questions. Browser fallback available; advanced synthesis requires a backend.",
-      "url": "https://ballzatram.com/tools/parcel/index.html",
+      "url": "https://dgallemore.com/tools/parcel/index.html",
       "link": "Explore prototype",
       "featured": "parcel"
     },
@@ -94,7 +94,7 @@
       "category": "Games & learning",
       "status": "Playable",
       "description": "Economics learned through decisions: a collection of simulations about markets, incentives, monetary policy, and strategic behavior.",
-      "url": "https://ballzatram.com/econ-arcade/index.html",
+      "url": "https://dgallemore.com/econ-arcade/index.html",
       "link": "Enter the arcade",
       "featured": "econ"
     },
@@ -103,7 +103,7 @@
       "category": "Markets & data",
       "status": "Browser tool",
       "description": "Analyze uploaded historical prices for return, volatility, drawdown, concentration, correlations, and risk contribution, with calculations performed locally.",
-      "url": "https://ballzatram.com/tools/portfolio/index.html",
+      "url": "https://dgallemore.com/tools/portfolio/index.html",
       "link": "Open portfolio lab"
     },
     {
@@ -111,7 +111,7 @@
       "category": "Markets & data",
       "status": "Browser tool",
       "description": "Translate macroeconomic shocks into portfolio factor sensitivities with explicit assumptions and stress scenarios.",
-      "url": "https://ballzatram.com/tools/scenario/index.html",
+      "url": "https://dgallemore.com/tools/scenario/index.html",
       "link": "Run a scenario"
     },
     {
@@ -127,7 +127,7 @@
       "category": "Markets & data",
       "status": "Paper research",
       "description": "A weather-market worksheet for settlement review, uncertainty, and capped sizing. The public worksheet does not place live orders.",
-      "url": "https://ballzatram.com/weather-bot.html",
+      "url": "https://dgallemore.com/weather-bot.html",
       "link": "Open worksheet"
     },
     {
@@ -147,11 +147,11 @@
       "link": "View implementation"
     },
     {
-      "name": "Ballzatram AI Guide",
+      "name": "Osiris · Your AI",
       "category": "AI & tools",
-      "status": "Configured service",
-      "description": "An AI guide for saved portfolio, scenario, supply-and-demand, and report context. Model access requires a configured, protected AI bridge.",
-      "url": "https://ballzatram.com/tools/ai/index.html",
+      "status": "Bring your AI",
+      "description": "Prepare selected project context for your own AI app. The Supply & Demand connector adds an interactive lab in compatible apps once activated; the connection guide shows its current availability.",
+      "url": "https://dgallemore.com/tools/ai/index.html",
       "link": "Explore AI guide"
     },
     {
@@ -159,7 +159,7 @@
       "category": "AI & tools",
       "status": "Browser tool",
       "description": "Turn saved analysis into editable Markdown reports that retain assumptions, provenance, caveats, and next checks.",
-      "url": "https://ballzatram.com/tools/reports/index.html",
+      "url": "https://dgallemore.com/tools/reports/index.html",
       "link": "Build a report"
     },
     {
@@ -167,7 +167,7 @@
       "category": "AI & tools",
       "status": "Backend prototype",
       "description": "A short-form video editing workflow for owned or licensed media. Actual rendering requires the Python backend and media workers.",
-      "url": "https://ballzatram.com/ai-edit-factory/",
+      "url": "https://dgallemore.com/ai-edit-factory/",
       "link": "Explore editing workflow"
     },
     {
@@ -175,7 +175,7 @@
       "category": "Games & learning",
       "status": "Playable",
       "description": "Explore equilibrium and welfare through taxes, price controls, shocks, predictions, and sandbox experiments.",
-      "url": "https://ballzatram.com/tools/supply-demand/index.html",
+      "url": "https://dgallemore.com/tools/supply-demand/index.html",
       "link": "Open market lab"
     },
     {
@@ -183,7 +183,7 @@
       "category": "Games & learning",
       "status": "Playable",
       "description": "Take the chair of a fictional central bank and navigate inflation, policy lags, credibility, and financial stability.",
-      "url": "https://ballzatram.com/games/central-bank.html",
+      "url": "https://dgallemore.com/games/central-bank.html",
       "link": "Take the chair"
     },
     {
@@ -191,7 +191,7 @@
       "category": "Games & learning",
       "status": "Playable",
       "description": "Experiment with cooperation and betrayal against repeated-game opponent archetypes, then inspect payoffs and strategy debriefs.",
-      "url": "https://ballzatram.com/econ-arcade/prisoners-dilemma.html",
+      "url": "https://dgallemore.com/econ-arcade/prisoners-dilemma.html",
       "link": "Test a strategy"
     },
     {
@@ -199,7 +199,7 @@
       "category": "Games & learning",
       "status": "Playable",
       "description": "A game-theory learning studio spanning auctions, signaling, bargaining, rational choice, and mechanism design.",
-      "url": "https://ballzatram.com/econ-arcade/platform.html",
+      "url": "https://dgallemore.com/econ-arcade/platform.html",
       "link": "Open strategy studio"
     },
     {
@@ -207,7 +207,7 @@
       "category": "Games & learning",
       "status": "Playable",
       "description": "A market-clearing simulation exploring decentralized decisions, price signals, and policy feedback.",
-      "url": "https://ballzatram.com/econ-arcade/invisible-hands.html",
+      "url": "https://dgallemore.com/econ-arcade/invisible-hands.html",
       "link": "Run a market"
     },
     {
@@ -215,7 +215,7 @@
       "category": "Creative experiments",
       "status": "Playable prototype",
       "description": "An absurd interactive-fiction experiment told through a fictional police blotter and branching decisions.",
-      "url": "https://ballzatram.com/games/stoney-bologna/index.html",
+      "url": "https://dgallemore.com/games/stoney-bologna/index.html",
       "link": "Play the story"
     },
     {
@@ -235,12 +235,12 @@
       "link": "Read architecture notes"
     },
     {
-      "name": "Ballzatram Observatory",
-      "category": "In development",
-      "status": "Planned foundation",
-      "description": "An institutional-accountability concept connecting congressional promises, bill provisions, legislative action, and comparative media coverage.",
-      "url": "https://github.com/Ballzatram/ballzatram/pull/162",
-      "link": "View foundation proposal"
+      "name": "Congressional Accountability",
+      "category": "AI & tools",
+      "status": "Public beta",
+      "description": "Follow bill activity, inspect official legislative records, and examine selected provisions with their sources. The broader promise and media-accountability work remains in development.",
+      "url": "https://dgallemore.com/tools/observatory/index.html",
+      "link": "Explore bill tracker"
     },
     {
       "name": "Osiris",

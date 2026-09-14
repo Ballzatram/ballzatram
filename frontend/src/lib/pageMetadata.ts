@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-const defaultSiteUrl = "https://ballzatram.com";
+const defaultSiteUrl = "https://dgallemore.com";
 
 export const siteMetadataBase = new URL(process.env.NEXT_PUBLIC_SITE_URL ?? defaultSiteUrl);
 

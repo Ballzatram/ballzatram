@@ -147,7 +147,7 @@ function simulate(value) {
     revision: ['sd1', input.scenarioId, input.mode, input.challengeId, ...input.actions].join(':'),
     input, market: { id: scenario.id, title: scenario.title, description: scenario.market }, baseline, result,
     challenge: input.mode === 'challenge' ? { id: challenge.id, title: challenge.title, brief: challenge.brief, target: challenge.target, maxMoves: challenge.maxMoves, complete: challenge.success(result, baseline) || input.actions.length >= challenge.maxMoves } : null,
-    provenance: { kind: 'deterministic-teaching-model', source: 'https://ballzatram.com/tools/supply-demand/index.html', limitations: 'Illustrative directional rules, not fitted supply/demand curves or real-market forecasts. Tax and price-control effects apply to the current move only; shifts persist. Welfare and stability are teaching indicators, not policy estimates.' }
+    provenance: { kind: 'deterministic-teaching-model', source: 'https://dgallemore.com/tools/supply-demand/index.html', limitations: 'Illustrative directional rules, not fitted supply/demand curves or real-market forecasts. Tax and price-control effects apply to the current move only; shifts persist. Welfare and stability are teaching indicators, not policy estimates.' }
   };
 }
 return Object.freeze({ VERSION, LIMIT, scenarios, actions, challenges, initialState, applyAction, roundMetric, validateInput, simulate });

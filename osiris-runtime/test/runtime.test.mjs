@@ -5,7 +5,7 @@ import { EventEmitter } from 'node:events';
 import { createRuntimeServer, validateRequest } from '../server.mjs';
 import { CodexSession, childEnvironment } from '../codex.mjs';
 
-const origin = 'https://ballzatram.com', code = 'a'.repeat(48);
+const origin = 'https://dgallemore.com', code = 'a'.repeat(48);
 const question = { tool: 'observatory', prompt: 'Explain this section.', context: { section: '3', text: 'One selected section.', source: 'https://example.org/bill' }, model: 'test-model', consent: true, responseLength: 'short' };
 class FakeRuntime {
   constructor(id) { this.id = id; this.signedIn = false; this.closed = false; this.calls = []; }
