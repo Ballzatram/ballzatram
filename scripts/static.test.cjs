@@ -8,7 +8,7 @@ const { JSDOM } = createRequire(path.join(root, 'frontend/package.json'))('jsdom
 
 function page(file, prepare = () => {}) {
   const dom = new JSDOM(fs.readFileSync(path.join(root, file), 'utf8'), {
-    url: `https://ballzatram.com/${file}`, runScripts: 'outside-only', pretendToBeVisual: true
+    url: `https://dgallemore.com/${file}`, runScripts: 'outside-only', pretendToBeVisual: true
   });
   dom.window.structuredClone = structuredClone;
   prepare(dom.window);
@@ -57,7 +57,7 @@ test('Homepage Start menu supports Escape, outside click, and keyboard focus', (
   dom.window.eval(fs.readFileSync(path.join(root, 'assets/win95/shell.js'), 'utf8'));
   const start = document.querySelector('.start95'); const menu = document.getElementById('start-menu95');
   start.click(); assert.equal(menu.hidden, false); assert.equal(start.getAttribute('aria-expanded'), 'true');
-  assert.equal(menu.querySelector('a').href, 'https://ballzatram.com/index.html');
+  assert.equal(menu.querySelector('a').href, 'https://dgallemore.com/index.html');
   document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
   assert.equal(menu.hidden, true); assert.equal(document.activeElement, start);
   start.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
@@ -153,13 +153,13 @@ test('AI guide handles blocked storage on startup and saves memory-only credenti
 
 test('Arcade service worker preserves other apps’ caches and excludes unrelated requests', async () => {
   const vm = require('node:vm'); const listeners = {}; const deleted = [];
-  const self = { location: new URL('https://ballzatram.com/econ-arcade/play/sw.js'), addEventListener: (name, fn) => { listeners[name] = fn; } };
+  const self = { location: new URL('https://dgallemore.com/econ-arcade/play/sw.js'), addEventListener: (name, fn) => { listeners[name] = fn; } };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'econ-arcade/play/sw.js'), 'utf8'), {
     self, URL, Response, caches: { keys: async () => ['private-trip-v14-final', 'econ-arcade-living-world-v2', 'econ-arcade-living-world-v3', 'econ-arcade-living-world-v4'], delete: async key => deleted.push(key) }
   });
   let activation; listeners.activate({ waitUntil: promise => { activation = promise; } }); await activation;
   assert.deepEqual(deleted, ['econ-arcade-living-world-v2', 'econ-arcade-living-world-v3']);
-  for (const url of ['https://example.com/data', 'https://ballzatram.com/travel/private', 'https://ballzatram.com/tools/ai/']) {
+  for (const url of ['https://example.com/data', 'https://dgallemore.com/travel/private', 'https://dgallemore.com/tools/ai/']) {
     let intercepted = false; listeners.fetch({ request: { url, method: 'GET' }, respondWith: () => { intercepted = true; } });
     assert.equal(intercepted, false);
   }

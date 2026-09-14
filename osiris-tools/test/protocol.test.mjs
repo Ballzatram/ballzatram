@@ -66,20 +66,28 @@ test('independent clients share no state and expose accurate per-project readine
 });
 
 test('HTTP rejects untrusted origins, malformed bodies, batches and oversized streamed input', async () => {
-  assert.equal((await rpc({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { Origin: 'https://attacker.example' })).status, 403);
+  for (const origin of ['https://attacker.example', 'https://dgallemore.com.attacker.example', 'http://dgallemore.com']) {
+    assert.equal((await rpc({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { Origin: origin })).status, 403);
+  }
   assert.equal((await rpc([])).status, 400);
   assert.equal((await rpc({ data: 'x'.repeat(17000) })).status, 413);
   assert.equal((await handle(new Request(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{' }))).status, 400);
   assert.equal((await handle(new Request(url, { method: 'DELETE' }))).status, 405);
   assert.equal((await handle(new Request(url, { method: 'POST', headers: { 'Content-Type': 'application/json-wrong' }, body: '{}' }))).status, 415);
-  const response = await rpc({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { Origin: 'https://ballzatram.com' });
-  assert.equal(response.headers.get('Access-Control-Allow-Origin'), 'https://ballzatram.com');
-  assert.equal(response.headers.get('mcp-session-id'), null);
+  for (const origin of ['https://dgallemore.com', 'https://www.dgallemore.com', 'https://ballzatram.com', 'https://www.ballzatram.com']) {
+    const response = await rpc({ jsonrpc: '2.0', id: 1, method: 'tools/list' }, { Origin: origin });
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), origin);
+    assert.equal(response.headers.get('mcp-session-id'), null);
+    const preflight = await handle(new Request(url, { method: 'OPTIONS', headers: { Origin: origin, 'Access-Control-Request-Method': 'POST' } }));
+    assert.equal(preflight.status, 204);
+    assert.equal(preflight.headers.get('Access-Control-Allow-Origin'), origin);
+  }
 });
 
 test('health is a tool-service check, with no provider/account verification or side effects', async () => {
-  const response = await handle(new Request('https://tools.example.test/health', { headers: { Origin: 'https://ballzatram.com' } }));
-  assert.equal(response.headers.get('Access-Control-Allow-Origin'), 'https://ballzatram.com');
+  const response = await handle(new Request('https://tools.example.test/health', { headers: { Origin: 'https://dgallemore.com' } }));
+  assert.equal(response.headers.get('Access-Control-Allow-Origin'), 'https://dgallemore.com');
   const data = await response.json();
   assert.equal(data.modelCalls, false); assert.equal(data.storage, 'none');
   assert.equal(data.auth, 'anonymous-read-only');

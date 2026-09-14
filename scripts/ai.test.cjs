@@ -15,7 +15,7 @@ const PKCE = 'ballzatram:ai-pkce:v2';
 const request = { tool: 'observatory', prompt: 'Explain this section.', context: { section: '3', source: 'https://example.org/source', text: 'Selected evidence only.' } };
 const flush = () => new Promise(resolve => setImmediate(resolve));
 const ok = data => ({ ok: true, status: 200, json: async () => data });
-function mount({ url = 'https://ballzatram.com/tools/ai/index.html', prepare = () => {}, ui = false } = {}) {
+function mount({ url = 'https://dgallemore.com/tools/ai/index.html', prepare = () => {}, ui = false } = {}) {
   const dom = new JSDOM(ui ? fs.readFileSync(path.join(root, 'tools/ai/index.html'), 'utf8') : '<!doctype html>', { url, runScripts: 'outside-only' });
   Object.defineProperty(dom.window, 'crypto', { value: webcrypto });
   dom.window.TextEncoder = TextEncoder;
@@ -257,7 +257,7 @@ test('disconnect during setup cannot restore an old session or send its code to 
 
 test('native panel stays in its project, sends only reviewed context, and renders provider HTML as text', async () => {
   const calls = [];
-  const dom = mount({ url: 'https://ballzatram.com/tools/scenario/index.html', prepare: w => {
+  const dom = mount({ url: 'https://dgallemore.com/tools/scenario/index.html', prepare: w => {
     subscriptionSession(w); w.localStorage.setItem('another-lab', 'UNSELECTED PRIVATE DATA');
     w.fetch = async (url, options) => {
       calls.push([url, options]);

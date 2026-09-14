@@ -1,5 +1,7 @@
 # Ballzatram
 
+Public home: [dgallemore.com](https://dgallemore.com/) — Devin Gallemore’s projects, portfolio, games, and tools. See [domain and deployment setup](DEPLOYMENT.md) for the Namecheap and GitHub Pages configuration.
+
 ## Windows 95 desktop
 
 Only the homepage uses the Windows 95 desktop, searchable program directory, and Start menu. Tools, games, Congressional Accountability, the portfolio, and supporting pages retain their independent designs. `data/public-programs.json` generates the homepage with `python scripts/build_desktop.py`; the generator does not rewrite internal pages. Next.js likewise uses the desktop only at `/`, with its original application layout on other routes. Desktop CSS tokens and general element rules are scoped to the homepage.

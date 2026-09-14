@@ -46,7 +46,7 @@ def main():
             if link.startswith('#'):
                 assert link[1:] in page.ids, f'Missing anchor: {link}'
                 continue
-            if url.scheme in ('mailto', 'https') and url.netloc != 'ballzatram.com':
+            if url.scheme in ('mailto', 'https') and url.netloc != 'dgallemore.com':
                 continue
             assert url.scheme in ('', 'https'), f'Unexpected link protocol: {link}'
             target = ROOT / unquote(url.path).lstrip('/') if url.netloc else SITE / unquote(url.path)

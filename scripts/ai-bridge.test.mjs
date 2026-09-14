@@ -6,7 +6,7 @@ const { default: worker } = await import('data:text/javascript;base64,' + Buffer
 const key = 'sk-proj-visitor-test-api-key';
 const env = { OPENAI_API_KEY: 'operator-must-never-be-used', ANTHROPIC_API_KEY: 'operator-must-never-be-used', BALLZATRAM_ACCESS_TOKEN: 'old-owner-token' };
 const body = { provider: 'openai', model: 'test-model', tool: 'observatory', prompt: 'Explain the evidence', context: { section: '3' }, maxTokens: 1200 };
-const make = (data = body, headers = {}, path = '/v2/assist') => new Request('https://relay.example' + path, { method: 'POST', headers: { Origin: 'https://ballzatram.com', 'Content-Type': 'application/json', Authorization: `Bearer ${key}`, ...headers }, body: JSON.stringify(data) });
+const make = (data = body, headers = {}, path = '/v2/assist') => new Request('https://relay.example' + path, { method: 'POST', headers: { Origin: 'https://dgallemore.com', 'Content-Type': 'application/json', Authorization: `Bearer ${key}`, ...headers }, body: JSON.stringify(data) });
 
 test('operator secrets never authorize v1 or requests without a user key', async () => {
   const original = globalThis.fetch; globalThis.fetch = () => { throw new Error('No inference expected'); };
@@ -37,7 +37,14 @@ test('relay enforces actual body size without Content-Length, provider, origin a
   assert.equal((await worker.fetch(make({ ...body, context: { text: 'x'.repeat(24000) } }), env)).status, 413);
   assert.equal((await worker.fetch(make({ ...body, maxTokens: 100000 }), env)).status, 400);
   assert.equal((await worker.fetch(make({ ...body, provider: 'custom-url' }), env)).status, 400);
-  assert.equal((await worker.fetch(make(body, { Origin: 'https://attacker.example' }), env)).status, 403);
+  for (const origin of ['https://attacker.example', 'https://dgallemore.com.attacker.example']) {
+    assert.equal((await worker.fetch(make(body, { Origin: origin }), env)).status, 403);
+  }
+  for (const origin of ['https://dgallemore.com', 'https://www.dgallemore.com', 'https://ballzatram.com', 'https://www.ballzatram.com']) {
+    const response = await worker.fetch(new Request('https://relay.example/v2/assist', { method: 'OPTIONS', headers: { Origin: origin } }), env);
+    assert.equal(response.status, 204);
+    assert.equal(response.headers.get('Access-Control-Allow-Origin'), origin);
+  }
   assert.equal((await worker.fetch(make(body, { Authorization: 'Bearer sk-ant-oat-subscription-session' }), env)).status, 401);
 });
 

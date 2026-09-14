@@ -17,13 +17,13 @@ and internal portfolio/data scale figures are omitted. The resume's browser prin
 button supports printing or saving a PDF. Update employment and project status
 labels when they change; no status is automatically inferred from a running server.
 
-## Future personal domain
+## Personal domain
 
-Copy this directory to the new site's document root. Its CSS, JavaScript, favicon,
-and page links are relative and self-contained; project links continue to point to
-Ballzatram or GitHub. Update the public portfolio URL in `build.py` and regenerate
-the resume. Hosting, DNS, and a redirect from the old URL can be added separately.
-No migration of user data is needed.
+The portfolio's public address is `https://dgallemore.com/devin/`; the full
+Ballzatram collection uses the same domain. Project URLs and the printable
+resume use this address. See [deployment instructions](../DEPLOYMENT.md) for
+the GitHub Pages and Namecheap setup. The folder's CSS, JavaScript, favicon,
+and local page links remain relative so the portfolio can be moved later.
 
 ## Validation
 

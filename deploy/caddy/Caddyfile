@@ -1,8 +1,8 @@
-ballzatram.com, www.ballzatram.com {
+dgallemore.com, www.dgallemore.com {
   encode zstd gzip
 
-  @www host www.ballzatram.com
-  redir @www https://ballzatram.com{uri} permanent
+  @www host www.dgallemore.com
+  redir @www https://dgallemore.com{uri} permanent
 
   header {
     Strict-Transport-Security "max-age=2592000"

@@ -12,7 +12,7 @@ The detailed inventory below remains the feature-design backlog. “Configured�
 
 # Project AI configuration
 
-Updated September 13, 2026. [Open the site inventory](https://ballzatram.com/tools/ai/projects.html).
+Updated September 13, 2026. [Open the site inventory](https://dgallemore.com/tools/ai/projects.html).
 
 Each project needs a defined purpose, selected-data adapter, instructions, and rules for actions or saved memory. The visitor’s AI app supplies model access; the public connector supplies only its advertised project tools.
 

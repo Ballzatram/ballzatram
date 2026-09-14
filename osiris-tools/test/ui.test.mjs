@@ -70,7 +70,7 @@ test('a changed run invalidates consent and prevents a stale message acknowledge
 });
 
 test('website shares the visible run when storage is unavailable; page tools cannot change that run', async t => {
-  const dom = new JSDOM(await read('tools/supply-demand/index.html'), { url: 'https://ballzatram.com/tools/supply-demand/', runScripts: 'outside-only' });
+  const dom = new JSDOM(await read('tools/supply-demand/index.html'), { url: 'https://dgallemore.com/tools/supply-demand/', runScripts: 'outside-only' });
   t.after(() => dom.window.close());
   const w = dom.window, registered = [], opened = [];
   w.structuredClone = structuredClone;
@@ -92,7 +92,7 @@ test('website shares the visible run when storage is unavailable; page tools can
 });
 
 test('project panels prepare data in-place with no provider requests or automatic account switching', async t => {
-  const dom = new JSDOM('<html><head></head><body></body></html>', { url: 'https://ballzatram.com/tools/supply-demand/', runScripts: 'outside-only' });
+  const dom = new JSDOM('<html><head></head><body></body></html>', { url: 'https://dgallemore.com/tools/supply-demand/', runScripts: 'outside-only' });
   t.after(() => dom.window.close());
   const w = dom.window;
   w.HTMLDialogElement.prototype.showModal = function () { this.setAttribute('open', ''); };

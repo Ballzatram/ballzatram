@@ -2,7 +2,7 @@ import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/
 import { createServer, VERSION } from './server.mjs';
 
 const MAX_BYTES = 16384;
-const ORIGINS = new Set(['https://ballzatram.com', 'https://www.ballzatram.com', 'https://chatgpt.com', 'https://claude.ai']);
+const ORIGINS = new Set(['https://dgallemore.com', 'https://www.dgallemore.com', 'https://ballzatram.com', 'https://www.ballzatram.com', 'https://chatgpt.com', 'https://claude.ai']);
 const headers = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 function error(status, text) { return new Response(text, { status, headers }); }
 
