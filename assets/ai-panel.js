@@ -14,7 +14,7 @@
   function close() { generation++; stopPolling(); controller?.abort(); controller = null; dialog.close(); previouslyFocused?.focus?.(); }
   function create() {
     if (dialog) return;
-    const link = root.document.createElement('link'); link.rel = 'stylesheet'; link.href = '/assets/ai-panel.css?v=subscription-1'; root.document.head.append(link);
+    const link = root.document.createElement('link'); link.rel = 'stylesheet'; link.href = '/assets/ai-panel.css?v=host-tools-1'; root.document.head.append(link);
     dialog = root.document.createElement('dialog'); dialog.className = 'osiris-dialog'; dialog.setAttribute('aria-label', 'Osiris assistant');
     dialog.innerHTML = `<div class="osiris-head"><div><p>OSIRIS / YOUR AI</p><h2 data-osiris="title">Your companion in this project</h2></div><button type="button" data-osiris="close" aria-label="Close Osiris">Close ×</button></div>
       <div class="osiris-body"><p class="osiris-description">Connect your ChatGPT account and get help here. This private pilot uses Codex access included in your plan.</p>
@@ -126,6 +126,7 @@
     }
   }
   function open(payload, options = {}) {
+    if (!options.connectionOnly && !(AI.getSettings().mode === 'subscription' && Subscription.settings().endpoint)) return openInApp(payload);
     create(); controller?.abort(); controller = null; stopPolling(); generation++; previouslyFocused = root.document.activeElement;
     request = AI.prepare({ ...payload, prompt: payload.prompt || 'Help me understand this project.' });
     const profile = Features?.get(request.tool);
@@ -141,6 +142,54 @@
     const current = generation;
     if (Subscription.connection()) Subscription.status().then(async () => { if (current !== generation || !dialog.open) return; renderAccount(); if (Subscription.connection()?.account) await loadModels(); }).catch(error => { if (current === generation) { renderAccount(); message(error.message); } });
     if (!options.connectionOnly) $('question').focus();
+  }
+  let appDialog;
+  function openInApp(payload) {
+    if (!root.document.querySelector('link[href*="ai-panel.css"]')) { const sheet = root.document.createElement('link'); sheet.rel = 'stylesheet'; sheet.href = '/assets/ai-panel.css?v=host-tools-1'; root.document.head.append(sheet); }
+    const selected = AI.prepare({ ...payload, prompt: payload.prompt || 'Help me understand this result.' });
+    const feature = Features?.get(selected.tool);
+    if (!feature?.enabled) throw new Error('This project’s AI workflow needs to be configured first.');
+    // Close any active stream before opening a different context or transport.
+    generation++; stopPolling(); controller?.abort(); controller = null;
+    if (dialog?.open) dialog.close();
+    appDialog?.remove();
+    const focus = root.document.activeElement;
+    appDialog = root.document.createElement('dialog');
+    const current = appDialog;
+    current.className = 'osiris-dialog'; current.setAttribute('aria-label', 'Use your AI app');
+    current.innerHTML = `<div class="osiris-head"><div><p>OSIRIS / YOUR AI</p><h2 data-app="title"></h2></div><button type="button" data-app="close" aria-label="Close Osiris">Close ×</button></div>
+      <div class="osiris-body"><p>Use your ChatGPT, Claude, or Gemini account. Your AI app handles the response and its usual plan limits apply.</p>
+      <p data-app="host-note" class="osiris-fine"></p><a href="/tools/ai/connect.html">Use Ballzatram tools in your AI app →</a>
+      <label>My AI app<select data-app="provider"><option value="chatgpt">ChatGPT</option><option value="claude">Claude</option><option value="gemini">Gemini</option></select></label>
+      <p class="osiris-fine" data-app="scope"></p><details><summary>Review selected context</summary><pre data-app="context"></pre></details>
+      <form data-app="form"><label>Your question<textarea rows="3" maxlength="4000" data-app="question"></textarea></label><button class="osiris-primary" type="submit">Prepare for my AI app</button></form>
+      <section data-app="prepared" hidden><label>Prepared prompt<textarea rows="8" readonly data-app="text"></textarea></label><div class="osiris-actions"><button type="button" data-app="copy">Copy prompt</button><a class="osiris-button osiris-primary" data-app="launch" target="_blank" rel="noopener noreferrer"></a><button type="button" data-app="download">Download selected context</button></div><p class="osiris-fine">Paste the prompt and send it in your AI app. Opening it sends no data. Your answer stays there; this page does not sync it automatically.</p></section>
+      <p data-app="status" role="status" aria-live="polite">Only the context you review here is included. Nothing has been sent.</p></div>`;
+    const q = name => current.querySelector(`[data-app="${name}"]`);
+    q('title').textContent = feature.name; q('scope').textContent = feature.context;
+    q('context').textContent = JSON.stringify(selected.context, null, 2); q('question').value = selected.prompt;
+    q('host-note').textContent = selected.tool === 'supplyDemand' ? 'With the Ballzatram connector installed, the interactive lab can open inside a compatible AI app. This browser’s saved data is transferred only when you share it.' : 'This project can share selected context. Interactive tools for this project are not connected yet.';
+    const refreshProvider = () => {
+      const chat = AI.chats[q('provider').value]; q('launch').href = chat.url; q('launch').textContent = `Open ${chat.name} ↗`;
+    };
+    q('provider').value = AI.getSettings().chat; refreshProvider();
+    q('provider').onchange = () => { AI.saveSettings({ ...AI.getSettings(), chat: q('provider').value }); refreshProvider(); };
+    const hidePrepared = () => { q('prepared').hidden = true; q('text').value = ''; };
+    q('question').oninput = hidePrepared;
+    q('form').onsubmit = event => {
+      event.preventDefault();
+      try { q('text').value = AI.handoff({ ...selected, prompt: q('question').value }); q('prepared').hidden = false; q('status').textContent = 'Prompt ready. Review it, copy it, and send it in your AI app.'; }
+      catch (error) { hidePrepared(); q('status').textContent = error.message; }
+    };
+    q('copy').onclick = async () => { try { await AI.copy(q('text').value); q('status').textContent = 'Copied. Paste it in your AI app.'; } catch (error) { q('text').focus(); q('text').select(); q('status').textContent = error.message; } };
+    q('download').onclick = () => {
+      const body = { schemaVersion: 1, featureId: selected.tool, selectedAt: new Date().toISOString(), question: q('question').value, context: selected.context };
+      const url = root.URL.createObjectURL(new Blob([JSON.stringify(body, null, 2)], { type: 'application/json' }));
+      const link = root.document.createElement('a'); link.href = url; link.download = `osiris-${selected.tool}-context.json`; link.click(); root.setTimeout(() => root.URL.revokeObjectURL(url), 1000);
+    };
+    const dismiss = () => { current.close(); focus?.focus?.(); };
+    q('close').onclick = dismiss; current.addEventListener('cancel', event => { event.preventDefault(); dismiss(); });
+    root.document.body.append(current); current.showModal(); q('question').focus();
   }
   function attach() {
     root.document.querySelectorAll('[data-osiris-feature]').forEach(button => {

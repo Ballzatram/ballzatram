@@ -168,6 +168,7 @@ const service = 'https://osiris.example', token = 'a'.repeat(43), accessCode = '
 const account = { type: 'chatgpt', email: 'synthetic@example.test', planType: 'plus' };
 const login = () => ({ verificationUrl: 'https://auth.openai.com/codex/device', userCode: 'TEST-ONLY', expiresAt: Date.now() + 60000 });
 function subscriptionSession(w, signedIn = true) {
+  w.localStorage.setItem(PREFS, JSON.stringify({ mode: 'subscription' }));
   w.localStorage.setItem(SUB_PREFS, JSON.stringify({ endpoint: service, model: 'test-model' }));
   w.sessionStorage.setItem(SUB_SESSION, JSON.stringify({ token, endpoint: service, expiresAt: Date.now() + 60000, account: signedIn ? account : null }));
 }
@@ -176,7 +177,7 @@ function streamResponse(events) {
   return new Response(text, { headers: { 'Content-Type': 'text/event-stream' } });
 }
 
-test('subscription is the default and never substitutes an API account or manual handoff', async () => {
+test('AI app handoff is the default; explicit runtime selection never substitutes another account', async () => {
   const dom = mount();
   connect(dom.window);
   dom.window.BallzatramAI.saveSettings({ mode: 'subscription' });
@@ -184,7 +185,7 @@ test('subscription is the default and never substitutes an API account or manual
   await assert.rejects(dom.window.BallzatramAI.ask(request, { consent: true }), /Connect and sign in/);
   dom.window.close();
   const fresh = mount({ ui: true });
-  assert.equal(fresh.window.BallzatramAI.getSettings().mode, 'subscription');
+  assert.equal(fresh.window.BallzatramAI.getSettings().mode, 'handoff');
   fresh.window.document.getElementById('connectSubscription').click();
   assert.equal(fresh.window.document.querySelector('.osiris-dialog').open, true);
   assert.equal(fresh.window.document.querySelector('[data-osiris="form"]').hidden, true);
@@ -204,6 +205,7 @@ test('ChatGPT device connection makes no generation call; sending requires conse
     return streamResponse([['delta', { text: '<img src=x> Draft' }], ['done', { kind: 'answer', answer: '<img src=x> Draft answer', model: 'test-model', billing: 'chatgpt-subscription', usage: { total_tokens: 12 } }]]);
   }; } });
   const sub = dom.window.BallzatramSubscription;
+  dom.window.BallzatramAI.saveSettings({ mode: 'subscription' });
   sub.configure({ endpoint: service });
   assert.equal((await sub.connect(accessCode)).userCode, 'TEST-ONLY');
   await sub.status(); const rows = await sub.models(); sub.configure({ endpoint: service, model: rows[0].id });
