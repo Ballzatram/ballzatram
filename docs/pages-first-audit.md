@@ -2,9 +2,11 @@
 
 Date: 2026-08-18
 
+Domain note, 2026-09-14: The public address is now configured as `dgallemore.com`; see [the deployment guide](../DEPLOYMENT.md) for the in-flight DNS setup.
+
 ## Current goal
 
-Ballzatram does not need SaaS infrastructure yet. The immediate product goal is simpler: `ballzatram.com` should be a place where Devin can open tools, simulations, games, and experiments on a phone or laptop and use them.
+Ballzatram does not need SaaS infrastructure yet. The immediate product goal is simpler: the public site should be a place where Devin can open tools, simulations, games, and experiments on a phone or laptop and use them.
 
 The default implementation rule for this stage is:
 

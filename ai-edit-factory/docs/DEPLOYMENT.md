@@ -1,10 +1,14 @@
-# Production deployment: ballzatram.com
+# Self-hosted deployment example: dgallemore.com
 
-This deployment path makes `ballzatram.com` the Ballzatram launchpad while keeping AI Edit as a backend-powered tool route. Production should serve the repo-root homepage and static launchpad assets from Caddy, serve AI Edit at `/ai-edit-factory/`, and keep `/api/*`, `/api/diagnostics`, uploaded media previews, and rendered MP4 outputs behind HTTPS.
+This is an optional full-stack hosting path. The current public site uses GitHub
+Pages; [the repository deployment guide](../../DEPLOYMENT.md) covers its hosting
+and the domain setup in progress.
+
+This deployment path makes `dgallemore.com` the Ballzatram launchpad while keeping AI Edit as a backend-powered tool route. Production should serve the repo-root homepage and static launchpad assets from Caddy, serve AI Edit at `/ai-edit-factory/`, and keep `/api/*`, `/api/diagnostics`, uploaded media previews, and rendered MP4 outputs behind HTTPS.
 
 ## Target architecture
 
-- **Caddy** terminates HTTPS for `ballzatram.com`, serves the repo-root static Ballzatram launchpad from `/srv/ballzatram`, and reverse-proxies only backend-owned routes to `api:8000`.
+- **Caddy** terminates HTTPS for `dgallemore.com`, serves the repo-root static Ballzatram launchpad from `/srv/ballzatram`, and reverse-proxies only backend-owned routes to `api:8000`.
 - **FastAPI API** serves studio routes, `/api/diagnostics`, `/media/inputs/*`, `/media/outputs/*`, compatibility `/inputs/*` and `/outputs/*` media paths, and the built AI Edit frontend under `/ai-edit-factory/`.
 - **Redis** stores the render queue.
 - **Worker** runs the same backend image as the API and processes ffmpeg render jobs.
@@ -69,7 +73,7 @@ APP_MODE=production
 REDIS_URL=redis://redis:6379/0
 AIEF_BASE_DIR=/app
 AIEF_DB_PATH=/app/data/ai_edit_factory.sqlite3
-CORS_ORIGINS=https://ballzatram.com
+CORS_ORIGINS=https://dgallemore.com
 ALLOW_YOUTUBE_DOWNLOADS=false
 MAX_UPLOAD_MB=750
 ```
@@ -99,12 +103,12 @@ TTL: 300 or provider default
 Wait for DNS to resolve before starting the HTTPS verification. You can check from your workstation:
 
 ```bash
-dig +short ballzatram.com
+dig +short dgallemore.com
 ```
 
 ## 7. Start the production stack
 
-`docker-compose.prod.yml` includes `api`, `worker`, `redis`, and `caddy`. Caddy automatically provisions and renews HTTPS certificates for `ballzatram.com` when DNS points at the server and ports `80`/`443` are reachable.
+`docker-compose.prod.yml` includes `api`, `worker`, `redis`, and `caddy`. Caddy automatically provisions and renews HTTPS certificates for `dgallemore.com` when DNS points at the server and ports `80`/`443` are reachable.
 
 ```bash
 docker compose -f docker-compose.prod.yml up -d --build
@@ -127,13 +131,13 @@ docker compose -f docker-compose.prod.yml logs -f api worker caddy redis
 The required production verification endpoint is:
 
 ```text
-https://ballzatram.com/api/diagnostics
+https://dgallemore.com/api/diagnostics
 ```
 
 Run the verification script from the VPS:
 
 ```bash
-./scripts/verify_production.sh https://ballzatram.com
+./scripts/verify_production.sh https://dgallemore.com
 ```
 
 The script fails unless diagnostics reports all of these as ready:
@@ -150,7 +154,7 @@ The script fails unless diagnostics reports all of these as ready:
 
 ## 9. Verify the creator workflow
 
-Open `https://ballzatram.com` in a normal browser session and verify:
+Open `https://dgallemore.com` in a normal browser session and verify:
 
 1. The app shows only the polished creator workflow. Users should not see backend settings, API-origin fields, diagnostics panels, or debug controls in the normal flow.
 2. The render engine is ready; no static-only or preview-only warning should appear when the production backend is healthy.
@@ -175,7 +179,7 @@ docker compose -f docker-compose.prod.yml restart
 Then verify:
 
 ```bash
-./scripts/verify_production.sh https://ballzatram.com
+./scripts/verify_production.sh https://dgallemore.com
 ```
 
 Open the app and confirm previously uploaded media, project records, and rendered outputs still exist. The persistence check depends on keeping `./inputs`, `./outputs`, and `./data` mounted and backed up.

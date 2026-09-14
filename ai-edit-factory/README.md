@@ -45,7 +45,7 @@ ai-edit-factory/
 
 ## Run with Docker Compose
 
-Production deployment for `ballzatram.com` is documented in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). The production target is the FastAPI-backed Docker stack, not static-only hosting.
+The optional full-stack deployment for `dgallemore.com` is documented in [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). MP4 rendering requires the FastAPI-backed Docker stack. The current public site uses GitHub Pages; see the [repository deployment guide](../DEPLOYMENT.md) for hosting and DNS setup.
 
 
 Prerequisites: Docker Desktop or Docker Engine.

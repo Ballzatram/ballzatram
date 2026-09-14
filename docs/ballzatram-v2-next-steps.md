@@ -2,6 +2,8 @@
 
 Date: June 2, 2026
 
+Hosting note, 2026-09-14: These validation results are historical. The current site uses GitHub Pages at `dgallemore.com`; see [the deployment guide](../DEPLOYMENT.md).
+
 Status note, 2026-06-02: Quant Library/MacroBoard cleanup has retired `backend/app/services/macro_board.py` and the static `tools/macroboard` predecessor. Treat older MacroBoard implementation notes in this file as historical context only.
 
 ## What Was Built
@@ -50,9 +52,9 @@ Production-server HTTP smoke results on port `3028`:
 
 Metadata spot checks:
 
-- `/` renders canonical `https://ballzatram.com`.
-- `/quant-library` renders canonical `https://ballzatram.com/quant-library`.
-- `/bettors-corner` renders canonical `https://ballzatram.com/bettors-corner`.
+- `/` rendered the canonical site root.
+- `/quant-library` rendered its path under the configured canonical site origin.
+- `/bettors-corner` rendered its path under the configured canonical site origin.
 - `/stories/demo-market-breadth-check` renders story canonical and Open Graph title.
 - `/internal/generated-stories` renders `noindex, nofollow`.
 
@@ -77,7 +79,7 @@ Server-side only:
 Public/frontend:
 
 - `NEXT_PUBLIC_API_BASE`: frontend API base. Use `/api` for same-origin production behind Caddy.
-- `NEXT_PUBLIC_SITE_URL`: optional canonical/Open Graph site URL. Defaults to `https://ballzatram.com` when unset.
+- `NEXT_PUBLIC_SITE_URL`: optional canonical/Open Graph site URL. Currently defaults to `https://dgallemore.com` when unset.
 
 Do not ship private provider keys in browser-delivered static tools.
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-BASE_URL="${1:-${AIEF_PRODUCTION_URL:-https://ballzatram.com}}"
+BASE_URL="${1:-${AIEF_PRODUCTION_URL:-https://dgallemore.com}}"
 BASE_URL="${BASE_URL%/}"
 DIAGNOSTICS_URL="${BASE_URL}/api/diagnostics"
 

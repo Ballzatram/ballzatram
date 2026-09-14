@@ -3,7 +3,7 @@ main = "worker.js"
 compatibility_date = "2026-08-18"
 
 [vars]
-ALLOWED_ORIGINS = "https://dgallemore.com,https://www.dgallemore.com,https://ballzatram.com,https://www.ballzatram.com"
+ALLOWED_ORIGINS = "https://dgallemore.com,https://www.dgallemore.com"
 
 [observability]
 enabled = false

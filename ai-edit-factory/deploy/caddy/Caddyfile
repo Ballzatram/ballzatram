@@ -1,4 +1,4 @@
-ballzatram.com {
+dgallemore.com {
   encode zstd gzip
 
   # Match the app upload limit so large rights-approved source files can reach FastAPI.
