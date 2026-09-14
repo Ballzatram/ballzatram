@@ -1,0 +1,14 @@
+<section class="lab-card host-assistant" aria-label="Ask your AI app">
+  <p class="card-label">Osiris / Your AI</p>
+  <h2>Explore here. Ask your AI.</h2>
+  <p>Market moves run locally. When you ask for help, your AI app uses your account and its usual limits.</p>
+  <form id="hostForm">
+    <label>How can I help?<select id="helpMode"><option value="hint">A small hint</option><option value="explanation">Explain the change</option><option value="debrief">Debrief this run</option></select></label>
+    <label>Your question (optional)<textarea id="hostQuestion" rows="2" maxlength="2000" placeholder="What am I missing?"></textarea></label>
+    <details><summary>Review the selected run</summary><pre id="selectedRun"></pre></details>
+    <label class="host-consent"><input id="shareConsent" type="checkbox">Share this run and question with my AI app.</label>
+    <button id="askHost" type="submit" class="primary-action">Ask my AI</button>
+  </form>
+  <div id="hostFallback" hidden><label>Prepared prompt<textarea id="hostPrompt" rows="6" readonly></textarea></label><button id="copyHostPrompt" type="button" class="primary-action">Copy for chat</button></div>
+  <p id="hostStatus" role="status" aria-live="polite"></p>
+</section>

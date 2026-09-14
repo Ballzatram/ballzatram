@@ -1,0 +1,69 @@
+name: Osiris tools
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+    paths:
+      - 'osiris-tools/**'
+      - 'tools/supply-demand/**'
+      - 'assets/ai-features.js'
+      - '.github/workflows/osiris-tools.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: osiris-tools/package-lock.json
+      - run: npm ci --prefix osiris-tools --ignore-scripts
+      - run: npm ci --prefix frontend --ignore-scripts
+      - run: npm test --prefix osiris-tools
+      - run: npm run check:worker --prefix osiris-tools
+      - run: npm run test:worker --prefix osiris-tools
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osiris-lab-preview
+          path: osiris-tools/dist/widget.html
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check existing deployment connection
+        id: connection
+        shell: bash
+        run: |
+          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo 'ready=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'ready=false' >> "$GITHUB_OUTPUT"
+            echo 'Connector activation pending: existing Cloudflare repository credentials are not configured. No infrastructure was provisioned.' >> "$GITHUB_STEP_SUMMARY"
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.connection.outputs.ready == 'true'
+        with:
+          node-version: '22'
+      - if: steps.connection.outputs.ready == 'true'
+        run: npm ci --prefix osiris-tools --ignore-scripts
+      - if: steps.connection.outputs.ready == 'true'
+        run: npm run deploy --prefix osiris-tools
