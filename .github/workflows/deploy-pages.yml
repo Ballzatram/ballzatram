@@ -150,10 +150,10 @@ jobs:
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
+          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: _site
 
       - name: Wait for the branch Pages build before publishing refreshed data
-        if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         run: python scripts/wait_for_branch_pages.py
@@ -161,3 +161,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        with:
+          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
