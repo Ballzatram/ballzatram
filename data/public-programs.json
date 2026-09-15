@@ -5,7 +5,7 @@
     "category": "Games",
     "icon": "game",
     "status": "Playable",
-    "description": "Economics through choices, experiments, and a little friendly competition."
+    "description": "The Family Business and the full economics library: experience markets, incentives, finance, and policy."
   },
   {
     "title": "Central Banker",
@@ -72,12 +72,12 @@
     "description": "Find equilibrium in a market of changing supply and demand."
   },
   {
-    "title": "Osiris Adaptive Arcade",
+    "title": "The Family Business",
     "href": "econ-arcade/play/",
     "category": "Games",
     "icon": "bulb",
-    "status": "Playtest",
-    "description": "A learning experiment that selects challenges as you play."
+    "status": "Playable campaign",
+    "description": "Join the family. Run the deli, earn responsibility, and carry economics through one persistent 8-bit world."
   },
   {
     "title": "Reports",

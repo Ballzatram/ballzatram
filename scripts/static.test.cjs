@@ -171,12 +171,12 @@ test('AI guide handles blocked storage on startup and saves memory-only credenti
 
 test('Arcade service worker preserves other apps’ caches and excludes unrelated requests', async () => {
   const vm = require('node:vm'); const listeners = {}; const deleted = [];
-  const self = { location: new URL('https://dgallemore.com/econ-arcade/play/sw.js'), addEventListener: (name, fn) => { listeners[name] = fn; } };
+  const self = { clients: { claim: async () => {} }, location: new URL('https://dgallemore.com/econ-arcade/play/sw.js'), addEventListener: (name, fn) => { listeners[name] = fn; } };
   vm.runInNewContext(fs.readFileSync(path.join(root, 'econ-arcade/play/sw.js'), 'utf8'), {
-    self, URL, Response, caches: { keys: async () => ['private-trip-v14-final', 'econ-arcade-living-world-v2', 'econ-arcade-living-world-v3', 'econ-arcade-living-world-v4'], delete: async key => deleted.push(key) }
+    self, URL, Response, caches: { keys: async () => ['private-trip-v14-final', 'econ-arcade-living-world-v2', 'econ-arcade-living-world-v3', 'econ-arcade-living-world-v4', 'family-business-v1'], delete: async key => deleted.push(key) }
   });
   let activation; listeners.activate({ waitUntil: promise => { activation = promise; } }); await activation;
-  assert.deepEqual(deleted, ['econ-arcade-living-world-v2', 'econ-arcade-living-world-v3']);
+  assert.deepEqual(deleted, ['econ-arcade-living-world-v2', 'econ-arcade-living-world-v3', 'econ-arcade-living-world-v4']);
   for (const url of ['https://example.com/data', 'https://dgallemore.com/travel/private', 'https://dgallemore.com/tools/ai/']) {
     let intercepted = false; listeners.fetch({ request: { url, method: 'GET' }, respondWith: () => { intercepted = true; } });
     assert.equal(intercepted, false);

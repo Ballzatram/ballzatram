@@ -3,119 +3,44 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#09111d">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Econ Arcade">
+  <meta name="theme-color" content="#17241e">
+  <meta name="description" content="Start at the family deli. Rise through six ranks by experiencing economics in one persistent, pixel-art neighborhood. Osiris is your consigliere.">
   <link rel="manifest" href="manifest.webmanifest">
-  <link rel="stylesheet" href="world.css">
-  <title>Osiris · Econ Arcade</title></head>
+  <link rel="icon" href="../../assets/family-business/osiris.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="campaign.css?v=1">
+  <link rel="stylesheet" href="../../assets/ai-panel.css?v=host-tools-1">
+  <title>The Family Business · Econ Arcade</title>
+  <script defer src="campaign-data.js?v=1"></script>
+  <script defer src="campaign-engine.js?v=1"></script>
+  <script defer src="../../assets/ai-config.js"></script>
+  <script defer src="../../assets/ai-features.js"></script>
+  <script defer src="../../assets/subscription-client.js"></script>
+  <script defer src="../../assets/ai-client.js"></script>
+  <script defer src="../../assets/ai-panel.js"></script>
+  <script defer src="campaign.js?v=1"></script>
+</head>
 <body>
-<div class="sky"></div>
-<div class="app-shell">
-  <header class="topbar">
-    <button class="ghost icon" id="homeBtn" aria-label="Return to map">✦</button>
-    <div class="brand"><small>Ballzatram presents</small><strong>ECON ARCADE</strong></div>
-    <div class="chapter-badge" id="rankBadge">Wanderer</div>
+  <a class="skip-link" href="#main">Skip to the business</a>
+  <div class="top-rule"></div>
+  <header class="masthead">
+    <a class="brand" href="../index.html"><span class="brand-mark" aria-hidden="true">B</span><span>THE FAMILY<br><b>BUSINESS</b></span></a>
+    <span class="edition">AN ECON ARCADE STORY<br><span>Little Meridian · Est. 1984</span></span>
+    <div class="rank-seal"><span class="live-dot" aria-hidden="true"></span><span id="rank-label">Associate</span></div>
   </header>
-
-  <main>
-    <section id="world" class="screen active">
-      <div class="world-hero">
-        <div class="moon"></div>
-        <div class="kicker">The city of Meridian</div>
-        <h1>Every choice<br>leaves a mark.</h1>
-        <p>Three districts. Three kinds of power. One companion watching how you think.</p>
-      </div>
-
-      <article class="dialogue osiris-card">
-        <div class="portrait osiris-mark">O</div>
-        <div><div class="speaker">Osiris</div><p id="worldOsiris">You can read economics in a book. Or you can walk into a world where it pushes back. I prefer the second way.</p></div>
-      </article>
-
-      <section class="mission-card" id="missionCard">
-        <div class="mission-top"><span>OSIRIS // NEXT THREAD</span><span id="missionUrgency">NEW</span></div>
-        <h2 id="missionTitle">Market Row</h2>
-        <p id="missionReason">Start small. Twenty dollars, a battered cart, and a street full of people who owe you nothing.</p>
-        <button class="primary" id="missionBtn">Follow the thread →</button>
-      </section>
-
-      <div class="district-label">MERIDIAN</div>
-      <section class="districts">
-        <button class="district market" data-go="lemon">
-          <span class="district-number">01</span><span class="district-icon">🍋</span>
-          <strong>Market Row</strong><small>Lemon Empire</small><em id="marketStatus">A cart waits under the old clocktower.</em>
-        </button>
-        <button class="district bank" data-go="banker">
-          <span class="district-number">02</span><span class="district-icon">🏛️</span>
-          <strong>The Heights</strong><small>Central Banker</small><em id="bankStatus">The Republic is watching the next rate decision.</em>
-        </button>
-        <button class="district docks" data-go="dilemma">
-          <span class="district-number">03</span><span class="district-icon">⚓</span>
-          <strong>Low Harbor</strong><small>The Dilemma</small><em id="dockStatus">Promises travel faster than ships here.</em>
-        </button>
-      </section>
-
-      <section class="notebook">
-        <div class="notebook-head"><span>OSIRIS'S NOTEBOOK</span><button class="ghost small" id="toggleNotebook">open</button></div>
-        <div id="notebookBody" class="hidden">
-          <p class="muted">I keep the scores to myself. You get the useful part.</p>
-          <div class="two-col"><div><h3>Instincts I trust</h3><div id="strengthList"></div></div><div><h3>Patterns I want to test</h3><div id="gapList"></div></div></div>
-        </div>
-      </section>
-    </section>
-
-    <section id="lemon" class="screen">
-      <div class="scene market-scene">
-        <button class="back ghost" data-go="world">← Meridian</button>
-        <div class="scene-copy"><div class="kicker">MARKET ROW · CHAPTER <span id="lemonChapter">1</span></div><h1>Lemon Empire</h1><p id="lemonSceneText">The morning bell rings over Market Row. Your cart leans slightly left. You have $20, sixty paper cups, and exactly zero regular customers.</p></div>
-      </div>
-      <article class="dialogue character"><div class="portrait mina">M</div><div><div class="speaker">Mina Reyes · neighboring florist</div><p id="minaLine">“Theo charges three bucks across the street. He thinks tourists don't look at prices. Prove him wrong.”</p></div></article>
-      <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="lemonGuide">Before we touch a number: what do you think people on this street actually care about?</p></div></article>
-
-      <section class="story-panel">
-        <div class="headline" id="lemonHeadline">THE MERIDIAN MORNING // Clear skies over Market Row</div>
-        <p id="lemonEvent">Foot traffic is normal. Theo's cart is open across the square.</p>
-      </section>
-
-      <section id="lemonDecision" class="decision-card">
-        <div class="step">1 · MAKE A PLAN</div>
-        <div class="controls three"><label>Price per cup<input id="lemonPrice" type="number" value="2" step=".25" min=".25"></label><label>Cups to make<input id="lemonUnits" type="number" value="60" step="1" min="0"></label><label>Promotion spend<input id="lemonMarketing" type="number" value="0" step="1" min="0"></label></div>
-        <div class="prediction"><strong>What do you expect?</strong><select id="lemonPrediction"><option value="sellout">We'll sell out</option><option value="balanced" selected>We'll sell most of it</option><option value="surplus">We'll have lots left</option></select><textarea id="lemonTheory" placeholder="Why? Give Osiris your theory. Even a bad theory is useful."></textarea></div>
-        <button class="primary" id="runLemon">Open the cart</button>
-      </section>
-
-      <section id="lemonOutcome" class="hidden">
-        <article class="consequence"><div class="headline">END OF DAY // MARKET ROW</div><h2 id="lemonOutcomeTitle">The shutters come down.</h2><p id="lemonNarrative"></p><div class="stats"><span><small>Cash</small><strong id="lCash">—</strong></span><span><small>Sold</small><strong id="lSold">—</strong></span><span><small>Left</small><strong id="lUnsold">—</strong></span><span><small>Profit</small><strong id="lProfit">—</strong></span></div></article>
-        <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="lemonQuestion"></p></div></article>
-        <div class="reflection"><div class="step">2 · EXPLAIN WHAT HAPPENED</div><textarea id="lemonReflection" placeholder="What mechanism do you think caused that outcome?"></textarea><button class="primary" id="reflectLemon">Tell Osiris</button></div>
-      </section>
-      <section id="lemonDiscovery" class="discovery hidden"><div class="glyph">◇</div><div><small>IDEA DISCOVERED</small><h2 id="lemonConcept">Price Elasticity</h2><p id="lemonFeedback"></p><button class="primary" id="nextLemon">Next morning →</button></div></section>
-    </section>
-
-    <section id="banker" class="screen">
-      <div class="scene bank-scene"><button class="back ghost" data-go="world">← Meridian</button><div class="scene-copy"><div class="kicker">THE REPUBLIC OF ASTER · QUARTER <span id="bankQuarter">1</span></div><h1>The Mandate</h1><p>The marble halls are quiet before a rate decision. They won't stay that way.</p></div></div>
-      <article class="dialogue character"><div class="portrait lio">L</div><div><div class="speaker">Lio Chen · chief economist</div><p id="lioLine">“Governor, inflation is still above target. The labor market is holding. The problem is that markets already think they know what you'll do.”</p></div></article>
-      <section class="news-grid"><div class="metric"><small>Inflation</small><strong id="bInflation">3.4%</strong></div><div class="metric"><small>Unemployment</small><strong id="bUnemployment">4.4%</strong></div><div class="metric"><small>Growth</small><strong id="bGrowth">2.1%</strong></div><div class="metric"><small>Credibility</small><strong id="bCredibility">72%</strong></div></section>
-      <section class="story-panel"><div class="headline" id="bankHeadline">ASTER WIRE // Markets wait for the governor</div><p id="bankBrief">Two-year yields are steady. Editorials warn against declaring victory too early.</p></section>
-      <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="bankGuide">Your rate changes the economy slowly. Your words can move expectations before lunch. Tell me which one you're trying to move.</p></div></article>
-      <section class="decision-card"><div class="step">1 · SET POLICY</div><div class="controls three"><label>Policy rate<input id="bankRate" type="number" value="4.25" step=".25" min="0" max="20"></label><label>Guidance<select id="bankGuidance"><option value="neutral">Measured</option><option value="hawkish">Hawkish</option><option value="dovish">Dovish</option></select></label><label>Inflation forecast<input id="bankForecast" type="number" value="3.0" step=".1"></label></div><div class="prediction"><strong>What happens next?</strong><select id="bankPrediction"><option value="inflation_down">Inflation falls</option><option value="growth_down">Growth weakens first</option><option value="markets_first" selected>Markets move before the economy</option></select><textarea id="bankTheory" placeholder="What is your policy trying to accomplish, and through what channel?"></textarea></div><button class="primary" id="runBank">Walk to the podium</button></section>
-      <section id="bankOutcome" class="hidden"><article class="consequence"><div class="headline" id="bankAfterHeadline">ASTER WIRE // DECISION HITS THE TAPE</div><h2 id="bankOutcomeTitle"></h2><p id="bankNarrative"></p><div class="stats"><span><small>2Y yield</small><strong id="bYield">—</strong></span><span><small>Equities</small><strong id="bEquity">—</strong></span><span><small>Inflation</small><strong id="bAfterInflation">—</strong></span><span><small>Growth</small><strong id="bAfterGrowth">—</strong></span></div></article><article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="bankQuestion"></p></div></article><div class="reflection"><div class="step">2 · THE PRESS CONFERENCE</div><textarea id="bankReflection" placeholder="A reporter asks why the market moved before inflation did. How do you explain it?"></textarea><button class="primary" id="reflectBank">Answer the room</button></div></section>
-      <section id="bankDiscovery" class="discovery hidden"><div class="glyph">◇</div><div><small>IDEA DISCOVERED</small><h2 id="bankConcept">Policy Lags</h2><p id="bankFeedback"></p><button class="primary" id="nextBank">Next quarter →</button></div></section>
-    </section>
-
-    <section id="dilemma" class="screen">
-      <div class="scene docks-scene"><button class="back ghost" data-go="world">← Meridian</button><div class="scene-copy"><div class="kicker">LOW HARBOR · ENCOUNTER <span id="dilemmaRound">1</span></div><h1>Terms of Trust</h1><p>In Low Harbor, contracts matter. Memory matters more.</p></div></div>
-      <section class="opponent-card"><div class="portrait mara" id="oppPortrait">M</div><div><div class="speaker" id="oppName">Mara Voss</div><h2 id="oppRole">Freight broker. Patient. Dangerous.</h2><p id="oppBio">Mara built her business by remembering every favor and every betrayal.</p><div class="relationship-line"><span id="relationshipLabel">Strangers</span><span id="trustText">Trust uncertain</span></div></div></section>
-      <article class="dialogue character"><div class="portrait mara">M</div><div><div class="speaker" id="oppSpeaker">Mara</div><p id="oppDialogue">“One container. Two manifests. If neither of us talks, we both make money. I can live with that.”</p></div></article>
-      <article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris · private channel</div><p id="dilemmaGuide">Don't ask whether cooperation is nice. Ask what the other person expects you to do after today.</p></div></article>
-      <section class="decision-card"><div class="step">1 · CHOOSE WHAT THEY HEAR</div><label>Before the deal<select id="promise"><option value="none">Make no promise</option><option value="cooperate">Promise to honor the deal</option><option value="defect">Warn them you'll protect yourself</option></select></label><div class="prediction"><strong>What do you think they'll do?</strong><select id="oppPrediction"><option value="cooperate">Honor the deal</option><option value="defect">Betray me</option></select><textarea id="dilemmaTheory" placeholder="Why do you trust or distrust them?"></textarea></div><div class="actions"><button class="good" id="cooperate">Honor the deal</button><button class="bad" id="defect">Betray them</button></div></section>
-      <section id="dilemmaOutcome" class="hidden"><article class="consequence"><div class="headline">LOW HARBOR // WORD TRAVELS</div><h2 id="dilemmaOutcomeTitle"></h2><p id="dilemmaNarrative"></p><div class="stats"><span><small>You</small><strong id="dYou">—</strong></span><span><small>Them</small><strong id="dThem">—</strong></span><span><small>Trust</small><strong id="dTrust">—</strong></span><span><small>Reputation</small><strong id="dRep">—</strong></span></div></article><article class="dialogue osiris-card"><div class="portrait osiris-mark">O</div><div><div class="speaker">Osiris</div><p id="dilemmaQuestion"></p></div></article><div class="reflection"><div class="step">2 · WHAT DID THIS ROUND CHANGE?</div><textarea id="dilemmaReflection" placeholder="Would you make the same choice if you knew you'd meet again tomorrow? Why?"></textarea><button class="primary" id="reflectDilemma">Answer Osiris</button></div></section>
-      <section id="dilemmaDiscovery" class="discovery hidden"><div class="glyph">◇</div><div><small>IDEA DISCOVERED</small><h2 id="dilemmaConcept">Reputation</h2><p id="dilemmaFeedback"></p><button class="primary" id="nextDilemma">Next encounter →</button></div></section>
-    </section>
+  <div class="nav-bar"><nav aria-label="Family business">
+    <button data-view="desk" aria-current="page">The neighborhood</button>
+    <button data-view="ledger">The ledger</button>
+    <button data-view="path">Your seat at the table</button>
+    <button data-view="library">The Econ library</button>
+  </nav><span id="save-status" role="status">Your decisions stay on this device</span></div>
+  <main id="main" tabindex="-1">
+    <div id="storage-warning" class="notice warning" role="alert" hidden></div>
+    <div id="message" class="notice" role="status" hidden></div>
+    <div id="app"></div>
+    <noscript><section class="paper"><h1>The Family Business</h1><p>Turn on JavaScript to play this browser-based campaign. Your decisions are saved on this device. You can also visit the <a href="../index.html">Econ library overview</a>.</p></section></noscript>
   </main>
-  <footer>Experimental build · progress stays on this device · <a href="../index.html">Econ Arcade overview</a></footer>
-</div>
-<script src="world.js"></script>
+  <footer class="site-footer"><span>Family comes first. Understanding follows.</span><span><a href="../index.html">Econ Arcade</a> <span aria-hidden="true">/</span> <a href="../../index.html">Home</a> <span aria-hidden="true">/</span> <a href="../../docs/family-business.md">About this model</a></span></footer>
+  <dialog id="reset-dialog" aria-labelledby="reset-title"><form method="dialog"><p class="eyebrow">A new family</p><h2 id="reset-title">Close these books?</h2><p>This replaces this device’s Family Business save. Export a backup first if you want to return. Other games’ progress stays intact.</p><div class="actions"><button value="cancel">Keep playing</button><button class="danger" id="confirm-reset" value="reset">Start a new family</button></div></form></dialog>
+  <dialog id="import-dialog" aria-labelledby="import-title"><form method="dialog"><p class="eyebrow">Restore the books</p><h2 id="import-title">Use this backup?</h2><p id="import-summary"></p><p>The backup has been checked. Restoring replaces this device’s current Family Business save.</p><div class="actions"><button value="cancel">Keep current family</button><button class="primary" id="confirm-import" value="restore">Restore this family</button></div></form></dialog>
 </body>
 </html>
