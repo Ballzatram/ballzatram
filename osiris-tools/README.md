@@ -31,7 +31,7 @@ The server binds to `127.0.0.1:8787`; routes are `/mcp` and `/health`. The build
 
 The `Osiris tools` workflow validates PRs and deploys `master` only if existing repository secrets `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID` are configured. Missing credentials produce an explicit activation-pending result. No paid plan, database, or custom domain is provisioned.
 
-The Worker is named `ballzatram-osiris-tools`, has a 10 ms CPU ceiling, no environment bindings, and application observability disabled. Hosting quotas/costs still depend on the existing account. Zero model calls does not mean unlimited free hosting.
+The Worker is named `ballzatram-osiris-tools`, has no environment bindings, and has application observability disabled. On Workers Free, Cloudflare enforces its 10 ms CPU limit automatically. Custom CPU limits are omitted because Cloudflare only accepts them on paid plans. Hosting quotas/costs still depend on the existing account. Zero model calls does not mean unlimited free hosting.
 
 After successful deployment:
 
