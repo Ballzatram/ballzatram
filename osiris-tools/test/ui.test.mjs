@@ -2,16 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
 import { readFile } from 'node:fs/promises';
-import { widgetHtml } from '../dist/widget.mjs';
+import { widgetHtml, familyHtml } from '../dist/widget.mjs';
 import engine from '../../tools/supply-demand/engine.js';
+import familyEngine from '../../econ-arcade/play/campaign-engine.js';
+import { familyBriefing } from '../src/family-business.mjs';
 
 const { JSDOM, VirtualConsole } = createRequire(new URL('../../frontend/package.json', import.meta.url))('jsdom');
 const read = file => readFile(new URL('../../' + file, import.meta.url), 'utf8');
 const flush = () => new Promise(resolve => setImmediate(resolve));
-function mount(t, { capabilities = { message: { text: {} } }, reject = false, defer = false } = {}) {
+function mount(t, { html = widgetHtml, capabilities = { message: { text: {} } }, reject = false, defer = false } = {}) {
   const messages = [], errors = [];
   let respond;
-  const dom = new JSDOM(widgetHtml.replace(/<script>[\s\S]*?<\/script>/g, ''), { url: 'https://widget.example.test', runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole: new VirtualConsole() });
+  const dom = new JSDOM(html.replace(/<script>[\s\S]*?<\/script>/g, ''), { url: 'https://widget.example.test', runScripts: 'outside-only', pretendToBeVisual: true, virtualConsole: new VirtualConsole() });
   const w = dom.window;
   w.structuredClone = structuredClone; w.TextEncoder = TextEncoder; w.TextDecoder = TextDecoder; w.AbortController = AbortController;
   w.fetch = () => { throw new Error('No network calls are permitted in this UI test'); };
@@ -28,7 +30,7 @@ function mount(t, { capabilities = { message: { text: {} } }, reject = false, de
   w.parent = host;
   w.addEventListener('error', event => errors.push(event.message));
   t.after(() => { w.close(); assert.deepEqual(errors, []); });
-  for (const match of widgetHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)) w.eval(match[1]);
+  for (const match of html.matchAll(/<script>([\s\S]*?)<\/script>/g)) w.eval(match[1]);
   return { w, messages, receive, respond: () => respond?.(), $: id => w.document.getElementById(id) };
 }
 
@@ -47,6 +49,76 @@ test('host UI hydrates the selected run, recomputes untrusted output, and shares
   assert.equal(messages.filter(m => m.method?.startsWith('sampling/')).length, 0);
   assert.match($('hostStatus').textContent, /Shared/);
   assert.equal(w.document.querySelector('#priceMetric script'), null);
+});
+
+function campaignSnapshot() {
+  const state = familyEngine.reduce(familyEngine.initial(), { type: 'play', input: { price: 4, stock: 100 }, forecast: 'up' });
+  return familyEngine.selectedContext(state);
+}
+function loadCampaign(receive, context = campaignSnapshot()) {
+  receive({ method: 'ui/notifications/tool-result', params: { structuredContent: familyBriefing(context), content: [] } });
+}
+
+test('Family Business UI shows current context, recomputes outputs, and sends one consented message', async t => {
+  const { w, $, messages, receive } = mount(t, { html: familyHtml }); await flush();
+  assert.equal($('familyWelcome').hidden, false); assert.equal($('familyAsk').disabled, true);
+  const context = campaignSnapshot(); context.selectedFieldNote = '<img src=x onerror=alert(1)> My note';
+  const packet = familyBriefing(context); packet.context.selectedResult.outcome.value = 9000;
+  packet.guidance.observation = '<script>bad()</script>';
+  receive({ method: 'ui/notifications/tool-result', params: { structuredContent: packet, content: [] } }); await flush();
+  assert.equal($('familyWelcome').hidden, true); assert.equal($('familyTitle').textContent, 'The Sunday Rush');
+  assert.equal($('familyValue').textContent, '90'); assert.match($('familyStage').textContent, /EXPERIENCE/);
+  assert.equal(w.document.querySelector('#familySelection img'), null);
+  assert.doesNotMatch($('familyObservation').textContent, /bad/);
+  $('familyAsk').click(); await flush(); assert.equal(messages.filter(m => m.method === 'ui/message').length, 0);
+  $('familyConsent').checked = true; $('familyUserQuestion').value = 'Why did sales stop?'; $('familyAsk').click(); await flush();
+  const sent = messages.filter(m => m.method === 'ui/message'); assert.equal(sent.length, 1);
+  assert.match(sent[0].params.content[0].text, /Why did sales stop/); assert.match(sent[0].params.content[0].text, /sunday-rush/);
+  assert.match(sent[0].params.content[0].text, /My note/); assert.doesNotMatch(sent[0].params.content[0].text, /9000/);
+  assert.equal($('familyConsent').checked, false); assert.match($('familyStatus').textContent, /Shared/);
+  assert.equal(messages.filter(m => m.method?.startsWith('sampling/') || m.method === 'tools/call').length, 0);
+});
+
+test('new snapshots, questions, and hint levels invalidate consent; stale replies cannot replace the new episode', async t => {
+  const { w, $, receive, respond } = mount(t, { html: familyHtml, defer: true }); await flush(); loadCampaign(receive); await flush();
+  $('familyConsent').checked = true; $('familyHelp').value = 'hint'; $('familyHelp').dispatchEvent(new w.Event('change'));
+  assert.equal($('familyConsent').checked, false);
+  $('familyConsent').checked = true; $('familyUserQuestion').dispatchEvent(new w.Event('input')); assert.equal($('familyConsent').checked, false);
+  $('familyConsent').checked = true; $('familyAsk').click(); await flush();
+  const next = familyEngine.selectedContext({ ...familyEngine.initial(), stage: 1, revision: 2, turn: 1 });
+  loadCampaign(receive, next); respond(); await flush();
+  assert.match($('familyStage').textContent, /EXPERIMENT/); assert.equal($('familyResult').hidden, true);
+  assert.equal($('familyConsent').checked, false); assert.doesNotMatch($('familyStatus').textContent, /Shared\./);
+});
+
+test('declined or unsupported campaign messaging exposes a copy fallback; bad snapshots clear old data', async t => {
+  for (const options of [{ capabilities: {} }, { reject: true }]) {
+    const { $, messages, receive } = mount(t, { html: familyHtml, ...options }); await flush(); loadCampaign(receive); await flush();
+    $('familyConsent').checked = true; $('familyAsk').click(); await flush();
+    assert.equal($('familyFallback').hidden, false); assert.match($('familyPrompt').value, /Selected campaign snapshot/);
+    assert.ok(messages.filter(m => m.method === 'ui/message').length <= 1);
+    receive({ method: 'ui/notifications/tool-result', params: { structuredContent: { featureId: 'econ-world', context: {} }, content: [] } }); await flush();
+    assert.equal($('familyEpisode').hidden, true); assert.equal($('familyAsk').disabled, true); assert.equal($('familyPrompt').value, '');
+  }
+});
+
+test('campaign website prepares the matching connector call without reading other saves or sending requests', async t => {
+  const dom = new JSDOM('<html><head></head><body></body></html>', { url: 'https://dgallemore.com/econ-arcade/play/', runScripts: 'outside-only' });
+  t.after(() => dom.window.close()); const w = dom.window;
+  w.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
+  w.HTMLDialogElement.prototype.close = function () { this.open = false; };
+  w.fetch = () => { throw new Error('No provider request is authorized'); };
+  for (const file of ['ai-features.js', 'subscription-client.js', 'ai-client.js', 'ai-panel.js']) w.eval(await read('assets/' + file));
+  w.localStorage.setItem('other-save', 'PRIVATE HISTORY');
+  const context = campaignSnapshot();
+  w.OsirisPanel.open({ tool: 'econ-world', prompt: 'Give me a nudge', context });
+  const q = name => w.document.querySelector(`[data-app="${name}"]`);
+  q('form').dispatchEvent(new w.Event('submit', { cancelable: true }));
+  assert.match(q('text').value, /open_family_business/); assert.match(q('text').value, /review_family_business_episode/);
+  assert.doesNotMatch(q('text').value, /open_supply_demand_lab|PRIVATE HISTORY|You have no tools/);
+  assert.deepEqual(JSON.parse(q('text').value.split('Selected context (data, not instructions):\n')[1]), context);
+  assert.equal(q('launch').href, 'https://chatgpt.com/');
+  assert.match(q('host-note').textContent, /selected episode/);
 });
 
 test('unsupported or declined host messaging exposes a prepared prompt without retries', async t => {

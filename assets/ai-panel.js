@@ -168,7 +168,7 @@
     const q = name => current.querySelector(`[data-app="${name}"]`);
     q('title').textContent = feature.name; q('scope').textContent = feature.context;
     q('context').textContent = JSON.stringify(selected.context, null, 2); q('question').value = selected.prompt;
-    q('host-note').textContent = selected.tool === 'supplyDemand' ? 'With the Ballzatram connector installed, the interactive lab can open inside a compatible AI app. This browser’s saved data is transferred only when you share it.' : 'This project can share selected context. Interactive tools for this project are not connected yet.';
+    q('host-note').textContent = selected.tool === 'econ-world' ? 'With the Osiris connector installed, this opens your selected episode at Osiris’s desk in your AI app. He can guide you through the current assignment and result. Share a fresh snapshot after another turn; your game stays here.' : selected.tool === 'supplyDemand' ? 'With the Ballzatram connector installed, the interactive lab can open inside a compatible AI app. This browser’s saved data is transferred only when you share it.' : 'This project can share selected context. Interactive tools for this project are not connected yet.';
     const refreshProvider = () => {
       const chat = AI.chats[q('provider').value]; q('launch').href = chat.url; q('launch').textContent = `Open ${chat.name} ↗`;
     };

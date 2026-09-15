@@ -1,10 +1,12 @@
 # Current integration status — September 2026
 
-The shared registry separates `contextReady` from `hostTools`. Seven projects have explicit context adapters; only Supply & Demand has interactive host tools in this release. Nine others remain disabled pending feature design. `/tools/ai/connect.html` shows whether the remote connector has been activated; code readiness does not establish live ChatGPT/Claude installation or phone acceptance.
+The shared registry separates `contextReady` from `hostTools`. Eight projects have explicit context adapters; Supply & Demand and The Family Business have interactive host tools. Eight others remain disabled pending feature design. `/tools/ai/connect.html` shows whether the remote connector has been activated; code readiness does not establish live ChatGPT/Claude installation or phone acceptance.
 
 Supply & Demand now shares one deterministic engine among the website, MCP service, and host UI. Its snapshot includes schema/engine versions, revision, selected inputs, computed baseline/current results, and limitations. The visible run is selected directly even when storage is blocked. Reset invalidates the previous selection; comparisons in AI tools cannot change scores. The host UI offers a small hint, explanation, and debrief, with explicit sharing and host-composer fallback.
 
-The next feature is Congressional Accountability: keep the selected bill version, exact section locator, source URL, and provenance; design any research or draft-saving tools separately with authorization before enabling them. There is no general-purpose read/save endpoint in this pilot.
+The Family Business companion reviews the current episode, decisions, visible ledger, and learning stage. Episode outcomes are recomputed, while the wider ledger and progression remain explicitly visitor-reported. Osiris provides stage-aware nudges, additional clues, and debriefs inside the visitor’s AI app. The website prepares the exact connector call; saves and answers are not synchronized.
+
+Further Congressional Accountability integration remains separate work: keep the selected bill version, exact section locator, source URL, and provenance; design any research or draft-saving tools separately with authorization before enabling them. There is no general-purpose read/save endpoint in this pilot.
 
 The detailed inventory below remains the feature-design backlog. “Configured” means an explicit context contract, not a universal account connection. For the current transport and deployment design, see [Bring your own AI](bring-your-own-ai.md) and [Osiris tools](../osiris-tools/README.md).
 
@@ -12,11 +14,11 @@ The detailed inventory below remains the feature-design backlog. “Configured�
 
 # Project AI configuration
 
-Updated September 13, 2026. [Open the site inventory](https://dgallemore.com/tools/ai/projects.html).
+Updated September 15, 2026. [Open the site inventory](https://dgallemore.com/tools/ai/projects.html).
 
 Each project needs a defined purpose, selected-data adapter, instructions, and rules for actions or saved memory. The visitor’s AI app supplies model access; the public connector supplies only its advertised project tools.
 
-**Configured below means the code adapter and instructions exist.** It does not mean a live runtime has been deployed, a user has signed in, or that every feature in the project has AI support. The default prepares context in the current page for the visitor’s AI app; the Supply & Demand connector also provides a host UI. It does not take actions or persist a conversation.
+**Configured below means the code adapter and instructions exist.** It does not mean a live runtime has been deployed, a user has signed in, or that every feature in the project has AI support. The default prepares context in the current page for the visitor’s AI app; Supply & Demand and The Family Business also provide host UIs. It does not take actions or persist a conversation.
 
 ## Configured in this implementation
 
@@ -27,6 +29,7 @@ Each project needs a defined purpose, selected-data adapter, instructions, and r
 | Portfolio Lab | Latest explicitly selected saved portfolio run | Educational explanation of supplied results and assumptions | Benchmarks, risk explanation, questions that build investing literacy |
 | Scenario Stress Lab | Latest explicitly selected saved scenario run | Explains fixed factor sensitivities and illustrative bands | Scenario critique and treatment of uncertainty; no invented security exposures |
 | Supply & Demand Lab | Visible run with versioned input sequence and deterministic results | Shared interactive website/MCP lab; staged hints, explanation, and debrief | Hint stages, misconception detection, mastery evidence |
+| The Family Business | Current episode, stage, visible ledger, selected decision/result, optional current field note | Osiris’s desk in the AI app; recomputed episode outcome and progressive guidance | Native website conversation and optional cross-device memory |
 | Reports | Explicitly selected saved report draft | Separate critique/explanation; never edits or publishes the draft | Reviewable suggested edits and an explicit apply action |
 | Next.js workshop guide | Page ID and selected workflow only | Opens the shared panel in place | Data adapters for Quant Library, market analytics, land research; currently cannot see charts or uploads |
 
@@ -38,7 +41,6 @@ Saved-run buttons fail visibly when no run exists. Context is shown before a que
 | --- | --- | --- |
 | Central Banker | Deterministic policy simulation and feedback | Adviser role, policy-notebook fields, hint timing, debriefs, and player decision ownership |
 | Prisoner's Dilemma | Opponent archetypes are game logic | Tutor versus opponent roles, permissible history, hidden-information boundaries, strategy explanation |
-| Econ Arcade world | Scripted/local Osiris dialogue and progression | Character voices, shared learner context, reflective questions, mastery evidence |
 | Strategy Studio / Invisible Hands | Local learning engines and explanations | Scenario-specific context, spoiler rules, progression across concepts |
 | Parcel Intelligence | Legacy user-key backend or deterministic fallback | Verified sources, research permissions/actions, source-linked memo review |
 | Reading Room | Local reader progression; no reading history collected by this connection | Recommendation sources, spoiler preferences, finished-book evidence, private reader memory |

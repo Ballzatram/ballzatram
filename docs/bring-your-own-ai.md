@@ -4,7 +4,7 @@ The default is **the visitor's AI app runs the model; Ballzatram supplies select
 
 | Route | Interface and answer | Model usage | Current status |
 | --- | --- | --- | --- |
-| Interactive MCP App | Shared Supply & Demand Lab inside a compatible ChatGPT/Claude host; answer in its conversation | Visitor's AI account | Implemented and protocol-tested; deployment and host installation are separate activation steps |
+| Interactive MCP App | The Family Business companion and Supply & Demand Lab inside a compatible ChatGPT/Claude host; answer in its conversation | Visitor's AI account | Deployed on the existing Worker; host installation or connector refresh is required |
 | Selected context | Prepare in the current project, copy to any chat app | Visitor's chat account | Works without a backend; no automatic return/sync |
 | Optional WebMCP | Visible lab in a supporting AI browser | Visitor's AI host | Feature-detected; ordinary browser/phone users retain the local lab and copy flow |
 | Local preview | Fixed checklist or deterministic simulation | No model calls | Available for testing |
@@ -21,15 +21,21 @@ The user chooses a small hint, explanation, or debrief; reviews the exact run; t
 
 A website run is transferred explicitly by copying its prepared prompt or downloading its bounded JSON context. A connected tool can reopen that sequence in the AI app. The remote host cannot see local storage. Provider chat history, memory, custom GPTs, and every native provider tool are not imported.
 
+## The Family Business
+
+`open_family_business` and `review_family_business_episode` consume a reviewed current-episode snapshot prepared by the campaign’s “Ask with my AI” button. Osiris’s desk shows the stage, assignment, visible ledger, selected plan and outcome, and a built-in starting question. The player chooses a nudge, clue, or debrief, reviews the snapshot, and explicitly sends one message to the host model. No snapshot means sharing instructions, not fabricated progress.
+
+The shared campaign engine recomputes the episode result. The wider ledger, business reports, and progression are labeled visitor-reported. Full saves, other notes, and future state are excluded; the current note is opt-in. The companion has no save/decision tool, persistence, model client, or provider credential. Responses stay in the AI conversation. Share another snapshot after progressing on the website, and refresh existing connector installations to discover the new tools.
+
 ## Per-project setup
 
-Seven adapters cover the workspace, selected Observatory bill section, portfolio result, scenario result, Supply & Demand run, report draft, and Next.js workflow guide. The registry separates `contextReady` from `hostTools`; only Supply & Demand advertises interactive tools. Nine remaining entries stay disabled pending focused design.
+Eight adapters cover the workspace, selected Observatory bill section, portfolio result, scenario result, Supply & Demand run, report draft, Next.js workflow guide, and Family Business episode. The registry separates `contextReady` from `hostTools`; Supply & Demand and The Family Business advertise interactive tools. Eight remaining entries stay disabled pending focused design.
 
-Congressional Accountability is next: bill version, exact section locator, source URL, and provenance remain explicit. Research actions, persistent drafts, and reviewed edits require their own authorization and verification design. See the [project inventory](ai-project-configuration.md).
+Further Congressional Accountability integration remains separate: bill version, exact section locator, source URL, and provenance remain explicit. Research actions, persistent drafts, and reviewed edits require their own authorization and verification design. See the [project inventory](ai-project-configuration.md).
 
 ## Account and data boundaries
 
-- Visitors authenticate with their own AI app. Ballzatram's public teaching connector receives no provider passwords or subscription tokens. Personal records and write tools are absent; adding them requires OAuth authorization and user-scoped storage.
+- Visitors authenticate with their own AI app. Ballzatram's public teaching connector receives no provider passwords or subscription tokens. Only explicit snapshots are accepted; the service cannot look up personal records or saved games. Future persistent private records or write tools require separate authorization and user-scoped storage.
 - MCP application code does not persist requests. Hosting infrastructure may retain operational metadata under its policies; the AI host processes shared context under its own retention policy.
 - Website preferences allowlist provider/mode choices. Selected context is previewed and named credential/settings fields are excluded. Unselected project history is not scanned; model/source text is rendered as text.
 - OpenRouter PKCE and direct API keys remain distinct options with four-hour tab credentials bound to their provider/relay. Their credits are separate from consumer subscriptions. Connection/model checks do not request generation.

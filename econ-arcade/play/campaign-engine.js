@@ -342,16 +342,20 @@
   }
   function selectedContext(state, includeNote = false) {
     const m = mission(state);
-    const context = { campaign: 'The Family Business', rank: D.ranks[state.rank].name, episode: m.title,
+    const context = { schemaVersion: 1, campaignVersion: VERSION, campaign: 'The Family Business', episodeId: m.id,
+      revision: state.revision, turn: state.turn, phase: state.phase, practice: state.practice, finished: state.finished,
+      rank: D.ranks[state.rank].name, episode: m.title,
       stage: ['observe', 'controlled experiment', 'transfer'][state.stage], brief: state.stage === 2 ? m.shift : m.brief,
       assignment: state.stage === 0 ? 'Experience a result and notice a pattern.' : state.stage === 1 ? `Change exactly one control and predict the direction of ${m.metric.toLowerCase()} versus the standing order.` : m.target,
       ledger: { cash: state.cash, debt: state.debt, trust: state.trust }, concepts: m.concepts,
       limits: 'Fictional deterministic teaching model. No random shocks, real forecasts, or complete model of an economy. No assistant may choose, execute, score, save, or promote on behalf of the player.' };
     if (state.latest) {
       const r = state.latest;
-      context.selectedResult = { turn: r.turn, plan: copy(r.input), comparisonPlan: copy(r.referenceInput), environment: copy(r.environment),
+      context.selectedResult = { turn: r.turn, before: copy(r.before), plan: copy(r.input), comparisonPlan: copy(r.referenceInput), environment: copy(r.environment),
         forecast: r.forecast, observedDirection: r.expected, outcome: { metric: m.metric, value: r.actual.value, reference: r.reference.value, facts: copy(r.actual.facts), story: r.actual.story },
-        businessReports: copy(r.ongoing), ledgerChange: r.cashChange, evidence: { predictionMatched: r.correct, experimentCompleted: r.qualifies } };
+        businessReports: copy(r.ongoing), episodeSurplus: r.actual.profit, newBorrowing: r.actual.borrowing,
+        interestPaid: r.interestPaid, unpaidInterest: r.capitalized, ledgerChange: r.cashChange,
+        evidence: { predictionMatched: r.correct, experimentCompleted: r.qualifies } };
     }
     if (includeNote) context.selectedFieldNote = state.notes[m.id] || '';
     return context;
