@@ -20,13 +20,13 @@ function page(file, prepare = () => {}) {
   }
   return dom;
 }
-const visiblePrograms = document => [...document.querySelectorAll('.program95')].filter(card => !card.hidden);
+const visiblePrograms = document => [...document.querySelectorAll('.frontier-program')].filter(card => !card.hidden);
 
 for (const file of ['index.html']) {
   test(`${file}: search, category, and empty states preserve real links`, () => {
     const dom = page(file); const { document, Event } = dom.window;
     const search = document.getElementById('program-search');
-    const count = document.querySelectorAll('.program95').length;
+    const count = document.querySelectorAll('.frontier-program').length;
     assert.ok(count >= 7);
     assert.equal(document.querySelector('[data-enhanced]').hidden, false);
     search.value = 'central banker'; search.dispatchEvent(new Event('input'));
@@ -47,23 +47,41 @@ test('Homepage is fully navigable before JavaScript runs', () => {
   const dom = new JSDOM(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
   assert.equal(visiblePrograms(dom.window.document).length, 17);
   assert.equal(dom.window.document.querySelector('[data-enhanced]').hidden, true);
-  assert.ok([...dom.window.document.querySelectorAll('.program95 a')].every(a => a.getAttribute('href')));
+  assert.ok([...dom.window.document.querySelectorAll('.frontier-program a')].every(a => a.getAttribute('href')));
   dom.window.close();
 });
 
-test('Homepage Start menu supports Escape, outside click, and keyboard focus', () => {
-  const dom = page('index.html'); const { document, KeyboardEvent, MouseEvent } = dom.window;
-  Object.defineProperty(document, 'currentScript', { value: document.querySelector('script[src$="shell.js"]'), configurable: true });
-  dom.window.eval(fs.readFileSync(path.join(root, 'assets/win95/shell.js'), 'utf8'));
-  const start = document.querySelector('.start95'); const menu = document.getElementById('start-menu95');
-  start.click(); assert.equal(menu.hidden, false); assert.equal(start.getAttribute('aria-expanded'), 'true');
-  assert.equal(menu.querySelector('a').href, 'https://dgallemore.com/index.html');
-  document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-  assert.equal(menu.hidden, true); assert.equal(document.activeElement, start);
-  start.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowDown' }));
-  assert.equal(document.activeElement, menu.querySelector('a'));
-  document.body.dispatchEvent(new MouseEvent('click', { bubbles: true })); assert.equal(menu.hidden, true);
+test('Homepage filters reset together and restore keyboard focus', () => {
+  const dom = page('index.html'); const { document, Event, KeyboardEvent } = dom.window;
+  const search = document.getElementById('program-search');
+  document.querySelector('[data-filter="Games"]').click();
+  search.value = 'portfolio'; search.dispatchEvent(new Event('input'));
+  assert.equal(visiblePrograms(document).length, 0);
+  document.getElementById('clear-filters').click();
+  assert.equal(visiblePrograms(document).length, 17);
+  assert.equal(document.querySelector('[data-filter="all"]').getAttribute('aria-pressed'), 'true');
+  assert.equal(document.getElementById('no-programs').hidden, true);
+  assert.equal(document.activeElement, search);
+  search.value = 'central banker'; search.dispatchEvent(new Event('input'));
+  assert.equal(document.getElementById('program-count').textContent, '1 project of 17');
+  search.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
+  assert.equal(visiblePrograms(document).length, 17);
   dom.window.close();
+});
+
+test('Desert motion is opt-in and respects reduced-motion preferences', () => {
+  for (const reduced of [false, true]) {
+    const dom = page('index.html', win => { win.matchMedia = () => ({ matches: reduced, addEventListener() {} }); });
+    const { document } = dom.window;
+    const button = document.getElementById('frontier-motion');
+    assert.equal(document.body.dataset.motion, 'off');
+    button.click();
+    assert.equal(document.body.dataset.motion, reduced ? 'off' : 'on');
+    assert.equal(button.getAttribute('aria-pressed'), String(!reduced));
+    button.click();
+    assert.equal(document.body.dataset.motion, 'off');
+    dom.window.close();
+  }
 });
 
 test('Portfolio demo computes and escapes user-controlled symbols and benchmark warnings', () => {

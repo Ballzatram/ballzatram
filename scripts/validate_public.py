@@ -41,8 +41,8 @@ def validate():
             failures.append(f'{path.relative_to(output)}: duplicate id {duplicate}')
         for value in parsed.urls:
             url = urlsplit(value)
-            if path != output / 'index.html' and 'assets/win95/' in url.path:
-                failures.append(f'{path.relative_to(output)}: desktop assets belong only on the homepage')
+            if path != output / 'index.html' and any(theme in url.path for theme in ('assets/win95/', 'assets/frontier/')):
+                failures.append(f'{path.relative_to(output)}: homepage theme assets belong only on the homepage')
             if url.scheme or url.netloc:
                 continue
             target = (output / unquote(url.path).lstrip('/')) if url.path.startswith('/') else path.parent / unquote(url.path)

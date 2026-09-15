@@ -2,9 +2,9 @@ import { BallzatramLaunchpad } from "@/components/launchpad/BallzatramLaunchpad"
 import { pageMetadata } from "@/lib/pageMetadata";
 
 export const metadata = pageMetadata({
-  title: "Ballzatram | Tool Launchpad",
+  title: "Devin Gallemore | A digital frontier",
   description:
-    "A clean launchpad for Ballzatram's AI-guided workbenches, simulations, games, and strange little tools.",
+    "An independent outpost for curious minds. Tools, economics games, AI experiments, and projects by Devin Gallemore.",
   path: "/",
 });
 

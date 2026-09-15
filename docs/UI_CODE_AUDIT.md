@@ -1,5 +1,7 @@
 # Windows 95 UI and code cleanup — September 12, 2026
 
+> Historical audit. On September 15, the homepage moved to the retro cowboy theme in `assets/frontier/`. Use `python scripts/build_frontier.py` to regenerate it; `build_desktop.py` is now a compatibility entry point. The homepage-only boundary, catalog, project routes, and functional audit fixes below remain in place. The Start menu was replaced with direct navigation; filter-reset and optional-motion checks replace its retired behavior checks.
+
 ## What changed
 
 The public GitHub Pages site now uses a Windows 95 desktop: teal background, navy window title bars, beveled gray controls, original pixel-style SVG icons, desktop shortcuts, and a keyboard-accessible Start menu. Only the homepage is generated from `data/public-programs.json`. All program links remain available without JavaScript; search and category filters progressively enhance those pages.

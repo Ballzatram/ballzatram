@@ -2,9 +2,11 @@
 
 Public home: [dgallemore.com](https://dgallemore.com/) — Devin Gallemore’s projects, portfolio, games, and tools. See [domain and deployment setup](DEPLOYMENT.md) for the Namecheap and GitHub Pages configuration.
 
-## Windows 95 desktop
+## Retro cowboy homepage
 
-Only the homepage uses the Windows 95 desktop, searchable program directory, and Start menu. Tools, games, Congressional Accountability, the portfolio, and supporting pages retain their independent designs. `data/public-programs.json` generates the homepage with `python scripts/build_desktop.py`; the generator does not rewrite internal pages. Next.js likewise uses the desktop only at `/`, with its original application layout on other routes. Desktop CSS tokens and general element rules are scoped to the homepage.
+The homepage is an 8-bit Western outpost: a pixel cowboy at sunset, Arizona mesas, warm paper colors, and a searchable project board. Tools, games, Congressional Accountability, the portfolio, and supporting pages retain their independent designs. `data/public-programs.json` generates the homepage with `python scripts/build_frontier.py`; the generator does not rewrite internal pages. The old `build_desktop.py` command delegates to the new generator. Next.js uses the same artwork and scoped theme at `/`, with its original catalog and independent application layout on other routes.
+
+Homepage assets live in `assets/frontier/`. Pixel artwork is local SVG; the subsetted Press Start 2P font is self-hosted with its OFL license. All public project links work without JavaScript. Search, category filters, and a reset control progressively enhance the board. Optional desert-breeze motion is off initially, never persisted, and respects reduced-motion preferences. The homepage makes no network requests to AI providers.
 
 See [UI and code audit](docs/UI_CODE_AUDIT.md) for fixes, verification, and maintenance instructions. `python scripts/validate_public.py` builds and checks the exact GitHub Pages artifact before publication.
 
