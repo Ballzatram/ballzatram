@@ -121,7 +121,7 @@ test('AI context contains only the current selected episode and optional note, w
   assert.doesNotMatch(minimal, /PRIVATE OTHER NOTE|MY SELECTED NOTE|SECRET|journal|events/);
   const withNote = JSON.stringify(E.selectedContext(s, true)); assert.match(withNote, /MY SELECTED NOTE/); assert.doesNotMatch(withNote, /PRIVATE OTHER NOTE/);
   const features = require('../assets/ai-features.js'); assert.equal(features.get('econ-world').enabled, true);
-  assert.equal(features.capabilities('econ-world').hostTools, false); assert.equal(features.capabilities('econ-world').writes, false);
+  assert.equal(features.capabilities('econ-world').hostTools, true); assert.equal(features.capabilities('econ-world').writes, false);
 });
 function page(options = {}) {
   const file = path.join(root, 'econ-arcade/play/index.html');

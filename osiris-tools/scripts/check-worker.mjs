@@ -3,6 +3,7 @@ import { once } from 'node:events';
 import { setTimeout as delay } from 'node:timers/promises';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import familyEngine from '../../econ-arcade/play/campaign-engine.js';
 
 // Run the built Worker in workerd, not only in Node, without an AI/Cloudflare account.
 const child = spawn(process.execPath, ['node_modules/wrangler/bin/wrangler.js', 'dev', '--local', '--ip', '127.0.0.1', '--port', '8791'], {
@@ -28,11 +29,16 @@ try {
   client = new Client({ name: 'worker-smoke', version: '1.0.0' });
   await client.connect(new StreamableHTTPClientTransport(new URL('http://127.0.0.1:8791/mcp')));
   const tools = await client.listTools();
-  if (tools.tools.length !== 3) throw new Error('Worker tool discovery failed.');
+  if (tools.tools.length !== 5) throw new Error('Worker tool discovery failed.');
   const result = await client.callTool({ name: 'open_supply_demand_lab', arguments: { actions: ['supply-up'] } });
   if (result.isError || result.structuredContent?.result?.price !== 8.2) throw new Error('Worker simulation failed.');
   const ui = await client.readResource({ uri: 'ui://ballzatram/supply-demand/v1.html' });
   if (!ui.contents[0]?.text?.includes('hostForm')) throw new Error('Worker UI resource failed.');
+  const context = familyEngine.selectedContext(familyEngine.reduce(familyEngine.initial(), { type: 'play', input: { price: 4, stock: 100 }, forecast: 'up' }));
+  const family = await client.callTool({ name: 'open_family_business', arguments: { context } });
+  if (family.isError || family.structuredContent?.context?.selectedResult?.outcome.value !== 90) throw new Error('Worker campaign review failed.');
+  const familyUi = await client.readResource({ uri: 'ui://ballzatram/family-business/v1.html' });
+  if (!familyUi.contents[0]?.text?.includes('familyConsent')) throw new Error('Worker campaign UI failed.');
   console.log('Worker runtime verified: initialization, discovery, simulation, and UI. No model calls.');
 } finally {
   await client?.close();

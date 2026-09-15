@@ -18,5 +18,15 @@ const script = `${engine}\n(() => {\n${lab}\n})();\n${bundled.outputFiles[0].tex
 const html = `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Supply & Demand · Ballzatram</title><style>${css}\n${hostCss}</style></head><body>${body}<script>${script}</script></body></html>`;
 await mkdir(path.join(root, 'dist'), { recursive: true });
 await writeFile(path.join(root, 'dist/widget.html'), html);
-await writeFile(path.join(root, 'dist/widget.mjs'), `export const widgetHtml = ${JSON.stringify(html)};\n`);
+const [familySource, familyCss, portrait, font, familyBundle] = await Promise.all([
+  read('osiris-tools/web/family.html'), read('osiris-tools/web/family.css'), read('assets/family-business/osiris.svg'),
+  readFile(path.join(repo, 'assets/family-business/press-start-2p.woff')),
+  build({ entryPoints: [path.join(root, 'web/family.mjs')], bundle: true, write: false, format: 'iife', minify: true, target: 'es2022', platform: 'browser', logLevel: 'warning' })
+]);
+const familyHtml = familySource.replace('</head>', () => `<style>@font-face{font-family:"Family Pixel";src:url(data:font/woff;base64,${font.toString('base64')}) format("woff");font-display:swap}${familyCss}</style></head>`)
+  .replace('<!-- OSIRIS -->', () => portrait.replace(/<\?xml[^>]*\?>/, ''))
+  .replace('</body>', () => `<script>${familyBundle.outputFiles[0].text.replace(/<\/script/gi, '<\\/script')}</script></body>`);
+await writeFile(path.join(root, 'dist/family.html'), familyHtml);
+await writeFile(path.join(root, 'dist/widget.mjs'), `export const widgetHtml = ${JSON.stringify(html)};\nexport const familyHtml = ${JSON.stringify(familyHtml)};\n`);
 console.log(`Built shared lab UI (${Math.round(Buffer.byteLength(html) / 1024)} KiB); no model calls.`);
+console.log(`Built Family Business companion (${Math.round(Buffer.byteLength(familyHtml) / 1024)} KiB); no model calls.`);

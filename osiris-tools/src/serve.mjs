@@ -1,9 +1,9 @@
 import { createServer } from 'node:http';
 import { Readable } from 'node:stream';
 import { createHandler } from './http.mjs';
-import { widgetHtml } from '../dist/widget.mjs';
+import { widgetHtml, familyHtml } from '../dist/widget.mjs';
 
-const handle = createHandler(widgetHtml);
+const handle = createHandler(widgetHtml, familyHtml);
 const port = Number(process.env.PORT || 8787);
 const server = createServer(async (incoming, outgoing) => {
   try {

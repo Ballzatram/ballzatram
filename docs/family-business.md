@@ -45,7 +45,13 @@ Built-in character dialogue and three-stage hints work locally without an accoun
 
 “Ask with my AI” opens the existing selected-context handoff. The visitor reviews the current episode, assignment, visible cash/debt/trust, and the selected result before preparing a prompt. Sharing the current saved field note is opt-in. Other notes, full save history, browser settings, credentials, and hidden future state are excluded. No request is sent simply by opening this panel. The visitor copies/sends the prepared prompt in their chosen AI app, and the response stays there.
 
-The `econ-world` feature adapter is enabled for this explicit handoff. Native in-page model conversation, automatic answer synchronization, cross-device companion memory, and an interactive campaign MCP app are **not deployed** by this change. Existing Supply & Demand host tools remain separate. No operator API key is added, and AI text cannot execute decisions or modify progression.
+The `econ-world` adapter also opens **Osiris’s desk**, an interactive MCP companion inside compatible AI apps. `open_family_business` opens the selected episode; `review_family_business_episode` reviews the same snapshot without another widget. Both understand Experience, Experiment, and Adapt, as well as retries, revisits, and the completed campaign. With no snapshot, the companion explains how to share one instead of inventing progress. Existing installations must refresh the Osiris connector to discover the new tools.
+
+The companion recomputes the selected episode outcome from validated controls, canonical episode conditions, and the shared pre-turn ledger (needed for neighborhood trust). It reconstructs assignments and evidence rather than trusting supplied explanations or scores. The wider cash/debt ledger, rank, progress, and recurring business reports remain visitor-reported; a snapshot is not an authenticated save. Only the current episode is returned, without later-stage hints or unselected history. Field notes and report text are untrusted data.
+
+The player selects a small nudge, another clue, or a debrief, reviews the snapshot, and confirms a single message to their AI app. Changed questions, help levels, and snapshots invalidate consent; stale acknowledgements cannot replace a newer selection. Unsupported or declined messaging offers a copyable prompt without automatic retries. The starting question is labeled built-in; the host model writes the actual conversation using the visitor’s account.
+
+Native in-page model conversation, automatic answer synchronization, and cross-device companion memory remain separate work. Share a fresh snapshot after another turn. No operator API key is added, and AI text cannot execute decisions or modify progression.
 
 ## Save and recovery
 
@@ -69,6 +75,7 @@ The finale traces one input through a supply chain and updates later demand. It 
 - `campaign-engine.js`: deterministic models, event reducer, evidence, ledger, validated restore, selected AI context.
 - `campaign.js` and `campaign.css`: accessible browser UI, family management, notes, saves, and AI handoff.
 - `assets/family-business/`: original vector pixel art, shared theme, locally bundled font and license.
+- `osiris-tools/src/family-business.mjs` and `web/family.*`: strict campaign context contract, recomputed results, stage-aware guidance, and the interactive companion.
 - `scripts/family-business.test.cjs`: complete campaign, promotion evidence, budgets, persistence, stale tabs, malformed backups, DOM interactions, and AI selection boundaries.
 
 Run `npm run test:static --prefix frontend`, `npm run lint --prefix frontend`, and `python scripts/validate_public.py`. The public site remains a static GitHub Pages build in the existing repository.

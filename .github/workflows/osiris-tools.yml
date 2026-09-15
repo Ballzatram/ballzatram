@@ -8,6 +8,9 @@ on:
     paths:
       - 'osiris-tools/**'
       - 'tools/supply-demand/**'
+      - 'econ-arcade/play/campaign-data.js'
+      - 'econ-arcade/play/campaign-engine.js'
+      - 'assets/family-business/**'
       - 'assets/ai-features.js'
       - '.github/workflows/osiris-tools.yml'
   workflow_dispatch:
@@ -36,7 +39,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: osiris-lab-preview
-          path: osiris-tools/dist/widget.html
+          path: osiris-tools/dist/*.html
 
   deploy:
     if: github.event_name != 'pull_request'

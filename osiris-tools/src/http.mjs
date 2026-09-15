@@ -6,7 +6,7 @@ const ORIGINS = new Set(['https://dgallemore.com', 'https://www.dgallemore.com',
 const headers = { 'Cache-Control': 'no-store', 'X-Content-Type-Options': 'nosniff' };
 function error(status, text) { return new Response(text, { status, headers }); }
 
-export function createHandler(widgetHtml) {
+export function createHandler(widgetHtml, familyHtml) {
   return async function handle(request) {
     const url = new URL(request.url);
     const origin = request.headers.get('Origin');
@@ -36,7 +36,7 @@ export function createHandler(widgetHtml) {
     } catch { return error(400, 'Invalid JSON.'); }
     // Stateless, bounded tool calls. No batches, remote fetches, credentials, logging, or persistence.
     if (!body || Array.isArray(body) || typeof body !== 'object') return error(400, 'Send one JSON-RPC message.');
-    const server = createServer(widgetHtml);
+    const server = createServer(widgetHtml, familyHtml);
     const transport = new WebStandardStreamableHTTPServerTransport({ sessionIdGenerator: undefined, enableJsonResponse: true });
     try {
       await server.connect(transport);

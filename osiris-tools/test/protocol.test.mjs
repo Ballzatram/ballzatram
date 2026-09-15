@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import { Client } from '@modelcontextprotocol/sdk/client/index.js';
 import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { createHandler } from '../src/http.mjs';
-import { widgetHtml } from '../dist/widget.mjs';
+import { widgetHtml, familyHtml } from '../dist/widget.mjs';
 import engine from '../../tools/supply-demand/engine.js';
 import features from '../../assets/ai-features.js';
 import { RESOURCE_URI, MIME_TYPE } from '../src/server.mjs';
+import { FAMILY_RESOURCE_URI } from '../src/family-business.mjs';
+import familyEngine from '../../econ-arcade/play/campaign-engine.js';
 
-const handle = createHandler(widgetHtml);
+const handle = createHandler(widgetHtml, familyHtml);
 const url = 'https://tools.example.test/mcp';
 const rpc = (body, headers = {}) => handle(new Request(url, { method: 'POST', headers: { 'Content-Type': 'application/json', Accept: 'application/json, text/event-stream', ...headers }, body: JSON.stringify(body) }));
 async function client(t) {
@@ -24,9 +26,9 @@ test('official MCP client initializes, discovers tools, loads UI, and computes w
   assert.match(c.getInstructions(), /never call a model/);
   assert.doesNotMatch(c.getInstructions(), /You have no tools/);
   const { tools } = await c.listTools();
-  assert.deepEqual(tools.map(tool => tool.name), ['list_osiris_projects', 'simulate_supply_demand', 'open_supply_demand_lab']);
+  assert.deepEqual(tools.map(tool => tool.name), ['list_osiris_projects', 'simulate_supply_demand', 'open_supply_demand_lab', 'open_family_business', 'review_family_business_episode']);
   for (const tool of tools) { assert.equal(tool.annotations.readOnlyHint, true); assert.equal(tool.annotations.openWorldHint, false); assert.equal(tool.inputSchema.additionalProperties, false); }
-  assert.equal(tools.filter(tool => tool._meta?.ui?.resourceUri).length, 1);
+  assert.equal(tools.filter(tool => tool._meta?.ui?.resourceUri).length, 2);
   const ui = await c.readResource({ uri: RESOURCE_URI });
   assert.equal(ui.contents[0].mimeType, MIME_TYPE);
   assert.deepEqual(ui.contents[0]._meta.ui.csp.connectDomains, []);
@@ -62,7 +64,29 @@ test('independent clients share no state and expose accurate per-project readine
   assert.equal(clean.structuredContent.result.shortageSurplus, 'Balanced');
   const list = await b.callTool({ name: 'list_osiris_projects', arguments: {} });
   assert.equal(list.structuredContent.projects.length, features.features.length);
-  assert.deepEqual(list.structuredContent.projects.filter(p => p.hostTools).map(p => p.id), ['supplyDemand']);
+  assert.deepEqual(list.structuredContent.projects.filter(p => p.hostTools).map(p => p.id), ['supplyDemand', 'econ-world']);
+});
+
+test('Family Business opens without inventing a save, then reviews the exact shared episode', async t => {
+  const c = await client(t);
+  const welcome = await c.callTool({ name: 'open_family_business', arguments: {} });
+  assert.equal(welcome.structuredContent.needsContext, true); assert.equal(welcome.structuredContent.context, null);
+  const state = familyEngine.reduce(familyEngine.initial(), { type: 'play', input: { price: 4, stock: 100 }, forecast: 'up' });
+  const context = familyEngine.selectedContext(state);
+  const first = await c.callTool({ name: 'open_family_business', arguments: { context } });
+  assert.equal(first.isError, undefined); assert.deepEqual(first.structuredContent.context, context);
+  assert.equal(first.structuredContent.context.selectedResult.outcome.value, 90);
+  const review = await c.callTool({ name: 'review_family_business_episode', arguments: { context, help: 'debrief' } });
+  assert.deepEqual(review.structuredContent.context, context); assert.equal(review.structuredContent.help, 'debrief');
+  const ui = await c.readResource({ uri: FAMILY_RESOURCE_URI });
+  assert.equal(ui.contents[0].mimeType, MIME_TYPE); assert.match(ui.contents[0].text, /familyConsent/);
+  assert.deepEqual(ui.contents[0]._meta.ui.csp.connectDomains, []);
+  assert.doesNotMatch(ui.contents[0].text, /<script\b[^>]*src=|<iframe\b|subscription-client/);
+  for (const args of [{}, { context, save: true }, { context: { ...context, events: [] } }, { context, help: 'solve-everything' }]) {
+    assert.equal((await c.callTool({ name: 'review_family_business_episode', arguments: args })).isError, true);
+  }
+  const next = await client(t);
+  assert.equal((await next.callTool({ name: 'open_family_business', arguments: {} })).structuredContent.context, null);
 });
 
 test('HTTP rejects untrusted origins, malformed bodies, batches and oversized streamed input', async () => {

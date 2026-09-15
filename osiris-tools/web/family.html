@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><title>Osiris · The Family Business</title></head>
+<body><main>
+  <header><div class="portrait" aria-hidden="true"><!-- OSIRIS --></div><div><p class="eyebrow">THE FAMILY BUSINESS</p><h1>Osiris’s desk</h1><p class="intro">A quiet word before the next piece of business.</p></div></header>
+  <section id="familyWelcome" class="panel"><h2>Bring me the ledger.</h2><p>Open the campaign and choose <strong>Ask with my AI</strong>. Review your current episode, then copy and send the prepared prompt in this conversation.</p><p>Your game stays on the website. This desk works from the snapshot you choose to share.</p><a class="button" href="https://dgallemore.com/econ-arcade/play/" target="_blank" rel="noopener noreferrer">Open The Family Business ↗</a></section>
+  <div id="familyEpisode" hidden>
+    <section class="panel episode"><p class="eyebrow" id="familyStage"></p><h2 id="familyTitle"></h2><p id="familyBrief"></p><div class="assignment"><span class="label">YOUR ASSIGNMENT</span><p id="familyAssignment"></p></div>
+      <dl class="ledger"><div><dt>Cash</dt><dd id="familyCash"></dd></div><div><dt>Debt</dt><dd id="familyDebt"></dd></div><div><dt>Trust</dt><dd id="familyTrust"></dd></div></dl><p class="fine" id="familyRevision"></p>
+    </section>
+    <section id="familyResult" class="panel" hidden><p class="eyebrow">THE SHUTTERS COME DOWN</p><h2 id="familyMetric"></h2><div class="comparison"><div><span class="label">Your plan</span><strong id="familyValue"></strong></div><div><span class="label">Standing order</span><strong id="familyReference"></strong></div></div><p id="familyStory"></p><p id="familyEvidence"></p><details><summary>Your decisions and their consequences</summary><div class="table-wrap"><table><thead><tr><th scope="col">Decision</th><th scope="col">Your plan</th><th scope="col">Standing order</th></tr></thead><tbody id="familyPlan"></tbody></table></div><ul id="familyFacts"></ul><p id="familyCashChange"></p></details></section>
+    <section class="panel"><p class="eyebrow">A WORD FROM YOUR CONSIGLIERE</p><p id="familyObservation"></p><p id="familyQuestion" class="question"></p><p class="fine">Built-in starting question. Your AI app writes the conversation that follows.</p>
+      <form id="familyForm"><label for="familyHelp">How much help?</label><select id="familyHelp"><option value="nudge">A small nudge</option><option value="hint">One more clue</option><option value="debrief">Debrief this episode</option></select><label for="familyUserQuestion">Anything you want to ask? <span class="fine">Optional</span></label><textarea id="familyUserQuestion" rows="2" maxlength="1200" placeholder="Why did my prediction miss?"></textarea>
+      <details><summary>Review the snapshot to share</summary><pre id="familySelection"></pre></details><label class="consent"><input type="checkbox" id="familyConsent"> Share this episode and my question with my AI app.</label><button id="familyAsk" type="submit">Ask Osiris</button></form>
+      <section id="familyFallback" hidden><label for="familyPrompt">Prepared prompt</label><textarea id="familyPrompt" rows="6" readonly></textarea><button type="button" id="familyCopy">Copy prompt</button></section>
+    </section>
+    <p class="fine boundary">This is the snapshot you shared, not a live view of your save. Share again after another turn. Episode results are recomputed; the wider ledger and progress are reported by your game. AI answers appear in this conversation and use your account’s allowance.</p>
+    <a class="return-link" href="https://dgallemore.com/econ-arcade/play/" target="_blank" rel="noopener noreferrer">Back to the family ↗</a>
+  </div>
+  <p id="familyStatus" role="status" aria-live="polite">Waiting for your selected episode.</p>
+</main></body></html>

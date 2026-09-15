@@ -1,8 +1,8 @@
 const PREFIX = 'family-business-';
-const CACHE = `${PREFIX}v1`;
-const ASSETS = ['./', './index.html', './campaign.css?v=1', './campaign-data.js?v=1', './campaign-engine.js?v=1', './campaign.js?v=1', './manifest.webmanifest',
+const CACHE = `${PREFIX}v2`;
+const ASSETS = ['./', './index.html', './campaign.css?v=1', './campaign-data.js?v=1', './campaign-engine.js?v=2', './campaign.js?v=1', './manifest.webmanifest',
   '../../assets/family-business/meridian.svg', '../../assets/family-business/osiris.svg', '../../assets/family-business/press-start-2p.woff',
-  '../../assets/ai-panel.css?v=host-tools-1', '../../assets/ai-config.js', '../../assets/ai-features.js', '../../assets/subscription-client.js', '../../assets/ai-client.js', '../../assets/ai-panel.js'];
+  '../../assets/ai-panel.css?v=host-tools-1', '../../assets/ai-config.js', '../../assets/ai-features.js?v=family-connector-1', '../../assets/subscription-client.js', '../../assets/ai-client.js?v=family-connector-1', '../../assets/ai-panel.js?v=family-connector-1'];
 const ALLOWED = new Set(ASSETS.map(asset => new URL(asset, self.location.href).href));
 self.addEventListener('install', event => { event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting())); });
 self.addEventListener('activate', event => {
