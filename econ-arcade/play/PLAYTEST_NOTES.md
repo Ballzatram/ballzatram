@@ -1,3 +1,5 @@
+> Archived design notes for the earlier three-district playtest, now at `legacy.html`. The active campaign is documented in [The Family Business](../../docs/family-business.md).
+
 # Econ Arcade living-world playtest
 
 This playtest intentionally hides the curriculum from the player.

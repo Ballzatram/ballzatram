@@ -1,0 +1,10 @@
+@font-face{font-family:FamilyRoomPixel;src:url('press-start-2p.woff') format('woff');font-display:swap}
+body.family-room{background:#17241e!important;color:#eee5cc!important}
+.family-room-bar{font-family:system-ui,sans-serif;display:grid;grid-template-columns:auto 1fr;gap:10px 28px;align-items:center;max-width:1500px;margin:0 auto 20px;padding:20px 28px;background:#26382b;border-bottom:3px solid #bda876;color:#ecdbb3;font-size:13px;line-height:1.6}
+.family-room-bar a{display:inline-flex;align-items:center;min-height:44px;color:#ecdbb3!important;text-decoration:underline;text-underline-offset:5px;grid-row:span 2}
+.family-room-bar strong{font:11px/1.8 FamilyRoomPixel,monospace}.family-room-bar span{color:#c5cab8}
+.family-room .lab-shell,.family-room .arcade-shell,.family-room .game-shell{background:transparent!important}
+.family-room .lab-hero,.family-room .arcade-hero,.family-room .lab-panel,.family-room .lab-card{background:#223428!important;border-color:#59684d!important;color:#eee5cc!important;box-shadow:none!important}
+.family-room .lab-kicker,.family-room .kicker{color:#e2c48c!important}.family-room .lab-hero h1,.family-room .lab-hero h2{color:#f2dfb4!important}
+.family-room .lab-hero p,.family-room .lab-panel p{color:#c8cdbb!important}.family-room button:focus-visible,.family-room a:focus-visible{outline:3px solid #e2c48c;outline-offset:4px}
+@media(max-width:680px){.family-room-bar{display:block;padding:14px 18px}.family-room-bar a,.family-room-bar strong,.family-room-bar span{display:block}.family-room-bar strong{font-size:10px;margin:5px 0 10px}}
