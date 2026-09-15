@@ -4,7 +4,7 @@
 
 The personal showcase and Ballzatram tools use `https://dgallemore.com/`.
 The repository remains `Ballzatram/ballzatram`; its name does not need to change.
-The Windows 95 homepage links to the portfolio and resume at `/devin/`, games,
+The retro cowboy homepage links to the portfolio and resume at `/devin/`, games,
 research tools, and the Osiris connection guide.
 
 GitHub Pages publishes the static site through `.github/workflows/deploy-pages.yml`.

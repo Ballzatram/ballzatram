@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges">
+  <symbol id="hat" viewBox="0 0 32 32"><path fill="currentColor" d="M10 7h4v2h5V7h3v5h2v8h5v-3h3v7h-3v2H3v-2H0v-7h3v3h5V12h2z"/><path fill="#edab54" d="M8 17h16v3H8z"/></symbol>
+  <symbol id="star" viewBox="0 0 32 32"><path fill="currentColor" d="M14 2h4v7h4V7h7v7h-7v4h7v7h-7v-2h-4v7h-4v-7h-4v2H3v-7h7v-4H3V7h7v2h4z"/><path fill="#f4e8ce" d="M13 13h6v6h-6z"/></symbol>
+  <symbol id="game" viewBox="0 0 32 32"><path fill="currentColor" d="M6 8h20v3h3v15h-8v-5H11v5H3V11h3z"/><path fill="#f4e8ce" d="M8 12h3v3h3v3h-3v3H8v-3H5v-3h3zm12 0h3v3h-3zm5 5h3v3h-3z"/></symbol>
+  <symbol id="chart" viewBox="0 0 32 32"><path fill="currentColor" d="M3 4h3v22h24v3H3zm6 14h4v5H9zm7-6h4v11h-4zm7-7h4v18h-4z"/></symbol>
+  <symbol id="book" viewBox="0 0 32 32"><path fill="currentColor" d="M2 6h11v2h6V6h11v21H19v2h-6v-2H2z"/><path fill="#f4e8ce" d="M6 10h6v2H6zm0 5h6v2H6zm0 5h6v2H6zm14-10h6v2h-6zm0 5h6v2h-6zm0 5h6v2h-6zm-5-9h2v14h-2z"/></symbol>
+  <symbol id="bulb" viewBox="0 0 32 32"><path fill="currentColor" d="M11 3h10v3h4v4h3v9h-4v4h-4v6h-8v-6H8v-4H4v-9h3V6h4z"/><path fill="#f4e8ce" d="M11 8h10v3H11zm2 6h6v3h-2v7h-2v-7h-2z"/></symbol>
+  <symbol id="folder" viewBox="0 0 32 32"><path fill="currentColor" d="M2 7h11v4h17v16H2z"/><path fill="#f4e8ce" d="M6 15h20v3H6z"/></symbol>
+  <symbol id="person" viewBox="0 0 32 32"><path fill="currentColor" d="M12 3h8v3h3v9h-3v3h-8v-3H9V6h3zM8 21h16v3h4v6H4v-6h4z"/></symbol>
+  <symbol id="arrow" viewBox="0 0 32 32"><path fill="currentColor" d="M18 6h4v4h4v4h4v4h-4v4h-4v4h-4v-8H2v-4h16z"/></symbol>
+  <symbol id="cactus" viewBox="0 0 32 32"><path fill="currentColor" d="M14 2h4v2h2v14h4V9h4v12h-2v2h-6v7h-8V19H6v-2H4V7h4v8h4V4h2z"/></symbol>
+</svg>

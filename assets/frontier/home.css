@@ -1,0 +1,114 @@
+@font-face{font-family:Frontier Pixel;src:url('./press-start-2p.woff') format('woff');font-weight:400;font-style:normal;font-display:swap}
+/* All element rules live under this root: individual projects keep their own styles. */
+.frontier-home{--paper:#f3e9d2;--ink:#342b28;--muted:#6b594e;--rust:#a63e2b;--gold:#eaae58;--night:#272638;margin:0;background:var(--paper);color:var(--ink);font:16px/1.65 'Courier New',monospace;min-height:100vh}
+.frontier-home *{box-sizing:border-box}
+.frontier-home [hidden]{display:none!important}
+.frontier-home ::selection{background:var(--gold);color:var(--night)}
+.frontier-home :is(h1,h2,h3,p){margin:0}
+.frontier-home a{color:inherit;text-decoration:none}
+.frontier-home button,.frontier-home input{font:inherit}
+.frontier-home button{cursor:pointer}
+.frontier-home :is(a,button,input):focus-visible{outline:3px solid var(--rust);outline-offset:5px}
+.frontier-home .frontier-hero :is(a,button):focus-visible{outline-color:#fff1d3}
+.frontier-home .pixel-icon{width:28px;height:28px;flex-shrink:0;image-rendering:pixelated}
+.frontier-home .frontier-width{width:min(1240px,calc(100% - 80px));margin-inline:auto}
+.frontier-home .frontier-skip{position:absolute;top:8px;left:12px;transform:translateY(-160%);padding:10px 16px;background:var(--paper);z-index:10}
+.frontier-home .frontier-skip:focus{transform:translateY(0)}
+.frontier-home .frontier-header{min-height:102px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.frontier-home .frontier-brand{display:flex;align-items:center;gap:13px;font-weight:bold;font-size:15px;line-height:1.5;letter-spacing:.04em}
+.frontier-home .frontier-brand .pixel-icon{width:42px;height:42px;color:var(--rust)}
+.frontier-home .frontier-brand small{display:block;font-size:10px;font-weight:normal;letter-spacing:.17em;color:var(--muted)}
+.frontier-home .frontier-nav{display:flex;align-items:center;gap:27px;font-size:12px;font-weight:bold}
+.frontier-home .frontier-nav a{padding:10px 0}
+.frontier-home .frontier-nav a:hover{color:var(--rust);text-decoration:underline;text-underline-offset:6px}
+.frontier-home .frontier-nav .nav-resume{border:1px solid var(--ink);padding:9px 16px;box-shadow:3px 3px 0 #d1bfa1}
+.frontier-home .frontier-hero{position:relative;isolation:isolate;min-height:594px;border:4px solid var(--ink);background:var(--night);color:#fff0d1;box-shadow:7px 7px 0 #d3b995;overflow:hidden}
+.frontier-home .frontier-scene{position:absolute;z-index:-1;inset:0;width:100%;height:100%;object-fit:cover;object-position:right bottom;image-rendering:pixelated}
+.frontier-home .hero-copy{padding:52px 48px 100px;max-width:660px}
+.frontier-home .frontier-kicker{display:flex;align-items:center;gap:12px;font-size:10px;font-weight:bold;letter-spacing:.17em;text-transform:uppercase}
+.frontier-home .hero-copy .frontier-kicker{color:#eaae78}
+.frontier-home .hero-copy .frontier-kicker:before{content:'';width:7px;height:7px;background:var(--gold);box-shadow:2px 2px 0 #795244;flex-shrink:0}
+.frontier-home .hero-copy h1{margin:30px 0 23px;font:400 clamp(27px,3.7vw,45px)/1.5 'Frontier Pixel',monospace;letter-spacing:-.045em;text-shadow:4px 4px 0 #151724}
+.frontier-home .hero-copy h1 span{display:block;color:var(--gold)}
+.frontier-home .hero-description{max-width:430px;font-size:15px;line-height:1.85;color:#e2d4c8;text-wrap:pretty}
+.frontier-home .hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:24px;margin-top:31px;font-size:12px;font-weight:bold}
+.frontier-home .pixel-button{display:inline-flex;align-items:center;justify-content:center;gap:15px;min-height:46px;padding:12px 18px;border:2px solid var(--ink);background:var(--gold);color:#2f2726;box-shadow:4px 4px 0 #161724;line-height:1.4;font-weight:bold;transition:transform .12s,box-shadow .12s}
+.frontier-home .pixel-button:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 #161724;background:#f2c67d}
+.frontier-home .pixel-button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #161724}
+.frontier-home .pixel-button .pixel-icon{width:18px;height:18px}
+.frontier-home .text-link{border-bottom:1px solid currentColor;padding-block:5px}
+.frontier-home .text-link:hover{color:var(--gold)}
+.frontier-home .hero-stamp{position:absolute;right:27px;top:26px;border:1px solid #bb9173;padding:9px 12px;font:9px/1.9 'Frontier Pixel',monospace;color:#dfb491;text-align:center;transform:rotate(3deg)}
+.frontier-home .hero-footer{position:absolute;bottom:20px;left:28px;right:28px;display:flex;justify-content:space-between;align-items:center;gap:20px;color:#d3b79a;font-size:10px;letter-spacing:.09em;text-transform:uppercase}
+.frontier-home .hero-footer span{display:flex;align-items:center;gap:9px}
+.frontier-home .hero-footer .pixel-icon{width:17px;height:17px}
+.frontier-home .frontier-intro{display:flex;align-items:center;justify-content:space-between;gap:30px;padding:35px 3px;border-bottom:1px solid #bdab90;font-size:12px}
+.frontier-home .frontier-intro strong{font-size:14px}
+.frontier-home .frontier-intro p{color:var(--muted)}
+.frontier-home .frontier-intro .intro-mark{display:flex;align-items:center;gap:12px;white-space:nowrap;color:var(--rust);font-size:11px;font-weight:bold}
+.frontier-home .frontier-trails{padding:50px 0 48px}
+.frontier-home .section-heading{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:24px}
+.frontier-home .section-heading .frontier-kicker{color:var(--rust);margin-bottom:9px}
+.frontier-home h2{font:400 clamp(15px,1.7vw,20px)/1.7 'Frontier Pixel',monospace;letter-spacing:-.04em}
+.frontier-home .section-heading>p{font-size:12px;color:var(--muted)}
+.frontier-home .trail-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.frontier-home .trail-card{display:flex;flex-direction:column;position:relative;min-height:245px;padding:27px;background:#e4d4b4;border:2px solid var(--ink);box-shadow:4px 4px 0 #c6af89;transition:transform .15s,box-shadow .15s}
+.frontier-home .trail-card:hover{transform:translateY(-4px);box-shadow:4px 8px 0 #c6af89}
+.frontier-home .trail-card:nth-child(2){background:#d9dfcf}
+.frontier-home .trail-card:nth-child(3){background:#e9ccba}
+.frontier-home .trail-card .trail-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:23px}
+.frontier-home .trail-card .trail-top .pixel-icon{width:38px;height:38px}
+.frontier-home .trail-card .trail-top span{font-size:10px;letter-spacing:.12em}
+.frontier-home .trail-card h3{font:400 13px/1.65 'Frontier Pixel',monospace;letter-spacing:-.035em;margin-bottom:12px}
+.frontier-home .trail-card p{font-size:12px;line-height:1.7;max-width:29ch}
+.frontier-home .trail-card .trail-arrow{margin-top:auto;align-self:end;font-size:20px;line-height:1}
+.frontier-home .frontier-directory{padding:8px 0 55px;scroll-margin-top:24px}
+.frontier-home .directory-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px;padding:17px 0 22px;border-top:1px solid #bdab90}
+.frontier-home .frontier-filters{display:flex;flex-wrap:wrap;gap:6px}
+.frontier-home .frontier-filters button{border:1px solid transparent;background:transparent;color:var(--muted);padding:8px 13px;min-height:40px;font-size:11px;font-weight:bold}
+.frontier-home .frontier-filters button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--paper);box-shadow:2px 2px 0 #baa483}
+.frontier-home .frontier-filters button:hover{border-color:var(--ink)}
+.frontier-home .frontier-search{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:bold}
+.frontier-home .frontier-search input{width:235px;max-width:100%;border:1px solid #94816c;background:#faf4e6;padding:10px 12px;color:var(--ink);font-size:12px;border-radius:0;appearance:none}
+.frontier-home .program-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #bdab90;border-left:1px solid #bdab90}
+.frontier-home .frontier-program{display:flex;flex-direction:column;position:relative;padding:25px;min-height:235px;border-bottom:1px solid #bdab90;border-right:1px solid #bdab90;background:#f8efdc;transition:background .15s}
+.frontier-home .frontier-program:hover{background:#fff8e8}
+.frontier-home .program-top{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:21px;color:var(--rust)}
+.frontier-home .program-status{border:1px solid #c4b298;padding:3px 7px;color:#655144;font-size:9px;line-height:1.4;letter-spacing:.03em;background:#f3e7d0}
+.frontier-home .frontier-program h3{font:700 17px/1.4 'Courier New',monospace;margin-bottom:9px}
+.frontier-home .frontier-program h3 a:after{content:'';position:absolute;inset:0}
+.frontier-home .frontier-program h3 a:focus-visible{outline:none}
+.frontier-home .frontier-program:has(a:focus-visible){outline:3px solid var(--rust);outline-offset:-4px}
+.frontier-home .frontier-program p{font-size:12px;line-height:1.8;color:var(--muted);margin-bottom:22px}
+.frontier-home .program-bottom{display:flex;justify-content:space-between;align-items:center;margin-top:auto;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--muted)}
+.frontier-home .program-bottom .pixel-icon{width:16px;height:16px;color:var(--rust)}
+.frontier-home .directory-status{display:flex;justify-content:space-between;gap:20px;font-size:10px;color:var(--muted);padding-top:14px}
+.frontier-home .frontier-empty{padding:35px;border:1px dashed #a99173;margin-top:14px;text-align:center;font-size:13px}
+.frontier-home .frontier-empty button{margin-top:18px;font-size:12px}
+.frontier-home .campfire-note{display:grid;grid-template-columns:auto 1fr auto;gap:28px;align-items:center;padding:35px;border:2px solid var(--ink);background:#dfcfaf;box-shadow:4px 4px 0 #c7af8b;margin-bottom:40px}
+.frontier-home .campfire-note>.pixel-icon{height:45px;width:45px;color:var(--rust)}
+.frontier-home .campfire-note h2{font-size:14px;margin-bottom:12px}
+.frontier-home .campfire-note p{font-size:12px;max-width:68ch;color:#5b493d}
+.frontier-home .campfire-note a{font-size:11px;white-space:nowrap}
+.frontier-home .frontier-footer{display:flex;justify-content:space-between;gap:22px;align-items:center;padding:25px 0 35px;border-top:1px solid #bdab90;font-size:10px;color:var(--muted)}
+.frontier-home .footer-credit{display:flex;align-items:center;gap:10px}
+.frontier-home .footer-credit .pixel-icon{width:23px;height:23px;color:var(--rust)}
+.frontier-home .frontier-footer nav{display:flex;gap:20px;flex-wrap:wrap}
+.frontier-home .frontier-footer a:hover{text-decoration:underline;text-underline-offset:4px}
+/* Optional motion is local, never persisted, and off initially. */
+.frontier-home .pixel-dust{position:absolute;right:-40px;bottom:37px;width:15px;height:15px;border:3px dotted #c09569;transform:rotate(20deg);opacity:0;pointer-events:none}
+.frontier-home[data-motion=on] .pixel-dust{animation:frontier-tumble 12s steps(80,end) infinite}
+.frontier-home .motion-toggle{border:1px solid #9f816a;background:#272638;color:#edcca6;padding:7px 10px;font-size:9px;min-height:34px}
+@keyframes frontier-tumble{0%{right:-40px;transform:rotate(0);opacity:0}5%,90%{opacity:.75}100%{right:105%;transform:rotate(-720deg);opacity:0}}
+/* The development homepage uses its original catalog and routes. */
+.frontier-home .next-frontier-section{padding:32px 0}
+.frontier-home .next-frontier-section>p{font-size:13px;color:var(--muted);margin:12px 0 25px}
+.frontier-home .next-frontier-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.frontier-home .next-frontier-grid>article{background:#f8efdc;border:1px solid #bdab90;box-shadow:3px 3px 0 #d5c1a1}
+.frontier-home .next-frontier-grid a{color:var(--ink);background:var(--paper);border-color:#b5a080}
+.frontier-home .next-frontier-grid a:first-child{color:var(--paper);background:var(--ink);border-color:var(--ink)}
+.frontier-home .next-frontier-grid a:hover{background:#e6d1ad;color:var(--ink)}
+@media(min-width:1440px){.frontier-home .frontier-hero{min-height:620px}.frontier-home .hero-copy{padding-top:65px}}
+@media(max-width:1000px){.frontier-home .frontier-width{width:calc(100% - 48px)}.frontier-home .frontier-nav{gap:19px}.frontier-home .hero-copy{padding:40px 30px 130px;max-width:540px}.frontier-home .hero-description{max-width:330px;font-size:13px}.frontier-home .hero-stamp{font-size:7px;right:18px}.frontier-home .frontier-hero{min-height:570px}.frontier-home .frontier-scene{width:112%;max-width:none;left:-12%}.frontier-home .program-grid,.frontier-home .next-frontier-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.frontier-home .trail-card{padding:21px}.frontier-home .trail-card h3{font-size:11px}.frontier-home .campfire-note{grid-template-columns:auto 1fr}.frontier-home .campfire-note a{grid-column:2;justify-self:start}}
+@media(max-width:700px){.frontier-home .frontier-width{width:calc(100% - 32px)}.frontier-home .frontier-header{min-height:100px;flex-wrap:wrap;gap:5px;padding-block:17px}.frontier-home .frontier-brand{font-size:13px}.frontier-home .frontier-brand small{font-size:8px}.frontier-home .frontier-brand .pixel-icon{width:33px;height:33px}.frontier-home .frontier-nav{gap:19px;font-size:10px;width:100%;justify-content:space-between;margin-top:8px}.frontier-home .frontier-nav .nav-resume{padding:5px 10px}.frontier-home .frontier-hero{min-height:700px;border-width:3px;box-shadow:4px 4px 0 #d3b995}.frontier-home .hero-copy{padding:31px 23px 310px;max-width:none}.frontier-home .hero-copy h1{font-size:clamp(21px,6.4vw,36px);margin:26px 0 19px;line-height:1.55;letter-spacing:-.05em}.frontier-home .hero-copy .frontier-kicker{font-size:8px;letter-spacing:.10em;gap:8px}.frontier-home .hero-description{max-width:38ch;font-size:12px}.frontier-home .hero-actions{gap:17px;margin-top:22px;font-size:10px}.frontier-home .pixel-button{padding:12px;gap:10px;min-height:44px}.frontier-home .frontier-scene{inset:auto 0 0 auto;width:100%;height:350px;object-fit:cover;object-position:right bottom}.frontier-home .hero-stamp{display:none}.frontier-home .hero-footer{left:17px;right:17px;bottom:15px;font-size:8px}.frontier-home .hero-footer .pixel-icon{width:13px;height:13px}.frontier-home .hero-footer .hero-coordinates{display:none}.frontier-home .frontier-intro{display:block;padding:27px 1px;font-size:11px}.frontier-home .frontier-intro strong{font-size:12px}.frontier-home .frontier-intro .intro-mark{margin-top:14px;font-size:10px}.frontier-home .section-heading{display:block}.frontier-home .section-heading>p{margin-top:10px;font-size:11px}.frontier-home .frontier-trails{padding:34px 0}.frontier-home .trail-grid{grid-template-columns:1fr;gap:14px}.frontier-home .trail-card{display:grid;grid-template-columns:44px 1fr 20px;column-gap:18px;min-height:0;padding:20px}.frontier-home .trail-card .trail-top{grid-column:1;grid-row:1 / 3;align-self:center;margin:0}.frontier-home .trail-card .trail-top span{display:none}.frontier-home .trail-card h3{grid-column:2;margin:0 0 7px;font-size:11px}.frontier-home .trail-card p{grid-column:2;max-width:none;font-size:11px}.frontier-home .trail-card .trail-arrow{grid-column:3;grid-row:1 / 3;align-self:center}.frontier-home .directory-toolbar{gap:16px;padding-top:14px}.frontier-home .frontier-filters{gap:3px;width:100%}.frontier-home .frontier-filters button{padding:7px 9px;font-size:10px}.frontier-home .frontier-search{width:100%}.frontier-home .frontier-search input{flex:1;width:0;min-width:0}.frontier-home .program-grid,.frontier-home .next-frontier-grid{grid-template-columns:1fr}.frontier-home .frontier-program{padding:22px;min-height:215px}.frontier-home .directory-status{font-size:9px}.frontier-home .campfire-note{grid-template-columns:1fr;gap:18px;padding:26px}.frontier-home .campfire-note>.pixel-icon{width:33px;height:33px}.frontier-home .campfire-note h2{font-size:12px;line-height:1.9}.frontier-home .campfire-note a{grid-column:1}.frontier-home .frontier-footer{flex-direction:column;align-items:start;font-size:9px;gap:20px}.frontier-home .frontier-footer nav{gap:20px}}
+@media(prefers-reduced-motion:reduce){.frontier-home *{animation:none!important;transition:none!important;scroll-behavior:auto!important}.frontier-home .motion-toggle{display:none}}
