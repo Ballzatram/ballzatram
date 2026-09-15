@@ -17,8 +17,9 @@
   };
   $('checkConnector').onclick = async () => {
     $('checkConnector').disabled = true;
+    $('serviceStatus').textContent = 'Checking the tool service…';
     try {
-      const response = await fetch(new URL('/health', endpoint), { credentials: 'omit', cache: 'no-store', redirect: 'error', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(10000) });
+      const response = await fetch(new URL('/health', endpoint), { credentials: 'omit', cache: 'no-store', redirect: 'error', referrerPolicy: 'no-referrer', signal: AbortSignal.timeout(20000) });
       const data = await response.json();
       if (!response.ok || data.service !== 'ballzatram-osiris-tools' || data.modelCalls !== false) throw new Error();
       $('serviceStatus').textContent = 'Tool service reachable. No model call was made. This does not verify your AI app’s connection.';
