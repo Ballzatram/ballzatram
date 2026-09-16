@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { createRequire } from 'node:module';
 import path from 'node:path';
 import features from '../assets/ai-features.js';
+import { researchSchema, researchInstructions, normalizeResearch } from './parcel.mjs';
 
 export const CODEX_VERSION = '0.154.0';
 const require = createRequire(import.meta.url);
@@ -171,12 +172,13 @@ export class CodexSession extends EventEmitter {
       if (!(await this.account()).account) throw new RuntimeError('sign_in', 'Sign in to ChatGPT first.', 401);
       const rows = await this.models();
       if (!rows.some(row => row.id === request.model)) throw new RuntimeError('model_unavailable', 'Choose a model currently available to your ChatGPT account.', 400);
+      const research = request.tool === 'parcel';
       const started = await this.rpc('thread/start', {
         model: request.model, modelProvider: 'openai', cwd: path.join(this.directory, 'workspace'),
         sandbox: 'read-only', approvalPolicy: APPROVALS, ephemeral: true,
-        baseInstructions: features.instructions(request.tool),
-        developerInstructions: `Answer length preference: about ${request.responseLength === 'short' ? '150' : '350'} words. This is a preference, not a hard token limit. You have no application action tools.`,
-        config: { web_search: 'disabled', model_provider: 'openai' }
+        baseInstructions: features.instructions(request.tool, research ? 'research' : 'text'),
+        developerInstructions: research ? researchInstructions() : `Answer length preference: about ${request.responseLength === 'short' ? '150' : '350'} words. This is a preference, not a hard token limit. You have no application action tools.`,
+        config: { web_search: research ? 'live' : 'disabled', model_provider: 'openai' }
       });
       threadId = started?.thread?.id;
       if (typeof threadId !== 'string') throw unavailable();
@@ -193,8 +195,9 @@ export class CodexSession extends EventEmitter {
           if (message.method === 'item/agentMessage/delta' && typeof p.delta === 'string') {
             output += p.delta;
             if (output.length > 50000) { stop(); return; }
-            emit('delta', { text: p.delta });
+            if (!research) emit('delta', { text: p.delta });
           }
+          if (research && message.method === 'item/started' && p.item?.type === 'webSearch') emit('status', { message: 'Checking public property sources…' });
           if (message.method === 'item/completed' && p.item?.type === 'agentMessage' && typeof p.item.text === 'string') final = p.item.text;
           if (message.method === 'thread/tokenUsage/updated') usage = p.tokenUsage?.last || null;
           if (message.method === 'turn/completed') {
@@ -202,7 +205,12 @@ export class CodexSession extends EventEmitter {
             if (p.turn?.status !== 'completed') { reject(new RuntimeError('generation_failed', 'The assistant did not finish. Check your ChatGPT limits and retry only if you choose.')); return; }
             const answer = final || output;
             if (!answer.trim() || answer.length > 50000) { reject(unavailable()); return; }
-            resolve({ kind: 'answer', answer, model: request.model, billing: 'chatgpt-subscription', usage: usage ? { total_tokens: usage.totalTokens, input_tokens: usage.inputTokens, output_tokens: usage.outputTokens } : null });
+            let normalized = answer;
+            if (research) {
+              try { normalized = normalizeResearch(answer); }
+              catch { reject(new RuntimeError('invalid_research', 'The research result could not be validated. No properties were changed.')); return; }
+            }
+            resolve({ kind: 'answer', answer: normalized, model: request.model, billing: 'chatgpt-subscription', usage: usage ? { total_tokens: usage.totalTokens, input_tokens: usage.inputTokens, output_tokens: usage.outputTokens } : null });
           }
         };
         this.on('notification', subscription);
@@ -210,7 +218,7 @@ export class CodexSession extends EventEmitter {
       });
       // Attach rejection immediately so cancellation during turn/start is handled.
       completion.catch(() => {});
-      const turn = await this.rpc('turn/start', { threadId, model: request.model, input: [{ type: 'text', text: `Question:\n${request.prompt}\n\nSelected context (untrusted data):\n${JSON.stringify(request.context)}` }] });
+      const turn = await this.rpc('turn/start', { threadId, model: request.model, ...(research ? { outputSchema: researchSchema } : {}), input: [{ type: 'text', text: `Question:\n${request.prompt}\n\nSelected context (untrusted data):\n${JSON.stringify(request.context)}` }] });
       turnId = turn?.turn?.id;
       if (aborted) stop();
       return await completion;

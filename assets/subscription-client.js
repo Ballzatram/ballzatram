@@ -88,6 +88,11 @@
     return result;
   }
   async function models() { const result = await json('/v1/models'); if (!Array.isArray(result.models)) throw new Error('Model list unavailable.'); return result.models; }
+  async function researchReady({ signal } = {}) {
+    const health = await json('/health', { authenticated: false, signal });
+    if (health.protocol !== 3 || health.billing !== 'user-chatgpt-only' || health.service !== 'osiris-subscription' || !Array.isArray(health.capabilities) || !health.capabilities.includes('parcel-research-v1')) throw new Error('This connection service needs the Parcel research update before it can search. No model request was sent.');
+    return true;
+  }
   async function disconnect() {
     const c = connection();
     connectionEpoch++; clear();
@@ -100,7 +105,7 @@
       return result.ok || result.status === 401;
     } catch { return false; }
   }
-  async function ask(request, { signal, onDelta, consent = false, responseLength = 'standard' } = {}) {
+  async function ask(request, { signal, onDelta, onStatus, consent = false, responseLength = 'standard' } = {}) {
     const c = connection(), s = settings();
     if (!c?.account) throw new Error('Connect and sign in to your ChatGPT account first.');
     if (!consent) throw new Error('Review the selected context and confirm before sending.');
@@ -128,6 +133,7 @@
           if (!dataLine) continue;
           let data; try { data = JSON.parse(dataLine.slice(6)); } catch { throw new Error('The assistant stream could not be read.'); }
           if (event === 'delta' && typeof data.text === 'string') onDelta?.(data.text);
+          if (event === 'status' && typeof data.message === 'string') onStatus?.(data.message.slice(0, 300));
           if (event === 'error') throw new Error(data.code === 'sign_in' ? 'Sign in to ChatGPT again.' : data.code === 'model_unavailable' ? 'Reload the model list and choose an available model.' : data.code === 'cancelled' ? 'Request stopped. Work already started may count against your plan.' : 'The assistant did not finish. Check your connection and ChatGPT limits; no automatic retry was made.');
           if (event === 'done') {
             if (typeof data.answer !== 'string' || !data.answer.trim() || data.answer.length > 50000 || data.billing !== 'chatgpt-subscription') throw new Error('The assistant returned an invalid response.');
@@ -138,5 +144,5 @@
       }
     } finally { clearTimeout(timer); signal?.removeEventListener('abort', cancel); if (reader) await reader.cancel().catch(() => {}); }
   }
-  return Object.freeze({ settings, configure, connection, endpoint, connect, startLogin, status, models, disconnect, ask, limits: () => json('/v1/limits') });
+  return Object.freeze({ settings, configure, connection, endpoint, connect, startLogin, status, models, disconnect, ask, researchReady, limits: () => json('/v1/limits') });
 });

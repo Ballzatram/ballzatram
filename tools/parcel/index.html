@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Turn a land-use brief into a sourced property shortlist. Screen acreage, flat usable land, drive time, expansion, and event feasibility.">
   <title>Parcel — Land worth a closer look</title>
-  <link rel="stylesheet" href="./style.css?v=2">
+  <link rel="stylesheet" href="./style.css?v=3">
 </head>
 <body>
   <a class="skip" href="#main">Skip to workspace</a>
@@ -18,7 +18,7 @@
       <div><p class="eyebrow">A PLACE FOR THE NEXT CHAPTER</p><h1>Land worth<br>a closer look.</h1><p class="intro">Start with what you want to build. Find the places to investigate, keep the evidence together, and see what still needs an answer.</p><div class="actions"><a class="button primary" href="#brief">Shape the brief ↓</a><a class="button" href="#discovery">Find land ↗</a></div></div>
       <aside class="brief-card" aria-label="Current search"><span class="eyebrow">ON THE DESK</span><h2 id="hero-name">Your next land search</h2><div id="hero-stats" class="hero-stats"></div><p id="hero-region"></p><span class="stamp">A RESEARCH BRIEF, NOT A SITE APPROVAL</span></aside>
     </section>
-    <nav class="workflow" aria-label="Research workflow"><a href="#brief"><b>01</b> Brief</a><a href="#discovery"><b>02</b> Search areas</a><a href="#candidates"><b>03</b> Properties</a><a href="#comparison"><b>04</b> Compare &amp; memo</a></nav>
+    <nav class="workflow" aria-label="Research workflow"><a href="#brief"><b>01</b> Brief</a><a href="#discovery"><b>02</b> Research</a><a href="#candidates"><b>03</b> Properties</a><a href="#comparison"><b>04</b> Compare &amp; memo</a></nav>
     <div class="workspace-bar"><p id="save-status" role="status">Your workspace stays in this browser. Export a backup to keep or move it.</p><div class="actions"><button id="export-workspace" type="button">Export workspace</button><button id="open-import" type="button">Import research</button></div></div>
     <p id="status" class="notice" role="status" aria-live="polite" hidden></p>
     <noscript><p class="notice">Enable JavaScript to edit and save a research workspace. You can still use the source links below.</p></noscript>
@@ -57,9 +57,31 @@
     </section>
 
     <section id="discovery" class="panel">
-      <div class="section-head"><div><p class="eyebrow">02 / WHERE TO LOOK</p><h2>Search the corridor. Check the ground.</h2></div><button id="research-ai" class="primary" type="button">Research with my AI ↗</button></div>
-      <p class="muted">Search links open current results. Parcel does not scrape live inventory or measure terrain and travel time. Your AI app can research the saved brief and selected properties; review its sources before importing findings.</p>
-      <div id="search-areas" class="area-grid"></div>
+      <div class="section-head"><div><p class="eyebrow">02 / RESEARCH</p><h2>Let the search come to you.</h2></div><button id="research-ai" class="primary" type="button">Research in Parcel</button></div>
+      <p class="muted">Use your saved brief to research property sources, review the findings here, and add the places worth investigating.</p>
+      <section id="research-workbench" class="research-workbench" aria-label="AI property research">
+        <div class="section-head"><h3>Osiris / Your land researcher</h3><span id="research-account" class="badge">AI service not connected</span></div>
+        <p id="research-availability" class="muted"></p>
+        <details id="research-connection"><summary>ChatGPT connection</summary>
+          <form id="research-connect-form">
+            <p class="muted">Use the service address and private access code supplied by the site owner. Enter your ChatGPT credentials only on OpenAI’s sign-in page.</p>
+            <div class="research-connection-grid"><label>Connection service<input id="research-endpoint" type="url" required placeholder="https://your-osiris-service.example" autocomplete="off"></label><label>Private access code<input id="research-access" type="password" required autocomplete="off" spellcheck="false"></label></div>
+            <button id="research-connect" type="submit">Connect ChatGPT</button>
+          </form>
+          <div id="research-login" hidden><p>Enter this one-time code on OpenAI’s sign-in page:</p><p id="research-code" class="research-code"></p><a id="research-sign-in" class="button primary" target="_blank" rel="noopener noreferrer">OpenAI sign-in ↗</a><p class="muted">Return here after signing in. This connection lasts for the session; research itself stays in Parcel. Device-code login must be enabled in your ChatGPT security settings.</p></div>
+          <div id="research-account-controls" hidden><label>Research model<select id="research-model"><option value="">Loading available models…</option></select></label><button id="research-models" type="button">Refresh models</button></div>
+          <button id="research-disconnect" type="button" hidden>Disconnect</button>
+        </details>
+        <form id="research-form">
+          <label>What should I look into?<textarea id="research-question" rows="3" maxlength="4000" required>Find current property leads for my saved brief. Check the hard requirements, prioritize the best-supported fits, and explain what still needs verification. Use actual property sources. Do not contact anyone.</textarea></label>
+          <p id="research-share" class="muted"></p>
+          <div class="actions"><button id="research-run" class="primary" type="submit" disabled>Run research</button><button id="research-stop" type="button" hidden>Stop research</button></div>
+        </form>
+        <p id="research-status" class="research-status" role="status" aria-live="polite">Save your brief, connect your account, and run research here.</p>
+        <p id="research-error" class="error" role="alert"></p>
+        <section id="research-results" aria-label="AI research findings" hidden><h3>Findings to review</h3><p id="research-summary"></p><div id="research-findings" class="candidate-grid"></div><p id="research-usage" class="muted"></p><button id="research-apply" class="primary" type="button">Add selected properties</button></section>
+      </section>
+      <details class="source-desk"><summary>Search areas and manual searches</summary><p class="muted">These optional links open source sites. Parcel does not measure terrain or drive time; those checks need supporting evidence.</p><div id="search-areas" class="area-grid"></div></details>
       <details class="source-desk"><summary>Open the evidence desk</summary><div class="source-grid">
         <a href="https://www.usgs.gov/tools/national-map-viewer" target="_blank" rel="noopener noreferrer"><b>USGS National Map</b><span>Review contours and elevation. Confirm the proposed footprint with a survey.</span></a>
         <a href="https://msc.fema.gov/portal/home" target="_blank" rel="noopener noreferrer"><b>FEMA flood maps</b><span>Check the actual parcel and proposed footprint, not only the street address.</span></a>
@@ -118,11 +140,11 @@
   </dialog>
   <article id="print-output" hidden></article>
   <script src="../../assets/ai-config.js"></script>
-  <script src="../../assets/ai-features.js?v=parcel-research-1"></script>
-  <script src="../../assets/subscription-client.js"></script>
-  <script src="../../assets/ai-client.js?v=parcel-research-1"></script>
-  <script src="../../assets/ai-panel.js?v=parcel-research-1"></script>
-  <script src="./core.js?v=2"></script>
-  <script src="./script.js?v=2"></script>
+  <script src="../../assets/ai-features.js?v=parcel-inline-1"></script>
+  <script src="../../assets/subscription-client.js?v=parcel-inline-1"></script>
+  <script src="../../assets/ai-client.js?v=parcel-inline-1"></script>
+  <script src="./core.js?v=3"></script>
+  <script src="./research.js?v=1"></script>
+  <script src="./script.js?v=3"></script>
 </body>
 </html>

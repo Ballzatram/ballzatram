@@ -41,7 +41,7 @@ test('private pilot rejects wrong origins, missing/invalid access, and arbitrary
   assert.equal((await f.call('/v1/account', { from: null })).status, 403);
   assert.equal((await f.call('/v1/account')).status, 401);
   assert.equal(f.runtimes.length, 0);
-  const health = await (await f.call('/health')).json(); assert.equal(health.billing, 'user-chatgpt-only'); assert.equal(health.release, 'private-pilot');
+  const health = await (await f.call('/health')).json(); assert.equal(health.billing, 'user-chatgpt-only'); assert.equal(health.release, 'private-pilot'); assert.ok(health.capabilities.includes('parcel-research-v1'));
   const token = await f.connect();
   assert.equal((await f.call('/rpc', { token, body: { method: 'command/exec', params: { argv: ['whoami'] } } })).status, 404);
   assert.equal((await f.call('/v1/account?token=secret', { token })).status, 400);
@@ -138,6 +138,38 @@ test('Codex handles events arriving before turn/start response and uses server-o
   assert.equal(result.answer, 'Final draft answer'); assert.equal(deltas[0][1].text, 'Draft answer');
   const thread = calls.find(call => call[0] === 'thread/start')[1];
   assert.equal(thread.ephemeral, true); assert.equal(thread.modelProvider, 'openai');
+  assert.equal(thread.config.web_search, 'disabled'); assert.equal(calls.find(call => call[0] === 'turn/start')[1].outputSchema, undefined);
   assert.match(thread.baseInstructions, /promise fulfillment/); assert.equal(thread.approvalPolicy.granular.sandbox_approval, false);
   assert.equal(calls.filter(call => call[0] === 'turn/start').length, 1); runtime.fail();
+});
+
+test('Parcel alone gets web search and structured output; results are normalized before delivery', async () => {
+  const { runtime } = protocol(), calls = [], events = [];
+  const resultJSON = JSON.stringify({ kind: 'parcel-research', schemaVersion: 1, summary: 'Check the source claims.', candidates: [{ title: 'Test property', location: 'Example County', listingUrl: 'https://example.com/property', shortlisted: true, facts: { acres: { value: 50, level: 'documented', sourceUrl: 'https://example.com/property', checkedAt: '2026-09-16' } } }] });
+  runtime.rpc = async (method, params) => {
+    calls.push([method, params]);
+    if (method === 'account/read') return { account: { type: 'chatgpt' } };
+    if (method === 'model/list') return { data: [{ model: 'test-model', displayName: 'Test model' }] };
+    if (method === 'thread/start') return { thread: { id: 'research-thread' } };
+    if (method === 'turn/start') {
+      for (const [method, data] of [['turn/started', { turn: { id: 'research-turn' } }], ['item/started', { item: { type: 'webSearch', query: 'Untrusted query' } }], ['item/agentMessage/delta', { delta: '{raw private JSON' }], ['item/completed', { item: { type: 'agentMessage', text: resultJSON } }], ['turn/completed', { turn: { status: 'completed' } }]]) runtime.emit('notification', { method, params: { threadId: 'research-thread', ...data } });
+      return { turn: { id: 'research-turn' } };
+    }
+    return {};
+  };
+  const result = await runtime.ask(validateRequest({ ...question, tool: 'parcel' }), (event, data) => events.push([event, data]), new AbortController().signal);
+  const thread = calls.find(([name]) => name === 'thread/start')[1], turn = calls.find(([name]) => name === 'turn/start')[1];
+  assert.equal(thread.config.web_search, 'live'); assert.equal(thread.sandbox, 'read-only'); assert.equal(thread.approvalPolicy.granular.sandbox_approval, false);
+  assert.match(thread.baseInstructions, /publicly accessible sources/); assert.ok(turn.outputSchema.properties.candidates);
+  assert.equal(events.filter(([event]) => event === 'delta').length, 0); assert.equal(events[0][0], 'status');
+  const research = JSON.parse(result.answer); assert.equal(research.candidates[0].shortlisted, false); assert.equal(research.candidates[0].facts.acres.level, 'reported');
+  assert.equal(result.billing, 'chatgpt-subscription'); runtime.fail();
+});
+
+test('Parcel refuses invalid research instead of returning fabricated fallback properties', async () => {
+  const { normalizeResearch } = await import('../parcel.mjs');
+  assert.throws(() => normalizeResearch('No JSON returned'), /complete research result/);
+  assert.throws(() => normalizeResearch(JSON.stringify({ kind: 'parcel-research', schemaVersion: 1, summary: 'Unsupported', candidates: [{ title: 'A property', location: 'Somewhere' }] })), /actual source link/);
+  const empty = normalizeResearch(JSON.stringify({ kind: 'parcel-research', schemaVersion: 1, summary: 'Search could not establish a listing.', candidates: [] }));
+  assert.equal(JSON.parse(empty).candidates.length, 0);
 });

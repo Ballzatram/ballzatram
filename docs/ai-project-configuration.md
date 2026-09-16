@@ -24,7 +24,7 @@ Each project needs a defined purpose, selected-data adapter, instructions, and r
 
 | Project | What Osiris receives | Current behavior | Focused next conversation |
 | --- | --- | --- | --- |
-| Parcel Intelligence | Saved brief, search areas, and explicitly shortlisted properties | Research handoff to the visitor’s AI app; reviewed JSON import and source-linked memo | Live inventory feeds and automated GIS/routing remain unconnected |
+| Parcel Intelligence | Saved brief, search areas, and explicitly shortlisted properties | In-page subscription research, reviewed property cards, and source-linked memo | Separate subscription hosting and user sign-in required; automated GIS/routing remain unconnected |
 | Osiris workspace | User's question and chosen context | Prepares a question for the visitor’s AI app | Conversation history, companion identity, and optional long-term memory |
 | Congressional Accountability | One selected bill section, version, locator, source URL, provenance | Prepares selected evidence for a draft reading aid | Multiple sources, bill-version comparison, verification, promise-evidence workflows |
 | Portfolio Lab | Latest explicitly selected saved portfolio run | Educational explanation of supplied results and assumptions | Benchmarks, risk explanation, questions that build investing literacy |
@@ -48,7 +48,7 @@ Saved-run buttons fail visibly when no run exists. Context is shown before a que
 | AI Edit Factory | Separate upload/rendering/media system | Media providers, retention, rendering cost, assistant permissions and reviewable actions |
 | Generated stories / newspaper archive | Existing archive/demo surfaces, not a verified live generator | Which workflows stay active; labels for sourced facts versus fiction |
 
-Parcel’s public workspace uses an explicit research handoff even when an advanced runtime account is configured. Its handoff permits only host-provided public browsing, requires exact sources, and cannot contact people or update records. The user reviews and imports research. Legacy text-runtime requests still have no browsing tools.
+Parcel has an in-page research panel using the visitor’s ChatGPT subscription. The service must advertise `parcel-research-v1`; only Parcel threads enable public web search and structured output. Results appear as reviewable property cards and are added locally only on explicit selection. Other projects remain text-only. The public default subscription URL is still unset: deploying the separate host and completing user sign-in are required for live research. The Cloudflare MCP connector does not run these website requests.
 
 The registry uses `enabled: false` for the remaining feature IDs, so context preparation and the legacy subscription endpoint reject them. It cannot make a deterministic game opponent into a model opponent just because the user connected an account.
 
