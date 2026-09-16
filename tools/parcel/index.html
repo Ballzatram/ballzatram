@@ -1,90 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Parcel Intelligence Dashboard</title>
-  <link rel="stylesheet" href="./style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Turn a land-use brief into a sourced property shortlist. Screen acreage, flat usable land, drive time, expansion, and event feasibility.">
+  <title>Parcel — Land worth a closer look</title>
+  <link rel="stylesheet" href="./style.css?v=2">
 </head>
 <body>
-  <main class="app shell">
-    <header class="topbar card">
-      <div>
-        <p class="kicker">Parcel Intelligence</p>
-        <h1>AI Land Acquisition Analyst</h1>
-        <p class="sub">Find, score, and pitch land opportunities through a guided acquisition workflow with explicit source quality, assumptions, caveats, and next steps.</p>
-      </div>
-      <div class="topbar-actions">
-        <a href="#search-form" class="cta">Explore research leads</a>
-        <a href="../../tools/index.html" class="back-link">Back to tools</a>
-      </div>
-    </header>
-
-    <section class="stage stage-active card tool-contract" aria-label="New Parcel Intelligence workspace">
-      <div>
-        <p class="kicker">Research prototype</p>
-        <h2>Parcel research workbench</h2>
-      </div>
-      <p class="section-copy">Start with a land-use thesis, inspect source links, and compare research leads. Verify listings and assumptions before making a decision.</p>
+  <a class="skip" href="#main">Skip to workspace</a>
+  <header class="masthead wrap">
+    <a class="brand" href="./" aria-label="Parcel home"><span class="brand-mark" aria-hidden="true">P</span> PARCEL <span class="brand-tag">LAND RESEARCH</span></a>
+    <a href="../../tools/index.html">All tools ↗</a>
+  </header>
+  <main id="main" class="wrap">
+    <section class="hero">
+      <div><p class="eyebrow">A PLACE FOR THE NEXT CHAPTER</p><h1>Land worth<br>a closer look.</h1><p class="intro">Start with what you want to build. Find the places to investigate, keep the evidence together, and see what still needs an answer.</p><div class="actions"><a class="button primary" href="#brief">Shape the brief ↓</a><a class="button" href="#discovery">Find land ↗</a></div></div>
+      <aside class="brief-card" aria-label="Current search"><span class="eyebrow">ON THE DESK</span><h2 id="hero-name">Your next land search</h2><div id="hero-stats" class="hero-stats"></div><p id="hero-region"></p><span class="stamp">A RESEARCH BRIEF, NOT A SITE APPROVAL</span></aside>
     </section>
+    <nav class="workflow" aria-label="Research workflow"><a href="#brief"><b>01</b> Brief</a><a href="#discovery"><b>02</b> Search areas</a><a href="#candidates"><b>03</b> Properties</a><a href="#comparison"><b>04</b> Compare &amp; memo</a></nav>
+    <div class="workspace-bar"><p id="save-status" role="status">Your workspace stays in this browser. Export a backup to keep or move it.</p><div class="actions"><button id="export-workspace" type="button">Export workspace</button><button id="open-import" type="button">Import research</button></div></div>
+    <p id="status" class="notice" role="status" aria-live="polite" hidden></p>
+    <noscript><p class="notice">Enable JavaScript to edit and save a research workspace. You can still use the source links below.</p></noscript>
 
-    <section class="stage stage-active card tool-contract" aria-label="Parcel workflow contract">
-      <div>
-        <p class="kicker">What this does</p>
-        <h2>Thesis -> source search -> scoring -> shortlist -> pitch</h2>
-      </div>
-      <p class="section-copy">Parcel does not treat a listing link as truth. It separates opportunity, evidence, caveat, confidence, and diligence questions so a weak source cannot look stronger than it is.</p>
-    </section>
-
-    <section class="stage stage-active card" id="stage-intake">
-      <h2>1) Define investment thesis</h2>
-      <p class="section-copy">Create a clear thesis first. Parcel Intelligence then searches, normalizes, scores, and prioritizes opportunities.</p>
-      <form id="search-form" class="search-grid">
-        <label>Target use case
-          <select id="target-use" required>
-            <option>Equestrian Center</option><option>Country Club</option><option>Residential Development</option><option>Land Banking</option><option>Solar</option><option>Industrial</option><option>Hospitality</option><option>Mixed-Use</option>
-          </select>
-        </label>
-        <label>Location / target market<input id="location" placeholder="City, county, state, or region" required /></label>
-        <label>Search radius (miles)<input id="radius" type="number" min="1" value="40" /></label>
-        <label>Acreage minimum<input id="acreage-min" type="number" min="0" value="20" /></label>
-        <label>Acreage maximum<input id="acreage-max" type="number" min="0" value="300" /></label>
-        <label>Budget ceiling (USD)<input id="budget-max" type="number" min="0" value="5000000" /></label>
-        <label>Must-have factors (comma separated)<input id="must-have" placeholder="Road frontage, utilities, zoning flexibility" /></label>
-        <label>Risk factors to avoid (comma separated)<input id="risk-factors" placeholder="Floodplain, inaccessible easements" /></label>
-        <label class="full">Thesis notes<textarea id="notes" rows="3" placeholder="Describe your strategy, ideal parcel profile, and non-negotiables."></textarea></label>
-        <label>Search coverage
-          <select id="source"><option value="all">All tracked land marketplaces</option><option value="landsearch">LandSearch</option><option value="land">Land.com</option><option value="loopnet">LoopNet</option><option value="zillow">Zillow</option><option value="realtor">Realtor</option></select>
-        </label>
-        <button class="cta" type="submit">2) Find opportunities</button>
+    <section id="brief" class="panel">
+      <div class="section-head"><div><p class="eyebrow">01 / THE BRIEF</p><h2>What does the land need to do?</h2></div><button id="reset-brief" type="button">Reset brief</button></div>
+      <p class="muted">Your overall property and the arena area are separate requirements. Leave budgets blank until you have them.</p>
+      <form id="brief-form">
+        <div class="form-grid">
+          <label>Project name<input name="name" required maxlength="200"></label>
+          <label>Intended use<input name="use" required maxlength="300"></label>
+          <label>Target region<input name="region" required maxlength="300"></label>
+          <label>Drive origin<input name="origin" required maxlength="300"></label>
+          <label>Minimum total acres<input name="minAcres" type="number" min="0.01" step="any" required></label>
+          <label>Maximum total acres <span>(optional)</span><input name="maxAcres" type="number" min="0.01" step="any" placeholder="No ceiling"></label>
+          <label>Minimum usable arena area, acres<input name="minFlatAcres" type="number" min="0" step="any"></label>
+          <label>Target usable arena area, acres<input name="targetFlatAcres" type="number" min="0" step="any"></label>
+          <label>Preferred drive, minutes<input name="preferredDrive" type="number" min="0" step="any"></label>
+          <label>Maximum drive, minutes<input name="maxDrive" type="number" min="1" step="any" required></label>
+          <label>Preferred corridor<input name="corridor" maxlength="300"></label>
+          <label>Corridor priority<select name="corridorMode"><option value="preferred">Preference — keep alternatives visible</option><option value="required">Required — flag outside properties</option><option value="off">No corridor preference</option></select></label>
+        </div>
+        <details class="form-details"><summary>Budget, event size, and other requirements</summary><div class="form-grid">
+          <label>Transaction<select name="tenure"><option value="either">Buy or lease — undecided</option><option value="sale">Purchase</option><option value="lease">Lease</option></select></label>
+          <label>Purchase budget, USD <span>(optional)</span><input name="purchaseBudget" type="number" min="0" step="any" placeholder="Not set"></label>
+          <label>Annual lease budget, USD <span>(optional)</span><input name="annualLeaseBudget" type="number" min="0" step="any" placeholder="Not set"></label>
+          <label>Event attendance <span>(optional)</span><input name="eventGuests" type="number" min="0" step="1" placeholder="To define"></label>
+          <label>Maximum footprint slope, % <span>(optional)</span><input name="maxSlope" type="number" min="0" max="100" step="any" placeholder="Engineer to advise"><small>A screening threshold you choose, not a sport or engineering standard.</small></label>
+          <div class="switches"><label><input name="requireFlat" type="checkbox"> Flat site without rolling hills</label><label><input name="requireExpansion" type="checkbox"> Room for expansion</label><label><input name="requireField" type="checkbox"> Future grass polo field</label><label><input name="requireEvents" type="checkbox"> Spectator and event facilities</label></div>
+          <label class="span-2">Search areas <span>(one per line; editable for any region)</span><textarea name="searchAreas" rows="4" maxlength="1000"></textarea></label>
+          <label class="span-2">Project notes<textarea name="notes" rows="4" maxlength="4000"></textarea></label>
+        </div></details>
+        <div class="form-footer"><p id="brief-error" class="error" role="alert"></p><button class="primary" type="submit">Save brief &amp; rescreen properties</button></div>
       </form>
+      <aside class="field-note"><b>Plan the whole footprint.</b><p>An arena playing surface is about <strong>1.03 acres</strong> (300 × 150 ft); a full grass playing field is about <strong>9.92 acres</strong> (300 × 160 yd). Add supporting space around the playing surface before comparing it with usable acreage. Runoffs, parking, trailers, stabling, drainage, and setbacks need their own space.</p><a href="https://www.uspolo.org/sport/rules" target="_blank" rel="noopener noreferrer">USPA playing dimensions ↗</a></aside>
     </section>
 
-    <section class="stage card" id="stage-processing"><div class="spinner"></div><h2>2) Search + scoring in progress</h2><p id="processing-text">Building thesis object, validating sources, and scoring opportunities.</p></section>
-
-    <section class="stage card" id="stage-results">
-      <div class="dash-head"><h2>3) Opportunity workspace</h2><button id="refresh-btn" class="ghost">Refresh</button></div>
-      <article class="thesis-block" id="thesis-block"></article>
-      <p id="summary"></p>
-      <div class="metrics" id="metrics"></div>
-      <article class="ai-note" id="ai-note"></article>
-      <div id="results" class="opportunity-grid"></div>
-      <div class="empty" id="results-empty" hidden>No opportunities found. Try broadening geography, acreage, or budget criteria.</div>
+    <section id="discovery" class="panel">
+      <div class="section-head"><div><p class="eyebrow">02 / WHERE TO LOOK</p><h2>Search the corridor. Check the ground.</h2></div><button id="research-ai" class="primary" type="button">Research with my AI ↗</button></div>
+      <p class="muted">Search links open current results. Parcel does not scrape live inventory or measure terrain and travel time. Your AI app can research the saved brief and selected properties; review its sources before importing findings.</p>
+      <div id="search-areas" class="area-grid"></div>
+      <details class="source-desk"><summary>Open the evidence desk</summary><div class="source-grid">
+        <a href="https://www.usgs.gov/tools/national-map-viewer" target="_blank" rel="noopener noreferrer"><b>USGS National Map</b><span>Review contours and elevation. Confirm the proposed footprint with a survey.</span></a>
+        <a href="https://msc.fema.gov/portal/home" target="_blank" rel="noopener noreferrer"><b>FEMA flood maps</b><span>Check the actual parcel and proposed footprint, not only the street address.</span></a>
+        <a href="https://www.fws.gov/program/national-wetlands-inventory/wetlands-mapper" target="_blank" rel="noopener noreferrer"><b>Wetlands Mapper</b><span>Screen mapped wetlands; obtain field confirmation where needed.</span></a>
+      </div></details>
+      <div class="starter-note"><div><b>Your research stays in your workspace</b><p>Start with a brief, import an existing Parcel workspace, or add properties from sources you find. Project requirements and candidate records are saved in this browser; they are not published with the website.</p></div><a class="button" href="#candidates">Build your research file ↓</a></div>
     </section>
 
-    <section class="stage card" id="stage-shortlist">
-      <div class="dash-head"><h2>4) Shortlist + compare</h2><button id="generate-deck" class="cta ghost">Generate Pitch Deck</button></div>
-      <article class="ai-note" id="compare-summary"></article>
-      <div class="table-wrap"><table><thead><tr><th>Title</th><th>Location</th><th>Acres</th><th>Asking</th><th>$/Acre</th><th>Fit</th><th>Risk</th><th>Confidence</th><th>Pitch</th><th>Summary</th></tr></thead><tbody id="shortlist-table"></tbody></table></div>
-      <p id="shortlist-empty" class="empty">No shortlisted opportunities yet. Save cards from results to compare and build a deck.</p>
+    <section id="candidates" class="panel">
+      <div class="section-head"><div><p class="eyebrow">03 / THE RESEARCH FILE</p><h2>Every property needs evidence.</h2></div><button id="add-candidate" type="button" class="primary">+ Add a property</button></div>
+      <div id="metrics" class="metrics"></div>
+      <div class="list-toolbar"><label>Show<select id="filter"><option value="all">All properties</option><option value="shortlist">Shortlist</option><option value="research">Needs research</option><option value="promising">Promising</option><option value="conflict">Conflicts with brief</option></select></label><p id="result-count" class="muted"></p></div>
+      <div id="candidate-list" class="candidate-grid"></div>
+      <div id="empty" class="empty"><span class="empty-mark" aria-hidden="true">⌑</span><h3>Your search starts with a real place.</h3><p>Add a broker link or import a sourced research file. Missing information stays unknown until you attach evidence.</p></div>
     </section>
 
-    <section class="stage card" id="stage-deck">
-      <h2>5) Pitch deck preview</h2>
-      <div id="deck-preview" class="deck-grid"></div>
-      <div class="deck-actions"><button class="ghost" disabled>Export PDF (coming soon)</button><button class="ghost" disabled>Export PowerPoint (coming soon)</button><button class="ghost" disabled>Share deck (coming soon)</button></div>
+    <section id="comparison" class="panel">
+      <div class="section-head"><div><p class="eyebrow">04 / THE DECISION DESK</p><h2>Compare what you know.</h2></div><div class="actions"><button id="export-memo" class="primary" type="button">Download diligence memo</button><button id="print-memo" type="button">Print / save PDF</button></div></div>
+      <p class="muted">Shortlist properties to compare. Required conflicts always remain visible; a good price cannot cancel a terrain or acreage failure. “Promising” still requires independent site and professional review.</p>
+      <div id="comparison-table" class="table-wrap" tabindex="0" role="region" aria-label="Shortlisted property comparison"></div>
+      <details><summary>Preview the current memo</summary><pre id="memo-preview"></pre></details>
     </section>
+    <footer class="footer"><p>Parcel / Evidence before enthusiasm.</p><p>Saved on this browser only. A source link is not ground truth. Export your work before switching devices.</p></footer>
   </main>
-  <script src="./script.js"></script>
+
+  <dialog id="candidate-dialog" aria-labelledby="candidate-heading">
+    <div class="dialog-head"><div><p class="eyebrow">PROPERTY RESEARCH</p><h2 id="candidate-heading">Add a property</h2></div><button type="button" id="close-candidate" aria-label="Close property editor">Close ×</button></div>
+    <form id="candidate-form">
+      <input type="hidden" name="id">
+      <div class="form-grid">
+        <label>Property name<input name="title" required maxlength="500"></label><label>Actual address / location<input name="location" required maxlength="500"></label>
+        <label class="span-2">Listing or owner source URL<input name="listingUrl" type="url" placeholder="https://…"></label>
+        <label>County and state<input name="county" maxlength="500" placeholder="County and state"></label><label>Parcel ID<input name="parcelId" maxlength="500"></label>
+        <label>Source snapshot date<input name="capturedAt" type="date"></label><label>Availability per source<select name="listingStatus"><option value="unknown">Unknown</option><option value="reported-active">Reported active</option><option value="under-contract">Under contract / contingent</option><option value="unavailable">Unavailable / inactive link</option><option value="off-market">Off-market lead — availability unknown</option></select></label>
+        <label>Transaction offered<select name="tenure"><option value="unknown">Unknown</option><option value="sale">Sale</option><option value="lease">Lease</option></select></label>
+        <label>Origin used for the drive check<input name="routeOrigin" maxlength="500" placeholder="Exact starting point"></label>
+        <label>Travel day / time and traffic context<input name="routeWhen" maxlength="500" placeholder="e.g. Saturday 10 am, mapped estimate"></label>
+        <label>Corridor actually assessed<input name="corridorName" maxlength="500" placeholder="Named corridor from the brief"></label>
+        <label>Region actually assessed<input name="regionName" maxlength="500" placeholder="Target region from the brief"></label>
+        <label>Use covered by the site / zoning assessment<input name="assessedUse" maxlength="500" placeholder="Intended use from the brief"></label>
+        <label class="span-2">Notes, exclusions, and open questions<textarea name="notes" rows="3" maxlength="4000"></textarea></label>
+      </div>
+      <p class="field-note">Record each fact separately. <strong>Reported</strong> means a listing, person, or AI claims it. Use <strong>Documented by me</strong> only after you review supporting evidence and attach its link and date. Neither label certifies a property.</p>
+      <div id="fact-editor"></div>
+      <div class="dialog-footer"><p id="candidate-error" class="error" role="alert"></p><button class="primary" type="submit">Save property &amp; screen fit</button></div>
+    </form>
+  </dialog>
+  <dialog id="import-dialog" aria-labelledby="import-heading">
+    <div class="dialog-head"><h2 id="import-heading">Bring research into Parcel</h2><button type="button" id="close-import" aria-label="Close import">Close ×</button></div>
+    <p>Import a Parcel backup or the research JSON from your AI app. Research imports add new leads, preserve existing evidence, and treat claims as reported.</p>
+    <label>Choose a JSON file<input id="import-file" type="file" accept=".json,application/json"></label>
+    <label>Or paste the JSON<textarea id="import-text" rows="9" maxlength="1000000" spellcheck="false"></textarea></label>
+    <button id="review-import" type="button" class="primary">Review import</button>
+    <div id="import-preview" hidden><p id="import-description"></p><p id="import-titles"></p><label class="check"><input id="import-replace" type="checkbox"> Replace this workspace and brief with the backup (export the current workspace first).</label><button id="apply-import" type="button" class="primary">Apply reviewed import</button></div>
+    <p id="import-error" class="error" role="alert"></p>
+  </dialog>
+  <article id="print-output" hidden></article>
+  <script src="../../assets/ai-config.js"></script>
+  <script src="../../assets/ai-features.js?v=parcel-research-1"></script>
+  <script src="../../assets/subscription-client.js"></script>
+  <script src="../../assets/ai-client.js?v=parcel-research-1"></script>
+  <script src="../../assets/ai-panel.js?v=parcel-research-1"></script>
+  <script src="./core.js?v=2"></script>
+  <script src="./script.js?v=2"></script>
 </body>
 </html>

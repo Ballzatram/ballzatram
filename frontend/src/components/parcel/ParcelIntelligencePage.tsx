@@ -1617,6 +1617,11 @@ export function ParcelIntelligencePage() {
 
   return (
     <div className="min-h-dvh bg-[#f4f7f2] text-[#18241e]">
+      <aside className="mx-auto max-w-[1480px] border-b border-[#c7d4cc] px-6 py-5">
+        <p className="font-bold">The updated Parcel workspace is ready for active land searches.</p>
+        <p className="mt-2 text-sm">Use editable land briefs, terrain and commute checks, sourced leads, reviewed AI research imports, and downloadable diligence memos. This older Land Desk retains its separate saved projects.</p>
+        <a className="mt-3 inline-block font-bold underline" href="/tools/parcel/index.html">Open the updated Parcel workspace →</a>
+      </aside>
       <section className="border-b border-[#d8e1db] bg-[#eef4ef]">
         <div className="mx-auto grid w-full max-w-[1480px] gap-4 px-4 py-4 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-end justify-between gap-4">
