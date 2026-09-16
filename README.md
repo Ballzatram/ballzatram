@@ -15,7 +15,7 @@ Ballzatram is a clean launchpad for useful AI-guided workbenches, simulations, g
 The public site is intentionally simple:
 
 - Home: a grouped launchpad for every exposed tool and page worth finding.
-- Land Desk: Parcel Intelligence as a prototype land-acquisition research workflow.
+- Land Desk: Parcel’s browser research workspace for land briefs, sourced candidates, terrain and commute checks, shortlist comparison, and diligence memo export. The older Next.js Land Desk remains separately accessible.
 - Markets & Risk: Quant Library plus demo portfolio, scenario, event-study, model, and report workflows.
 - Games & Simulations: Econ Arcade, economics labs, static games, and experimental playable prototypes.
 - Creative / AI Lab: AI Edit Factory and generated-story previews with backend/review caveats.

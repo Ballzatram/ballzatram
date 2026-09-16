@@ -1,6 +1,6 @@
 # Current integration status — September 2026
 
-The shared registry separates `contextReady` from `hostTools`. Eight projects have explicit context adapters; Supply & Demand and The Family Business have interactive host tools. Eight others remain disabled pending feature design. `/tools/ai/connect.html` shows whether the remote connector has been activated; code readiness does not establish live ChatGPT/Claude installation or phone acceptance.
+The shared registry separates `contextReady` from `hostTools`. Nine projects have explicit context adapters; Supply & Demand and The Family Business have interactive host tools. Seven others remain disabled pending feature design. `/tools/ai/connect.html` shows whether the remote connector has been activated; code readiness does not establish live ChatGPT/Claude installation or phone acceptance.
 
 Supply & Demand now shares one deterministic engine among the website, MCP service, and host UI. Its snapshot includes schema/engine versions, revision, selected inputs, computed baseline/current results, and limitations. The visible run is selected directly even when storage is blocked. Reset invalidates the previous selection; comparisons in AI tools cannot change scores. The host UI offers a small hint, explanation, and debrief, with explicit sharing and host-composer fallback.
 
@@ -24,6 +24,7 @@ Each project needs a defined purpose, selected-data adapter, instructions, and r
 
 | Project | What Osiris receives | Current behavior | Focused next conversation |
 | --- | --- | --- | --- |
+| Parcel Intelligence | Saved brief, search areas, and explicitly shortlisted properties | Research handoff to the visitor’s AI app; reviewed JSON import and source-linked memo | Live inventory feeds and automated GIS/routing remain unconnected |
 | Osiris workspace | User's question and chosen context | Prepares a question for the visitor’s AI app | Conversation history, companion identity, and optional long-term memory |
 | Congressional Accountability | One selected bill section, version, locator, source URL, provenance | Prepares selected evidence for a draft reading aid | Multiple sources, bill-version comparison, verification, promise-evidence workflows |
 | Portfolio Lab | Latest explicitly selected saved portfolio run | Educational explanation of supplied results and assumptions | Benchmarks, risk explanation, questions that build investing literacy |
@@ -42,13 +43,14 @@ Saved-run buttons fail visibly when no run exists. Context is shown before a que
 | Central Banker | Deterministic policy simulation and feedback | Adviser role, policy-notebook fields, hint timing, debriefs, and player decision ownership |
 | Prisoner's Dilemma | Opponent archetypes are game logic | Tutor versus opponent roles, permissible history, hidden-information boundaries, strategy explanation |
 | Strategy Studio / Invisible Hands | Local learning engines and explanations | Scenario-specific context, spoiler rules, progression across concepts |
-| Parcel Intelligence | Legacy user-key backend or deterministic fallback | Verified sources, research permissions/actions, source-linked memo review |
 | Reading Room | Local reader progression; no reading history collected by this connection | Recommendation sources, spoiler preferences, finished-book evidence, private reader memory |
 | Genealogy / family stories | No genealogy assistant implementation found in this repository | Evidence-ranked family links, source provenance, family privacy, separating research from storytelling |
 | AI Edit Factory | Separate upload/rendering/media system | Media providers, retention, rendering cost, assistant permissions and reviewable actions |
 | Generated stories / newspaper archive | Existing archive/demo surfaces, not a verified live generator | Which workflows stay active; labels for sourced facts versus fiction |
 
-The registry uses `enabled: false` for these feature IDs, so context preparation and the legacy subscription endpoint reject them. It cannot make a deterministic game opponent into a model opponent just because the user connected an account.
+Parcel’s public workspace uses an explicit research handoff even when an advanced runtime account is configured. Its handoff permits only host-provided public browsing, requires exact sources, and cannot contact people or update records. The user reviews and imports research. Legacy text-runtime requests still have no browsing tools.
+
+The registry uses `enabled: false` for the remaining feature IDs, so context preparation and the legacy subscription endpoint reject them. It cannot make a deterministic game opponent into a model opponent just because the user connected an account.
 
 ## A focused setup conversation for each feature
 

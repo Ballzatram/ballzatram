@@ -126,6 +126,7 @@
     }
   }
   function open(payload, options = {}) {
+    if (options.handoffOnly) return openInApp(payload);
     if (!options.connectionOnly && !(AI.getSettings().mode === 'subscription' && Subscription.settings().endpoint)) return openInApp(payload);
     create(); controller?.abort(); controller = null; stopPolling(); generation++; previouslyFocused = root.document.activeElement;
     request = AI.prepare({ ...payload, prompt: payload.prompt || 'Help me understand this project.' });

@@ -1,340 +1,180 @@
-const stages = {
-  intake: document.getElementById("stage-intake"),
-  processing: document.getElementById("stage-processing"),
-  results: document.getElementById("stage-results"),
-  shortlist: document.getElementById("stage-shortlist"),
-  deck: document.getElementById("stage-deck"),
-};
-const form = document.getElementById("search-form");
-const processingText = document.getElementById("processing-text");
-const summary = document.getElementById("summary");
-const metricsEl = document.getElementById("metrics");
-const aiNoteEl = document.getElementById("ai-note");
-const resultsEl = document.getElementById("results");
-const resultsEmpty = document.getElementById("results-empty");
-const thesisBlock = document.getElementById("thesis-block");
-const shortlistTable = document.getElementById("shortlist-table");
-const shortlistEmpty = document.getElementById("shortlist-empty");
-const compareSummary = document.getElementById("compare-summary");
-const deckPreview = document.getElementById("deck-preview");
-
-let shortlist = [];
-let latestThesis = null;
-let latestResults = [];
-
-const SOURCES = ["landsearch.com", "land.com", "loopnet.com", "zillow.com", "realtor.com", "landwatch.com"];
-const activate = (stageName) => {
-  Object.entries(stages).forEach(([name, stage]) => {
-    const shouldShow = name === stageName || (stageName === "results" && ["results", "shortlist", "deck"].includes(name));
-    stage.classList.toggle("stage-active", shouldShow);
+(function () {
+  'use strict';
+  const C = window.ParcelCore, $ = id => document.getElementById(id);
+  const escape = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+  const link = (href, title, classes = '') => C.url(href) ? `<a class="${classes}" href="${escape(C.url(href))}" target="_blank" rel="noopener noreferrer">${escape(title)}</a>` : '';
+  let state = C.workspace(), editing = null, pendingImport = null, briefDirty = false, preserveSaved = false, importRead = 0;
+  function notify(message) { $('status').textContent = message; $('status').hidden = false; }
+  try {
+    const saved = localStorage.getItem(C.STORAGE_KEY);
+    if (saved) state = C.parseImport(JSON.parse(saved));
+  } catch {
+    preserveSaved = true;
+    $('save-status').textContent = 'Saved data could not be restored or storage is blocked. Existing data is untouched; export any new work from this session.';
+  }
+  function save() {
+    try {
+      if (preserveSaved) throw new Error('Preserve unreadable or externally changed data.');
+      localStorage.setItem(C.STORAGE_KEY, JSON.stringify(state));
+      $('save-status').textContent = 'Saved in this browser. Export a workspace backup to keep or move your research.';
+    } catch { $('save-status').textContent = 'Changes are in this session only. Export your workspace before closing this page.'; }
+  }
+  function requireSavedBrief() { if (state.draft) throw new Error('Save a brief with your target region and drive origin, or import a workspace and choose Replace.'); if (briefDirty) throw new Error('Save your edited brief first so this action uses the new requirements.'); }
+  function fillBrief() {
+    for (const [key, value] of Object.entries(state.brief)) {
+      const el = $('brief-form').elements.namedItem(key); if (!el) continue;
+      if (el.type === 'checkbox') el.checked = value; else el.value = value ?? '';
+    }
+    briefDirty = false;
+  }
+  function renderHeader() {
+    const b = state.brief;
+    $('hero-name').textContent = b.name;
+    $('hero-stats').innerHTML = [ [`${b.minAcres}+`, 'total acres'], [b.minFlatAcres ?? '—', 'arena acres minimum'], [b.maxDrive, 'minutes maximum'] ].map(([v, label]) => `<div><b>${escape(v)}</b><span>${label}</span></div>`).join('');
+    $('hero-region').textContent = b.region ? `${b.region} · ${b.corridorMode === 'off' ? 'No corridor preference' : b.corridor}` : 'Set your region and drive origin to begin, or import a saved workspace.';
+    $('search-areas').innerHTML = C.researchPlan(b).map((area, i) => `<article class="area-card"><span class="area-number">SEARCH AREA / ${String(i + 1).padStart(2, '0')}</span><h3>${escape(area.area)}</h3><p>${escape(area.note)}</p><div class="area-links">${link(area.listings, 'Listing search ↗')}${link(area.search, 'Wider search ↗')}${link(area.records, 'County records ↗')}${link(area.map, 'View area ↗')}</div></article>`).join('');
+    if (!$('search-areas').children.length) $('search-areas').innerHTML = '<p class="muted">Save a brief with your target region and drive origin to build a search plan.</p>';
+  }
+  function renderCard(c, a) {
+    const summary = a.failed.length ? a.failed.map(x => x.label).join('; ') : a.nextQuestions[0] || 'Review the site and supporting documents before advancing.';
+    return `<article class="candidate-card" data-candidate="${escape(c.id)}"><span class="badge ${a.verdict}">${escape(a.label)}</span><h3>${escape(c.title)}</h3><p class="location">${escape(c.location)}</p>
+      <dl>${['acres', 'flatAcres', 'terrain', c.tenure === 'lease' ? 'annualRent' : 'price', 'driveMinutes', 'usableAcres'].map(key => `<div><dt>${escape(C.FACTS.find(f => f.key === key).label)}</dt><dd>${escape(C.factText(c, key))}</dd></div>`).join('')}</dl>
+      <p class="evidence-line">${a.passed}/${a.total} required checks have a current reported fit · ${a.evidenceCount} documented by user<br>${escape(c.listingStatus.replaceAll('-', ' '))} · source snapshot ${escape(c.capturedAt || 'undated')} ${C.age(c.capturedAt) > 30 ? '· availability needs rechecking' : ''}</p>
+      <p class="note"><b>${a.failed.length ? 'Conflict: ' : 'Next: '}</b>${escape(summary)}</p>
+      <details><summary>Fit checks and evidence</summary><ul class="checks">${a.checks.map(x => `<li class="check-${x.state}"><b>${escape(C.STATUS[x.state])}</b> · ${escape(x.label)}${x.required ? '' : ' (preference)'}<small>${escape(x.detail || '')}</small></li>`).join('')}</ul>
+      <div class="evidence-detail">${C.FACTS.filter(d => c.facts[d.key].value !== null).map(d => { const f = c.facts[d.key]; return `<p><b>${escape(d.label)}:</b> ${escape(C.factText(c, d.key))}<br>${escape(f.level)} · ${escape(f.checkedAt || 'undated')} · ${link(f.sourceUrl, 'Evidence ↗') || 'source missing'}<br>${escape(f.detail)}</p>`; }).join('')}</div><p class="note">${escape(c.notes)}</p></details>
+      <div class="actions">${link(c.listingUrl, 'Source ↗', 'button')}${link(C.routeUrl(c, state.brief), 'Check drive ↗', 'button')}<button type="button" data-edit="${escape(c.id)}">Edit evidence</button><button type="button" data-shortlist="${escape(c.id)}" aria-pressed="${c.shortlisted}">${c.shortlisted ? 'Remove from shortlist' : '+ Shortlist'}</button><button type="button" data-remove="${escape(c.id)}">Remove</button></div></article>`;
+  }
+  function renderCandidates() {
+    const rows = state.candidates.map(c => ({ c, a: C.evaluate(c, state.brief) }));
+    const counts = [['Properties', rows.length], ['Shortlisted', rows.filter(({ c }) => c.shortlisted).length], ['Needs research', rows.filter(({ a }) => a.verdict === 'research').length], ['Conflicts', rows.filter(({ a }) => a.verdict === 'conflict').length]];
+    $('metrics').innerHTML = counts.map(([label, value]) => `<div><b>${value}</b><span>${label}</span></div>`).join('');
+    const filter = $('filter').value;
+    const visible = rows.filter(({ c, a }) => filter === 'all' || (filter === 'shortlist' ? c.shortlisted : a.verdict === filter));
+    visible.sort((x, y) => ({ promising: 0, research: 1, conflict: 2 }[x.a.verdict] - { promising: 0, research: 1, conflict: 2 }[y.a.verdict]));
+    $('candidate-list').innerHTML = visible.map(({ c, a }) => renderCard(c, a)).join('');
+    $('result-count').textContent = `${visible.length} shown / ${rows.length} saved. No automatic suitability score.`;
+    $('empty').hidden = visible.length > 0;
+    $('empty').querySelector('h3').textContent = rows.length ? 'No properties in this view.' : 'Your search starts with a real place.';
+    $('empty').querySelector('p').textContent = rows.length ? 'Choose All properties or add more research.' : 'Add a broker link or import a sourced research file. Missing information stays unknown until you attach evidence.';
+  }
+  function renderComparison() {
+    if (state.draft) {
+      $('comparison-table').innerHTML = '<p class="muted">Save a brief or import a workspace to start comparing properties.</p>';
+      $('memo-preview').textContent = 'Your diligence memo will appear after you save a research brief.';
+      return;
+    }
+    const selected = state.candidates.filter(c => c.shortlisted);
+    if (!selected.length) $('comparison-table').innerHTML = '<p class="muted">No properties shortlisted yet. Use + Shortlist on a property to compare it here.</p>';
+    else {
+      const rows = [ ['Screening result', c => escape(C.evaluate(c, state.brief).label)],
+        ...C.FACTS.map(d => [d.label, c => `${escape(C.factText(c, d.key))}<small>${escape(c.facts[d.key].checkedAt || 'Undated')} · ${escape(c.facts[d.key].level)}</small>`]),
+        ['Open questions', c => escape(C.evaluate(c, state.brief).nextQuestions.join(' '))], ['Source', c => link(c.listingUrl, 'Open listing ↗') || 'Missing'] ];
+      $('comparison-table').innerHTML = `<table><thead><tr><th scope="col">Requirement / evidence</th>${selected.map(c => `<th scope="col">${escape(c.title)}</th>`).join('')}</tr></thead><tbody>${rows.map(([name, value]) => `<tr><th scope="row">${escape(name)}</th>${selected.map(c => `<td>${value(c)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+    }
+    $('memo-preview').textContent = C.memo(state);
+  }
+  function render() { renderHeader(); renderCandidates(); renderComparison(); }
+  $('brief-form').addEventListener('input', () => { briefDirty = true; notify('Brief changes are not saved yet. Save the brief to update screening, searches, and exports.'); });
+  $('brief-form').addEventListener('submit', event => {
+    event.preventDefault();
+    try {
+      const raw = Object.fromEntries(new FormData(event.currentTarget));
+      for (const key of ['requireFlat', 'requireExpansion', 'requireField', 'requireEvents']) raw[key] = event.currentTarget.elements.namedItem(key).checked;
+      state.brief = C.normalizeBrief(raw); state.draft = false; briefDirty = false; $('brief-error').textContent = ''; save(); render();
+      notify('Brief saved. All existing properties were screened again against these requirements.');
+    } catch (error) { $('brief-error').textContent = error.message; }
   });
-};
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-const splitCsv = (value) => value.split(",").map((item) => item.trim()).filter(Boolean);
-const escapeHtml = (value) => String(value ?? "").replace(/[&<>"']/g, (character) => ({
-  "&": "&amp;",
-  "<": "&lt;",
-  ">": "&gt;",
-  '"': "&quot;",
-  "'": "&#39;",
-}[character]));
-
-function safeUrl(url) {
-  try {
-    const parsed = new URL(url);
-    return ["http:", "https:"].includes(parsed.protocol) ? parsed.href : "#";
-  } catch {
-    return "#";
-  }
-}
-
-function money(value, fallback = "unknown/inferred") {
-  return Number(value) ? `$${Number(value).toLocaleString()}` : fallback;
-}
-
-function stableId(row) {
-  const text = String(row.url || row.title || Math.random()).slice(0, 80);
-  let hash = 0;
-  for (const char of text) hash = ((hash << 5) - hash + char.charCodeAt(0)) | 0;
-  return `parcel_${Math.abs(hash)}`;
-}
-
-function generateInvestmentThesis() {
-  const thesis = {
-    targetUse: document.getElementById("target-use").value,
-    location: document.getElementById("location").value.trim(),
-    radiusMiles: Number(document.getElementById("radius").value) || null,
-    acreageMin: Number(document.getElementById("acreage-min").value) || null,
-    acreageMax: Number(document.getElementById("acreage-max").value) || null,
-    budgetMax: Number(document.getElementById("budget-max").value) || null,
-    mustHaveFactors: splitCsv(document.getElementById("must-have").value),
-    riskFactors: splitCsv(document.getElementById("risk-factors").value),
-    notes: document.getElementById("notes").value.trim(),
-    scoringWeights: {
-      locationFit: 18,
-      acreageFit: 14,
-      priceFit: 14,
-      accessFit: 10,
-      zoningFit: 10,
-      utilityFit: 9,
-      floodRisk: 8,
-      demographicSupport: 7,
-      competitionGap: 5,
-      developmentComplexity: 5,
-    },
-  };
-  thesis.generatedSearchSummary = `${thesis.targetUse} strategy in ${thesis.location} within ${thesis.radiusMiles || "any"} miles; target ${thesis.acreageMin || "any"}-${thesis.acreageMax || "any"} acres and max budget ${money(thesis.budgetMax, "not set")}.`;
-  return thesis;
-}
-
-function parseJina(text) {
-  return text.split("\n")
-    .map((line) => line.match(/\[(.*?)\]\((https?:\/\/[^)]+)\)/))
-    .filter(Boolean)
-    .map((match) => ({ title: match[1], url: match[2] }))
-    .filter((row) => SOURCES.some((domain) => row.url.includes(domain)))
-    .map((row) => ({ ...row, source: new URL(row.url).hostname.replace("www.", "") }));
-}
-
-async function fallbackRows() {
-  try {
-    const response = await fetch("./output/seed_listings.json", { cache: "no-store" });
-    return response.ok ? response.json() : [];
-  } catch {
-    return [];
-  }
-}
-
-async function validateSource(url) {
-  if (!url) return "source search required";
-  try {
-    await fetch(url, { method: "HEAD", mode: "no-cors" });
-    return "manual verification needed";
-  } catch {
-    return "manual verification needed";
-  }
-}
-
-function scoreOpportunity(opportunity, thesis) {
-  const dims = {
-    locationFit: 45,
-    acreageFit: 50,
-    priceFit: 50,
-    accessFit: 55,
-    zoningFit: 50,
-    utilityFit: 50,
-    floodRisk: 50,
-    demographicSupport: 55,
-    competitionGap: 50,
-    developmentComplexity: 50,
-  };
-  const text = (opportunity.title || "").toLowerCase();
-  if (text.includes(thesis.location.toLowerCase())) dims.locationFit = 92;
-  if (/acre|land|tract|ranch|farm/.test(text)) dims.acreageFit = 80;
-  if (/highway|road|frontage/.test(text)) dims.accessFit = 75;
-  if (/utility|electric|water|sewer/.test(text)) dims.utilityFit = 76;
-  if (/flood/.test(text)) dims.floodRisk = 25;
-
-  const weighted = Object.entries(dims).reduce((total, [key, value]) => total + value * (thesis.scoringWeights[key] || 0), 0) / 100;
-  const overallFitScore = Math.round(weighted);
-  const developmentRisk = overallFitScore > 75 ? "low" : overallFitScore > 58 ? "medium" : "high";
-  const pitchReadinessScore = Math.max(35, Math.round(overallFitScore - (opportunity.dataConfidence === "low" ? 18 : opportunity.dataConfidence === "medium" ? 8 : 0)));
-
-  return {
-    overallFitScore,
-    developmentRisk,
-    pitchReadinessScore,
-    scoreBreakdown: dims,
-    scoreExplanation: [
-      `Location fit ${dims.locationFit}/100 based on title/source match.`,
-      `Acreage and land-type signal ${dims.acreageFit}/100 from listing context.`,
-      "Price fit is conservative due to sparse verified asking data.",
-    ],
-  };
-}
-
-function summarizeOpportunity(opportunity, thesis) {
-  return `Potential ${thesis.targetUse.toLowerCase()} candidate in ${opportunity.location}. Fit is driven by location and parcel-use signals. Validate zoning, utilities, and title chain before an LOI.`;
-}
-
-function normalizeOpportunity(row, thesis) {
-  const askingPrice = row.price || null;
-  const acreage = row.acreage || null;
-  const pricePerAcre = askingPrice && acreage ? Math.round(askingPrice / acreage) : null;
-  const fieldCount = ["title", "url", "source"].filter((key) => row[key]).length;
-  const dataConfidence = fieldCount >= 3 ? "medium" : "low";
-  const opportunity = {
-    id: stableId(row),
-    title: row.title || "Untitled opportunity",
-    location: thesis.location,
-    acreage,
-    askingPrice,
-    pricePerAcre,
-    sourceUrl: row.url || null,
-    sourceStatus: row.url ? "manual verification needed" : "source search required",
-    sourceType: row.source?.includes("county") ? "county/GIS" : "listing",
-    dataConfidence,
-    aiSummary: "",
-    fitReason: "",
-    redFlags: "Unknown acreage/price; verify with broker or county records.",
-    nextQuestions: "What is current zoning, utility tie-in cost, and floodplain status?",
-  };
-  const score = scoreOpportunity(opportunity, thesis);
-  opportunity.aiSummary = summarizeOpportunity(opportunity, thesis);
-  opportunity.fitReason = score.scoreExplanation[0];
-  return { ...opportunity, ...score };
-}
-
-function createCard(opportunity) {
-  const sourceUrl = safeUrl(opportunity.sourceUrl);
-  const sourceLabel = opportunity.sourceUrl ? "View source" : "Source search required";
-  const card = document.createElement("article");
-  card.className = "opp-card";
-  card.innerHTML = `
-    <h3>${escapeHtml(opportunity.title)}</h3>
-    <p>${escapeHtml(opportunity.aiSummary)}</p>
-    <div class="badges">
-      <span>Fit ${escapeHtml(opportunity.overallFitScore)}/100</span>
-      <span>Risk ${escapeHtml(opportunity.developmentRisk)}</span>
-      <span>Confidence ${escapeHtml(opportunity.dataConfidence)}</span>
-      <span>Source ${escapeHtml(opportunity.sourceStatus)}</span>
-    </div>
-    <ul>
-      <li><strong>Location:</strong> ${escapeHtml(opportunity.location)}</li>
-      <li><strong>Acreage:</strong> ${escapeHtml(opportunity.acreage ?? "unknown/inferred")}</li>
-      <li><strong>Asking:</strong> ${escapeHtml(money(opportunity.askingPrice))}</li>
-      <li><strong>$/Acre:</strong> ${escapeHtml(money(opportunity.pricePerAcre))}</li>
-      <li><strong>Why it fits:</strong> ${escapeHtml(opportunity.fitReason)}</li>
-      <li><strong>Red flags:</strong> ${escapeHtml(opportunity.redFlags)}</li>
-      <li><strong>Next questions:</strong> ${escapeHtml(opportunity.nextQuestions)}</li>
-    </ul>
-    <div class="actions">
-      <a class="ghost" href="${escapeHtml(sourceUrl)}" target="_blank" rel="noreferrer">${sourceLabel}</a>
-      <button class="ghost" data-save="${escapeHtml(opportunity.id)}">Save to Shortlist</button>
-      <button class="ghost" data-compare="${escapeHtml(opportunity.id)}">Compare</button>
-      <button class="ghost" disabled>Generate Slide</button>
-      <button class="ghost" disabled>Ask AI</button>
-    </div>`;
-  return card;
-}
-
-function renderMetrics(rows) {
-  const average = rows.length ? (rows.reduce((total, row) => total + row.overallFitScore, 0) / rows.length).toFixed(1) : "0.0";
-  metricsEl.innerHTML = [
-    ["Total opportunities", rows.length],
-    ["Shortlisted", shortlist.length],
-    ["Avg fit", average],
-    ["Workflow", "Thesis -> Score -> Pitch"],
-  ].map(([label, value]) => `<div class="metric"><p>${escapeHtml(label)}</p><strong>${escapeHtml(value)}</strong></div>`).join("");
-}
-
-function generateComparisonSummary(list, thesis) {
-  if (!list.length) return "Add at least one opportunity to generate a comparison summary.";
-  const best = [...list].sort((a, b) => b.overallFitScore - a.overallFitScore)[0];
-  return `Based on the current thesis for ${thesis.targetUse} in ${thesis.location}, ${best.title} is currently the strongest pitch candidate due to composite fit score and readiness. Lower-ranked parcels may still offer upside but require more diligence on zoning, utilities, and environmental risk.`;
-}
-
-function renderShortlist() {
-  shortlistTable.innerHTML = "";
-  shortlist.forEach((opportunity) => {
-    const row = document.createElement("tr");
-    row.innerHTML = `
-      <td>${escapeHtml(opportunity.title)}</td>
-      <td>${escapeHtml(opportunity.location)}</td>
-      <td>${escapeHtml(opportunity.acreage ?? "unknown")}</td>
-      <td>${escapeHtml(opportunity.askingPrice ? money(opportunity.askingPrice) : "unknown")}</td>
-      <td>${escapeHtml(opportunity.pricePerAcre ? money(opportunity.pricePerAcre) : "unknown")}</td>
-      <td>${escapeHtml(opportunity.overallFitScore)}</td>
-      <td>${escapeHtml(opportunity.developmentRisk)}</td>
-      <td>${escapeHtml(opportunity.dataConfidence)}</td>
-      <td>${escapeHtml(opportunity.pitchReadinessScore)}</td>
-      <td>${escapeHtml(opportunity.aiSummary)}</td>`;
-    shortlistTable.appendChild(row);
+  $('reset-brief').addEventListener('click', () => {
+    const current = state.brief; state.brief = { ...C.DEFAULT_BRIEF }; fillBrief(); state.brief = current;
+    briefDirty = true; notify('Blank brief loaded into the form. Save it to apply; existing properties will be preserved.');
   });
-  shortlistEmpty.hidden = shortlist.length > 0;
-  compareSummary.textContent = generateComparisonSummary(shortlist, latestThesis);
-}
-
-function generatePitchDeck(list, thesis) {
-  if (!list.length) {
-    deckPreview.innerHTML = '<p class="empty">Deck cannot be generated until at least one parcel is shortlisted.</p>';
-    return;
+  function editor(candidate) {
+    editing = candidate || null;
+    const form = $('candidate-form'); form.reset(); $('candidate-error').textContent = '';
+    $('candidate-heading').textContent = candidate ? 'Edit property evidence' : 'Add a property';
+    const c = candidate || { routeOrigin: state.brief.origin, corridorName: state.brief.corridor, regionName: state.brief.region, assessedUse: state.brief.use, facts: {} };
+    for (const key of ['id', 'title', 'location', 'county', 'parcelId', 'listingUrl', 'capturedAt', 'routeOrigin', 'routeWhen', 'corridorName', 'regionName', 'assessedUse', 'notes']) form.elements.namedItem(key).value = c[key] || '';
+    form.elements.namedItem('listingStatus').value = c.listingStatus || 'unknown'; form.elements.namedItem('tenure').value = c.tenure || 'unknown';
+    $('fact-editor').innerHTML = C.FACTS.map(d => {
+      const f = c.facts[d.key] || C.blankFact(), name = `fact.${d.key}`;
+      const control = d.type === 'number' ? `<input name="${name}.value" type="number" min="0" step="any" value="${escape(f.value)}" placeholder="Unknown">` : `<select name="${name}.value"><option value="">Unknown</option>${(d.options || C.YES_NO).map(([v, label]) => `<option value="${v}" ${f.value === v ? 'selected' : ''}>${label}</option>`).join('')}</select>`;
+      return `<details class="fact-block" ${['acres', 'flatAcres', 'terrain', 'driveMinutes'].includes(d.key) ? 'open' : ''}><summary>${escape(d.label)}<span>${escape(candidate ? C.factText(candidate, d.key) : 'Unknown')}</span></summary><p>${escape(d.question)}</p><div class="form-grid"><label>${escape(d.label)}${control}</label><label>Evidence status<select name="${name}.level"><option value="reported">Reported — needs verification</option><option value="documented" ${f.level === 'documented' ? 'selected' : ''}>Documented by me</option></select></label><label class="source-label">Source URL<input name="${name}.sourceUrl" type="url" value="${escape(f.sourceUrl)}" placeholder="https://…"></label><label>Date you checked this source<input name="${name}.checkedAt" type="date" value="${escape(f.checkedAt)}"></label><label>Evidence / measurement notes<textarea name="${name}.detail" rows="2" maxlength="1000">${escape(f.detail)}</textarea></label></div></details>`;
+    }).join('');
+    $('candidate-dialog').showModal();
   }
-  const slides = [
-    ["Title slide", `Parcel Intelligence acquisition pitch: ${thesis.targetUse} in ${thesis.location}`],
-    ["Investment thesis", thesis.generatedSearchSummary],
-    ["Market/search criteria", `Radius ${thesis.radiusMiles || "any"} mi - Acres ${thesis.acreageMin || "any"}-${thesis.acreageMax || "any"} - Budget ceiling ${money(thesis.budgetMax, "not set")}`],
-    ["Shortlist summary", generateComparisonSummary(list, thesis)],
-    ["Opportunity map placeholder", "Map preview coming soon; integrate GIS layer in the next release."],
-    ...list.map((opportunity, index) => [`Opportunity ${index + 1}`, `${opportunity.title} - Fit ${opportunity.overallFitScore}/100 - Risk ${opportunity.developmentRisk}`]),
-    ["Risk matrix", "Primary risks: zoning uncertainty, utility tie-in cost, floodplain, entitlement complexity."],
-    ["Financial assumptions placeholder", "IRR model, capex assumptions, and hold/sell scenarios coming soon."],
-    ["Recommended next steps", "Validate title/zoning, request utility letters, site visit, broker interviews, and investment committee memo."],
-  ];
-  deckPreview.innerHTML = slides.map(([title, body]) => `<article class="slide"><h3>${escapeHtml(title)}</h3><p>${escapeHtml(body)}</p></article>`).join("");
-}
-
-async function executeSearch() {
-  activate("processing");
-  latestThesis = generateInvestmentThesis();
-  thesisBlock.textContent = `Thesis: ${latestThesis.generatedSearchSummary}`;
-  processingText.textContent = "Building thesis object, checking source coverage, and scoring opportunities...";
-  await wait(300);
-
-  const source = document.getElementById("source").value;
-  const selectedSources = source === "all" ? SOURCES : SOURCES.filter((item) => item.includes(source));
-  const clause = selectedSources.map((item) => `site:${item}`).join(" OR ");
-  const query = `land for sale ${latestThesis.location} ${latestThesis.targetUse} ${clause}`;
-  let rows = [];
-
-  try {
-    const proxy = `https://r.jina.ai/http://duckduckgo.com/html/?q=${encodeURIComponent(query)}`;
-    const text = await fetch(proxy, { cache: "no-store" }).then((response) => response.text());
-    rows = parseJina(text);
-  } catch {
-    rows = [];
+  $('add-candidate').addEventListener('click', () => { try { requireSavedBrief(); editor(null); } catch (e) { notify(e.message); } });
+  $('close-candidate').addEventListener('click', () => $('candidate-dialog').close());
+  $('candidate-form').addEventListener('submit', event => {
+    event.preventDefault();
+    try {
+      const data = Object.fromEntries(new FormData(event.currentTarget)); data.facts = {};
+      for (const d of C.FACTS) data.facts[d.key] = Object.fromEntries(['value', 'level', 'sourceUrl', 'checkedAt', 'detail'].map(k => [k, data[`fact.${d.key}.${k}`]]));
+      data.shortlisted = editing?.shortlisted || false;
+      const next = C.normalizeCandidate(data);
+      if (state.candidates.some(c => c.id !== editing?.id && C.sameCandidate(c, next))) throw new Error('This source or county/parcel ID is already in the workspace. Edit the existing property instead.');
+      if (editing) state.candidates = state.candidates.map(c => c.id === editing.id ? next : c);
+      else { if (state.candidates.length >= 100) throw new Error('Export this workspace and start another to research more than 100 properties.'); state.candidates.push(next); }
+      save(); render(); $('candidate-dialog').close(); notify('Property saved. Screening uses only the evidence recorded here.');
+    } catch (error) { $('candidate-error').textContent = error.message; }
+  });
+  $('candidate-list').addEventListener('click', event => {
+    const button = event.target.closest('button'); if (!button) return;
+    const id = button.dataset.edit || button.dataset.shortlist || button.dataset.remove;
+    const c = state.candidates.find(x => x.id === id); if (!c) return;
+    if (button.dataset.edit) { editor(c); return; }
+    if (button.dataset.shortlist) { c.shortlisted = !c.shortlisted; save(); renderCandidates(); renderComparison(); document.querySelector(`[data-shortlist="${CSS.escape(id)}"]`)?.focus(); return; }
+    if (button.dataset.remove && window.confirm(`Remove “${c.title}” and its evidence from this workspace?`)) { state.candidates = state.candidates.filter(x => x.id !== id); save(); render(); notify('Property removed from this workspace.'); }
+  });
+  $('filter').addEventListener('change', renderCandidates);
+  function download(name, content, type) {
+    const href = URL.createObjectURL(new Blob([content], { type })); const a = document.createElement('a'); a.href = href; a.download = name; document.body.append(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(href), 1000);
   }
-
-  if (!rows.length) {
-    processingText.textContent = "Live source coverage is sparse. Loading known inventory and marking links for manual verification.";
-    await wait(200);
-    rows = await fallbackRows();
-  }
-
-  const normalized = await Promise.all(rows.slice(0, 30).map(async (row) => {
-    const opportunity = normalizeOpportunity(row, latestThesis);
-    opportunity.sourceStatus = await validateSource(opportunity.sourceUrl);
-    if (opportunity.sourceStatus === "manual verification needed" && opportunity.dataConfidence === "medium") opportunity.dataConfidence = "medium";
-    return opportunity;
+  function guard(fn) { return () => { try { requireSavedBrief(); fn(); } catch (error) { notify(error.message); } }; }
+  $('export-workspace').addEventListener('click', guard(() => download('parcel-workspace.json', JSON.stringify(state, null, 2), 'application/json')));
+  $('export-memo').addEventListener('click', guard(() => download('parcel-diligence-memo.md', C.memo(state), 'text/markdown;charset=utf-8')));
+  $('print-memo').addEventListener('click', guard(() => { $('print-output').textContent = C.memo(state); window.print(); }));
+  $('research-ai').addEventListener('click', guard(() => {
+    if (!window.OsirisPanel) throw new Error('The AI panel could not load. Export the workspace to share with your AI app.');
+    window.OsirisPanel.open({ tool: 'parcel', context: C.aiContext(state), prompt: 'Research this saved land brief. Find source-linked candidate properties in the target areas; keep total acreage separate from the arena footprint. Check each hard requirement, prioritize flat land and the drive limit, and flag unknowns. Cite exact property pages and dates. Give me a short comparison plus a parcel-research JSON file using the supplied return format. Do not contact anyone.' }, { handoffOnly: true });
   }));
-
-  latestResults = normalized.sort((a, b) => b.overallFitScore - a.overallFitScore);
-  resultsEl.replaceChildren();
-  latestResults.forEach((opportunity) => resultsEl.appendChild(createCard(opportunity)));
-  resultsEmpty.hidden = latestResults.length > 0;
-  summary.textContent = latestResults.length
-    ? `Found ${latestResults.length} normalized opportunities. Source status is explicit so weak or missing links do not masquerade as evidence.`
-    : "No opportunities found. Broaden geography, budget, acreage, or source coverage.";
-  aiNoteEl.textContent = "Guided workflow: deterministic scoring is active. Live AI enrichment can plug into this same card schema later without changing the user experience.";
-  renderMetrics(latestResults);
-  renderShortlist();
-  generatePitchDeck(shortlist, latestThesis);
-  activate("results");
-}
-
-form.addEventListener("submit", async (event) => {
-  event.preventDefault();
-  await executeSearch();
-});
-document.getElementById("refresh-btn").addEventListener("click", executeSearch);
-document.getElementById("generate-deck").addEventListener("click", () => generatePitchDeck(shortlist, latestThesis));
-resultsEl.addEventListener("click", (event) => {
-  const target = event.target instanceof HTMLElement ? event.target : null;
-  const id = target?.dataset?.save || target?.dataset?.compare;
-  if (!id) return;
-  const pick = latestResults.find((result) => result.id === id);
-  if (!pick) return;
-  if (!shortlist.some((item) => item.id === id)) shortlist.push(pick);
-  renderMetrics(latestResults);
-  renderShortlist();
-});
+  function clearImport() { pendingImport = null; $('import-preview').hidden = true; $('import-error').textContent = ''; }
+  $('open-import').addEventListener('click', () => { importRead++; clearImport(); $('import-text').value = ''; $('import-file').value = ''; $('import-dialog').showModal(); });
+  $('close-import').addEventListener('click', () => $('import-dialog').close());
+  $('import-text').addEventListener('input', () => { importRead++; clearImport(); });
+  $('import-file').addEventListener('change', async () => {
+    const current = ++importRead; clearImport();
+    try {
+      const file = $('import-file').files[0]; if (!file) return;
+      if (file.size > 1000000) throw new Error('Choose a JSON file smaller than 1 MB.');
+      const content = await file.text();
+      if (current !== importRead) return;
+      clearImport(); $('import-text').value = content;
+    } catch (error) { if (current === importRead) $('import-error').textContent = error.message; }
+  });
+  $('review-import').addEventListener('click', () => {
+    clearImport();
+    try {
+      const text = $('import-text').value.trim().replace(/^```(?:json)?\s*\n/, '').replace(/\n```$/, '');
+      if (text.length > 1000000) throw new Error('Keep research imports below 1 MB.');
+      pendingImport = C.parseImport(JSON.parse(text));
+      $('import-description').textContent = `${pendingImport.candidates.length} candidate(s). ${pendingImport.kind === 'parcel-workspace' ? `Backup of “${pendingImport.brief.name}”. Merge candidates, or explicitly replace the current workspace below.` : 'New research will be merged; existing records will not be overwritten. All imported claims are reported, not verified.'}`;
+      $('import-titles').textContent = pendingImport.candidates.map(c => `${c.title} — ${c.location}`).join('\n');
+      $('import-replace').checked = false; $('import-replace').closest('label').hidden = pendingImport.kind !== 'parcel-workspace'; $('import-preview').hidden = false;
+    } catch (error) { $('import-error').textContent = error instanceof SyntaxError ? 'This is not valid JSON. Paste the complete Parcel research object or choose an exported workspace.' : error.message; }
+  });
+  $('apply-import').addEventListener('click', () => {
+    try {
+      if (!pendingImport) throw new Error('Review the import first.');
+      if (pendingImport.kind === 'parcel-workspace' && $('import-replace').checked) {
+        state = C.workspace(pendingImport.brief, C.mergeCandidates([], pendingImport.candidates).candidates); preserveSaved = false; fillBrief();
+      } else {
+        requireSavedBrief();
+        const merged = C.mergeCandidates(state.candidates, pendingImport.candidates); state.candidates = merged.candidates;
+      }
+      save(); render(); $('import-dialog').close(); notify('Reviewed research imported. Existing records are retained unless you chose to replace the workspace.'); clearImport();
+    } catch (error) { $('import-error').textContent = error.message; }
+  });
+  window.addEventListener('storage', event => { if (event.key === C.STORAGE_KEY) { preserveSaved = true; notify('This workspace changed in another tab. Export this tab’s changes or reload before saving over that version.'); } });
+  fillBrief(); render();
+})();
