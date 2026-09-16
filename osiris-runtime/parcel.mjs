@@ -3,7 +3,7 @@ import Parcel from '../tools/parcel/core.js';
 const string = { type: 'string' };
 const object = properties => ({ type: 'object', properties, required: Object.keys(properties), additionalProperties: false });
 const facts = Object.fromEntries(Parcel.FACTS.map(f => [f.key, object({
-  value: f.type === 'number' ? { type: ['number', 'null'] } : { enum: [...(f.options || Parcel.YES_NO).map(([value]) => value), null] },
+  value: f.type === 'number' ? { type: ['number', 'null'] } : { type: ['string', 'null'], enum: [...(f.options || Parcel.YES_NO).map(([value]) => value), null] },
   level: { type: 'string', enum: ['reported'] }, sourceUrl: string, checkedAt: string, detail: string
 })]));
 export const researchSchema = object({
