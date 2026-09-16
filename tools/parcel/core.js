@@ -193,6 +193,16 @@
     }
     return { candidates, added, skipped: incoming.length - added };
   }
+  function parseAIResearch(answer) {
+    if (typeof answer !== 'string' || answer.length > 50000) throw new Error('The research response is too large or unreadable. No properties were changed.');
+    let raw;
+    try { raw = JSON.parse(answer.trim().replace(/^```(?:json)?\s*\n/, '').replace(/\n```$/, '')); }
+    catch { throw new Error('The AI did not return a complete research result. No properties were changed.'); }
+    if (raw?.kind !== 'parcel-research' || typeof raw.summary !== 'string' || raw.summary.length > 6000 || !Array.isArray(raw.candidates) || raw.candidates.length > 8) throw new Error('The research response has an unsupported format. No properties were changed.');
+    const parsed = parseImport(raw);
+    if (parsed.candidates.some(c => !c.listingUrl)) throw new Error('Every AI property needs an actual source link. No properties were changed.');
+    return { ...parsed, summary: raw.summary.trim() };
+  }
   function memo(state, now = new Date()) {
     const b = state.brief, selected = state.candidates.filter(c => c.shortlisted), candidates = selected.length ? selected : state.candidates;
     const lines = [`# ${b.name}`, '', `Research memo · ${new Date(now).toISOString().slice(0, 10)}`, '',
@@ -222,8 +232,8 @@
       limitations: 'Source claims are unverified. Do not infer terrain, usable acreage, zoning, or drive time from a title. Do not contact owners or change records.',
       returnFormat: { kind: 'parcel-research', schemaVersion: VERSION, candidates: [{ title: 'Property name', location: 'Actual address / town / state', listingUrl: 'https://source.example/property', capturedAt: 'YYYY-MM-DD', listingStatus: 'unknown', tenure: 'unknown', county: '', parcelId: '', routeOrigin: '', routeWhen: '', corridorName: '', regionName: '', assessedUse: '', notes: 'What the source says and what is missing', facts: Object.fromEntries(FACTS.map(f => [f.key, blankFact()])) }] },
       factValues: { numbers: 'Number or null; never an estimated value without labeling and sourcing it.', terrain: 'flat, rolling, mixed, or null', otherFacts: 'yes, no, or null', level: 'reported', checkedAt: 'YYYY-MM-DD when you read the source; describe cached or older source data in detail.' } };
-    if (JSON.stringify(context).length > 23000) throw new Error('This shortlist is too large for one AI handoff. Select fewer properties or export the full workspace.');
+    if (JSON.stringify(context).length > 23000) throw new Error('This shortlist is too large for one research request. Select fewer properties or export the full workspace.');
     return context;
   }
-  return Object.freeze({ VERSION, STORAGE_KEY, DEFAULT_BRIEF, FACTS, YES_NO, STATUS, normalizeBrief, normalizeCandidate, blankFact, url, date, age, evaluate, money, factText, researchPlan, routeUrl, workspace, parseImport, mergeCandidates, sameCandidate, memo, aiContext });
+  return Object.freeze({ VERSION, STORAGE_KEY, DEFAULT_BRIEF, FACTS, YES_NO, STATUS, normalizeBrief, normalizeCandidate, blankFact, url, date, age, evaluate, money, factText, researchPlan, routeUrl, workspace, parseImport, parseAIResearch, mergeCandidates, sameCandidate, memo, aiContext });
 });

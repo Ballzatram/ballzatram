@@ -73,7 +73,7 @@ export function createRuntimeServer({ origins, accessCodes, sessionFactory = () 
       const route = url.pathname;
       if (route === '/health' && req.method === 'GET') {
         if (origin && !allowed.has(origin)) throw error('origin', 'This website is not allowed to use this service.', 403);
-        json(res, 200, { ok: true, protocol: 3, service: 'osiris-subscription', release: 'private-pilot', provider: 'codex', codexVersion: CODEX_VERSION, billing: 'user-chatgpt-only', features: features.features.filter(f => f.enabled).map(f => f.id) }); return;
+        json(res, 200, { ok: true, protocol: 3, service: 'osiris-subscription', release: 'private-pilot', provider: 'codex', codexVersion: CODEX_VERSION, billing: 'user-chatgpt-only', capabilities: ['parcel-research-v1'], features: features.features.filter(f => f.enabled).map(f => f.id) }); return;
       }
       if (!origin || !allowed.has(origin)) throw error('origin', 'This website is not allowed to use this service.', 403);
       if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }

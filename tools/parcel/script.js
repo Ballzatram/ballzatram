@@ -134,10 +134,10 @@
   $('export-workspace').addEventListener('click', guard(() => download('parcel-workspace.json', JSON.stringify(state, null, 2), 'application/json')));
   $('export-memo').addEventListener('click', guard(() => download('parcel-diligence-memo.md', C.memo(state), 'text/markdown;charset=utf-8')));
   $('print-memo').addEventListener('click', guard(() => { $('print-output').textContent = C.memo(state); window.print(); }));
-  $('research-ai').addEventListener('click', guard(() => {
-    if (!window.OsirisPanel) throw new Error('The AI panel could not load. Export the workspace to share with your AI app.');
-    window.OsirisPanel.open({ tool: 'parcel', context: C.aiContext(state), prompt: 'Research this saved land brief. Find source-linked candidate properties in the target areas; keep total acreage separate from the arena footprint. Check each hard requirement, prioritize flat land and the drive limit, and flag unknowns. Cite exact property pages and dates. Give me a short comparison plus a parcel-research JSON file using the supplied return format. Do not contact anyone.' }, { handoffOnly: true });
-  }));
+  if (window.ParcelResearch) window.ParcelResearch.mount({ getState: () => state, requireSavedBrief, applyCandidates: incoming => {
+    const merged = C.mergeCandidates(state.candidates, incoming);
+    state.candidates = merged.candidates; save(); render(); return merged;
+  } });
   function clearImport() { pendingImport = null; $('import-preview').hidden = true; $('import-error').textContent = ''; }
   $('open-import').addEventListener('click', () => { importRead++; clearImport(); $('import-text').value = ''; $('import-file').value = ''; $('import-dialog').showModal(); });
   $('close-import').addEventListener('click', () => $('import-dialog').close());

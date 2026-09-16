@@ -6,5 +6,9 @@
 !osiris-runtime/package-lock.json
 !osiris-runtime/server.mjs
 !osiris-runtime/codex.mjs
+!osiris-runtime/parcel.mjs
+!tools/
+!tools/parcel/
+!tools/parcel/core.js
 !osiris-runtime/scripts/
 !osiris-runtime/scripts/check-runtime.mjs
