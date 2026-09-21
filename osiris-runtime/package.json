@@ -7,7 +7,9 @@
   "scripts": {
     "start": "node server.mjs",
     "test": "node --test test/*.test.mjs",
-    "check:runtime": "node scripts/check-runtime.mjs"
+    "check:runtime": "node scripts/check-runtime.mjs",
+    "check:readiness": "node scripts/check-readiness.mjs",
+    "check:deployment": "node scripts/check-deployment.mjs"
   },
   "dependencies": { "@openai/codex": "0.154.0" }
 }

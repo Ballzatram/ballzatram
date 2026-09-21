@@ -177,7 +177,7 @@ function streamResponse(events) {
   return new Response(text, { headers: { 'Content-Type': 'text/event-stream' } });
 }
 
-test('AI app handoff is the default; explicit runtime selection never substitutes another account', async () => {
+test('native is the default; unavailable runtime never substitutes another account or transport', async () => {
   const dom = mount();
   connect(dom.window);
   dom.window.BallzatramAI.saveSettings({ mode: 'subscription' });
@@ -185,7 +185,7 @@ test('AI app handoff is the default; explicit runtime selection never substitute
   await assert.rejects(dom.window.BallzatramAI.ask(request, { consent: true }), /Connect and sign in/);
   dom.window.close();
   const fresh = mount({ ui: true });
-  assert.equal(fresh.window.BallzatramAI.getSettings().mode, 'handoff');
+  assert.equal(fresh.window.BallzatramAI.getSettings().mode, 'subscription');
   fresh.window.document.getElementById('connectSubscription').click();
   assert.equal(fresh.window.document.querySelector('.osiris-dialog').open, true);
   assert.equal(fresh.window.document.querySelector('[data-osiris="form"]').hidden, true);
@@ -297,4 +297,64 @@ test('disconnect during an answer stops it and leaves the native panel usable fo
   assert.equal(aborted, true); assert.equal(dom.window.BallzatramSubscription.connection(), null);
   assert.equal(selector('ask').disabled, false); assert.equal(selector('cancel').hidden, true); assert.equal(selector('login').hidden, true);
   assert.match(selector('status').textContent, /Disconnected/); dom.window.close();
+});
+
+test('unconfigured native panel preserves the project and draft without network requests or popup', async () => {
+  let calls = 0, popups = 0;
+  const dom = mount({ url: 'https://dgallemore.com/econ-arcade/play/index.html', prepare: w => { w.fetch = async () => { calls++; throw new Error('Unexpected'); }; w.open = () => { popups++; }; } });
+  const d = dom.window.document;
+  dom.window.OsirisPanel.open({ tool: 'econ-world', prompt: 'What should I notice?', context: { episode: 'selected-episode', result: { revenue: 100 } } });
+  await flush();
+  assert.equal(d.querySelector('.osiris-dialog[open]').dataset.connectionState, 'unconfigured');
+  assert.equal(d.querySelector('[data-osiris="question"]').value, 'What should I notice?');
+  assert.match(d.querySelector('[data-osiris="status"]').textContent, /awaiting runtime activation/);
+  assert.equal(d.querySelector('[data-app="form"]'), null);
+  assert.equal(calls, 0); assert.equal(popups, 0); assert.equal(dom.window.location.pathname, '/econ-arcade/play/index.html'); dom.window.close();
+});
+
+test('handoff requires an explicit choice and can return to the native panel with the same draft', async () => {
+  const dom = mount(); const d = dom.window.document;
+  dom.window.OsirisPanel.open(request);
+  d.querySelector('[data-osiris="question"]').value = 'My edited question';
+  d.querySelector('[data-osiris="handoff"]').click();
+  assert.equal(d.querySelector('[data-app="question"]').value, 'My edited question');
+  assert.equal(d.querySelector('[data-osiris="form"]').closest('dialog').open, false);
+  d.querySelector('[data-app="native"]').click();
+  assert.equal(d.querySelector('[data-osiris="question"]').value, 'My edited question');
+  assert.match(d.querySelector('[data-osiris="context"]').textContent, /Selected evidence only/);
+  assert.equal(d.querySelector('[data-osiris="form"]').closest('dialog').open, true); dom.window.close();
+});
+
+test('closing the panel during session creation erases the late session and does not open provider login', async () => {
+  let finish; const calls = [];
+  const dom = mount({ prepare: w => { w.fetch = async (url, options) => {
+    calls.push([url, options]);
+    if (url.endsWith('/health')) return ok({ service: 'osiris-subscription', protocol: 3, billing: 'user-chatgpt-only' });
+    if (options.method === 'DELETE') return ok({});
+    return new Promise(resolve => { finish = resolve; });
+  }; } });
+  const d = dom.window.document, q = name => d.querySelector(`[data-osiris="${name}"]`);
+  dom.window.OsirisPanel.open(request); q('endpoint').value = service; q('access-code').value = accessCode; q('connect').click(); await flush();
+  q('close').click(); finish(ok({ token, expiresAt: Date.now() + 60000 })); await flush(); await flush();
+  assert.equal(dom.window.BallzatramSubscription.connection(), null); assert.equal(calls.some(([url]) => url.endsWith('/login')), false);
+  assert.equal(calls.at(-1)[1].method, 'DELETE'); assert.equal(d.querySelector('.osiris-dialog').open, false); dom.window.close();
+});
+
+test('switching to handoff during authorization cancels pending native credentials', async () => {
+  const calls = [];
+  const dom = mount({ prepare: w => { subscriptionSession(w, false); w.fetch = async (url, options) => { calls.push([url, options]); return ok(options.method === 'DELETE' ? {} : { account: null }); }; } });
+  const d = dom.window.document;
+  dom.window.OsirisPanel.open(request); await flush();
+  d.querySelector('[data-osiris="handoff"]').click(); await flush();
+  assert.equal(dom.window.BallzatramSubscription.connection(), null); assert.ok(calls.some(([, options]) => options.method === 'DELETE')); dom.window.close();
+});
+
+test('editing question, response length or model clears native consent', async () => {
+  const dom = mount({ prepare: w => { subscriptionSession(w); w.fetch = async url => ok(url.endsWith('/models') ? { models: [{ id: 'test-model', name: 'Test model', isDefault: true }] } : { account }); } });
+  dom.window.OsirisPanel.open(request); await flush(); await flush();
+  const q = name => dom.window.document.querySelector(`[data-osiris="${name}"]`);
+  for (const [name, event] of [['question', 'input'], ['length', 'change'], ['model', 'change']]) {
+    q('consent').checked = true; q(name).dispatchEvent(new dom.window.Event(event)); assert.equal(q('consent').checked, false, name);
+  }
+  dom.window.close();
 });
