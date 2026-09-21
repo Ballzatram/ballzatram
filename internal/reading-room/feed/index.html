@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="theme-color" content="#11191c">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; frame-src https://www.youtube-nocookie.com; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Osiris Feed · The Reading Room</title>
+  <meta name="description" content="A quiet feed of ideas worth following. AI, building, history, markets and learning—with sources and room to go deeper.">
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="./feed.css?v=1">
+  <script type="module" src="./app.mjs?v=1"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to the feed</a>
+  <header class="topbar">
+    <a class="wordmark" href="./" aria-label="Osiris Feed home"><span class="mark" aria-hidden="true">✳</span> OSIRIS <span class="wordmark-sub">/ FEED</span></a>
+    <div class="top-actions"><a href="../">← Reading Room</a><button id="settings-open" type="button" disabled>Your feed</button></div>
+  </header>
+  <div class="layout">
+    <aside class="rail" aria-label="About this collection">
+      <p class="eyebrow">THE READING ROOM</p><h2>A thread<br>worth following.</h2>
+      <p>Explore an idea.<br>Make a connection.<br>Build something with it.</p>
+      <div class="rail-line"></div>
+      <p class="eyebrow">YOUR ACTIVITY</p>
+      <div id="rail-stats" class="rail-stats">Local to this browser.</div>
+      <p class="fine">Viewed is not mastered.<br>No streaks. No finish line.</p>
+      <div class="rail-line"></div>
+      <p class="fine">Curated foundations.<br>No AI call per scroll.<br>No automatic news imports.</p>
+    </aside>
+    <main id="main" tabindex="-1">
+      <section class="intro" aria-labelledby="page-title">
+        <p class="eyebrow" id="edition">FOUNDATIONS / EDITION 01</p>
+        <h1 id="page-title">Follow your<br><em>curiosity.</em></h1>
+        <p id="page-description">Small ideas. Useful detours. A little further every time.</p>
+        <button id="resume" class="text-button" type="button" hidden>Resume your previous card →</button>
+      </section>
+      <p id="storage-warning" class="notice" role="status" hidden></p>
+      <section id="controls" class="controls" aria-label="Explore the collection" hidden>
+        <nav id="topics" class="chips" aria-label="Topics"></nav>
+        <div class="search-row"><label class="sr-only" for="search">Search cards or sources</label><input id="search" type="search" placeholder="Find a concept, book or question…" autocomplete="off"><button id="clear" type="button">Clear</button></div>
+        <p class="collection-meta"><span id="result-count"></span><span id="mix-label">AI-first mix</span></p>
+      </section>
+      <section id="stream" aria-label="Learning cards" aria-busy="true">
+        <div class="empty"><h2>Opening the first edition…</h2><p>The feed needs JavaScript and its local content file. If this message remains, reload the page.</p><p>You can still visit <a href="https://karpathy.ai/zero-to-hero.html" target="_blank" rel="noopener noreferrer">Zero to Hero ↗</a> or return to the <a href="../">Reading Room</a>.</p></div>
+      </section>
+      <div id="more-area" class="session-end" hidden><p class="eyebrow" id="more-label">A GOOD PLACE TO PAUSE</p><p id="more-copy">Keep one idea, or keep exploring.</p><button id="more" class="primary" type="button">Keep exploring</button><button id="to-top" class="text-button" type="button">Back to top ↑</button></div>
+      <div id="sentinel" aria-hidden="true"></div>
+      <noscript><p class="notice">JavaScript is disabled. The interactive feed cannot load, but the reference links above and your Reading Room remain available.</p></noscript>
+      <footer class="page-note">An unlisted page, not an authenticated private vault. General learning content only. Your activity stays in this browser unless you export it.</footer>
+    </main>
+  </div>
+  <nav class="dock" aria-label="Feed navigation">
+    <button type="button" data-view="feed" aria-current="page"><span aria-hidden="true">≋</span>Feed</button>
+    <button type="button" data-view="saved"><span aria-hidden="true">◇</span>Saved <span id="saved-count">0</span></button>
+    <button type="button" data-view="paths"><span aria-hidden="true">⌁</span>Paths</button>
+    <button type="button" data-view="sources"><span aria-hidden="true">▤</span>Sources</button>
+  </nav>
+  <dialog id="settings" aria-labelledby="settings-title">
+    <div class="dialog-head"><h2 id="settings-title">Your feed, your pace.</h2><button id="settings-close" type="button" aria-label="Close your feed settings">Close</button></div>
+    <p id="progress-summary"></p><p class="fine">Viewed means the card heading was visible briefly. Practiced means you submitted a question, right or wrong. Neither is a mastery score.</p>
+    <label for="mix">Choose your mix</label><select id="mix"><option value="ai-first">AI-first · AI and building, with useful detours</option><option value="balanced">Balanced · equal turns across available topics</option></select>
+    <p class="fine">Your explicit choice sets the order. The feed does not infer your beliefs or personality.</p>
+    <h3>Keep a copy</h3><p class="fine">No login or cross-device sync. An export contains saved/viewed card IDs, attempts, and your mix—not private notes or AI chats. Import replaces this feed’s progress after confirmation.</p>
+    <div class="dialog-actions"><button id="export" type="button">Export progress</button><label class="file-button" for="import">Import progress<input id="import" type="file" accept="application/json,.json"></label></div>
+    <p id="settings-status" role="status"></p>
+    <h3>Start fresh</h3><p class="fine">Reset only this feed. Reading Room book progress is untouched.</p><button id="reset" class="danger" type="button">Reset feed progress</button>
+    <hr><p class="fine">No analytics or provider calls. Loading a video connects to YouTube only after you ask. Source links open external sites. Anyone with this page’s address can access its general content.</p>
+  </dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+</body>
+</html>

@@ -1,0 +1,46 @@
+name: Osiris Feed validation
+on:
+  pull_request:
+    paths:
+      - 'internal/reading-room/**'
+      - 'scripts/*osiris_feed*'
+      - 'scripts/build_public.py'
+      - 'scripts/validate_public.py'
+      - '.github/workflows/osiris-feed.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'internal/reading-room/**'
+      - 'scripts/*osiris_feed*'
+      - '.github/workflows/osiris-feed.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Catalog and state tests
+        run: node --test scripts/test_osiris_feed.mjs
+      - name: Install browser test tools
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium
+      - name: Served-browser behavior and mobile layout
+        run: python scripts/smoke_osiris_feed.py
+      - name: Validate complete Pages artifact
+        run: python scripts/validate_public.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: osiris-feed-browser-previews
+          path: test-results/
+          if-no-files-found: ignore
