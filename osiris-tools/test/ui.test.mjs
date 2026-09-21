@@ -102,7 +102,7 @@ test('declined or unsupported campaign messaging exposes a copy fallback; bad sn
   }
 });
 
-test('campaign website prepares the matching connector call without reading other saves or sending requests', async t => {
+test('campaign website prepares the matching connector call only after explicit handoff, without reading other saves', async t => {
   const dom = new JSDOM('<html><head></head><body></body></html>', { url: 'https://dgallemore.com/econ-arcade/play/', runScripts: 'outside-only' });
   t.after(() => dom.window.close()); const w = dom.window;
   w.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
@@ -112,6 +112,9 @@ test('campaign website prepares the matching connector call without reading othe
   w.localStorage.setItem('other-save', 'PRIVATE HISTORY');
   const context = campaignSnapshot();
   w.OsirisPanel.open({ tool: 'econ-world', prompt: 'Give me a nudge', context });
+  assert.equal(w.document.querySelector('[data-app="form"]'), null);
+  assert.match(w.document.querySelector('[data-osiris="context"]').textContent, /The Family Business/);
+  w.document.querySelector('[data-osiris="handoff"]').click();
   const q = name => w.document.querySelector(`[data-app="${name}"]`);
   q('form').dispatchEvent(new w.Event('submit', { cancelable: true }));
   assert.match(q('text').value, /open_family_business/); assert.match(q('text').value, /review_family_business_episode/);
@@ -163,7 +166,7 @@ test('website shares the visible run when storage is unavailable; page tools can
   assert.equal(opened.at(-1).context.input.actions.length, 0);
 });
 
-test('project panels prepare data in-place with no provider requests or automatic account switching', async t => {
+test('project panels prepare data in-place and hand off only after an explicit choice', async t => {
   const dom = new JSDOM('<html><head></head><body></body></html>', { url: 'https://dgallemore.com/tools/supply-demand/', runScripts: 'outside-only' });
   t.after(() => dom.window.close());
   const w = dom.window;
@@ -173,6 +176,9 @@ test('project panels prepare data in-place with no provider requests or automati
   for (const file of ['ai-features.js', 'subscription-client.js', 'ai-client.js', 'ai-panel.js']) w.eval(await read('assets/' + file));
   w.localStorage.setItem('another-project', 'NEVER SHARE');
   w.OsirisPanel.open({ tool: 'supplyDemand', prompt: '<script>Question</script>', context: { ...engine.simulate({}), apiKey: 'SECRET' } });
+  assert.equal(w.document.querySelector('[data-app="form"]'), null);
+  assert.doesNotMatch(w.document.querySelector('[data-osiris="context"]').textContent, /SECRET|NEVER SHARE/);
+  w.document.querySelector('[data-osiris="handoff"]').click();
   const q = name => w.document.querySelector(`[data-app="${name}"]`);
   q('form').dispatchEvent(new w.Event('submit', { cancelable: true }));
   assert.match(q('text').value, /open_supply_demand_lab/);

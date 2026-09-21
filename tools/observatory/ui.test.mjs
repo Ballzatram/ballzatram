@@ -1,71 +1,72 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import {JSDOM,VirtualConsole} from 'jsdom';
-import {STORAGE_KEY,parseImport} from './core.mjs';
-const html=readFileSync(new URL('./index.html',import.meta.url),'utf8');
-const catalogue=JSON.parse(readFileSync(new URL('./live/index.json',import.meta.url),'utf8'));
-const fixture=JSON.parse(readFileSync(new URL('./data/dossier.json',import.meta.url),'utf8'));
-let dom,downloads=[],errors=[],mountNumber=0,requests=[];
-test.afterEach(()=>dom?.window.close());
-const flush=()=>new Promise(resolve=>setImmediate(resolve));
-async function mount(saved=null,{storageFailure=false,sourceFailure=false,live=false,hash=''}={}){
-  if(dom)dom.window.close();
-  errors=[];requests=[];
-  const vc=new VirtualConsole();vc.on('jsdomError',error=>errors.push(error.message));
-  dom=new JSDOM(html,{url:'https://local.test/tools/observatory/index.html'+hash,runScripts:'outside-only',virtualConsole:vc});
-  for(const key of ['window','document','localStorage','history','location','FormData'])Object.defineProperty(globalThis,key,{value:dom.window[key],configurable:true});
-  if(saved)localStorage.setItem(STORAGE_KEY,saved);
-  if(storageFailure)dom.window.Storage.prototype.setItem=()=>{throw new Error('Quota exceeded');};
-  dom.window.HTMLElement.prototype.scrollIntoView=()=>{};dom.window.scrollTo=()=>{};
-  dom.window.HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};
-  dom.window.HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
-  globalThis.fetch=async url=>{
-    requests.push(url);
-    if(url==='./live/index.json')return {ok:live,status:live?200:503,json:async()=>structuredClone(catalogue)};
-    if(url.startsWith('./live/bills/')){const raw=readFileSync(new URL(url,import.meta.url));return {ok:true,arrayBuffer:async()=>raw.buffer.slice(raw.byteOffset,raw.byteOffset+raw.byteLength)};}
-    assert.equal(url,'./data/dossier.json');return {ok:!sourceFailure,status:sourceFailure?503:200,json:async()=>structuredClone(fixture)};
-  };
-  URL.createObjectURL=blob=>{downloads.push(blob);return 'blob:testing';};URL.revokeObjectURL=()=>{};
-  dom.window.HTMLAnchorElement.prototype.click=function(){};
-  for(const file of ['ai-features.js','subscription-client.js','ai-client.js','ai-panel.js'])dom.window.eval(readFileSync(new URL(`../../assets/${file}`,import.meta.url),'utf8'));
-  await import(`./app.mjs?test=${++mountNumber}`);await flush();
-}
-const click=selector=>{const el=document.querySelector(selector);assert.ok(el,`Missing ${selector}`);el.click();};
-const input=(selector,value)=>{const el=document.querySelector(selector);assert.ok(el,`Missing ${selector}`);el.value=value;el.dispatchEvent(new dom.window.Event('input',{bubbles:true}));};
-const field=(form,key,value)=>{const el=form.elements.namedItem(key);if(el.type==='checkbox')el.checked=Boolean(value);else el.value=value;};
-const nav=tab=>{if(tab==='coverage'&&!document.querySelector('[data-tab="coverage"]'))click('[data-tab="dossier"]');click(`[data-tab="${tab}"]`);};
-const text=()=>document.body.textContent;
-async function importCase(content){const el=document.querySelector('#import-file');Object.defineProperty(el,'files',{value:[{size:content.length,text:async()=>content}],configurable:true});el.dispatchEvent(new dom.window.Event('change',{bubbles:true}));await flush();}
+import fs from 'node:fs';
+import vm from 'node:vm';
+import { JSDOM } from 'jsdom';
+import { normalizeBillDetail, searchCatalog } from './live.mjs';
 
-test('workbench interactions, drafts, import/export and reload',async()=>{
-  await mount();nav('guide');click('#load-example');await flush();nav('bill');assert.match(text(),/Speak Out Act/);assert.equal(document.querySelectorAll('[data-section]').length,5);
-  click('[data-section="section-4"]');assert.match(document.querySelector('.original').textContent,/before the dispute arises/);
-  click('[data-evidence]');assert.ok(document.querySelector('#evidence-dialog').hasAttribute('open'));assert.match(document.querySelector('#evidence-body').textContent,/SHA-256/);
-  click('#compare-section');assert.equal(document.querySelectorAll('ins').length>0,true);assert.equal(document.querySelectorAll('.diff-row').length,5);
-  nav('congress');assert.equal(document.querySelectorAll('#member-rows tr').length,432);
-  input('#state-filter','NC');assert.equal(document.querySelectorAll('#member-rows tr').length,13);
-  input('#member-query','A000370');assert.equal(document.querySelectorAll('#member-rows tr').length,1);assert.match(document.querySelector('#member-rows').textContent,/Adams/);
-  nav('promises');assert.match(text(),/site has not collected campaign promises/);
-  let form=document.querySelector('#promise-form');
-  for(const [key,value] of Object.entries({person:'SYNTHETIC Test Member <img src=x onerror=alert(1)>',date:'2022-07-01',url:'https://example.org/test-promise',quote:'Synthetic test pledge.',context:'Synthetic context.',interpretation:'Synthetic criterion.',opportunity:'Synthetic observed opportunity.',explanation:'Synthetic evidence limits.',memberId:'A000370',identityConfirmed:true,conduct:'Aligned action',outcome:'Unknown'}))field(form,key,value);
-  form.requestSubmit();assert.equal(document.querySelectorAll('.promise').length,1);assert.match(text(),/Aligned action/);assert.equal(document.querySelector('.promise img'),null);
-  click('[data-edit-promise]');form=document.querySelector('#promise-form');assert.equal(form.elements.namedItem('quote').value,'Synthetic test pledge.');field(form,'conduct','Mixed record');form.requestSubmit();assert.match(document.querySelector('.promise').textContent,/Mixed record/);
-  nav('coverage');form=document.querySelector('#coverage-form');
-  for(const [key,value] of Object.entries({title:'SYNTHETIC test headline',date:'2022-11-16',url:'https://example.org/coverage',note:'Synthetic mapping, not a real article.',sectionKeys:'enr:section-4'}))field(form,key,value);
-  form.requestSubmit();assert.match(text(),/SYNTHETIC test headline/);assert.match(text(),/ENR § 4/);
-  nav('dossier');input('#case-notes','SYNTHETIC test notebook. Keep uncertainty visible.');click('#save-case');
-  const saved=localStorage.getItem(STORAGE_KEY);assert.ok(saved);
-  click('#export-button');const exported=await downloads.at(-1).text();const packet=parseImport(exported);assert.equal(packet.research.promises[0].conduct,'Mixed record');assert.equal(packet.research.coverage[0].sectionKeys[0],'enr:section-4');
-  await mount(saved);nav('saved');click('[data-open-case]');nav('promises');assert.equal(document.querySelectorAll('.promise').length,1);nav('dossier');assert.equal(document.querySelector('#case-notes').value,'SYNTHETIC test notebook. Keep uncertainty visible.');
-  await importCase(exported);assert.match(text(),/Imported file · sources not verified here/);nav('coverage');assert.match(text(),/SYNTHETIC test headline/);
-  const oldTitle=document.querySelector('#case-title').textContent;await importCase('{broken');assert.match(document.querySelector('#notice').textContent,/Import failed/);assert.equal(document.querySelector('#case-title').textContent,oldTitle);
+const fixture=JSON.parse(fs.readFileSync(new URL('./fixtures/synthetic-training.json',import.meta.url),'utf8'));
+const metadata={ congress:119,number:12,type:'HR',title:'Synthetic live fixture title',updateDate:'2026-08-01',introducedDate:'2025-01-01',sponsors:[{bioguideId:'T000000',fullName:'Synthetic Test Sponsor',party:'I',state:'ZZ'}],cosponsors:{count:1},actions:{actions:[{actionDate:'2026-08-01',text:'Synthetic introduction'}]},textVersions:{textVersions:[{type:'Introduced in House',date:'2026-08-01',formats:[{url:'https://www.congress.gov/119/bills/hr12/BILLS-119hr12ih.htm',type:'Formatted Text'}]}]}};
+const detail=normalizeBillDetail(metadata,{}, {fetchedAt:'2026-08-02T00:00:00Z',retrievedFrom:'https://api.congress.gov/v3/bill/119/hr/12'});
+const catalog=searchCatalog([{congress:119,type:'HR',number:12,title:metadata.title,updateDate:'2026-08-01',latestAction:{actionDate:'2026-08-01',text:'Synthetic introduction'}}]);
+
+function setup({failRefresh=false,storage=null}={}){
+  const dom=new JSDOM(fs.readFileSync(new URL('./index.html',import.meta.url),'utf8'),{url:'https://dgallemore.com/tools/observatory/index.html',runScripts:'outside-only',pretendToBeVisual:true});
+  const {window}=dom;const errors=[],requests=[];
+  window.addEventListener('error',event=>errors.push(event.error));
+  window.HTMLElement.prototype.scrollIntoView=function(){};
+  window.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
+  window.HTMLDialogElement.prototype.close=function(){this.open=false;};
+  if(storage)window.localStorage.setItem('ballzatram:observatory-workbench:v1',storage);
+  window.fetch=async(url,options={})=>{
+    requests.push([url,options]);
+    const path=String(url);
+    if(path.endsWith('synthetic-training.json'))return{ok:true,json:async()=>structuredClone(fixture)};
+    if(path==='./data/catalog.json')return{ok:true,json:async()=>({ ...catalog, provenance:{...catalog.provenance,sourceLabel:'Bundled snapshot; API not configured'} })};
+    if(path==='./data/119-hr-12.json')return{ok:true,json:async()=>structuredClone(detail)};
+    if(path==='https://api.example/catalog')return{ok:!failRefresh,json:async()=>structuredClone(catalog)};
+    if(path==='https://api.example/bill/119/hr/12')return{ok:!failRefresh,json:async()=>structuredClone(detail)};
+    if(path==='https://text.example/bill')return{ok:true,text:async()=>'<h1>SEC. 7. LIVE FETCH TEST</h1><p>Arbitration is required unless parties opt out.</p>'};
+    return{ok:false,json:async()=>({})};
+  };
+  const context=dom.getInternalVMContext();
+  vm.runInContext(fs.readFileSync(new URL('./core.js',import.meta.url),'utf8'),context);
+  vm.runInContext(fs.readFileSync(new URL('./adapters.js',import.meta.url),'utf8'),context);
+  for(const name of ['ai-features.js','subscription-client.js','ai-client.js','ai-panel.js'])vm.runInContext(fs.readFileSync(new URL('../../assets/'+name,import.meta.url),'utf8'),context);
+  vm.runInContext(fs.readFileSync(new URL('./app.js',import.meta.url),'utf8'),context);
+  return{dom,window,requests,errors};
+}
+const flush=()=>new Promise(resolve=>setImmediate(resolve));
+
+// The training workspace must never imply that synthetic people are real records.
+test('full workbench navigation, evidence drafts, selected-context AI and local privacy',async()=>{
+  const {dom,window,requests,errors}=setup();const{document,Event,location}=window;const click=s=>document.querySelector(s).click();const nav=id=>click(`[data-view="${id}"]`);
+  assert.match(document.querySelector('#view').textContent,/Find a real bill/);
+  click('[data-action="load-demo"]');await flush();
+  assert.equal(document.querySelectorAll('.section-row').length,6);
+  assert.match(document.querySelector('#view').textContent,/SYNTHETIC TRAINING BILL/);
+  assert.match(document.querySelector('#view').textContent,/SYNTHETIC TRAINING DATA/);
+  assert.doesNotMatch(document.querySelector('#view').textContent,/hr_4321/i);
+  click('[data-section="section-3"]');assert.match(document.querySelector('.source-excerpt').textContent,/data retention exceeding six years/);
+  click('[data-section="section-4"]');assert.match(document.querySelector('.source-excerpt').textContent,/pre-dispute arbitration/);
+  click('[data-action="save-section-draft"]');assert.match(document.querySelector('#section-draft-note').textContent,/unreviewed/);
+  nav('compare');assert.match(document.querySelector('#view').textContent,/No comparable version/);
+  nav('claims');document.querySelector('#claim-title').value='SYNTHETIC test headline';document.querySelector('#claim-form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));assert.match(document.querySelector('#view').textContent,/SYNTHETIC test headline/);
+  nav('coverage');document.querySelector('#article-title').value='SYNTHETIC test article';document.querySelector('#article-outlet').value='SYNTHETIC Research Desk';document.querySelector('#article-section').value='section-3';document.querySelector('#article-form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));assert.match(document.querySelector('#view').textContent,/SYNTHETIC Research Desk/);
+  nav('promises');assert.match(document.querySelector('#view').textContent,/SYNTHETIC TEST OFFICEHOLDER/);assert.match(document.querySelector('#view').textContent,/Contradicting record/);
+  nav('report');document.querySelector('#note-input').value='SYNTHETIC test notebook';click('#save-note');assert.match(document.querySelector('#local-note').textContent,/SYNTHETIC test notebook/);
+  nav('sources');assert.match(document.querySelector('#view').textContent,/SYNTHETIC EXAMPLE/);nav('methods');assert.match(document.querySelector('#view').textContent,/prohibited interpretations/);
+  nav('watch');document.querySelector('#url-input').value='https://text.example/bill';click('#fetch-url');await flush();nav('bill');assert.match(document.querySelector('.source-excerpt').textContent,/Arbitration is required/);
+  nav('watch');click('[data-action="load-demo"]');await flush();assert.equal(document.querySelectorAll('.section-row').length,6);
   nav('bill');click('[data-section="section-4"]');document.querySelector('.osiris').open=true;
   const requestCount=requests.length,workbenchUrl=location.href;
   click('#ask-osiris');await flush();assert.match(document.querySelector('#osiris-answer').textContent,/Nothing has been sent/);
   assert.equal(document.querySelector('.osiris-dialog').open,true);
-  assert.match(document.querySelector('[data-app="context"]').textContent,/before the dispute arises/);
-  assert.doesNotMatch(document.querySelector('[data-app="context"]').textContent,/SYNTHETIC test notebook|SYNTHETIC test headline/);
+  assert.match(document.querySelector('[data-osiris="context"]').textContent,/before the dispute arises/);
+  assert.doesNotMatch(document.querySelector('[data-osiris="context"]').textContent,/SYNTHETIC test notebook|SYNTHETIC test headline/);
+  assert.equal(document.querySelector('[data-app="form"]'),null);
+  assert.equal(location.href,workbenchUrl);assert.equal(requests.length,requestCount);
+  click('[data-osiris="handoff"]');
   document.querySelector('[data-app="form"]').requestSubmit();
   const prepared=document.querySelector('[data-app="text"]').value;
   assert.match(prepared,/before the dispute arises/);
@@ -75,40 +76,47 @@ test('workbench interactions, drafts, import/export and reload',async()=>{
   assert.deepEqual(errors,[]);dom.window.close();
 });
 
-test('storage failure is visible and does not prevent export',async()=>{
-  await mount(null,{storageFailure:true});nav('guide');click('#load-example');await flush();click('#save-case');nav('dossier');assert.match(document.querySelector('#notice').textContent,/could not save/);click('#export-button');assert.equal(parseImport(await downloads.at(-1).text()).dossier.id,fixture.id);dom.window.close();
+test('browse, track, refresh, compare snapshots and persist live watchlist without relabeling historical votes',async()=>{
+  const {dom,window,requests,errors}=setup();const d=window.document;const click=s=>d.querySelector(s).click();
+  click('[data-action="browse-live"]');await flush();
+  assert.match(d.querySelector('#view').textContent,/Synthetic live fixture title/);
+  assert.equal(d.querySelectorAll('[data-action="track-bill"]').length,1);
+  click('[data-action="track-bill"]');await flush();
+  assert.match(d.querySelector('#view').textContent,/Live official metadata/);
+  assert.match(d.querySelector('#view').textContent,/Live bill text has not been retrieved/);
+  assert.match(d.querySelector('#view').textContent,/No accountability verdict/);
+  click('[data-view="sources"]');assert.match(d.querySelector('#view').textContent,/Congress.gov API bill detail/);
+  click('[data-view="compare"]');assert.match(d.querySelector('#view').textContent,/No comparable version/);
+  click('[data-view="watch"]');d.querySelector('#live-api-base').value='https://api.example';click('[data-action="save-api-base"]');
+  click('[data-action="refresh-live"]');await flush();assert.match(d.querySelector('#view').textContent,/No material official metadata changes/);
+  assert.ok(requests.some(([url])=>url==='https://api.example/bill/119/hr/12'));
+  const saved=JSON.parse(window.localStorage.getItem('ballzatram:observatory-workbench:v1'));assert.equal(saved.live.tracked.length,1);assert.equal(saved.live.snapshots['119-hr-12'].length,2);
+  assert.ok(!saved.live.snapshots['119-hr-12'][0].text.includes('vote'));
+  assert.deepEqual(errors,[]);dom.window.close();
 });
 
-test('source failure stays explicit and a valid import recovers the workbench',async()=>{
-  await mount(null,{sourceFailure:true});nav('guide');click('#load-example');await flush();assert.match(text(),/historical example could not be loaded/);await importCase(JSON.stringify(fixture));assert.match(document.querySelector('#case-title').textContent,/Speak Out Act/);nav('bill');assert.equal(document.querySelectorAll('[data-section]').length,5);dom.window.close();
+test('failed live refresh keeps the previous snapshot and shows a source problem',async()=>{
+  const state={live:{tracked:[{id:'119-hr-12',congress:119,type:'hr',number:12,title:'Synthetic live fixture title'}],snapshots:{'119-hr-12':[detail]},catalog,apiBase:'https://api.example'}};
+  const {dom,window}=setup({failRefresh:true,storage:JSON.stringify(state)});const d=window.document;
+  d.querySelector('[data-action="refresh-live"]').click();await flush();
+  assert.match(d.querySelector('#view').textContent,/previous snapshot was kept/);
+  assert.match(d.querySelector('#view').textContent,/1 snapshot saved/);dom.window.close();
 });
 
-async function until(check){for(let i=0;i<100;i++){if(check())return;await new Promise(r=>setTimeout(r,5));}assert.ok(check(),'UI did not reach the expected state');}
-test('citizen landing shows real coverage and never automatically opens the historical case',async()=>{
-  await mount(null,{live:true});assert.match(text(),/Congressional Accountability/);assert.equal(requests.includes('./data/dossier.json'),false);
-  assert.equal(document.querySelector('#case-nav').hidden,true);assert.equal(document.querySelector('#export-button'),null);
-  assert.doesNotMatch(document.querySelector('#panel').textContent,/Speak Out Act|Synthetic test/);
-  click('[data-open-bill]');await until(()=>document.querySelector('.lead-record'));
-  assert.match(text(),/Official source record/);assert.match(text(),/No sourced comparisons supplied/);assert.match(location.hash,/bill=119-/);
-  nav('promises');assert.match(text(),/Personal research/);assert.equal(document.querySelectorAll('.promise').length,0);
-  assert.match(location.hash,/view=promises/);input('[name="quote"]','SYNTHETIC unfinished quote');nav('congress');nav('promises');assert.equal(document.querySelector('[name="quote"]').value,'SYNTHETIC unfinished quote');assert.deepEqual(errors,[]);
-});
-test('shared bill URL opens the requested bill without loading any example',async()=>{
-  const row=catalogue.bills[0];await mount(null,{live:true,hash:`#bill=${row.id}&view=congress`});
-  await until(()=>document.querySelector('.timeline'));
-  assert.equal(document.querySelector('#case-title').textContent,row.title);
-  assert.equal(requests.includes('./data/dossier.json'),false);assert.match(text(),/Individual votes are not collected/);
-  assert.deepEqual(errors,[]);
-});
-test('a stale or malformed bill link does not substitute a different bill',async()=>{
-  await mount(null,{live:true,hash:'#bill=119-hr-99999&view=overview'});await until(()=>document.querySelector('#notice').textContent.includes('not in the current catalogue'));
-  assert.equal(document.querySelector('#case-title').textContent,'');assert.equal(requests.includes('./data/dossier.json'),false);
+test('untrusted HTML and invalid imports never execute or become links',async()=>{
+  const {dom,window,errors}=setup();const{document,Event}=window;
+  const click=s=>document.querySelector(s).click();
+  const imported=JSON.stringify({source_label:'<img src=x onerror=alert(1)>',bills:[{id:'safe-id',title:'<script>alert(1)</script>',text:'SECTION 1. TEST\nOpt-out rights expire after 30 days.',sources:[{id:'source-1',url:'javascript:alert(1)',excerpt:'<b>not markup</b>'}]}]});
+  document.querySelector('#bill-input').value=imported;click('#load-paste');
+  assert.equal(document.querySelectorAll('#view script,#view img').length,0);assert.match(document.querySelector('#view').textContent,/<script>/);
+  click('[data-view="sources"]');assert.equal(document.querySelectorAll('[href^="javascript:"]').length,0);
+  assert.match(document.querySelector('#view').textContent,/<b>not markup<\/b>/);
+  click('[data-view="watch"]');document.querySelector('#bill-input').value='{ invalid';click('#load-paste');assert.match(document.querySelector('#source-status').textContent,/could not be parsed/);
+  document.querySelector('#bill-input').value='SECTION 1. TEXT\n<svg onload=alert(1)>Arbitration is required.';click('#load-paste');assert.equal(document.querySelectorAll('#view svg,#view script').length,0);
+  click('[data-view="claims"]');document.querySelector('#claim-title').value='Claim';document.querySelector('#claim-url').value='https://example.test/';document.querySelector('#claim-form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));
+  assert.deepEqual(errors,[]);dom.window.close();
 });
 
-test('back navigation returns to the previous view of the selected live bill',async()=>{
-  await mount(null,{live:true});click('[data-open-bill]');await until(()=>document.querySelector('.lead-record'));
-  const id=document.querySelector('#case-title').textContent;
-  nav('promises');assert.match(location.hash,/view=promises/);
-  history.back();await until(()=>Boolean(document.querySelector('.lead-record')));
-  assert.equal(document.querySelector('#case-title').textContent,id);
+test('corrupt local saves recover visibly without inventing fixtures',()=>{
+  const {dom,window,errors}=setup({storage:'{broken'});assert.match(window.document.querySelector('#source-status').textContent,/could not be read/);assert.match(window.document.querySelector('#view').textContent,/Find a real bill/);assert.deepEqual(errors,[]);dom.window.close();
 });

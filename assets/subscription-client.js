@@ -72,7 +72,7 @@
     catch (e) { if (e.name === 'AbortError' || options.signal?.aborted) throw new Error('Request stopped. Work already started may count against your plan.'); throw new Error('Could not reach the subscription service. No automatic retry was made.'); }
   }
   async function readBoundedJSON(response) {
-    if (!response.body?.getReader) { // Also supports test transports; normal fetch uses the bounded reader below.
+    if (!response.body?.getReader) {
       const value = await response.json();
       if (JSON.stringify(value).length > 128000) throw new Error('Response too large.');
       return value;
@@ -202,7 +202,13 @@
       let buffer = '', received = 0, event = '', dataLines = [], eventSize = 0, outputSize = 0;
       while (true) {
         ensureCurrent();
-        const { value, done } = await reader.read(); ensureCurrent();
+        let chunk;
+        try { chunk = await reader.read(); }
+        catch {
+          ensureCurrent();
+          throw new Error('The connection ended before the answer finished. No automatic retry was made.');
+        }
+        const { value, done } = chunk; ensureCurrent();
         received += value?.byteLength || 0;
         if (received > 512000) throw new Error('The assistant response exceeded this pilot’s response limit.');
         try { buffer += decoder.decode(value, { stream: !done }); } catch { throw new Error('The assistant stream contains invalid text.'); }
