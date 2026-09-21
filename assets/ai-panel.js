@@ -7,25 +7,34 @@
   else root.OsirisPanel = value;
 })(typeof window === 'undefined' ? globalThis : window, function (root, AI, Subscription, Features) {
   'use strict';
-  let dialog, request, controller, pollTimer, loginDeadline = 0, generation = 0, previouslyFocused;
+  let dialog, request, controller, pollTimer, loginDeadline = 0, generation = 0, previouslyFocused, connectingUI = false;
   const $ = name => dialog.querySelector(`[data-osiris="${name}"]`);
   function message(text) { $('status').textContent = text; }
   function stopPolling() { clearTimeout(pollTimer); pollTimer = null; }
-  function close() { generation++; stopPolling(); controller?.abort(); controller = null; dialog.close(); previouslyFocused?.focus?.(); }
+  function cancelPendingLogin() {
+    const c = Subscription.connection();
+    if (connectingUI || (c && !c.account)) void Subscription.disconnect();
+    connectingUI = false; loginDeadline = 0;
+  }
+  function close() {
+    generation++; stopPolling(); controller?.abort(); controller = null; cancelPendingLogin();
+    dialog.close(); previouslyFocused?.focus?.();
+  }
   function create() {
     if (dialog) return;
-    const link = root.document.createElement('link'); link.rel = 'stylesheet'; link.href = '/assets/ai-panel.css?v=host-tools-1'; root.document.head.append(link);
+    const link = root.document.createElement('link'); link.rel = 'stylesheet'; link.href = '/assets/ai-panel.css?v=native-osiris-2'; root.document.head.append(link);
     dialog = root.document.createElement('dialog'); dialog.className = 'osiris-dialog'; dialog.setAttribute('aria-label', 'Osiris assistant');
     dialog.innerHTML = `<div class="osiris-head"><div><p>OSIRIS / YOUR AI</p><h2 data-osiris="title">Your companion in this project</h2></div><button type="button" data-osiris="close" aria-label="Close Osiris">Close ×</button></div>
-      <div class="osiris-body"><p class="osiris-description">Connect your ChatGPT account and get help here. This private pilot uses Codex access included in your plan.</p>
+      <div class="osiris-body"><p class="osiris-description">Osiris stays in this project. Connect an eligible ChatGPT account through the private Codex runtime; answers return here using your account’s allowance.</p>
       <details data-osiris="connection" class="osiris-connection" open><summary data-osiris="account-label">Connect ChatGPT</summary>
-      <div data-osiris="setup"><p>The pilot needs an Osiris connection service. Its operator provides the address and access code.</p>
+      <div data-osiris="setup"><p data-osiris="readiness">On-site AI needs a running Osiris connection service. Your question and project stay here while you connect.</p>
       <label>Connection service<input data-osiris="endpoint" type="url" placeholder="https://your-osiris-service.example" autocomplete="off"></label>
+      <button type="button" data-osiris="check-service">Check service without signing in</button>
       <label>Pilot access code<input data-osiris="access-code" type="password" autocomplete="off" spellcheck="false" placeholder="Provided by the service operator"></label>
       <p class="osiris-fine">This access code is for the pilot. Enter your ChatGPT credentials only on OpenAI’s sign-in page.</p>
       <button type="button" data-osiris="connect" class="osiris-primary">Connect ChatGPT</button>
       <a href="https://github.com/Ballzatram/ballzatram/blob/master/osiris-runtime/README.md" target="_blank" rel="noopener noreferrer">Service setup guide ↗</a></div>
-      <div data-osiris="login" hidden><p>Open OpenAI’s sign-in page and enter this one-time code:</p><p class="osiris-code" data-osiris="code"></p><a data-osiris="sign-in" class="osiris-primary osiris-button" target="_blank" rel="noopener noreferrer">Sign in at OpenAI ↗</a><p class="osiris-fine">Return here after signing in. No question is sent during connection. Device-code login must be enabled in your ChatGPT security settings or allowed by your workspace.</p></div>
+      <div data-osiris="login" hidden><p>Open OpenAI’s sign-in page and enter this one-time code:</p><p class="osiris-code" data-osiris="code"></p><a data-osiris="sign-in" class="osiris-primary osiris-button" target="_blank" rel="noopener noreferrer">Sign in at OpenAI ↗</a><button type="button" data-osiris="check-login">Check sign-in again</button><p class="osiris-fine">Only initial authorization opens OpenAI. Return here after signing in. No question is sent during connection. Device-code login must be enabled in your ChatGPT security settings or allowed by your workspace.</p></div>
       <div data-osiris="connected" hidden><p data-osiris="account"></p><label>Model<select data-osiris="model"><option value="">Load your available models…</option></select></label><div class="osiris-actions"><button type="button" data-osiris="models">Reload models</button><button type="button" data-osiris="limits">Check plan limits</button></div><p class="osiris-fine">Each request uses your ChatGPT plan’s Codex allowance. Signing in does not import your ChatGPT chat history or automatically configure every project.</p></div>
       <button type="button" data-osiris="disconnect" hidden>Disconnect this session</button></details>
       <p data-osiris="status" class="osiris-status" role="status" aria-live="polite"></p>
@@ -36,29 +45,47 @@
       <div class="osiris-actions"><button type="submit" data-osiris="ask" class="osiris-primary">Ask Osiris</button><button type="button" data-osiris="cancel" hidden>Stop</button></div>
       <p class="osiris-fine">Response length is a preference. Provider usage limits apply; stopping may still consume allowance for work already started.</p></form>
       <section data-osiris="result"><h3>Osiris’s response</h3><article data-osiris="answer" aria-live="polite">Your answer will appear here.</article><p data-osiris="usage" class="osiris-fine"></p></section>
+      <details class="osiris-alternatives"><summary>Other ways to use AI</summary><p class="osiris-fine">The separate connector/copy workflow opens your AI app. It is not an in-page connection.</p><button type="button" data-osiris="handoff">Use my AI app instead</button></details>
       <p class="osiris-fine"><a href="/tools/ai/projects.html" target="_blank" rel="noopener">Project AI setup</a> · <a href="/privacy.html" target="_blank" rel="noopener">Privacy</a></p></div>`;
     root.document.body.append(dialog);
     $('close').onclick = close; dialog.addEventListener('cancel', event => { event.preventDefault(); close(); });
     $('connect').onclick = connect;
-    $('models').onclick = () => loadModels().catch(error => message(error.message));
+    $('handoff').onclick = () => openInApp({ ...request, prompt: $('question').value || request.prompt });
+    $('check-login').onclick = () => { stopPolling(); void poll(generation); };
+    $('check-service').onclick = async () => {
+      const current = generation, address = $('endpoint').value.trim(); $('check-service').disabled = true;
+      try {
+        message('Checking the service and signed-out runtime. No account or question is sent.');
+        const result = await Subscription.checkService(address);
+        if (current === generation && dialog.open && address === $('endpoint').value.trim()) message(result.runtimeReady ? 'Service and signed-out runtime are ready. Connect ChatGPT next. No account or model response has been tested.' : 'Service reachable. This older runtime does not report readiness; sign-in and generation are still unverified.');
+      } catch (error) { if (current === generation && dialog.open) message(error.message); }
+      finally { if (current === generation) $('check-service').disabled = false; }
+    };
+    $('endpoint').oninput = () => { $('consent').checked = false; message('Service address changed. Check the new address before connecting. No question has been sent.'); };
+    $('models').onclick = () => { const current = generation; void loadModels().catch(error => { if (current === generation && dialog.open) message(error.message); }); };
     $('limits').onclick = async () => {
-      try { const limits = await Subscription.limits(); const used = [limits.primary, limits.secondary].filter(Boolean).map((b, i) => `${i ? 'Longer' : 'Primary'} window: ${Math.round(b.usedPercent)}% used${b.resetsAt ? `, resets ${new Date(b.resetsAt * 1000).toLocaleString()}` : ''}`); message(used.join(' · ') || 'The provider did not report usage windows. Check your ChatGPT account.'); }
-      catch (error) { message(error.message); }
+      const current = generation;
+      try { const limits = await Subscription.limits(); if (current !== generation || !dialog.open) return; const used = [limits.primary, limits.secondary].filter(Boolean).map((b, i) => `${i ? 'Longer' : 'Primary'} window: ${Math.round(b.usedPercent)}% used${b.resetsAt ? `, resets ${new Date(b.resetsAt * 1000).toLocaleString()}` : ''}`); message(used.join(' · ') || 'The provider did not report usage windows. Check your ChatGPT account.'); }
+      catch (error) { if (current === generation && dialog.open) message(error.message); }
     };
     $('model').onchange = () => { Subscription.configure({ ...Subscription.settings(), model: $('model').value }); $('consent').checked = false; };
     $('question').oninput = () => { $('consent').checked = false; };
     $('length').onchange = () => { $('consent').checked = false; };
     $('disconnect').onclick = async () => {
-      generation++; stopPolling(); controller?.abort(); controller = null;
+      const current = ++generation; stopPolling(); controller?.abort(); controller = null; connectingUI = false; loginDeadline = 0;
       $('ask').disabled = Features?.get(request?.tool)?.enabled === false; $('cancel').hidden = true;
       $('connect').disabled = false; $('login').hidden = true; $('consent').checked = false;
-      const removed = await Subscription.disconnect(); renderAccount();
+      const removed = await Subscription.disconnect(); if (current !== generation || !dialog.open) return; renderAccount();
       message(removed ? 'Disconnected. The service ended this session and cleared its temporary credentials.' : 'Disconnected in this tab. The service could not be reached; its session will expire after inactivity or its four-hour limit.');
     };
     $('cancel').onclick = () => controller?.abort(); $('form').onsubmit = ask;
   }
   function renderAccount() {
     const c = Subscription.connection(), account = c?.account;
+    $('readiness').textContent = !Subscription.settings().endpoint
+      ? 'On-site AI is not activated for this deployment yet. Your question stays here. The operator must provide a running service and private pilot code; the MCP connector is a different service.'
+      : 'Use the trusted runtime below. Check service verifies readiness without signing in or sending your question.';
+    dialog.dataset.connectionState = account ? 'connected' : c ? 'awaiting-sign-in' : Subscription.settings().endpoint ? 'disconnected' : 'unconfigured';
     $('connected').hidden = !account; $('setup').hidden = !!account; $('disconnect').hidden = !c;
     $('account-label').textContent = account ? `ChatGPT connected · ${account.planType}` : 'Connect ChatGPT';
     $('account').textContent = account ? `${account.email || 'Your ChatGPT account'} · ${account.planType}` : '';
@@ -89,20 +116,21 @@
     } catch (error) { if (current === generation) message(error.message); }
   }
   async function connect() {
-    stopPolling(); const current = ++generation; $('connect').disabled = true; $('consent').checked = false;
+    stopPolling(); const current = ++generation; connectingUI = true; $('connect').disabled = true; $('consent').checked = false;
     try {
       message('Opening a private session. No model request is being made.');
       const accessCode = $('access-code').value.trim(), nextEndpoint = Subscription.endpoint($('endpoint').value.trim());
       if (Subscription.connection()) await Subscription.disconnect();
+      if (current !== generation || !dialog.open) return;
       Subscription.configure({ endpoint: nextEndpoint, model: '' });
       const login = await Subscription.connect(accessCode); $('access-code').value = '';
-      if (current !== generation || !dialog.open) { await Subscription.disconnect(); return; }
+      if (current !== generation || !dialog.open) return;
       AI.saveSettings({ ...AI.getSettings(), mode: 'subscription' });
       $('code').textContent = login.userCode; $('sign-in').href = login.verificationUrl; $('login').hidden = false; $('disconnect').hidden = false;
       loginDeadline = login.expiresAt; message('Finish signing in on OpenAI’s page, then return here.');
       void poll(current);
     } catch (error) { if (current === generation) message(error.message); }
-    finally { if (current === generation) { $('access-code').value = ''; $('connect').disabled = false; } }
+    finally { if (current === generation) { connectingUI = false; $('access-code').value = ''; $('connect').disabled = false; } }
   }
   async function ask(event) {
     event.preventDefault(); if (controller) return;
@@ -127,18 +155,18 @@
   }
   function open(payload, options = {}) {
     if (options.handoffOnly) return openInApp(payload);
-    if (!options.connectionOnly && !(AI.getSettings().mode === 'subscription' && Subscription.settings().endpoint)) return openInApp(payload);
-    create(); controller?.abort(); controller = null; stopPolling(); generation++; previouslyFocused = root.document.activeElement;
+    // Native is the default even while disconnected. Handoff requires an explicit choice.
+    create(); appDialog?.close(); controller?.abort(); controller = null; stopPolling(); generation++; cancelPendingLogin(); previouslyFocused = root.document.activeElement;
     request = AI.prepare({ ...payload, prompt: payload.prompt || 'Help me understand this project.' });
     const profile = Features?.get(request.tool);
     $('title').textContent = profile?.name || 'Osiris'; $('scope').textContent = profile?.context || 'Only the context shown below is included.';
     $('question').value = payload.prompt || ''; $('context').textContent = JSON.stringify(request.context, null, 2);
     $('form').hidden = !!options.connectionOnly; $('result').hidden = !!options.connectionOnly;
     $('answer').textContent = 'Your answer will appear here.'; $('usage').textContent = ''; $('consent').checked = false; $('cancel').hidden = true; $('connect').disabled = false;
-    $('endpoint').value = Subscription.settings().endpoint; $('access-code').value = ''; $('login').hidden = true;
+    $('endpoint').value = Subscription.settings().endpoint; $('access-code').value = ''; $('login').hidden = true; $('check-service').disabled = false;
     $('connection').open = !Subscription.connection()?.account || !!options.connectionOnly;
     if (!dialog.open) dialog.showModal(); renderAccount();
-    message(profile && !profile.enabled ? 'This project needs its own AI workflow design before connection.' : Subscription.connection()?.account ? 'Review the selected context before sending.' : 'Connect your ChatGPT account to continue.');
+    message(profile && !profile.enabled ? 'This project needs its own AI workflow design before connection.' : Subscription.connection()?.account ? 'Review the selected context before sending.' : Subscription.settings().endpoint ? 'Connect your ChatGPT account to continue. No question is sent during sign-in.' : 'On-site AI is awaiting runtime activation. Your question and selected context remain on this page.');
     $('ask').disabled = !!profile && !profile.enabled;
     const current = generation;
     if (Subscription.connection()) Subscription.status().then(async () => { if (current !== generation || !dialog.open) return; renderAccount(); if (Subscription.connection()?.account) await loadModels(); }).catch(error => { if (current === generation) { renderAccount(); message(error.message); } });
@@ -146,12 +174,12 @@
   }
   let appDialog;
   function openInApp(payload) {
-    if (!root.document.querySelector('link[href*="ai-panel.css"]')) { const sheet = root.document.createElement('link'); sheet.rel = 'stylesheet'; sheet.href = '/assets/ai-panel.css?v=host-tools-1'; root.document.head.append(sheet); }
+    if (!root.document.querySelector('link[href*="ai-panel.css"]')) { const sheet = root.document.createElement('link'); sheet.rel = 'stylesheet'; sheet.href = '/assets/ai-panel.css?v=native-osiris-2'; root.document.head.append(sheet); }
     const selected = AI.prepare({ ...payload, prompt: payload.prompt || 'Help me understand this result.' });
     const feature = Features?.get(selected.tool);
     if (!feature?.enabled) throw new Error('This project’s AI workflow needs to be configured first.');
     // Close any active stream before opening a different context or transport.
-    generation++; stopPolling(); controller?.abort(); controller = null;
+    generation++; stopPolling(); controller?.abort(); controller = null; cancelPendingLogin();
     if (dialog?.open) dialog.close();
     appDialog?.remove();
     const focus = root.document.activeElement;
@@ -160,6 +188,7 @@
     current.className = 'osiris-dialog'; current.setAttribute('aria-label', 'Use your AI app');
     current.innerHTML = `<div class="osiris-head"><div><p>OSIRIS / YOUR AI</p><h2 data-app="title"></h2></div><button type="button" data-app="close" aria-label="Close Osiris">Close ×</button></div>
       <div class="osiris-body"><p>Use your ChatGPT, Claude, or Gemini account. Your AI app handles the response and its usual plan limits apply.</p>
+      <button type="button" data-app="native">Use Osiris on this page instead</button>
       <p data-app="host-note" class="osiris-fine"></p><a href="/tools/ai/connect.html">Use Ballzatram tools in your AI app →</a>
       <label>My AI app<select data-app="provider"><option value="chatgpt">ChatGPT</option><option value="claude">Claude</option><option value="gemini">Gemini</option></select></label>
       <p class="osiris-fine" data-app="scope"></p><details><summary>Review selected context</summary><pre data-app="context"></pre></details>
@@ -167,6 +196,7 @@
       <section data-app="prepared" hidden><label>Prepared prompt<textarea rows="8" readonly data-app="text"></textarea></label><div class="osiris-actions"><button type="button" data-app="copy">Copy prompt</button><a class="osiris-button osiris-primary" data-app="launch" target="_blank" rel="noopener noreferrer"></a><button type="button" data-app="download">Download selected context</button></div><p class="osiris-fine">Paste the prompt and send it in your AI app. Opening it sends no data. Your answer stays there; this page does not sync it automatically.</p></section>
       <p data-app="status" role="status" aria-live="polite">Only the context you review here is included. Nothing has been sent.</p></div>`;
     const q = name => current.querySelector(`[data-app="${name}"]`);
+    q('native').onclick = () => open({ ...selected, prompt: q('question').value || selected.prompt });
     q('title').textContent = feature.name; q('scope').textContent = feature.context;
     q('context').textContent = JSON.stringify(selected.context, null, 2); q('question').value = selected.prompt;
     q('host-note').textContent = selected.tool === 'econ-world' ? 'With the Osiris connector installed, this opens your selected episode at Osiris’s desk in your AI app. He can guide you through the current assignment and result. Share a fresh snapshot after another turn; your game stays here.' : selected.tool === 'supplyDemand' ? 'With the Ballzatram connector installed, the interactive lab can open inside a compatible AI app. This browser’s saved data is transferred only when you share it.' : 'This project can share selected context. Interactive tools for this project are not connected yet.';
