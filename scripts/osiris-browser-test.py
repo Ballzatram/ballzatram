@@ -48,7 +48,7 @@ def scenario(browser, base, runtime, mobile):
     assert not sent and len(context.pages) == 1
     original_save = page.evaluate("localStorage.getItem(window.FamilyBusiness.KEY)")
     page.evaluate("localStorage.setItem('unselected-private-record', 'NEVER-SHARE-THIS')")
-    page.screenshot(path=str(OUTPUT / f"{label}-setup.png"), full_page=True)
+    page.screenshot(path=str(OUTPUT / f"{label}-setup.png"), full_page=False)
     q("question").fill("Explain this consequence")
     q("endpoint").fill(runtime)
     q("check-service").click()
@@ -73,7 +73,11 @@ def scenario(browser, base, runtime, mobile):
     assert not q("consent").is_checked() and page.url == target and len(context.pages) == 1
     bounds = dialog.bounding_box()
     assert bounds["x"] >= -1 and bounds["x"] + bounds["width"] <= page.viewport_size["width"] + 1
-    page.screenshot(path=str(OUTPUT / f"{label}-answer.png"), full_page=True)
+    assert q("length").evaluate("el => getComputedStyle(el).colorScheme") == "light"
+    q("answer").scroll_into_view_if_needed()
+    close_bounds = q("close").bounding_box()
+    assert close_bounds["y"] >= -1 and close_bounds["y"] + close_bounds["height"] <= page.viewport_size["height"] + 1
+    page.screenshot(path=str(OUTPUT / f"{label}-answer.png"), full_page=False)
     q("question").fill("wait")
     q("consent").check()
     q("ask").click()
