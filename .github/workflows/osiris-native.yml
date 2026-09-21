@@ -1,0 +1,35 @@
+name: Osiris native integration
+
+on:
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: osiris-native-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  source-bundle:
+    name: Reproducible Osiris source bundle
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Package tracked runtime and acceptance-test sources only
+        run: |
+          git archive --format=tar.gz --output=osiris-source.tar.gz HEAD osiris-runtime assets frontend scripts .github/workflows tools/ai tools/parcel tools/supply-demand econ-arcade/play docs/osiris-native-plan.md docs/bring-your-own-ai.md docs/ai-project-configuration.md
+          sha256sum osiris-source.tar.gz > osiris-source.sha256
+          printf '%s\n' "${GITHUB_SHA}" > osiris-source.commit
+      - uses: actions/upload-artifact@v4
+        with:
+          name: osiris-source-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            osiris-source.tar.gz
+            osiris-source.sha256
+            osiris-source.commit
+          retention-days: 3
+          if-no-files-found: error
