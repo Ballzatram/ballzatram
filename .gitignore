@@ -14,3 +14,17 @@ backend/data/
 frontend/debug.log
 
 _site/
+
+# Local development artifacts (do not hide shared editor configuration).
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo

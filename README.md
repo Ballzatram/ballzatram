@@ -1,131 +1,98 @@
+<img src="assets/frontier/sunset.svg" alt="Ballzatram's pixel-art Arizona frontier" width="240" align="right" />
+
 # Ballzatram
 
-Public home: [dgallemore.com](https://dgallemore.com/) — Devin Gallemore’s projects, portfolio, games, and tools. See [domain and deployment setup](DEPLOYMENT.md) for the Namecheap and GitHub Pages configuration.
+**Applied AI, decision tools, and interactive systems.**
 
-## Retro cowboy homepage
+An independent software lab by **Devin Gallemore**. Ballzatram turns complex systems into things people can explore: economic simulations, source-backed research workspaces, and an AI companion that works with explicitly selected context.
 
-The homepage is an 8-bit Western outpost: a pixel cowboy at sunset, Arizona mesas, warm paper colors, and a searchable project board. Tools, games, Congressional Accountability, the portfolio, and supporting pages retain their independent designs. `data/public-programs.json` generates the homepage with `python scripts/build_frontier.py`; the generator does not rewrite internal pages. The old `build_desktop.py` command delegates to the new generator. Next.js uses the same artwork and scoped theme at `/`, with its original catalog and independent application layout on other routes.
+[Explore the site](https://dgallemore.com/) · [Portfolio](https://dgallemore.com/devin/) · [Engineering tour](docs/ENGINEERING_TOUR.md) · [Run locally](docs/DEVELOPMENT.md)
 
-Homepage assets live in `assets/frontier/`. Pixel artwork is local SVG; the subsetted Press Start 2P font is self-hosted with its OFL license. All public project links work without JavaScript. Search, category filters, and a reset control progressively enhance the board. Optional desert-breeze motion is off initially, never persisted, and respects reduced-motion preferences. The homepage makes no network requests to AI providers.
+<br clear="right" />
 
-See [UI and code audit](docs/UI_CODE_AUDIT.md) for fixes, verification, and maintenance instructions. `python scripts/validate_public.py` builds and checks the exact GitHub Pages artifact before publication.
+[![Pages deployment](https://github.com/Ballzatram/ballzatram/actions/workflows/deploy-pages.yml/badge.svg?branch=master)](https://github.com/Ballzatram/ballzatram/actions/workflows/deploy-pages.yml)
+[![Documentation](https://github.com/Ballzatram/ballzatram/actions/workflows/docs.yml/badge.svg?branch=master&event=push)](https://github.com/Ballzatram/ballzatram/actions/workflows/docs.yml)
 
-Ballzatram is a clean launchpad for useful AI-guided workbenches, simulations, games, and strange little tools.
+## The idea
 
-The public site is intentionally simple:
+Make the underlying system visible. A learner should be able to change a decision and understand the consequence. A researcher should be able to trace a finding back to its source. An AI integration should make clear what context it receives, what it can do, and who pays for inference.
 
-- Home: a grouped launchpad for every exposed tool and page worth finding.
-- Land Desk: Parcel’s browser research workspace for land briefs, sourced candidates, terrain and commute checks, shortlist comparison, and diligence memo export. The older Next.js Land Desk remains separately accessible.
-- Markets & Risk: Quant Library plus demo portfolio, scenario, event-study, model, and report workflows.
-- Games & Simulations: Econ Arcade, economics labs, static games, and experimental playable prototypes.
-- Creative / AI Lab: AI Edit Factory and generated-story previews with backend/review caveats.
-- Archive / Oddities: older newspaper, culture, betting-education, lore, and internal-note surfaces.
+The public site is a **static-first portfolio and working lab**, not a claim that every experiment is a production service. Browser-native projects work independently of the optional AI and backend services.
 
-No checkout, billing, auth, entitlement, live trading, or paid-access implementation is part of this reset.
+## Selected projects
 
-## Earlier launchpad foundation
+| Project | What it does | Where to start |
+| --- | --- | --- |
+| **Osiris** | Connects selected project context to AI workflows. Shared deterministic tools run inside compatible AI hosts; a separate runtime explores in-page, user-authorized conversation. | [Tools service](osiris-tools/README.md) · [Runtime pilot](osiris-runtime/README.md) |
+| **The Family Business / Econ Arcade** | Teaches economics through decisions, controlled experiments, and a persistent campaign. Shared engines keep simulation outcomes separate from AI explanations. | [Play the campaign](https://dgallemore.com/econ-arcade/play/) · [Design and mechanics](docs/family-business.md) |
+| **Congressional Accountability** | A bill-research workbench with source snapshots, version comparisons, local watchlists, and explicit evidence gaps. | [Open the workbench](https://dgallemore.com/tools/observatory/) · [Sources and limitations](docs/observatory/WORKBENCH.md) |
+| **Parcel** | Organizes land-search briefs, sourced candidates, comparisons, and diligence exports. Model-assisted research is an optional runtime-dependent path. | [Open Parcel](https://dgallemore.com/tools/parcel/) · [Project guide](tools/parcel/README.md) |
 
-A June 2026 pass reduced the public surface back to a clearer launchpad:
+The repository also includes a **Next.js / FastAPI quantitative research application**, a learning-feed experiment, and earlier creative prototypes. The [documentation index](docs/README.md) separates current implementation guides from proposals and historical audits.
 
-- `frontend/src/config/toolCatalog.ts` is the typed source of truth for the separate Next.js application’s tool cards, status labels, readiness notes, backend requirements, and route inventory.
-- The homepage now groups tools by use case instead of leading with Ballzatram Daily or a newspaper-first concept.
-- Land, Markets, Games, Creative / AI Lab, Culture, and Archive pages now reuse the same catalog labels.
-- Quant Library remains the primary markets route; Macro Board is a legacy redirect.
-- Betting, newspaper, Stoney, Penitent, and culture pages remain findable but de-emphasized as archive or experimental routes.
-- Weather Desk stays paper/research only, with no live orders and no financial advice.
+## What to review in the code
 
-## Congressional Accountability
+- **Shared domain logic:** the website and Osiris tools reuse simulation engines rather than asking a model to calculate authoritative game outcomes. Start with [Supply & Demand](tools/supply-demand/engine.js) and the [campaign engine](econ-arcade/play/campaign-engine.js).
+- **Explicit AI boundaries:** feature-specific context, consent checks, session handling, cancellation, and a constrained runtime protocol. Start with the [runtime server](osiris-runtime/server.mjs) and its [tests](osiris-runtime/test/runtime.test.mjs).
+- **Evidence-aware research:** bounded ingestion, retained source snapshots, freshness labels, and distinctions between official records and personal interpretations. Start with the [Observatory workbench guide](docs/observatory/WORKBENCH.md) and [refresh pipeline](scripts/refresh_observatory.py).
 
-The [Congressional Accountability](tools/observatory/index.html) brings bill text, version changes,
-congressional votes, sourced promise drafts, coverage mappings and portable investigation
-files together. Find and follow bills without uploading files: the Pages deployment scans
-official GPO sources every four hours and grows a searchable catalogue. Browser-local
-watchlists highlight changed records. Coverage and per-bill freshness stay visible,
-with pinned source snapshots and clearly labeled personal drafts. The citizen guide distinguishes
-official records, historical examples, saved snapshots, and missing evidence. See [usage and limitations](docs/observatory/WORKBENCH.md).
+For a guided review of the problem, implementation, tests, and tradeoffs, read the [engineering tour](docs/ENGINEERING_TOUR.md).
 
-## Econ Arcade
+## Architecture at a glance
 
-The May 2026 production polish pass added stronger public-site metadata, skip-link accessibility, a homepage mission panel, and an Econ Arcade learning contract that makes the curriculum explicit before users launch a game. Central Banker now includes setup learning objectives, an in-game policy notebook, and end-of-term concept debriefs so the macro game teaches inflation targeting, policy lags, financial stability, expectations, and central-bank credibility while preserving the playful Goblin Reserve loop.
-
-The Next.js Econ Arcade page now has a dedicated **Playable launch bay** so all currently runnable economics experiences are visible from one UI instead of being mixed into locked roadmap cards. It includes the Next.js Supply & Demand Lab, the Next.js Invisible Hands: Steel Crisis systems simulator, the static Invisible Hands market-clearing game, Central Banker, Prisoner's Dilemma Lab, Strategy Studio, and Quant Library. Planned modules such as Signal vs Noise and Tariff Lab remain visible in the complete registry with roadmap labels, not hidden. The `frontend/public` symlinks expose the existing static `econ-arcade`, `games`, `tools`, and asset folders to the Next.js dev/build server so these launch links return real pages instead of dead routes.
-
-The static homepage now links to `econ-arcade/index.html`, a dedicated strategy-learning menu for economics games and macro tools. `econ-arcade/platform.html` now provides the curriculum-wide Strategy Studio covering rational choice, static games, dynamic games, incomplete information, auctions, signaling, bargaining, and mechanism design with multiple playable concept engines. The first full standalone game theory module is `econ-arcade/prisoners-dilemma.html`, which implements a repeated Prisoner’s Dilemma lab with AI opponent archetypes, a live payoff matrix, a cooperation trace, and educational debriefs. Dependency-free Node API foundations for Prisoner’s Dilemma and the broader scenario catalog live in `econ-arcade/backend/`. The product/architecture blueprint lives in `docs/game-theory-platform.md`, Prisma schema in `prisma/schema.prisma`, and shared simulation contracts in `packages/sim-core/src/types.ts`.
-
-## Architecture (text diagram)
-- `backend/app/data`: ingestion adapters, normalization, validation, caching
-- `backend/app/analytics`: deterministic model runners (OLS, rolling, regularized, event study, stress, importance, regimes)
-- `backend/app/services`: workflow orchestration, provider interfaces, Quant Library research payloads, and reporting
-- `backend/app/api`: HTTP route handlers
-- `frontend/src/app`: Next.js product workflows for local/backend-backed development
-- `frontend/src/app/quant-library`: the active Quant Library workstation; old MacroBoard URLs redirect here for compatibility
-- `frontend/src/components`: reusable KPI/model assumption/chart UI
-
-## Setup
-### Backend
-```bash
-cd backend
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+```mermaid
+flowchart LR
+    Catalog[Public project catalog] --> Build[Python site assembly]
+    Build --> Pages[GitHub Pages / browser apps]
+    Engines[Shared simulation engines] --> Pages
+    Engines --> Tools[Osiris MCP tools]
+    Host[Compatible AI host] <--> Tools
+    Pages -. selected context and consent .-> Runtime[Osiris runtime / private pilot]
+    Runtime -. user-authorized session .-> Provider[Model provider]
+    Next[Separate Next.js application] --> API[FastAPI backend]
 ```
 
-### Frontend
-```bash
-cd frontend
-npm ci
-NEXT_PUBLIC_API_BASE=http://localhost:8000/api npm run dev
+**These are separate deployment surfaces.** GitHub Pages serves the browser applications; it does not run Next.js server features, FastAPI, or the persistent Osiris runtime. The MCP service runs tools inside a compatible AI host, while the runtime pilot is the distinct in-page conversation path. See [deployment](DEPLOYMENT.md) and the [AI integration guide](docs/bring-your-own-ai.md).
+
+## Run the public site locally
+
+Use **Python 3.12**, matching the repository's Python CI. No Node installation, provider account, or API key is needed for this static preview.
+
+```sh
+git clone https://github.com/Ballzatram/ballzatram.git
+cd ballzatram
+python scripts/build_public.py
+python -m http.server 8080 --bind 127.0.0.1 --directory _site
 ```
 
-## Env vars
-- `NEXT_PUBLIC_API_BASE` (frontend backend URL)
-- Future connectors (FRED/BLS) should add `FRED_API_KEY`, `BLS_API_KEY`.
+Open **http://127.0.0.1:8080/**. The assembly script recreates `_site/` from the explicit publication manifest; it does not start backend services. Stop the preview with `Ctrl+C`.
 
-## Bring your own AI
+For the Next.js / FastAPI application, Osiris services, and focused test suites, use the [development guide](docs/DEVELOPMENT.md).
 
-Open `/tools/ai/` to use your own AI app, share selected project context, or test locally without model calls. The [Osiris tools service](osiris-tools/README.md) adds Osiris’s Family Business companion and the interactive Supply & Demand Lab to compatible ChatGPT/Claude hosts using the same engine as the website. The host handles inference on the visitor’s account. `/tools/ai/connect.html` shows connector activation status; an empty public `mcpUrl` means it is not activated. The older hosted Codex pilot and user-funded APIs remain explicit advanced options. See [the architecture guide](docs/bring-your-own-ai.md) and [project configuration inventory](docs/ai-project-configuration.md).
+## Verification
 
-The public site has no operator-funded model fallback. The Next.js guide opens the same assistant panel in place, with workflow metadata only. Backend agent/parcel requests use deterministic fallback unless the visitor explicitly supplies a user OpenAI API key in the Authorization header; an `OPENAI_API_KEY` environment variable does not enable paid requests. The optional `OPENAI_AGENT_MODEL` controls the backend agent model only. Connecting an account does not automatically integrate every project's data or actions; the inventory records those remaining decisions.
+Run the lightweight documentation and public-site checks from the repository root:
 
-No billing routes, checkout, or entitlement gates are added by this integration. Provider accounts and their limits control model usage.
-
-## Lab Pass / monetization readiness
-
-Ballzatram is being prepared as an early-access lab membership called **Ballzatram Lab Pass**. Checkout is not live yet, and this repo still avoids billing routes, provider secrets, hard paywalls, and real entitlement gates.
-
-The current monetizable promise is membership/support around early access, the experimental archive, votes, suggestions, favorites, monthly drops, behind-the-scenes notes, and helping decide what gets polished next.
-
-Not currently promised:
-- Professional investment advice.
-- Live trading.
-- Verified land acquisition.
-- Guaranteed AI Edit uptime.
-- Unlimited rendering.
-- Durable paid workspaces.
-
-Readiness docs:
-- [`docs/MONETIZATION_READINESS.md`](docs/MONETIZATION_READINESS.md)
-- [`docs/SCALE_TO_10K.md`](docs/SCALE_TO_10K.md)
-- [`docs/PROPOSED_LAB_PASS_SCHEMA.md`](docs/PROPOSED_LAB_PASS_SCHEMA.md)
-
-Validation command:
-
-```bash
+```sh
+python scripts/validate_docs.py
 python scripts/validate_lab_readiness.py
+python scripts/validate_public.py
 ```
 
-## Data sources
-- Demo public dataset: `demo_data/macro_timeseries.csv`
-- Custom upload endpoint: `/api/data/upload-csv`
-- Planned key-required: FRED/BLS adapters.
+[PR Validation](.github/workflows/pr-validation.yml) also runs backend tests, frontend static regressions, TypeScript checks and a build, Observatory checks, and runtime protocol/container checks. The [Osiris tools](.github/workflows/osiris-tools.yml) and [learning-feed](.github/workflows/osiris-feed.yml) workflows cover their own surfaces. The frontend command named `lint` currently performs **type generation and TypeScript checking**, not a general-purpose lint pass.
 
-## Testing
-```bash
-cd backend && PYTHONPATH=. pytest -q
-cd frontend && npm run lint
-```
+Badges link to actual workflow runs. Passing automated checks is not proof of live provider sign-in, hosted-service activation, current external data, or user-account acceptance.
 
-## Roadmap
-1. Add real FRED/BLS/Yahoo connectors with retry, backoff, freshness monitoring.
-2. Add out-of-sample validation, walk-forward backtests, and model governance metadata.
-3. Add auth, saved workspaces, report export pipeline, and observability.
+## Current boundaries
+
+**Runnable browser experiences:** the campaign, simulations, and research workspaces. Some use retained public data or browser-local saves; availability and freshness are shown by each project.
+
+**Optional services:** Next.js / FastAPI require their own runtime. Osiris MCP requires deployment and host installation. The in-page subscription runtime is an invitation-only pilot; a running host and user-completed acceptance are required. The runtime guide records that development did not complete a live subscription sign-in or model answer. No universal subscription API or cross-provider compatibility is implied.
+
+**Not a production claim:** quantitative examples are research/demo workflows; teaching indicators are not calibrated policy estimates; source-backed candidates are not verified acquisitions. Public billing, durable multi-user workspaces, and broader AI activation remain separate work. Older monetization and scaling documents are proposals, not shipped capabilities.
+
+## Documentation and contribution
+
+[Documentation index](docs/README.md) · [Engineering tour](docs/ENGINEERING_TOUR.md) · [Development](docs/DEVELOPMENT.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
+
+This is independent, AI-assisted portfolio work. The [contribution guide](CONTRIBUTING.md) describes review expectations, evidence standards, and licensing status. Existing project identities, experiments, and third-party notices are retained.
