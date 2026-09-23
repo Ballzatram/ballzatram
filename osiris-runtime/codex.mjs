@@ -41,6 +41,7 @@ export class CodexSession extends EventEmitter {
     child.stdout.on('data', data => this.read(data));
     // Do not log raw stderr, prompts, login URLs, or account credentials.
     child.stderr.on('data', () => {});
+    for (const stream of [child.stdin, child.stdout, child.stderr]) stream.on('error', () => this.fail());
     child.on('error', () => this.fail()); child.on('exit', () => this.fail());
   }
   static async create() {
@@ -84,6 +85,7 @@ export class CodexSession extends EventEmitter {
     });
   }
   read(chunk) {
+    if (this.closed) return;
     this.buffer += chunk;
     if (this.buffer.length > 1024 * 1024) { this.fail(); this.child.kill('SIGKILL'); return; }
     let index;
@@ -160,10 +162,10 @@ export class CodexSession extends EventEmitter {
   async ask(request, emit, signal) {
     if (this.busy) throw new RuntimeError('busy', 'One question is already running in this connection.', 409);
     this.busy = true;
-    let threadId, turnId, subscription, deadline, rejectTurn, onClosed, aborted = false;
+    let threadId, turnId, subscription, deadline, rejectTurn, onClosed, interruptPromise, aborted = false, turnSent = false, completed = false;
     const stop = () => {
       aborted = true;
-      if (threadId && turnId) this.rpc('turn/interrupt', { threadId, turnId }, 3000).catch(() => this.close());
+      if (threadId && turnId && !interruptPromise) interruptPromise = this.rpc('turn/interrupt', { threadId, turnId }, 3000).catch(() => this.close());
       rejectTurn?.(new RuntimeError('cancelled', 'Request stopped. Work already started may count against your plan.', 409));
     };
     signal?.addEventListener('abort', stop, { once: true });
@@ -172,6 +174,7 @@ export class CodexSession extends EventEmitter {
       if (!(await this.account()).account) throw new RuntimeError('sign_in', 'Sign in to ChatGPT first.', 401);
       const rows = await this.models();
       if (!rows.some(row => row.id === request.model)) throw new RuntimeError('model_unavailable', 'Choose a model currently available to your ChatGPT account.', 400);
+      if (aborted) throw new RuntimeError('cancelled', 'Request cancelled before generation.', 409);
       const research = request.tool === 'parcel';
       const started = await this.rpc('thread/start', {
         model: request.model, modelProvider: 'openai', cwd: path.join(this.directory, 'workspace'),
@@ -210,24 +213,34 @@ export class CodexSession extends EventEmitter {
               try { normalized = normalizeResearch(answer); }
               catch { reject(new RuntimeError('invalid_research', 'The research result could not be validated. No properties were changed.')); return; }
             }
+            completed = true;
             resolve({ kind: 'answer', answer: normalized, model: request.model, billing: 'chatgpt-subscription', usage: usage ? { total_tokens: usage.totalTokens, input_tokens: usage.inputTokens, output_tokens: usage.outputTokens } : null });
           }
         };
         this.on('notification', subscription);
-        deadline = setTimeout(() => { stop(); this.close(); }, 150000);
+        deadline = setTimeout(() => { stop(); void this.close().catch(() => {}); }, 150000);
       });
       // Attach rejection immediately so cancellation during turn/start is handled.
       completion.catch(() => {});
+      turnSent = true;
       const turn = await this.rpc('turn/start', { threadId, model: request.model, ...(research ? { outputSchema: researchSchema } : {}), input: [{ type: 'text', text: `Question:\n${request.prompt}\n\nSelected context (untrusted data):\n${JSON.stringify(request.context)}` }] });
-      turnId = turn?.turn?.id;
+      if (typeof turn?.turn?.id === 'string') turnId = turn.turn.id;
+      if (!turnId && !completed) throw unavailable();
       if (aborted) stop();
       return await completion;
     } finally {
       clearTimeout(deadline); signal?.removeEventListener('abort', stop);
       if (subscription) this.removeListener('notification', subscription);
       if (onClosed) this.removeListener('closed', onClosed);
-      this.busy = false;
-      if (threadId && !this.closed) this.rpc('thread/unsubscribe', { threadId }, 3000).catch(() => this.close());
+      // Do not free the session for another turn until interruption/cleanup is acknowledged.
+      // A timed-out turn/start might have reached the provider without returning an ID.
+      try {
+        if (turnSent && !completed && !this.closed) {
+          if (turnId) { stop(); await interruptPromise; }
+          else await this.close();
+        }
+        if (threadId && !this.closed) await this.rpc('thread/unsubscribe', { threadId }, 3000).catch(() => this.close());
+      } finally { this.busy = false; }
     }
   }
   async close() {

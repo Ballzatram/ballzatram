@@ -34,7 +34,7 @@
   function normalizeSettings(value) {
     const v = value && typeof value === 'object' ? value : {};
     return {
-      mode: ['subscription', 'handoff', 'openrouter', 'native', 'demo'].includes(v.mode) ? v.mode : 'handoff',
+      mode: ['subscription', 'handoff', 'openrouter', 'native', 'demo'].includes(v.mode) ? v.mode : 'subscription',
       chat: Object.hasOwn(chats, v.chat) ? v.chat : 'chatgpt',
       model: typeof v.model === 'string' ? v.model.slice(0, 200) : '',
       provider: ['openai', 'anthropic'].includes(v.provider) ? v.provider : 'openai',
@@ -45,8 +45,7 @@
   }
   function getSettings() {
     const saved = read('localStorage', PREFS);
-    // Retire the previous public default when no runtime was ever configured.
-    if (!memorySettings && saved?.mode === 'subscription' && !subscription?.settings().endpoint) saved.mode = 'handoff';
+    // A missing runtime is an in-page setup state, never implicit consent to a handoff.
     return normalizeSettings(memorySettings || saved);
   }
   function saveSettings(value) {

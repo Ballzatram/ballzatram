@@ -7,8 +7,9 @@
 !osiris-runtime/server.mjs
 !osiris-runtime/codex.mjs
 !osiris-runtime/parcel.mjs
+!osiris-runtime/readiness.mjs
 !tools/
 !tools/parcel/
 !tools/parcel/core.js
 !osiris-runtime/scripts/
-!osiris-runtime/scripts/check-runtime.mjs
+!osiris-runtime/scripts/*.mjs
