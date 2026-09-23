@@ -1,5 +1,13 @@
 [
   {
+    "title": "Beckets Labyrinth",
+    "href": "tools/beckets-labyrinth/",
+    "category": "Experiments",
+    "icon": "bulb",
+    "status": "Explore · bring your AI",
+    "description": "Get lost in swipeable top tens. Reveal the countdown, call your #1, or create a rabbit hole with your own AI."
+  },
+  {
     "title": "Econ Arcade",
     "href": "econ-arcade/index.html",
     "category": "Games",

@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#111513">
+  <meta name="description" content="Beckets Labyrinth: a rabbit hole of swipeable top tens. Explore original starter countdowns, or let your own AI create one about anything that sparks your curiosity.">
+  <meta property="og:title" content="Beckets Labyrinth · Get lost in a good top ten">
+  <meta property="og:description" content="Ten discoveries. One more rabbit hole. Swipe through countdowns or make one with your own AI.">
+  <meta property="og:type" content="website">
+  <link rel="canonical" href="https://dgallemore.com/tools/beckets-labyrinth/">
+  <title>Beckets Labyrinth · Ten discoveries. One more rabbit hole.</title>
+  <link rel="stylesheet" href="./style.css?v=1">
+  <script defer src="/assets/ai-config.js"></script>
+  <script defer src="/assets/ai-features.js?v=labyrinth-1"></script>
+  <script defer src="/assets/subscription-client.js"></script>
+  <script defer src="/assets/ai-client.js"></script>
+  <script defer src="/assets/ai-panel.js"></script>
+  <script defer src="./core.js?v=1"></script>
+  <script defer src="./seeds.js?v=1"></script>
+  <script defer src="./app.js?v=1"></script>
+</head>
+<body>
+  <a class="skip" href="#feed">Skip to countdowns</a>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Beckets Labyrinth home">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M37 20V3H3v34h34V26H14V14h12v6M9 31V9h22v16M20 20h-1"/></svg>
+      <span><span class="brand-top">BECKETS</span><span class="brand-bottom">Labyrinth</span></span>
+    </a>
+    <nav aria-label="Site"><a class="home-link" href="/">← The lab</a><button id="create-top" class="primary">Create a top 10 <span aria-hidden="true">＋</span></button></nav>
+  </header>
+  <div class="layout">
+    <aside class="intro">
+      <p class="eyebrow"><span class="status-dot"></span> AN OSIRIS EXPERIENCE</p>
+      <h1>A good<br>rabbit hole<br>goes <em>deeper.</em></h1>
+      <p class="intro-copy">Ten discoveries.<br>One more reason to be curious.</p>
+      <button id="surprise-feed" class="surprise">Surprise me <span aria-hidden="true">↝</span></button>
+      <p class="small">Shuffle the free starter editions.<br>No AI account needed to explore.</p>
+      <div class="how"><span>01</span><p>Scroll to find your next obsession.</p><span>02</span><p>Tap or swipe left to count down.</p><span>03</span><p>Call your #1. Then see the reveal.</p></div>
+      <div class="intro-footer"><p>Your curiosity. Your AI.</p><p class="small">Original editorial lists, not objective rankings. Your shelf stays on this device.</p><a href="/tools/ai/index.html">Manage your AI →</a></div>
+    </aside>
+    <main class="main">
+      <div class="filters" role="group" aria-label="Countdown filters">
+        <button class="filter" data-filter="All" aria-pressed="true">For you</button>
+        <button class="filter" data-filter="Cinema" aria-pressed="false">Cinema</button>
+        <button class="filter" data-filter="Mindbenders" aria-pressed="false">Mindbenders</button>
+        <button class="filter" data-filter="AI" aria-pressed="false">AI</button>
+        <button class="filter" data-filter="Story fuel" aria-pressed="false">Story fuel</button>
+        <button class="filter" data-filter="Wildcard" aria-pressed="false">Wildcard</button>
+        <button class="filter saved-filter" data-filter="Saved" aria-pressed="false">My shelf <span id="saved-count">0</span></button>
+      </div>
+      <div class="feed-heading"><p id="feed-label">CHOOSE A DOOR</p><button id="mobile-surprise" class="text-button">Shuffle ↝</button><span id="feed-count"></span></div>
+      <section id="feed" class="feed" tabindex="0" aria-label="Swipeable top ten countdowns"></section>
+      <noscript><p class="no-script">Turn on JavaScript to explore the interactive countdowns. <a href="./README.md">Read about Beckets Labyrinth</a>.</p></noscript>
+    </main>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <template id="deck-template">
+    <article class="deck" tabindex="0" aria-roledescription="countdown">
+      <div class="deck-top"><span class="category"></span><span class="edition"></span><button class="icon-button save" aria-label="Save countdown" title="Save on this device">♡</button></div>
+      <div class="rank-scene" aria-hidden="true"><div class="maze-orbit"></div><span class="rank-number">10</span><span class="rank-label">FOLLOW YOUR CURIOSITY</span></div>
+      <div class="deck-copy"><p class="series"></p><h2 class="deck-title"></h2><p class="deck-detail"></p>
+        <details class="why"><summary>What makes the cut?</summary><p class="why-copy"></p><div class="source-links"></div><p class="source-note"></p></details>
+        <div class="finale" hidden><p class="prediction-result"></p><div class="votes"><button class="vote" data-vote="agree">Fair #1</button><button class="vote" data-vote="disagree">I’d reorder it</button></div><p class="small">Your reaction stays on this device.</p><p class="next-label">NEXT RABBIT HOLES</p><div class="rabbit-holes"></div></div>
+      </div>
+      <div class="deck-bottom"><div class="progress" role="group" aria-label="Jump to a rank; reveals spoilers"></div>
+        <div class="deck-controls"><button class="back secondary" aria-label="Previous rank">←</button><button class="predict secondary">Call your #1</button><button class="advance primary">Enter the countdown →</button></div>
+        <div class="deck-footer"><span class="gesture-hint">Scroll for another list · swipe left to reveal</span><button class="share text-button">Share</button><button class="export text-button">Export</button></div>
+      </div>
+    </article>
+  </template>
+
+  <dialog id="composer" aria-labelledby="composer-title">
+    <div class="dialog-head"><div><p class="eyebrow">CREATE A NEW DOOR</p><h2 id="composer-title">Where are we<br>getting lost?</h2></div><button class="close-dialog secondary" aria-label="Close generator">×</button></div>
+    <form id="generate-form">
+      <fieldset id="compose-fields"><legend class="sr-only">Countdown settings</legend>
+        <label for="topic">Your top 10 topic</label><textarea id="topic" rows="2" maxlength="240" required placeholder="Movie villains who almost had a point…"></textarea>
+        <div class="compose-row"><button id="random-topic" class="secondary" type="button">↻ Random topic</button><label class="vibe-label" for="vibe">Storytelling style<select id="vibe"><option>Cinematic</option><option>Mind-blowing</option><option>Playful</option><option>Deep cut</option></select></label></div>
+        <div class="connection-box"><p id="connection-label"></p><p id="connection-detail" class="small"></p><div class="inline-actions"><button id="connect-subscription" class="text-button" type="button">Connect ChatGPT pilot</button><a id="other-ai" href="/tools/ai/index.html">Other AI settings →</a></div></div>
+        <p class="small">Only this topic and style are shared. Rankings use general knowledge, not live research. Verify recent facts and important claims.</p>
+        <label class="consent"><input id="consent" type="checkbox"><span id="consent-copy">Use my selected AI for this one countdown. My provider’s usage limits or charges apply.</span></label>
+        <button class="primary generate-button" id="generate" type="submit">Generate with my AI →</button>
+      </fieldset>
+      <div class="generation-status"><p id="generation-status" role="status" aria-live="polite"></p><button id="cancel-generation" class="secondary" type="button" hidden>Stop generation</button></div>
+    </form>
+    <section id="handoff" hidden><h3>Use your AI app, then bring the list back</h3><p class="small">This is a prepared prompt, not a generated countdown. Copy it into your AI app, then paste its JSON response below. Nothing opens automatically.</p><textarea id="handoff-prompt" rows="5" readonly aria-label="Prepared AI prompt"></textarea><button id="copy-prompt" class="secondary">Copy prompt</button></section>
+    <details id="import-panel"><summary>Paste a countdown from your AI / import JSON</summary><label for="import-json">Complete countdown JSON</label><textarea id="import-json" rows="5" maxlength="50000" placeholder='{"schemaVersion":1,"title":"…","items":[…]}'></textarea><button id="import-countdown" class="secondary">Add to my feed</button><p id="import-status" class="small" role="status"></p></details>
+    <div class="composer-footer"><button id="free-edition" class="text-button">Explore a free starter instead →</button><p class="small">No silent background generation, automatic retries, or site-funded model fallback.</p><button id="clear-local" class="text-button">Clear this device’s Labyrinth activity</button></div>
+  </dialog>
+
+  <dialog id="prediction" aria-labelledby="prediction-title"><div class="dialog-head"><div><p class="eyebrow">BEFORE THE REVEAL</p><h2 id="prediction-title">Call your #1.</h2></div><button class="close-dialog secondary" aria-label="Close prediction">×</button></div><p id="prediction-topic"></p><form id="prediction-form"><label for="prediction-input">What deserves the top spot?</label><input id="prediction-input" maxlength="100" required autocomplete="off" placeholder="Your pick. No peeking necessary."><p class="small">This is your opinion, not a trivia score. Saved only on this device.</p><button class="primary" type="submit">Lock in my pick →</button></form></dialog>
+  <dialog id="share-dialog" aria-labelledby="share-title"><div class="dialog-head"><h2 id="share-title">Pass the rabbit hole on.</h2><button class="close-dialog secondary" aria-label="Close sharing">×</button></div><p id="share-note"></p><label for="share-link">Share link</label><input id="share-link" readonly><button id="copy-link" class="primary">Copy link</button><p id="share-status" role="status"></p></dialog>
+</body>
+</html>
