@@ -115,7 +115,7 @@ try:
             response = fixture(page)
             calls = []
             endpoint = {'openrouter':'https://openrouter.ai/api/v1/chat/completions','native':'https://relay.example.test/v2/assist','subscription':'https://runtime.example.test/v1/assist'}[mode]
-            def respond(route, mode=mode):
+            def respond(route, _request, mode=mode):
                 if route.request.method == 'OPTIONS':
                     route.fulfill(status=204, headers=HEADERS)
                     return
