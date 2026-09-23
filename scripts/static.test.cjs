@@ -5,6 +5,7 @@ const path = require('node:path');
 const { createRequire } = require('node:module');
 const root = path.resolve(__dirname, '..');
 const { JSDOM } = createRequire(path.join(root, 'frontend/package.json'))('jsdom');
+const publicPrograms = JSON.parse(fs.readFileSync(path.join(root, 'data/public-programs.json'), 'utf8'));
 
 function page(file, prepare = () => {}) {
   const dom = new JSDOM(fs.readFileSync(path.join(root, file), 'utf8'), {
@@ -45,9 +46,17 @@ for (const file of ['index.html']) {
 
 test('Homepage is fully navigable before JavaScript runs', () => {
   const dom = new JSDOM(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
-  assert.equal(visiblePrograms(dom.window.document).length, 17);
-  assert.equal(dom.window.document.querySelector('[data-enhanced]').hidden, true);
-  assert.ok([...dom.window.document.querySelectorAll('.frontier-program a')].every(a => a.getAttribute('href')));
+  const { document } = dom.window;
+  const cards = visiblePrograms(document);
+  assert.equal(cards.length, publicPrograms.length);
+  assert.equal(document.querySelector('[data-enhanced]').hidden, true);
+  // Check the actual destinations, labels and categories, not just a stale count.
+  assert.deepEqual(cards.map(card => ({
+    title: card.querySelector('h3 a').textContent,
+    href: card.querySelector('h3 a').getAttribute('href'),
+    category: card.dataset.category
+  })), publicPrograms.map(({ title, href, category }) => ({ title, href, category })));
+  assert.equal(document.getElementById('program-count').textContent, `${publicPrograms.length} projects`);
   dom.window.close();
 });
 
@@ -58,14 +67,14 @@ test('Homepage filters reset together and restore keyboard focus', () => {
   search.value = 'portfolio'; search.dispatchEvent(new Event('input'));
   assert.equal(visiblePrograms(document).length, 0);
   document.getElementById('clear-filters').click();
-  assert.equal(visiblePrograms(document).length, 17);
+  assert.equal(visiblePrograms(document).length, publicPrograms.length);
   assert.equal(document.querySelector('[data-filter="all"]').getAttribute('aria-pressed'), 'true');
   assert.equal(document.getElementById('no-programs').hidden, true);
   assert.equal(document.activeElement, search);
   search.value = 'central banker'; search.dispatchEvent(new Event('input'));
-  assert.equal(document.getElementById('program-count').textContent, '1 project of 17');
+  assert.equal(document.getElementById('program-count').textContent, `1 project of ${publicPrograms.length}`);
   search.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-  assert.equal(visiblePrograms(document).length, 17);
+  assert.equal(visiblePrograms(document).length, publicPrograms.length);
   dom.window.close();
 });
 
