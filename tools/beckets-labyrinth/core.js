@@ -60,10 +60,10 @@
     };
   }
   function parseDeck(answer) {
-    if (typeof answer !== 'string' || answer.length > 50000) throw new Error('The response is empty or too large. Paste a single countdown under 50,000 characters.');
+    if (typeof answer !== 'string' || answer.length > 50000) throw new Error('The countdown response is empty or exceeds the 50,000-character limit. Nothing was added.');
     const cleaned = answer.trim().replace(/^```(?:json)?\s*\n?([\s\S]*?)\n?```$/i, '$1').trim();
     let raw;
-    try { raw = JSON.parse(cleaned); } catch { throw new Error('The AI did not return complete countdown JSON. Nothing was added or retried. Check the response limit in AI settings, or paste a corrected response.'); }
+    try { raw = JSON.parse(cleaned); } catch { throw new Error('The AI did not return a complete countdown. Nothing was added or retried. Check the response limit in AI settings before trying again.'); }
     return validateDeck(raw);
   }
   function request(topic, vibe = 'Cinematic') {
@@ -76,12 +76,15 @@
     };
   }
   async function generate(ai, payload, options = {}) {
-    if (!ai || typeof ai.ask !== 'function') throw new Error('The shared AI connection did not load. Reload or use a free starter countdown.');
+    const run = typeof ai?.execute === 'function' ? ai.execute : ai?.ask;
+    if (typeof run !== 'function') throw new Error('The shared AI connection did not load. Reload or use a free starter countdown.');
     if (options.consent !== true) throw new Error('Confirm the selected topic before using your AI.');
     if (options.signal?.aborted) throw new Error('Generation stopped.');
-    const response = await ai.ask(payload, { ...options, responseLength: 'standard' });
+    // execute is the shared orchestration contract. The legacy transport guard below
+    // also rejects stale cached clients: a prompt is never a generated countdown.
+    const response = await run.call(ai, payload, { ...options, responseLength: 'standard' });
     if (options.signal?.aborted) throw new Error('Generation stopped.');
-    if (response?.kind === 'handoff') return { kind: 'handoff', prompt: response.answer };
+    if (response?.kind === 'handoff') throw new Error('Connect an in-page AI account to generate this countdown. Prompt handoff is not supported by this tool.');
     if (response?.kind === 'demo') throw new Error('Local preview is not AI generation. Choose a free starter below or connect your own AI.');
     if (response?.truncated) throw new Error('Your model hit its response limit. No partial list was added. Increase the output limit in AI settings and explicitly try again.');
     return { kind: 'deck', deck: parseDeck(response?.answer), model: typeof response?.model === 'string' ? response.model.slice(0, 200) : 'Your AI' };
