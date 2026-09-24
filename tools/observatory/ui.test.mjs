@@ -64,8 +64,11 @@ test('workbench interactions, drafts, import/export and reload',async()=>{
   const requestCount=requests.length,workbenchUrl=location.href;
   click('#ask-osiris');await flush();assert.match(document.querySelector('#osiris-answer').textContent,/Nothing has been sent/);
   assert.equal(document.querySelector('.osiris-dialog').open,true);
-  assert.match(document.querySelector('[data-app="context"]').textContent,/before the dispute arises/);
-  assert.doesNotMatch(document.querySelector('[data-app="context"]').textContent,/SYNTHETIC test notebook|SYNTHETIC test headline/);
+  assert.match(document.querySelector('[data-osiris="context"]').textContent,/before the dispute arises/);
+  assert.doesNotMatch(document.querySelector('[data-osiris="context"]').textContent,/SYNTHETIC test notebook|SYNTHETIC test headline/);
+  assert.equal(document.querySelector('[data-app="form"]'),null);
+  assert.equal(location.href,workbenchUrl);assert.equal(requests.length,requestCount);
+  click('[data-osiris="handoff"]');
   document.querySelector('[data-app="form"]').requestSubmit();
   const prepared=document.querySelector('[data-app="text"]').value;
   assert.match(prepared,/before the dispute arises/);

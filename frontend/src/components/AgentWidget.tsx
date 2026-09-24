@@ -12,7 +12,7 @@ export function AgentWidget() {
   const [processes, setProcesses] = useState<Record<string, AgentProcess[]>>({});
   const [selectedProcess, setSelectedProcess] = useState("");
   const [input, setInput] = useState("");
-  const [status, setStatus] = useState("Review your question and choose your AI app in the Osiris panel.");
+  const [status, setStatus] = useState("Review your question and connect your AI account in the Osiris panel without leaving this page.");
 
   useEffect(() => {
     api.agentProcesses().then(res => setProcesses(res.processes)).catch(() => {
@@ -44,7 +44,7 @@ export function AgentWidget() {
           <div className="rounded-xl border border-slate-800 bg-slate-900/70 p-3 text-sm text-slate-200"><ol className="list-decimal space-y-1 pl-5">{activeProcess.steps.map(step => <li key={step}>{step}</li>)}</ol><button className="mt-3 rounded-lg border border-emerald-300/40 px-3 py-2 text-emerald-200" onClick={() => prepare(activeProcess.starter_prompt)}>Prepare a starting question</button></div>
         </> : null}
         <form onSubmit={submit} className="space-y-3"><label className="block text-sm text-slate-300">Your question<textarea className="mt-2 min-h-24 w-full rounded-xl border border-slate-700 bg-slate-900 p-3 text-sm text-white" maxLength={4000} placeholder="What should I explore or challenge here?" value={input} onChange={e => setInput(e.target.value)} /></label><p className="text-xs text-slate-400" role="status">{status}</p><button className="rounded-full bg-emerald-400 px-4 py-2 text-sm font-semibold text-slate-950 disabled:opacity-60" disabled={!input.trim()}>Open Osiris here</button></form>
-        <p className="text-xs leading-5 text-slate-400">Use your own AI app. Only the page name and selected workflow are shared; the guide cannot see your charts or uploaded data automatically.</p><a className="text-sm text-emerald-200 underline" href="/tools/ai/projects.html">Project AI setup</a>
+        <p className="text-xs leading-5 text-slate-400">Use your own ChatGPT/Codex allowance after runtime activation. Only the page name and selected workflow are shared; the guide cannot see your charts or uploaded data automatically.</p><a className="text-sm text-emerald-200 underline" href="/tools/ai/projects.html">Project AI setup</a>
       </div>
     </section> : <button className="ml-auto flex items-center gap-3 rounded-full border border-emerald-300/40 bg-slate-950 px-5 py-3 text-sm font-semibold text-emerald-200 shadow-xl" onClick={() => setOpen(true)}>Ask Osiris <span aria-hidden="true">↗</span></button>}
   </div>;

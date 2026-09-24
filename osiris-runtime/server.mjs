@@ -3,6 +3,7 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto';
 import { pathToFileURL } from 'node:url';
 import features from '../assets/ai-features.js';
 import { CodexSession, RuntimeError, CODEX_VERSION } from './codex.mjs';
+import { probeRuntime } from './readiness.mjs';
 
 const SESSION_TTL = 4 * 60 * 60 * 1000;
 const IDLE_TTL = 30 * 60 * 1000;
@@ -22,12 +23,13 @@ export function validateRequest(body) {
   if (!body.context || typeof body.context !== 'object' || Array.isArray(body.context)) throw error('invalid_context', 'Choose a valid context snapshot.', 400);
   const text = JSON.stringify(body.context, (key, value) => secretField.test(key) ? undefined : value);
   if (text.length > 24000) throw error('context_too_large', 'Choose a smaller run or section; nothing was sent.', 413);
-  if (!['general', 'page-guide'].includes(profile.id) && !Object.keys(body.context).length) throw error('context_missing', 'Run this tool or select a source before asking about its results.', 400);
-  return { tool: profile.id, prompt: body.prompt.trim(), model: body.model, context: JSON.parse(text), responseLength: body.responseLength };
+  const context = JSON.parse(text);
+  if (!['general', 'page-guide'].includes(profile.id) && !Object.keys(context).length) throw error('context_missing', 'Run this tool or select a source before asking about its results.', 400);
+  return { tool: profile.id, prompt: body.prompt.trim(), model: body.model, context, responseLength: body.responseLength };
 }
 
 export async function readJSON(request) {
-  if (request.headers['content-type']?.split(';')[0] !== 'application/json') throw error('content_type', 'Use an application/json request.', 415);
+  if (request.headers['content-type']?.split(';')[0].trim().toLowerCase() !== 'application/json') throw error('content_type', 'Use an application/json request.', 415);
   if (Number(request.headers['content-length']) > MAX_BODY) throw error('too_large', 'Request is too large.', 413);
   let size = 0; const chunks = [];
   for await (const chunk of request) {
@@ -38,14 +40,26 @@ export async function readJSON(request) {
   try { return JSON.parse(Buffer.concat(chunks).toString('utf8')); } catch { throw error('invalid_json', 'Request could not be read.', 400); }
 }
 
-export function createRuntimeServer({ origins, accessCodes, sessionFactory = () => CodexSession.create(), maxSessions = 8, now = Date.now } = {}) {
+export function createRuntimeServer({ origins, accessCodes, sessionFactory = () => CodexSession.create(), readinessProbe = probeRuntime, maxSessions = 8, now = Date.now } = {}) {
   if (!Array.isArray(accessCodes) || !accessCodes.length || accessCodes.some(code => !/^[a-zA-Z0-9_-]{32,128}$/.test(code))) throw new Error('Set OSIRIS_PILOT_CODES to one or more random 32–128 character access codes.');
   const allowed = new Set(origins || []);
   if (!allowed.size || [...allowed].some(origin => {
     try { const u = new URL(origin); return u.origin !== origin || (u.protocol !== 'https:' && !(u.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(u.hostname))); } catch { return true; }
   })) throw new Error('OSIRIS_ALLOWED_ORIGINS must contain exact HTTPS origins (or localhost for development).');
   const codes = accessCodes.map(digest), sessions = new Map(), attempts = new Map();
-  let closing = false;
+  let closing = false, readinessPromise = null, readiness = null;
+  const metadata = () => ({ protocol: 3, service: 'osiris-subscription', release: 'private-pilot', provider: 'codex', codexVersion: CODEX_VERSION, billing: 'user-chatgpt-only', capabilities: ['parcel-research-v1', 'runtime-readiness-v1'], features: features.features.filter(f => f.enabled).map(f => f.id) });
+  async function ready() {
+    if (readiness && now() - readiness.checkedAt < 30000) return readiness;
+    // One signed-out probe at a time; no browser request can create a probe stampede.
+    if (!readinessPromise) readinessPromise = (async () => {
+      let runtimeReady = false;
+      try { runtimeReady = await readinessProbe() === true; } catch { /* Never expose provider errors or host paths. */ }
+      readiness = { runtimeReady, checkedAt: now(), inferenceVerified: false };
+      return readiness;
+    })().finally(() => { readinessPromise = null; });
+    return readinessPromise;
+  }
   const json = (res, status, body) => { res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8' }); res.end(JSON.stringify(body)); };
   async function erase(id) {
     const session = sessions.get(id);
@@ -71,9 +85,12 @@ export function createRuntimeServer({ origins, accessCodes, sessionFactory = () 
       const url = new URL(req.url, 'http://localhost');
       if (url.search) throw error('invalid_url', 'Use the connection service without query parameters.', 400);
       const route = url.pathname;
-      if (route === '/health' && req.method === 'GET') {
+      if ((route === '/health' || route === '/ready') && req.method === 'GET') {
         if (origin && !allowed.has(origin)) throw error('origin', 'This website is not allowed to use this service.', 403);
-        json(res, 200, { ok: true, protocol: 3, service: 'osiris-subscription', release: 'private-pilot', provider: 'codex', codexVersion: CODEX_VERSION, billing: 'user-chatgpt-only', capabilities: ['parcel-research-v1'], features: features.features.filter(f => f.enabled).map(f => f.id) }); return;
+        if (route === '/health') { json(res, 200, { ok: true, ...metadata(), runtimeReady: readiness?.runtimeReady ?? null, inferenceVerified: false }); return; }
+        const state = await ready();
+        if (closing) throw error('closing', 'The connection service is restarting.', 503);
+        json(res, state.runtimeReady ? 200 : 503, { ok: state.runtimeReady, ...metadata(), ...state }); return;
       }
       if (!origin || !allowed.has(origin)) throw error('origin', 'This website is not allowed to use this service.', 403);
       if (req.method === 'OPTIONS') { res.writeHead(204); res.end(); return; }
@@ -120,6 +137,8 @@ export function createRuntimeServer({ origins, accessCodes, sessionFactory = () 
       if (route === '/v1/assist' && req.method === 'POST') {
         const request = validateRequest(await readJSON(req));
         if (!(await runtime.account()).account) throw error('sign_in', 'Sign in to ChatGPT before asking a question.', 401);
+        if (res.destroyed || req.aborted) return;
+        if (sessions.get(token) !== s || runtime.closed) throw error('session_expired', 'The connection ended before this question could start.', 401);
         if (s.abort) throw error('busy', 'One question is already running in this connection.', 409);
         s.requests = s.requests.filter(time => now() - time < 60 * 60 * 1000);
         if (s.requests.length >= 30) throw error('pilot_limit', 'This pilot allows 30 questions per connection each hour.', 429);
@@ -149,6 +168,7 @@ export function createRuntimeServer({ origins, accessCodes, sessionFactory = () 
   async function shutdown() {
     closing = true; clearInterval(sweep);
     await Promise.allSettled([...sessions.keys()].map(erase));
+    if (readinessPromise) await readinessPromise;
     server.closeAllConnections(); await new Promise(resolve => server.close(resolve));
   }
   return { server, shutdown };

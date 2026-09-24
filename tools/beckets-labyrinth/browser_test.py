@@ -1,8 +1,8 @@
-"""Browser regressions against the real shared AI clients; provider HTTP is mocked.
+"""Browser regressions against real shared AI clients; provider HTTP is synthetic.
 
 Run from the repo root after installing playwright==1.55.0 and its Chromium:
     python tools/beckets-labyrinth/browser_test.py
-No provider credentials, live model calls, or external services are used.
+No real provider credentials, live model calls, or paid services are used.
 """
 import functools
 import json
@@ -23,7 +23,7 @@ class QuietHandler(SimpleHTTPRequestHandler):
 server = ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(QuietHandler, directory=str(ROOT)))
 threading.Thread(target=server.serve_forever, daemon=True).start()
 BASE = f'http://127.0.0.1:{server.server_port}/tools/beckets-labyrinth/'
-HEADERS = {'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, authorization', 'access-control-allow-methods': 'POST, OPTIONS'}
+HEADERS = {'access-control-allow-origin': '*', 'access-control-allow-headers': 'content-type, authorization', 'access-control-allow-methods': 'GET, POST, DELETE, OPTIONS'}
 errors = []
 count = 0
 
@@ -37,6 +37,7 @@ def configured_page(browser, mode='handoff', width=390, height=844):
     page = context.new_page()
     page.on('pageerror', lambda e: errors.append(str(e)))
     page.add_init_script('''(mode => {
+      // No executionRevision: exercise the old public default saved on returning users' phones.
       const settings = {mode,chat:'chatgpt',model:'fixture/model',provider:'openai',nativeModel:'fixture-model',bridgeUrl:'https://relay.example.test',maxTokens:2400};
       localStorage.setItem('ballzatram:ai-preferences:v2', JSON.stringify(settings));
       if(mode==='openrouter'||mode==='native') sessionStorage.setItem('ballzatram:ai-connection:v2', JSON.stringify({kind:mode,key:'sk-or-fixture-not-a-real-key',provider:mode==='native'?'openai':'openrouter',endpoint:mode==='native'?'https://relay.example.test':'https://openrouter.ai/api/v1',expiresAt:Date.now()+3600000}));
@@ -95,10 +96,19 @@ try:
         page.locator('.deck').first.locator('.share').click()
         assert 'list=seed-' in page.locator('#share-link').input_value()
         page.locator('#share-dialog .close-dialog').click()
+        sent = []
+        page.on('request', lambda request: sent.append(request.url) if '/v1/' in request.url or '/v2/' in request.url else None)
         submit(page)
-        expect(page.locator('#handoff')).to_be_visible()
-        assert 'beckets-labyrinth' in page.locator('#handoff-prompt').input_value()
+        expect(page.locator('dialog[aria-label="Osiris assistant"]')).to_be_visible()
+        expect(page.locator('[data-osiris="status"]')).to_contain_text('awaiting runtime activation')
+        assert page.evaluate('BallzatramAI.getSettings().mode') == 'subscription'
+        assert page.locator('#handoff-prompt, #copy-prompt').count() == 0
+        assert page.url == BASE and len(context.pages) == 1 and not sent
+        page.locator('[data-osiris="close"]').click()
+        expect(page.locator('#topic')).to_have_value('Original imaginary worlds')
+        expect(page.locator('#consent')).not_to_be_checked()
         expect(page.locator('.deck')).to_have_count(5)
+        page.locator('#import-panel summary').click()
         malicious = fixture(page, '<img src=x onerror="window.pwned=1">')
         malicious['sources'] = [{'label': 'bad', 'url': 'javascript:alert(1)'}]
         page.locator('#import-json').fill(json.dumps(malicious))
@@ -107,7 +117,76 @@ try:
         assert page.evaluate('window.pwned === undefined')
         assert page.locator('.deck img').count() == 0
         assert page.locator('.deck a[href^="javascript:"]').count() == 0
-        passed('filters, shuffle, share, honest handoff, import and safe text rendering')
+        passed('legacy handoff migrates to same-page setup; no prompt export, navigation or inference; saved import remains safe')
+        context.close()
+
+        # Start disconnected, authorize through synthetic HTTP, then explicitly generate
+        # in the original composer. This checks the complete UI flow, NOT real entitlement.
+        context, page = configured_page(browser)
+        response = fixture(page, 'Connected without leaving the Labyrinth')
+        state = {'signed_in': False, 'generations': [], 'deleted': 0}
+        def native_flow(route):
+            if route.request.method == 'OPTIONS':
+                route.fulfill(status=204, headers=HEADERS)
+                return
+            path = route.request.url.removeprefix('https://runtime.example.test')
+            identity = {'service':'osiris-subscription','protocol':3,'billing':'user-chatgpt-only','capabilities':['runtime-readiness-v1']}
+            expires = page.evaluate('Date.now() + 3600000')
+            body, status_code = {}, 200
+            if path == '/health':
+                body = identity
+            elif path == '/ready':
+                body = {**identity, 'runtimeReady':True, 'inferenceVerified':False}
+            elif path == '/v1/session' and route.request.method == 'DELETE':
+                state['signed_in'] = False
+                state['deleted'] += 1
+                body = {'disconnected':True}
+            elif path == '/v1/session':
+                body, status_code = {'token':'b'*43,'expiresAt':expires}, 201
+            elif path == '/v1/login':
+                state['signed_in'] = True
+                body = {'verificationUrl':'https://auth.openai.com/codex/device','userCode':'TEST-ONLY','expiresAt':page.evaluate('Date.now() + 600000')}
+            elif path == '/v1/account':
+                body = {'account':{'type':'chatgpt','planType':'synthetic','email':'test@example.test'} if state['signed_in'] else None, 'loginStatus':'completed'}
+            elif path == '/v1/models':
+                body = {'models':[{'id':'fixture-model','name':'Synthetic model','isDefault':True}]}
+            elif path == '/v1/assist':
+                assert state['signed_in']
+                state['generations'].append(route.request.post_data_json)
+                done = {'answer':json.dumps(response),'model':'fixture-model','billing':'chatgpt-subscription'}
+                route.fulfill(status=200, headers={**HEADERS,'content-type':'text/event-stream'}, body='event: done\ndata: '+json.dumps(done)+'\n\n')
+                return
+            else:
+                raise AssertionError('Unexpected runtime path: ' + path)
+            route.fulfill(status=status_code, headers=HEADERS, json=body)
+        page.route('https://runtime.example.test/**', native_flow)
+        submit(page, 'Original imaginary worlds')
+        q = lambda name: page.locator(f'[data-osiris="{name}"]')
+        q('endpoint').fill('https://runtime.example.test')
+        q('access-code').fill('b' * 43)
+        q('connect').click()
+        expect(page.locator('dialog[aria-label="Osiris assistant"]')).to_have_attribute('data-connection-state', 'connected', timeout=15000)
+        expect(q('model')).to_have_value('fixture-model')
+        assert not state['generations'] and len(context.pages) == 1 and page.url == BASE
+        q('close').click()
+        expect(page.locator('#composer')).to_be_visible()
+        expect(page.locator('#topic')).to_have_value('Original imaginary worlds')
+        expect(page.locator('#consent')).not_to_be_checked()
+        page.locator('#consent').check()
+        page.locator('#generate').click()
+        expect(page.locator('.deck')).to_have_count(6)
+        expect(page.locator('.deck').first.locator('.deck-title')).to_have_text('Connected without leaving the Labyrinth')
+        assert len(state['generations']) == 1 and state['generations'][0]['consent'] is True
+        assert state['generations'][0]['context']['topic'] == 'Original imaginary worlds'
+        assert page.url == BASE and len(context.pages) == 1
+        page.screenshot(path=str(ARTIFACTS / 'mobile-native-countdown.png'), full_page=True)
+        page.locator('#create-top').click()
+        page.locator('#connect-subscription').click()
+        q('disconnect').click()
+        expect(q('status')).to_contain_text('Disconnected')
+        assert page.evaluate('BallzatramSubscription.connection()') is None
+        assert state['deleted'] == 1 and len(state['generations']) == 1
+        passed('disconnected → same-page synthetic sign-in → explicit generation → feed update → disconnect; no copying or navigation')
         context.close()
 
         for mode in ['openrouter', 'native', 'subscription']:
@@ -144,7 +223,7 @@ try:
             page.locator('#generate').click()
             expect(page.locator('.deck')).to_have_count(6)
             expect(page.locator('.deck').first.locator('.edition')).to_contain_text('YOUR AI')
-            assert len(calls) == 1
+            assert len(calls) == 1 and page.url == BASE and len(context.pages) == 1
             page.locator('.deck').first.locator('.advance').click()
             assert len(calls) == 1
             page.locator('.deck').first.locator('.share').click()
@@ -196,10 +275,9 @@ try:
             page.screenshot(path=str(ARTIFACTS / f'layout-{width}.png'), full_page=True)
             context.close()
         passed('small phone, modern phone and desktop layouts have no horizontal overflow')
-        context, page = configured_page(browser)
-        context.close()
         context = browser.new_context(viewport={'width':390,'height':844})
         page = context.new_page()
+        page.on('pageerror', lambda e: errors.append(str(e)))
         page.add_init_script("Object.defineProperty(window,'localStorage',{get(){throw new Error('blocked')}}); Object.defineProperty(window,'sessionStorage',{get(){throw new Error('blocked')}});")
         page.goto(BASE + '?topic=Fictional%20worlds')
         expect(page.locator('.deck')).to_have_count(5)
@@ -210,7 +288,7 @@ try:
         passed('blocked storage and shared topic links remain usable without auto-generation')
         assert not errors, errors
         browser.close()
-        print(f'{count} browser scenarios passed; zero page errors. Provider responses were mocked, not live sign-ins.')
+        print(f'{count} browser scenarios passed; zero page errors. Provider responses were synthetic, not real subscription acceptance.')
 finally:
     server.shutdown()
     server.server_close()

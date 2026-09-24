@@ -2,7 +2,7 @@ FROM node:22-bookworm-slim
 WORKDIR /app/osiris-runtime
 COPY osiris-runtime/package.json osiris-runtime/package-lock.json ./
 RUN npm ci --omit=dev --ignore-scripts && npm cache clean --force
-COPY osiris-runtime/server.mjs osiris-runtime/codex.mjs osiris-runtime/parcel.mjs ./
+COPY osiris-runtime/server.mjs osiris-runtime/codex.mjs osiris-runtime/parcel.mjs osiris-runtime/readiness.mjs ./
 COPY osiris-runtime/scripts ./scripts
 COPY assets/ai-features.js /app/assets/ai-features.js
 COPY tools/parcel/core.js /app/tools/parcel/core.js
