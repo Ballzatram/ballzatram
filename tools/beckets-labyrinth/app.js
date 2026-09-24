@@ -7,7 +7,7 @@
   let storage;
   try { storage = window.localStorage; } catch { storage = null; }
   let state = C.readStore(storage), filter = 'All', order = [], visible = [], activeId = '', observer;
-  let activeTask = null, taskSerial = 0, predictionId = '', toastTimer, previousFocus;
+  let activeTask = null, taskSerial = 0, predictionId = '', toastTimer, previousFocus, lastConnectionStamp;
   const cards = new Map(), reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
   const allDecks = () => [...state.custom, ...seeds];
   const findDeck = id => allDecks().find(d => d.id === id);
@@ -182,18 +182,25 @@
     openDialog($('prediction')); $('prediction-input').focus();
   }
   function connectionStamp() {
-    const s = AI?.getSettings?.() || {};
-    const sub = window.BallzatramSubscription;
-    return JSON.stringify([s.mode, s.model, s.nativeModel, s.bridgeUrl, s.provider, sub?.settings?.().model, sub?.connection?.()?.token]);
+    const s = AI?.getSettings?.() || {}, sub = window.BallzatramSubscription;
+    return JSON.stringify([s.mode, s.model, s.nativeModel, s.bridgeUrl, s.provider, sub?.settings?.().endpoint, sub?.settings?.().model, sub?.connection?.()?.token]);
   }
   function refreshConnection() {
     const s = AI?.getSettings?.() || { mode: 'demo' }, connected = AI?.isConnected?.() || false;
-    const handoff = s.mode === 'handoff';
-    $('connection-label').textContent = connected ? `Your AI is connected · ${s.mode === 'subscription' ? 'ChatGPT pilot' : s.mode === 'openrouter' ? 'OpenRouter' : 'API account'}` : handoff ? 'Current mode: your AI app, with copy / paste' : 'No in-page AI account connected';
-    $('connection-detail').textContent = handoff ? 'Prepare a prompt here, use it in your AI app, then paste the JSON back. In-page generation requires a configured connection.' : s.mode === 'subscription' ? 'The ChatGPT subscription pilot needs a running Osiris service, pilot access, and a selected model. It is not universal subscription sign-in.' : `Uses your existing site connection and model. ${s.mode === 'demo' ? 'Local preview cannot generate a new countdown.' : 'Your provider’s limits and API charges apply.'}`;
-    $('generate').textContent = handoff ? 'Prepare my AI prompt →' : 'Generate with my AI →';
-    $('consent-copy').textContent = handoff ? 'Prepare only this topic and style for my AI app. Nothing is sent automatically.' : 'Use my selected AI for this one countdown. My provider’s usage limits or charges apply.';
-    if (activeTask && activeTask.stamp !== connectionStamp()) {
+    const subscription = s.mode === 'subscription', paid = ['openrouter', 'native'].includes(s.mode);
+    const configured = !!window.BallzatramSubscription?.settings?.().endpoint;
+    $('connection-label').textContent = connected ? `Your AI is connected · ${subscription ? 'ChatGPT subscription' : s.mode === 'openrouter' ? 'OpenRouter' : 'API account'}` : 'Connect your AI to generate here';
+    $('connection-detail').textContent = connected
+      ? subscription ? 'Your selected model uses your ChatGPT plan’s Codex allowance. The countdown returns directly to this feed.' : 'Your explicitly selected API account runs this countdown here. Separate API charges apply.'
+      : subscription && !configured ? 'Subscription generation is awaiting the site’s runtime activation. Your topic stays here; the separate MCP connector does not run this page.'
+      : paid ? 'Your selected API connection is not ready. Reconnect it in AI settings, or explicitly connect ChatGPT below.'
+      : 'Connect ChatGPT below. After the initial provider sign-in, generate without leaving this page. Manual export and local preview are not AI connections.';
+    $('generate').textContent = connected ? 'Generate with my AI →' : 'Connect AI to generate →';
+    $('consent-copy').textContent = paid ? 'Use my selected API account for this one countdown. Separate API charges apply.' : 'Use my connected ChatGPT subscription for this one countdown. My plan’s Codex usage limits apply.';
+    const stamp = connectionStamp();
+    if (lastConnectionStamp !== undefined && lastConnectionStamp !== stamp) $('consent').checked = false;
+    lastConnectionStamp = stamp;
+    if (activeTask && activeTask.stamp !== stamp) {
       stopGeneration(); status('Your AI connection changed. Review it before sending another request.', true);
     }
   }
@@ -203,7 +210,7 @@
   function openComposer(topic) {
     if (activeTask) return;
     if (typeof topic === 'string') $('topic').value = topic.slice(0, 240);
-    $('consent').checked = false; $('handoff').hidden = true; status('');
+    $('consent').checked = false; status('');
     $('import-status').textContent = ''; refreshConnection(); openDialog(composer); $('topic').focus();
   }
   function status(message, error = false) {
@@ -234,6 +241,13 @@
     state.progress[id] = -1; filter = 'All'; order = []; save(); renderFeed(id);
     return id;
   }
+  function connectSubscription() {
+    try {
+      if (!window.OsirisPanel) throw new Error('Connection settings did not load. Reload this page.');
+      draft(); $('consent').checked = false;
+      window.OsirisPanel.open({ tool: 'beckets-labyrinth', prompt: 'Connect my AI for countdowns.', context: { topic: $('topic').value } }, { connectionOnly: true });
+    } catch (error) { status(error.message, true); }
+  }
   async function generate(event) {
     event.preventDefault(); if (activeTask) return;
     let task;
@@ -242,25 +256,24 @@
       const payload = C.request($('topic').value, $('vibe').value); ensureSpace();
       const settings = AI?.getSettings?.();
       if (!settings) throw new Error('The shared AI client did not load. Reload or use a free starter.');
+      if (!AI.isConnected()) {
+        connectSubscription();
+        status('Connect your AI here, then review and generate your countdown. Your topic is preserved; nothing has been sent.');
+        return;
+      }
       if (['native', 'openrouter'].includes(settings.mode) && settings.maxTokens < 1200) throw new Error('Ten entries need more room. Choose a 1,200 or 2,400 output-token limit in AI settings first. Nothing was sent.');
-      if (settings.mode === 'demo') throw new Error('Local preview is not a model. Connect your AI, paste a response, or explore a free starter.');
-      if (settings.mode !== 'handoff' && !AI.isConnected()) throw new Error('Connect your AI account before generating. Free starter countdowns work without a connection.');
-      draft(); $('handoff').hidden = true;
+      draft();
       const serial = ++taskSerial, controller = new AbortController();
       task = { serial, controller, stamp: connectionStamp(), timer: null }; activeTask = task;
       task.timer = setTimeout(() => { if (activeTask === task) { stopGeneration(); status('The request timed out. No retry was made; review your provider’s activity before trying again.', true); } }, 180000);
-      busy(true); status(settings.mode === 'handoff' ? 'Preparing your prompt. No model is being called.' : 'Your AI is building ten doors. You can stop this request below.');
+      busy(true); status('Your AI is building ten doors. You can stop this request below.');
       const result = await C.generate(AI, payload, { signal: controller.signal, consent: true, onStatus: () => { if (activeTask === task) status('Your connected AI is working on this countdown…'); } });
       if (activeTask !== task || serial !== taskSerial || controller.signal.aborted) return;
       if (task.stamp !== connectionStamp()) throw new Error('Your AI connection changed before the answer finished. No countdown was added.');
-      if (result.kind === 'handoff') {
-        $('handoff-prompt').value = result.prompt; $('handoff').hidden = false; $('import-panel').open = true;
-        status('Prompt ready. Use it in your AI app, then paste its complete JSON response below.');
-      } else {
-        addCustom(result.deck, 'ai', result.model);
-        clearTimeout(task.timer); activeTask = null; busy(false); composer.close();
-        say('Your AI countdown is ready. Ten new doors to open.');
-      }
+      if (result.kind !== 'deck') throw new Error('The AI did not return a complete countdown. Nothing was added.');
+      addCustom(result.deck, 'ai', result.model);
+      clearTimeout(task.timer); activeTask = null; busy(false); composer.close();
+      say('Your AI countdown is ready. Ten new doors to open.');
     } catch (error) { if (!task || activeTask === task) status(error.message || 'The countdown could not be generated. No retry was made.', true); }
     finally {
       if (task) clearTimeout(task.timer);
@@ -294,19 +307,12 @@
   $('prediction-form').onsubmit = e => {
     e.preventDefault(); state.picks[predictionId] = $('prediction-input').value.trim().slice(0, 100); save(); renderCard(predictionId); closeDialog($('prediction')); say('Your #1 is locked in. Let the countdown begin.');
   };
-  $('random-topic').onclick = () => { $('topic').value = C.surprise($('topic').value); $('consent').checked = false; $('handoff').hidden = true; draft(); };
-  [$('topic'), $('vibe')].forEach(input => input.addEventListener('input', () => { $('consent').checked = false; $('handoff').hidden = true; draft(); }));
+  $('random-topic').onclick = () => { $('topic').value = C.surprise($('topic').value); $('consent').checked = false; draft(); };
+  [$('topic'), $('vibe')].forEach(input => input.addEventListener('input', () => { $('consent').checked = false; draft(); }));
   $('generate-form').onsubmit = generate; $('cancel-generation').onclick = stopGeneration;
-  $('connect-subscription').onclick = () => {
-    try {
-      if (!window.OsirisPanel) throw new Error('Connection settings did not load. Reload this page.');
-      draft(); $('consent').checked = false;
-      window.OsirisPanel.open({ tool: 'beckets-labyrinth', prompt: 'Connect my AI for countdowns.', context: { topic: $('topic').value } }, { connectionOnly: true });
-    } catch (error) { status(error.message, true); }
-  };
+  $('connect-subscription').onclick = connectSubscription;
   $('other-ai').onclick = draft;
   $('free-edition').onclick = () => { closeDialog(composer); shuffleFeed(); };
-  $('copy-prompt').onclick = () => copyField($('handoff-prompt'), $('generation-status'));
   $('copy-link').onclick = () => copyField($('share-link'), $('share-status'));
   $('import-countdown').onclick = () => {
     if (activeTask) return;
