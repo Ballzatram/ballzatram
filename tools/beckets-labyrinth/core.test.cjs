@@ -60,9 +60,16 @@ test('no call without consent or after pre-cancellation', async () => {
   let calls=0;const ai={ask:()=>{calls++;}};await assert.rejects(C.generate(ai,C.request('AI')),/Confirm/);
   const controller=new AbortController();controller.abort();await assert.rejects(C.generate(ai,C.request('AI'),{consent:true,signal:controller.signal}),/stopped/);assert.equal(calls,0);
 });
-test('handoff stays a prepared prompt, never a deck', async () => {
-  const out=await C.generate({ask:async()=>({kind:'handoff',answer:'prompt'})},C.request('AI'),{consent:true});
-  assert.deepEqual(out,{kind:'handoff',prompt:'prompt'});
+test('legacy handoff is rejected, never returned as a prompt or a deck', async () => {
+  let calls=0;
+  await assert.rejects(C.generate({ask:async()=>{calls++;return {kind:'handoff',answer:'prompt'};}},C.request('AI'),{consent:true}),/in-page AI account/);
+  assert.equal(calls,1);
+});
+test('generator uses the shared execution contract instead of the legacy ask/export route', async () => {
+  let calls=0;
+  const ai={execute:async(r,o)=>{calls++;assert.equal(r.tool,'beckets-labyrinth');assert.equal(o.consent,true);return {kind:'answer',answer:JSON.stringify(clone()),model:'fixture'};},ask:()=>{throw new Error('Legacy ask must not be used');}};
+  const out=await C.generate(ai,C.request('AI'),{consent:true});
+  assert.equal(out.kind,'deck');assert.equal(out.deck.items.length,10);assert.equal(calls,1);
 });
 test('demo, truncation and provider failure do not auto-retry', async () => {
   for (const response of [{kind:'demo'}, {truncated:true,answer:JSON.stringify(clone())}, {answer:'not json'}]) {
