@@ -34,6 +34,7 @@
   function normalizeSettings(value) {
     const v = value && typeof value === 'object' ? value : {};
     return {
+      executionRevision: 1,
       mode: ['subscription', 'handoff', 'openrouter', 'native', 'demo'].includes(v.mode) ? v.mode : 'subscription',
       chat: Object.hasOwn(chats, v.chat) ? v.chat : 'chatgpt',
       model: typeof v.model === 'string' ? v.model.slice(0, 200) : '',
@@ -44,8 +45,15 @@
     };
   }
   function getSettings() {
-    const saved = read('localStorage', PREFS);
-    // A missing runtime is an in-page setup state, never implicit consent to a handoff.
+    const saved = memorySettings || read('localStorage', PREFS);
+    // Older releases persisted handoff automatically when the runtime was missing.
+    // Migrate that legacy state once, without touching provider credentials or paid choices.
+    // Explicit manual-export choices made after this release remain workspace-only.
+    if (saved?.mode === 'handoff' && saved.executionRevision !== 1) {
+      memorySettings = normalizeSettings({ ...saved, mode: 'subscription' });
+      write('localStorage', PREFS, memorySettings);
+    }
+    // A missing runtime is an in-page setup state, never an implicit transport switch.
     return normalizeSettings(memorySettings || saved);
   }
   function saveSettings(value) {
@@ -173,7 +181,7 @@
     callback.searchParams.set('ai_state', state);
     const challenge = base64url(new Uint8Array(await root.crypto.subtle.digest('SHA-256', new TextEncoder().encode(verifier))));
     if (!write('sessionStorage', PKCE, { verifier, state, callback: callback.origin + callback.pathname, expiresAt: Date.now() + 10 * 60 * 1000 })) {
-      throw new Error('Allow tab storage to link an account, or use the copy-and-paste chat option.');
+      throw new Error('Allow tab storage to link an account. Your question stays on this page.');
     }
     const url = new URL('https://openrouter.ai/auth');
     url.searchParams.set('callback_url', callback.href);
@@ -208,6 +216,11 @@
   async function checkConnection() {
     const settings = getSettings();
     if (!isConnected(settings)) throw new Error('Connect your own account or API key first.');
+    if (settings.mode === 'subscription') {
+      const result = await subscription.status();
+      if (!result.account) throw new Error('Sign in to your ChatGPT account again.');
+      return { message: 'ChatGPT account connection verified. No model request was made; generation is not yet verified.' };
+    }
     const c = connection();
     if (settings.mode === 'native') {
       const data = await requestJSON(`${c.endpoint}/health`);
@@ -236,6 +249,20 @@
     if (typeof answer !== 'string' || !answer.trim()) throw new Error('The model returned no text. Your provider may have billed reasoning tokens; review its activity before retrying.');
     return { kind: 'answer', answer, model: typeof data.model === 'string' ? data.model : model, usage: data.usage || null, truncated: data.choices?.[0]?.finish_reason === 'length' || data.truncated === true };
   }
+  /** An internal orchestration step: a real response or an error, never a prepared prompt. */
+  async function execute(request, options = {}) {
+    if (options.consent !== true) throw new Error('Review the selected context and confirm before sending.');
+    if (options.signal?.aborted) throw new Error('Request stopped. Nothing was sent.');
+    const mode = getSettings().mode;
+    if (!['subscription', 'openrouter', 'native'].includes(mode)) {
+      const error = new Error('Connect an in-page AI account to run this tool. Manual export and local preview are not AI connections.');
+      error.code = 'AI_CONNECTION_REQUIRED';
+      throw error;
+    }
+    const result = await ask(request, options);
+    if (result?.kind !== 'answer' || typeof result.answer !== 'string' || !result.answer.trim()) throw new Error('The AI did not return a completed response. Nothing was imported or retried.');
+    return result;
+  }
   async function copy(text) {
     if (!root.navigator?.clipboard?.writeText) throw new Error('Select and copy the prepared text below.');
     try { await root.navigator.clipboard.writeText(text); } catch { throw new Error('Clipboard access was blocked. Select and copy the prepared text below.'); }
@@ -246,5 +273,5 @@
   }
   remove('localStorage', 'ballzatram:ai-bridge-settings:v1');
   expireConnection();
-  return Object.freeze({ getSettings, saveSettings, bridgeUrl, connectKey, isConnected, disconnect, prepare, handoff, stageRequest, preparedRequest, authorizationUrl, finishAuthorization, models, checkConnection, ask, copy, label, chats });
+  return Object.freeze({ getSettings, saveSettings, bridgeUrl, connectKey, isConnected, disconnect, prepare, handoff, stageRequest, preparedRequest, authorizationUrl, finishAuthorization, models, checkConnection, ask, execute, copy, label, chats });
 });
