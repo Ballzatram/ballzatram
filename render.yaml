@@ -1,0 +1,30 @@
+# Deployment preparation only: importing this Blueprint requires owner approval
+# of Render's displayed hosting price. Merging the repo creates no service.
+# Private pilot only. Never add a provider API key or a shared ChatGPT account.
+# Reference: https://render.com/docs/blueprint-spec (checked 2026-09-24).
+services:
+  - type: web
+    name: osiris-subscription-pilot
+    runtime: docker
+    branch: master
+    region: ohio
+    plan: 1c-2g
+    numInstances: 1
+    autoDeployTrigger: 'off'
+    dockerfilePath: ./osiris-runtime/Dockerfile
+    dockerContext: .
+    preDeployCommand: node scripts/check-runtime.mjs
+    healthCheckPath: /ready
+    envVars:
+      - key: PORT
+        value: '8788'
+      - key: OSIRIS_BIND_HOST
+        value: 0.0.0.0
+      - key: OSIRIS_ALLOWED_ORIGINS
+        value: https://dgallemore.com,https://www.dgallemore.com
+      - key: OSIRIS_PILOT_CODES
+        sync: false
+# OSIRIS_PILOT_CODES must be a private random base64url string, 32-128 chars.
+# Do not use generateValue here: Render generates standard base64 (+/=), which
+# is deliberately outside the runtime's admission-code format.
+# No persistent disk, public admission code, provider key, autoscaling or previews.
