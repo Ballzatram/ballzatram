@@ -11,14 +11,14 @@
   <link rel="canonical" href="https://dgallemore.com/tools/beckets-labyrinth/">
   <title>Beckets Labyrinth · Ten discoveries. One more rabbit hole.</title>
   <link rel="stylesheet" href="./style.css?v=1">
-  <script defer src="/assets/ai-config.js"></script>
-  <script defer src="/assets/ai-features.js?v=labyrinth-1"></script>
-  <script defer src="/assets/subscription-client.js"></script>
-  <script defer src="/assets/ai-client.js"></script>
-  <script defer src="/assets/ai-panel.js"></script>
-  <script defer src="./core.js?v=1"></script>
+  <script defer src="/assets/ai-config.js?v=native-execution-1"></script>
+  <script defer src="/assets/ai-features.js?v=native-execution-1"></script>
+  <script defer src="/assets/subscription-client.js?v=native-execution-1"></script>
+  <script defer src="/assets/ai-client.js?v=native-execution-1"></script>
+  <script defer src="/assets/ai-panel.js?v=native-execution-1"></script>
+  <script defer src="./core.js?v=native-execution-1"></script>
   <script defer src="./seeds.js?v=1"></script>
-  <script defer src="./app.js?v=1"></script>
+  <script defer src="./app.js?v=native-execution-1"></script>
 </head>
 <body>
   <a class="skip" href="#feed">Skip to countdowns</a>
@@ -77,15 +77,14 @@
       <fieldset id="compose-fields"><legend class="sr-only">Countdown settings</legend>
         <label for="topic">Your top 10 topic</label><textarea id="topic" rows="2" maxlength="240" required placeholder="Movie villains who almost had a point…"></textarea>
         <div class="compose-row"><button id="random-topic" class="secondary" type="button">↻ Random topic</button><label class="vibe-label" for="vibe">Storytelling style<select id="vibe"><option>Cinematic</option><option>Mind-blowing</option><option>Playful</option><option>Deep cut</option></select></label></div>
-        <div class="connection-box"><p id="connection-label"></p><p id="connection-detail" class="small"></p><div class="inline-actions"><button id="connect-subscription" class="text-button" type="button">Connect ChatGPT pilot</button><a id="other-ai" href="/tools/ai/index.html">Other AI settings →</a></div></div>
-        <p class="small">Only this topic and style are shared. Rankings use general knowledge, not live research. Verify recent facts and important claims.</p>
-        <label class="consent"><input id="consent" type="checkbox"><span id="consent-copy">Use my selected AI for this one countdown. My provider’s usage limits or charges apply.</span></label>
+        <div class="connection-box"><p id="connection-label"></p><p id="connection-detail" class="small"></p><div class="inline-actions"><button id="connect-subscription" class="text-button" type="button">Connect ChatGPT here</button><a id="other-ai" href="/tools/ai/index.html">Advanced AI settings →</a></div></div>
+        <p class="small">Only this topic and style are shared. Your AI’s result appears directly in this feed. Rankings use general knowledge, not live research. Verify recent facts and important claims.</p>
+        <label class="consent"><input id="consent" type="checkbox"><span id="consent-copy">Use my connected ChatGPT subscription for this one countdown. My plan’s Codex usage limits apply.</span></label>
         <button class="primary generate-button" id="generate" type="submit">Generate with my AI →</button>
       </fieldset>
       <div class="generation-status"><p id="generation-status" role="status" aria-live="polite"></p><button id="cancel-generation" class="secondary" type="button" hidden>Stop generation</button></div>
     </form>
-    <section id="handoff" hidden><h3>Use your AI app, then bring the list back</h3><p class="small">This is a prepared prompt, not a generated countdown. Copy it into your AI app, then paste its JSON response below. Nothing opens automatically.</p><textarea id="handoff-prompt" rows="5" readonly aria-label="Prepared AI prompt"></textarea><button id="copy-prompt" class="secondary">Copy prompt</button></section>
-    <details id="import-panel"><summary>Paste a countdown from your AI / import JSON</summary><label for="import-json">Complete countdown JSON</label><textarea id="import-json" rows="5" maxlength="50000" placeholder='{"schemaVersion":1,"title":"…","items":[…]}'></textarea><button id="import-countdown" class="secondary">Add to my feed</button><p id="import-status" class="small" role="status"></p></details>
+    <details id="import-panel"><summary>Restore an exported countdown</summary><p class="small">Optional file recovery for a previously saved edition. AI generation does not require exporting or importing anything.</p><label for="import-json">Saved countdown JSON</label><textarea id="import-json" rows="5" maxlength="50000" placeholder='{"schemaVersion":1,"title":"…","items":[…]}'></textarea><button id="import-countdown" class="secondary">Add to my feed</button><p id="import-status" class="small" role="status"></p></details>
     <div class="composer-footer"><button id="free-edition" class="text-button">Explore a free starter instead →</button><p class="small">No silent background generation, automatic retries, or site-funded model fallback.</p><button id="clear-local" class="text-button">Clear this device’s Labyrinth activity</button></div>
   </dialog>
 
