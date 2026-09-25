@@ -19,8 +19,15 @@
   }
   function settings() {
     const value = memorySettings || read('localStorage', PREFS) || {};
+    const configured = root.BallzatramAIConfig?.subscriptionUrl;
+    const savedEndpoint = typeof value.endpoint === 'string' ? value.endpoint.trim() : '';
     let origin = '';
-    try { origin = endpoint(typeof value.endpoint === 'string' ? value.endpoint : root.BallzatramAIConfig?.subscriptionUrl); } catch { /* Unconfigured or invalid saved settings. */ }
+    // An old blank/invalid saved endpoint must never mask a newly activated public runtime.
+    // Prefer a valid explicit endpoint, otherwise fall back to the site's public runtime.
+    try { origin = endpoint(savedEndpoint || configured); }
+    catch {
+      try { origin = endpoint(configured); } catch { /* Runtime is genuinely unconfigured. */ }
+    }
     return { endpoint: origin, model: typeof value.model === 'string' && MODEL.test(value.model) ? value.model : '' };
   }
   function clear(notify = true) {
