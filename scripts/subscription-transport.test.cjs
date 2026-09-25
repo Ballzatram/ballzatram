@@ -127,6 +127,13 @@ for (const [name, bad] of [['expired', { expiresAt: Date.now() - 1 }], ['too lon
   assert.equal(sub.connection(), null); assert.equal(window.sessionStorage.getItem(SESSION), null);
 });
 
+test('public runtime replaces a stale blank saved endpoint without touching model preference', () => {
+  const { sub, window } = mount(async () => { throw new Error('Must not fetch'); }, { signedIn: false, settings: { endpoint: '', model: 'test-model' } });
+  window.BallzatramAIConfig = { subscriptionUrl: 'https://public-runtime.example' };
+  assert.equal(sub.settings().endpoint, 'https://public-runtime.example');
+  assert.equal(sub.settings().model, 'test-model');
+});
+
 test('endpoint validator rejects credentials, paths, queries, remote HTTP and invalid saved model', () => {
   const { sub } = mount(async () => json({}), { signedIn: false, settings: { endpoint: 'javascript:alert(1)', model: '../bad model' } });
   assert.equal(sub.settings().endpoint, ''); assert.equal(sub.settings().model, '');
