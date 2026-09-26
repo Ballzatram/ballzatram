@@ -56,7 +56,7 @@
       const current = generation, address = $('endpoint').value.trim(); $('check-service').disabled = true;
       try {
         message('Checking the service and signed-out runtime. No account or question is sent.');
-        const result = await Subscription.checkService(address);
+        const result = await Subscription.checkService(address, { onStatus: text => { if (current === generation && dialog.open && address === $('endpoint').value.trim()) message(text); } });
         if (current === generation && dialog.open && address === $('endpoint').value.trim()) message(result.runtimeReady ? 'Service and signed-out runtime are ready. Connect ChatGPT next. No account or model response has been tested.' : 'Service reachable. This older runtime does not report readiness; sign-in and generation are still unverified.');
       } catch (error) { if (current === generation && dialog.open) message(error.message); }
       finally { if (current === generation) $('check-service').disabled = false; }
