@@ -23,32 +23,20 @@ jobs:
           origin='https://dgallemore.com'
           base='https://osiris-subscription-pilot.onrender.com'
 
-          curl_json() {
-            local path="$1"
-            local max="$2"
-            local body headers code
+          check_path() {
+            path="$1"
+            max="$2"
             body="$(mktemp)"
             headers="$(mktemp)"
-            code="$(curl -sS -D "$headers" -o "$body" -w '%{http_code}'               --connect-timeout 20 --max-time "$max"               -H "Origin: $origin" "$base$path")"
+            code="$(curl -sS -D "$headers" -o "$body" -w '%{http_code}' --connect-timeout 20 --max-time "$max" -H "Origin: $origin" "$base$path")"
             echo "$path -> HTTP $code"
             cat "$body"
             echo
             test "$code" = "200"
             grep -qi '^access-control-allow-origin: https://dgallemore.com' "$headers"
-            node - "$path" "$body" <<'NODE'
-          const fs = require('fs');
-          const [path, file] = process.argv.slice(2);
-          const body = JSON.parse(fs.readFileSync(file, 'utf8'));
-          if (body.service !== 'osiris-subscription') throw new Error(path + ': wrong service');
-          if (body.protocol !== 3) throw new Error(path + ': wrong protocol');
-          if (body.billing !== 'user-chatgpt-only') throw new Error(path + ': wrong billing');
-          if (path === '/ready') {
-            if (body.runtimeReady !== true) throw new Error('/ready: runtimeReady is not true');
-            if (body.inferenceVerified !== false) throw new Error('/ready: inferenceVerified contract changed');
-          }
-NODE
+            node -e "const fs=require('fs');const path=process.argv[1],file=process.argv[2];const b=JSON.parse(fs.readFileSync(file,'utf8'));if(b.service!=='osiris-subscription')throw Error(path+': wrong service');if(b.protocol!==3)throw Error(path+': wrong protocol');if(b.billing!=='user-chatgpt-only')throw Error(path+': wrong billing');if(path==='/ready'&&(b.runtimeReady!==true||b.inferenceVerified!==false))throw Error('/ready: bad readiness contract');" "$path" "$body"
             rm -f "$body" "$headers"
           }
 
-          curl_json /health 90
-          curl_json /ready 90
+          check_path /health 90
+          check_path /ready 90
