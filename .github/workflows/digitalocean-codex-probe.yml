@@ -1,0 +1,74 @@
+name: DigitalOcean real Codex device auth
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/digitalocean-codex-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: osiris-runtime/package-lock.json
+      - name: Build pinned Codex package locally
+        run: npm ci --prefix osiris-runtime --ignore-scripts
+      - name: Generate one-time encryption certificate
+        shell: bash
+        run: |
+          set -euo pipefail
+          openssl req -x509 -newkey rsa:3072 -nodes             -keyout /tmp/wrap.key -out /tmp/wrap.crt             -subj '/CN=ephemeral-osiris-codex-probe' -days 1 >/dev/null 2>&1
+          chmod 600 /tmp/wrap.key
+      - name: Publish encryption certificate only
+        uses: actions/upload-artifact@v4
+        with:
+          name: osiris-codex-wrap-cert-${{ github.run_id }}
+          path: /tmp/wrap.crt
+          retention-days: 1
+          if-no-files-found: error
+      - name: Wait for encrypted SSH payload
+        shell: bash
+        run: |
+          set -euo pipefail
+          url="https://raw.githubusercontent.com/Ballzatram/ballzatram/master/.ops/osiris-codex-ssh-${GITHUB_RUN_ID}.cms.b64"
+          ok=0
+          for attempt in $(seq 1 90); do
+            if curl -fsS --connect-timeout 10 --max-time 20 "$url?attempt=$attempt" -o /tmp/payload.b64; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+          base64 -d /tmp/payload.b64 > /tmp/payload.cms
+          openssl cms -decrypt -binary -inform DER             -in /tmp/payload.cms             -recip /tmp/wrap.crt             -inkey /tmp/wrap.key             -out /tmp/id_osiris
+          chmod 600 /tmp/id_osiris
+          rm -f /tmp/payload.b64 /tmp/payload.cms
+      - name: Run actual device-login start and cancel on DigitalOcean
+        shell: bash
+        run: |
+          set -euo pipefail
+          host='142.93.71.206'
+          codex_bin="$(find osiris-runtime/node_modules/@openai -type f -path '*/vendor/*/bin/codex' | head -n1)"
+          test -n "$codex_bin"
+          chmod +x "$codex_bin"
+          opts=(-i /tmp/id_osiris -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/tmp/known_hosts -o ConnectTimeout=10)
+          scp "${opts[@]}" "$codex_bin" root@"$host":/tmp/osiris-codex
+          scp "${opts[@]}" osiris-runtime/scripts/remote-codex-device-probe.py root@"$host":/tmp/osiris-codex-probe.py
+          ssh "${opts[@]}" root@"$host" 'chmod 700 /tmp/osiris-codex && python3 /tmp/osiris-codex-probe.py /tmp/osiris-codex; rc=$?; rm -f /tmp/osiris-codex /tmp/osiris-codex-probe.py; exit $rc'
+      - name: Destroy temporary key material
+        if: always()
+        shell: bash
+        run: |
+          shred -u /tmp/id_osiris /tmp/wrap.key 2>/dev/null || rm -f /tmp/id_osiris /tmp/wrap.key
+          rm -f /tmp/wrap.crt /tmp/known_hosts
