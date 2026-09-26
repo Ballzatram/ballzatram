@@ -19,7 +19,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          url='https://143-198-11-207.sslip.io/probe.txt'
+          url='http://142.93.71.206/probe.txt'
           tmp="$(mktemp)"
           ok=0
           for attempt in $(seq 1 30); do
