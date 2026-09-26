@@ -59,7 +59,10 @@ export class CodexSession extends EventEmitter {
     ].join('\n');
     await writeFile(path.join(directory, 'codex', 'config.toml'), config, { mode: 0o600 });
     // Spawn the pinned native executable directly so termination cannot leave an npm-launcher grandchild alive.
-    const child = spawn(binary, ['app-server', '--listen', 'stdio://'], {
+    // Work around Codex App Server auth bug where forced_login_method in config.toml
+    // is visible through config/read but is not honored by account/login/start on Linux.
+    // Keep this as a single root-level override; Codex gives CLI config highest precedence.
+    const child = spawn(binary, ['-c', 'forced_login_method="chatgpt"', 'app-server', '--listen', 'stdio://'], {
       cwd: path.join(directory, 'workspace'), env: childEnvironment(directory), stdio: ['pipe', 'pipe', 'pipe']
     });
     const session = new CodexSession(child, directory);
