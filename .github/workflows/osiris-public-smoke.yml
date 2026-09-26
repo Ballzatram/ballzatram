@@ -52,3 +52,12 @@ jobs:
           echo
           test "$wrong_code" = "401"
           rm -f "$wrong_body"
+
+          page="$(mktemp)"
+          client="$(mktemp)"
+          curl -fsS --connect-timeout 20 --max-time 30 'https://dgallemore.com/tools/beckets-labyrinth/?public-smoke=1' -o "$page"
+          grep -q 'subscription-client.js?v=native-execution-3' "$page"
+          curl -fsS --connect-timeout 20 --max-time 30 'https://dgallemore.com/assets/subscription-client.js?v=native-execution-3' -o "$client"
+          grep -q 'wakeRetryable' "$client"
+          echo 'dgallemore.com -> native-execution-3 client confirmed'
+          rm -f "$page" "$client"
