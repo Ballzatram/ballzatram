@@ -3,6 +3,14 @@ name: Osiris native integration
 on:
   pull_request:
     branches: [master]
+  push:
+    branches: [master]
+    paths:
+      - 'osiris-runtime/**'
+      - 'assets/subscription-client.js'
+      - 'assets/ai-client.js'
+      - 'assets/ai-panel.js'
+      - '.github/workflows/osiris-native.yml'
   workflow_dispatch:
 
 permissions:
@@ -29,6 +37,8 @@ jobs:
         run: node --test osiris-runtime/test/*.test.mjs scripts/subscription-transport.test.cjs
       - name: Signed-out native binary readiness
         run: npm run check:readiness --prefix osiris-runtime
+      - name: Signed-out device-code login start/cancel
+        run: npm run check:device-login --prefix osiris-runtime
       - name: Real loopback HTTP acceptance without sign-in or generation
         shell: bash
         run: |
