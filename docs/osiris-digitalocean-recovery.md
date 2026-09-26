@@ -25,10 +25,12 @@ resize a droplet to repeat a failed HTTP probe. In DigitalOcean, open the drople
 and choose **Web Console** (or **Actions → Connect**). This uses the existing
 account access; do not put private SSH keys or account passwords in chat.
 
-Download the script from its reviewed commit, inspect it, then run:
+Download the script from its reviewed commit and run it in that console:
 
 ```sh
-sudo bash osiris-host-preflight.sh --install-deps
+osiris_check_script="$(mktemp)" && \
+  curl -fsSL 'https://raw.githubusercontent.com/Ballzatram/ballzatram/5f9f377f23fb12801355edccbbb42e976262b804/scripts/osiris-host-preflight.sh' -o "$osiris_check_script" && \
+  sudo bash "$osiris_check_script" --install-deps
 ```
 
 The script installs only missing Ubuntu dependencies, starts Docker if needed,
