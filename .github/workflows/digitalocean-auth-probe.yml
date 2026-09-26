@@ -1,0 +1,37 @@
+name: DigitalOcean auth probe
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - '.github/workflows/digitalocean-auth-probe.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Read credential-free OpenAI auth probe
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://143-198-11-207.sslip.io/probe.txt'
+          tmp="$(mktemp)"
+          ok=0
+          for attempt in $(seq 1 30); do
+            if curl -fsS --connect-timeout 8 --max-time 12 "$url?attempt=$attempt" -o "$tmp"; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+          cat "$tmp"
+          grep -Eq '^status=[0-9]{3}$' "$tmp"
+          grep -Eq '^server=' "$tmp"
+          grep -Eq '^cf_mitigated=' "$tmp"
+          rm -f "$tmp"
