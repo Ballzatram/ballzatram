@@ -1,4 +1,5 @@
 name: DigitalOcean real Codex device auth
+# One-time encrypted transport; no plaintext SSH key is stored in GitHub.
 
 on:
   push:
