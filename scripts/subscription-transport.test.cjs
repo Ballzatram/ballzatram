@@ -151,6 +151,22 @@ test('readiness checks do not authenticate or generate and distinguish legacy he
   assert.equal((await legacy.sub.checkService()).runtimeReady, null); assert.equal(legacy.calls.length, 1);
 });
 
+test('readiness check waits through a temporary free-host 502 without creating a session', async () => {
+  const health = { service: 'osiris-subscription', protocol: 3, billing: 'user-chatgpt-only', capabilities: ['runtime-readiness-v1'] };
+  let healthCalls = 0; const statuses = [];
+  const { sub, calls } = mount(async url => {
+    if (url.endsWith('/health') && healthCalls++ === 0) return json({ waking: true }, 502);
+    if (url.endsWith('/health')) return json(health);
+    if (url.endsWith('/ready')) return json({ ...health, runtimeReady: true, inferenceVerified: false });
+    throw new Error('Unexpected request');
+  }, { signedIn: false });
+  const result = await sub.checkService(undefined, { onStatus: value => statuses.push(value) });
+  assert.equal(result.runtimeReady, true);
+  assert.deepEqual(calls.map(([url]) => new URL(url).pathname), ['/health', '/health', '/ready']);
+  assert.match(statuses.join(' '), /Waking/);
+  assert.ok(calls.every(([url, options]) => !url.includes('/v1/') && !options.headers.Authorization));
+});
+
 test('wrong service or failed runtime readiness blocks login before session creation', async () => {
   for (const health of [{ service: 'osiris-tools' }, { service: 'osiris-subscription', protocol: 3, billing: 'user-chatgpt-only', capabilities: ['runtime-readiness-v1'] }]) {
     const { sub, calls } = mount(async url => json(url.endsWith('/ready') ? { ...health, runtimeReady: false, inferenceVerified: false } : health), { signedIn: false });
