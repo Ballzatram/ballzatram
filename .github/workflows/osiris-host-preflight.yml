@@ -1,0 +1,28 @@
+name: Osiris host preflight permissions
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'scripts/osiris-host-preflight.sh'
+      - 'scripts/tests/test_osiris_host_preflight.py'
+      - '.github/workflows/osiris-host-preflight.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'scripts/osiris-host-preflight.sh'
+      - 'scripts/tests/test_osiris_host_preflight.py'
+      - '.github/workflows/osiris-host-preflight.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  permissions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - run: bash -n scripts/osiris-host-preflight.sh
+      - name: Reproduce restrictive source modes and verify actual UID 1000 access
+        run: sudo env OSIRIS_REQUIRE_UID_TEST=1 python3 -m unittest discover -s scripts/tests -p 'test_osiris_host_preflight.py' -v

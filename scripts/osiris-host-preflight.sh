@@ -8,6 +8,7 @@ readonly OSIRIS_CHECK_IMAGE="osiris-host-check:${OSIRIS_SOURCE_REVISION}"
 OSIRIS_CHECK_ROOT='/opt/osiris-host-check'
 OSIRIS_CHECK_STAGE='arguments'
 OSIRIS_CHECK_CONTAINER=''
+OSIRIS_CHECK_CONTEXT=''
 
 usage() {
   cat <<'HELP'
@@ -32,6 +33,9 @@ cleanup() {
   trap - EXIT
   if [[ -n "$OSIRIS_CHECK_CONTAINER" ]]; then
     docker rm -f "$OSIRIS_CHECK_CONTAINER" >/dev/null 2>&1 || true
+  fi
+  if [[ -n "$OSIRIS_CHECK_CONTEXT" ]]; then
+    rm -rf -- "$OSIRIS_CHECK_CONTEXT"
   fi
   if (( result != 0 )); then
     printf 'OSIRIS_HOST_PREFLIGHT=FAIL stage=%s exit=%s\n' "$OSIRIS_CHECK_STAGE" "$result" >&2
@@ -89,6 +93,22 @@ prepare_source() {
   [[ "$(git -C "$source_dir" rev-parse HEAD)" == "$OSIRIS_SOURCE_REVISION" ]] || fail 'Source revision verification failed.'
 }
 
+prepare_build_context() {
+  local source_dir=$1
+  local revision=${2:-$OSIRIS_SOURCE_REVISION}
+  OSIRIS_CHECK_CONTEXT=$(mktemp -d "$OSIRIS_CHECK_ROOT/build.XXXXXX")
+  # The host work directory and checkout stay private. Git's tracked archive
+  # supplies a separate context with normal source permissions for USER node.
+  # Never copy .git, untracked files, or a host's private .env into this context.
+  (
+    umask 022
+    git -C "$source_dir" archive --format=tar "$revision" \
+      osiris-runtime assets/ai-features.js tools/parcel/core.js \
+      | tar --extract --file=- --directory="$OSIRIS_CHECK_CONTEXT" \
+          --no-same-owner --no-same-permissions
+  )
+}
+
 run_check() {
   local script=$1
   OSIRIS_CHECK_STAGE="$script"
@@ -128,7 +148,8 @@ main() {
   OSIRIS_CHECK_STAGE='source'
   prepare_source "$source_dir"
   OSIRIS_CHECK_STAGE='build'
-  docker build --pull -t "$OSIRIS_CHECK_IMAGE" -f "$source_dir/osiris-runtime/Dockerfile" "$source_dir"
+  prepare_build_context "$source_dir"
+  docker build --pull -t "$OSIRIS_CHECK_IMAGE" -f "$OSIRIS_CHECK_CONTEXT/osiris-runtime/Dockerfile" "$OSIRIS_CHECK_CONTEXT"
   run_check check-runtime.mjs
   run_check check-device-login.mjs
   OSIRIS_CHECK_STAGE='complete'
