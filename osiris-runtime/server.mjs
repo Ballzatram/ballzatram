@@ -85,6 +85,10 @@ export function createRuntimeServer({ origins, accessCodes, sessionFactory = () 
       const url = new URL(req.url, 'http://localhost');
       if (url.search) throw error('invalid_url', 'Use the connection service without query parameters.', 400);
       const route = url.pathname;
+      // Privacy-safe operational trace: method, allowlisted route, and final status only.
+      // Never log origins, headers, bodies, access codes, session tokens, prompts, or provider output.
+      const traceable = ['/health', '/ready', '/v1/session', '/v1/login', '/v1/account', '/v1/models', '/v1/limits', '/v1/assist'].includes(route);
+      if (traceable) res.once('finish', () => process.stdout.write(`Osiris request ${req.method} ${route} -> ${res.statusCode}\n`));
       if ((route === '/health' || route === '/ready') && req.method === 'GET') {
         if (origin && !allowed.has(origin)) throw error('origin', 'This website is not allowed to use this service.', 403);
         if (route === '/health') { json(res, 200, { ok: true, ...metadata(), runtimeReady: readiness?.runtimeReady ?? null, inferenceVerified: false }); return; }
