@@ -1,5 +1,5 @@
-name: DigitalOcean real Codex device auth
-# One-time encrypted transport; no plaintext SSH key is stored in GitHub.
+name: DigitalOcean Osiris pilot acceptance
+# One-time encrypted transport; no plaintext SSH key or pilot code is stored in GitHub.
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
 jobs:
   probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -22,14 +22,31 @@ jobs:
           node-version: '22'
           cache: npm
           cache-dependency-path: osiris-runtime/package-lock.json
-      - name: Build pinned Codex package locally
-        run: npm ci --prefix osiris-runtime --ignore-scripts
+
+      - name: Assemble tested runtime and pinned Caddy
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --prefix osiris-runtime --omit=dev --ignore-scripts
+          mkdir -p /tmp/osiris-bundle/assets /tmp/osiris-bundle/tools/parcel
+          cp -a osiris-runtime /tmp/osiris-bundle/osiris-runtime
+          cp assets/ai-features.js /tmp/osiris-bundle/assets/ai-features.js
+          cp tools/parcel/core.js /tmp/osiris-bundle/tools/parcel/core.js
+          cp "$(command -v node)" /tmp/osiris-bundle/node
+          chmod 0755 /tmp/osiris-bundle/node
+          tar -C /tmp/osiris-bundle -czf /tmp/osiris-runtime-bundle.tgz .
+          curl -fsSL --retry 3             https://github.com/caddyserver/caddy/releases/download/v2.11.4/caddy_2.11.4_linux_amd64.tar.gz             -o /tmp/caddy.tgz
+          mkdir -p /tmp/caddy-unpack
+          tar -xzf /tmp/caddy.tgz -C /tmp/caddy-unpack caddy
+          chmod 0755 /tmp/caddy-unpack/caddy
+
       - name: Generate one-time encryption certificate
         shell: bash
         run: |
           set -euo pipefail
-          openssl req -x509 -newkey rsa:3072 -nodes             -keyout /tmp/wrap.key -out /tmp/wrap.crt             -subj '/CN=ephemeral-osiris-codex-probe' -days 1 >/dev/null 2>&1
+          openssl req -x509 -newkey rsa:3072 -nodes             -keyout /tmp/wrap.key -out /tmp/wrap.crt             -subj '/CN=ephemeral-osiris-pilot' -days 1 >/dev/null 2>&1
           chmod 600 /tmp/wrap.key
+
       - name: Publish encryption certificate only
         uses: actions/upload-artifact@v4
         with:
@@ -37,6 +54,7 @@ jobs:
           path: /tmp/wrap.crt
           retention-days: 1
           if-no-files-found: error
+
       - name: Wait for encrypted SSH payload
         shell: bash
         run: |
@@ -55,21 +73,68 @@ jobs:
           openssl cms -decrypt -binary -inform DER             -in /tmp/payload.cms             -recip /tmp/wrap.crt             -inkey /tmp/wrap.key             -out /tmp/id_osiris
           chmod 600 /tmp/id_osiris
           rm -f /tmp/payload.b64 /tmp/payload.cms
-      - name: Run actual device-login start and cancel on DigitalOcean
+          openssl dgst -sha256 -binary /tmp/id_osiris             | openssl base64 -A             | tr '+/' '-_' | tr -d '='             > /tmp/osiris-pilot-code
+          chmod 600 /tmp/osiris-pilot-code
+
+      - name: Verify real Codex login and launch pilot
         shell: bash
         run: |
           set -euo pipefail
           host='142.93.71.206'
+          domain='142.93.71.206.sslip.io'
           codex_bin="$(find osiris-runtime/node_modules/@openai -type f -path '*/vendor/*/bin/codex' | head -n1)"
           test -n "$codex_bin"
           chmod +x "$codex_bin"
           opts=(-i /tmp/id_osiris -o BatchMode=yes -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new -o UserKnownHostsFile=/tmp/known_hosts -o ConnectTimeout=10)
+
+          ready=0
+          for attempt in $(seq 1 40); do
+            if timeout 4 bash -c "cat < /dev/null > /dev/tcp/$host/22" 2>/dev/null; then ready=1; break; fi
+            sleep 5
+          done
+          test "$ready" = "1"
+
           scp "${opts[@]}" "$codex_bin" root@"$host":/tmp/osiris-codex
           scp "${opts[@]}" osiris-runtime/scripts/remote-codex-device-probe.py root@"$host":/tmp/osiris-codex-probe.py
           ssh "${opts[@]}" root@"$host" 'chmod 700 /tmp/osiris-codex && python3 /tmp/osiris-codex-probe.py /tmp/osiris-codex; rc=$?; rm -f /tmp/osiris-codex /tmp/osiris-codex-probe.py; exit $rc'
+
+          scp "${opts[@]}" /tmp/osiris-runtime-bundle.tgz root@"$host":/tmp/osiris-runtime-bundle.tgz
+          scp "${opts[@]}" /tmp/caddy-unpack/caddy root@"$host":/tmp/caddy
+          scp "${opts[@]}" /tmp/osiris-pilot-code root@"$host":/tmp/osiris-pilot-code
+          scp "${opts[@]}" osiris-runtime/scripts/launch-digitalocean-pilot.sh root@"$host":/tmp/launch-osiris.sh
+          ssh "${opts[@]}" root@"$host" "chmod 700 /tmp/launch-osiris.sh /tmp/caddy && /tmp/launch-osiris.sh '$domain' /tmp/osiris-runtime-bundle.tgz /tmp/caddy /tmp/osiris-pilot-code"
+
+      - name: Public HTTPS and login-start acceptance
+        shell: bash
+        run: |
+          set -euo pipefail
+          base='https://142.93.71.206.sslip.io'
+          origin='https://dgallemore.com'
+          ok=0
+          for attempt in $(seq 1 60); do
+            if curl -fsS --connect-timeout 10 --max-time 20 -H "Origin: $origin" "$base/ready" -o /tmp/ready.json; then
+              ok=1
+              break
+            fi
+            sleep 5
+          done
+          test "$ok" = "1"
+          node -e "const b=require('/tmp/ready.json');if(b.service!=='osiris-subscription'||b.protocol!==3||b.billing!=='user-chatgpt-only'||b.runtimeReady!==true||b.inferenceVerified!==false)process.exit(1)"
+
+          pilot="$(tr -d '\r\n' < /tmp/osiris-pilot-code)"
+          body="$(node -e 'process.stdout.write(JSON.stringify({accessCode:process.argv[1]}))' "$pilot")"
+          curl -fsS --connect-timeout 10 --max-time 30             -H "Origin: $origin" -H 'Content-Type: application/json'             --data-binary "$body" "$base/v1/session" -o /tmp/session.json
+          token="$(node -e "const b=require('/tmp/session.json');if(typeof b.token!=='string'||b.token.length<32)process.exit(1);process.stdout.write(b.token)")"
+          curl -fsS --connect-timeout 10 --max-time 40             -X POST -H "Origin: $origin" -H "Authorization: Bearer $token"             "$base/v1/login" -o /tmp/login.json
+          node -e "const b=require('/tmp/login.json');if(!['https://auth.openai.com/codex/device','https://chatgpt.com/codex/device'].includes(b.verificationUrl)||typeof b.userCode!=='string'||!b.userCode.match(/^[A-Za-z0-9-]{4,32}$/))process.exit(1)"
+          curl -fsS --connect-timeout 10 --max-time 20             -X DELETE -H "Origin: $origin" -H "Authorization: Bearer $token"             "$base/v1/session" -o /tmp/disconnect.json
+          node -e "const b=require('/tmp/disconnect.json');if(b.disconnected!==true)process.exit(1)"
+          echo 'OSIRIS_PUBLIC_ACCEPTANCE=PASS'
+          echo 'HTTPS, readiness, admission, real Codex login start, and disconnect passed.'
+
       - name: Destroy temporary key material
         if: always()
         shell: bash
         run: |
-          shred -u /tmp/id_osiris /tmp/wrap.key 2>/dev/null || rm -f /tmp/id_osiris /tmp/wrap.key
-          rm -f /tmp/wrap.crt /tmp/known_hosts
+          shred -u /tmp/id_osiris /tmp/osiris-pilot-code /tmp/wrap.key 2>/dev/null || true
+          rm -rf /tmp/wrap.crt /tmp/known_hosts /tmp/osiris-bundle /tmp/osiris-runtime-bundle.tgz /tmp/caddy.tgz /tmp/caddy-unpack
