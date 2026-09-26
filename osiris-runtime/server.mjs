@@ -184,6 +184,13 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     accessCodes: (process.env.OSIRIS_PILOT_CODES || '').split(',').map(s => s.trim()).filter(Boolean)
   });
   const port = Number(process.env.PORT || 8788), host = process.env.OSIRIS_BIND_HOST || '127.0.0.1';
-  server.listen(port, host, () => process.stdout.write(`Osiris private pilot listening on ${host}:${port}. No provider account is connected.\n`));
+  server.listen(port, host, () => {
+    process.stdout.write(`Osiris private pilot listening on ${host}:${port}. No provider account is connected.\n`);
+    // Credential-free egress diagnostic for remote ChatGPT device auth. Log only
+    // status/challenge metadata; never cookies, bodies, tokens, codes, or redirects.
+    void fetch('https://auth.openai.com/', { redirect: 'manual', signal: AbortSignal.timeout(10000) })
+      .then(response => process.stdout.write(`OpenAI auth egress status=${response.status} cfMitigated=${response.headers.get('cf-mitigated') || 'none'} server=${response.headers.get('server') || 'unknown'}\n`))
+      .catch(() => process.stdout.write('OpenAI auth egress network_error\n'));
+  });
   for (const event of ['SIGINT', 'SIGTERM']) process.once(event, () => void shutdown().then(() => process.exit(0)));
 }
