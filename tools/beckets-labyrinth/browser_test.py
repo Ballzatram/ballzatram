@@ -100,7 +100,8 @@ try:
         page.on('request', lambda request: sent.append(request.url) if '/v1/' in request.url or '/v2/' in request.url else None)
         submit(page)
         expect(page.locator('dialog[aria-label="Osiris assistant"]')).to_be_visible()
-        expect(page.locator('[data-osiris="status"]')).to_contain_text('awaiting runtime activation')
+        expect(page.locator('[data-osiris="status"]')).to_contain_text('Connect your ChatGPT account')
+        expect(page.locator('[data-osiris="endpoint"]')).to_have_value('https://osiris-subscription-pilot.onrender.com')
         assert page.evaluate('BallzatramAI.getSettings().mode') == 'subscription'
         assert page.locator('#handoff-prompt, #copy-prompt').count() == 0
         assert page.url == BASE and len(context.pages) == 1 and not sent
