@@ -40,3 +40,15 @@ jobs:
 
           check_path /health 90
           check_path /ready 90
+
+          preflight="$(curl -sS -o /dev/null -w '%{http_code}' --connect-timeout 20 --max-time 30 -X OPTIONS -H "Origin: $origin" -H 'Access-Control-Request-Method: POST' -H 'Access-Control-Request-Headers: content-type' "$base/v1/session")"
+          echo "/v1/session preflight -> HTTP $preflight"
+          test "$preflight" = "204"
+
+          wrong_body="$(mktemp)"
+          wrong_code="$(curl -sS -o "$wrong_body" -w '%{http_code}' --connect-timeout 20 --max-time 30 -X POST -H "Origin: $origin" -H 'Content-Type: application/json' --data '{"accessCode":"wrongwrongwrongwrongwrongwrongwrong12"}' "$base/v1/session")"
+          echo "/v1/session wrong-code boundary -> HTTP $wrong_code"
+          cat "$wrong_body"
+          echo
+          test "$wrong_code" = "401"
+          rm -f "$wrong_body"
