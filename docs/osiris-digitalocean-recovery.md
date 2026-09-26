@@ -18,6 +18,15 @@ job `Native transport and signed-out deployment acceptance`. The browser job in
 that run failed separately. Runner success does not establish DigitalOcean host
 success. `assets/ai-config.js` still leaves the native service address empty.
 
+A later [SSH diagnostic](https://github.com/Ballzatram/ballzatram/actions/runs/36209660703)
+reached a replacement host at 01:49 UTC and returned `OPENAI_AUTH_STATUS=403`
+and `OPENAI_CF_MITIGATED=challenge` from the root URL `https://auth.openai.com/`.
+That workflow reported success because it did not reject error HTTP statuses.
+This confirms a challenge for that particular root-page request, not a successful
+sign-in and not a result from the supported Codex device-login endpoint. Do not
+rotate hosts or disable TLS to evade it; run the existing official device-login
+start/cancel check below to determine whether that supported flow works.
+
 ## Existing-host check
 
 Use the existing Ubuntu 24.04 x86_64 host with at least 1 GB RAM. Do not create or
