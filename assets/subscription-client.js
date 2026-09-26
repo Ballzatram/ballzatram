@@ -104,7 +104,9 @@
     if (authenticated && !sameSession(c, epoch)) throw changed();
     if (!response.ok) {
       if (authenticated && response.status === 401 && sameSession(c, epoch)) { invalidate(); clear(); }
-      throw new Error(messages[response.status] || `Subscription request failed (${response.status}). No automatic retry was made.`);
+      const failure = new Error(messages[response.status] || `Subscription request failed (${response.status}). No automatic retry was made.`);
+      failure.status = response.status;
+      throw failure;
     }
     let result;
     try { result = await readBoundedJSON(response); } catch { throw new Error('The connection service returned an unreadable response.'); }
@@ -112,13 +114,45 @@
     if (!result || typeof result !== 'object' || Array.isArray(result) || result.error) throw new Error('The connection service returned an unreadable response.');
     return result;
   }
-  async function checkService(value = settings().endpoint, { signal } = {}) {
-    const serviceEndpoint = endpoint(value), health = await json('/health', { authenticated: false, serviceEndpoint, signal });
+  function pause(ms, signal) {
+    if (signal?.aborted) return Promise.reject(new Error('Request stopped.'));
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(resolve, ms);
+      signal?.addEventListener('abort', () => { clearTimeout(timer); reject(new Error('Request stopped.')); }, { once: true });
+    });
+  }
+  function wakeRetryable(error) {
+    return [502, 503, 504].includes(error?.status) || /Could not reach the subscription service/.test(error?.message || '');
+  }
+  async function checkService(value = settings().endpoint, { signal, onStatus } = {}) {
+    const serviceEndpoint = endpoint(value);
+    let health, lastError;
+    const wakeDelays = [0, 1500, 2500, 4000, 5000, 5000];
+    for (let attempt = 0; attempt < wakeDelays.length; attempt++) {
+      if (wakeDelays[attempt]) {
+        onStatus?.(attempt === 1 ? 'Waking the free Osiris runtime…' : 'Osiris is still waking up…');
+        await pause(wakeDelays[attempt], signal);
+      }
+      try {
+        health = await json('/health', { authenticated: false, serviceEndpoint, signal });
+        lastError = null;
+        break;
+      } catch (error) {
+        lastError = error;
+        if (!wakeRetryable(error) || attempt === wakeDelays.length - 1) throw error;
+      }
+    }
+    if (!health) throw lastError || new Error('Could not reach the subscription service.');
     if (health.protocol !== 3 || health.billing !== 'user-chatgpt-only' || health.service !== 'osiris-subscription') throw new Error('This address is not a compatible Osiris subscription service.');
     const capabilities = Array.isArray(health.capabilities) ? health.capabilities.filter(v => typeof v === 'string').slice(0, 50) : [];
     let runtimeReady = null;
     if (capabilities.includes('runtime-readiness-v1')) {
-      const ready = await json('/ready', { authenticated: false, serviceEndpoint, signal });
+      let ready;
+      try { ready = await json('/ready', { authenticated: false, serviceEndpoint, signal }); }
+      catch (error) {
+        if (error?.status === 503) throw new Error('The service is awake, but the Codex runtime readiness check failed. The operator needs to inspect the runtime.');
+        throw error;
+      }
       if (ready.service !== health.service || ready.protocol !== 3 || ready.billing !== health.billing || ready.runtimeReady !== true || ready.inferenceVerified !== false) throw new Error('The service is reachable but its subscription runtime is not ready. Ask its operator to run the deployment checks.');
       runtimeReady = true;
     }
