@@ -1,4 +1,5 @@
 name: Osiris public runtime smoke
+# Public unauthenticated readiness probe; never sends credentials or prompts.
 
 on:
   workflow_dispatch:
