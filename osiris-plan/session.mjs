@@ -106,7 +106,8 @@ export class PlanSession {
     if (!record.models.some(row => row.id === input.model)) throw failure('model_unavailable', 'Reload models and choose an available model.', 422);
     record.calls = record.calls.filter(time => time > Date.now() - 60 * 60 * 1000);
     if (record.calls.length >= 30) throw failure('usage_limit', 'This connection allows 30 questions per hour.', 429);
-    record.calls.push(Date.now()); record.activeUntil = Date.now() + TURN_MS; record.lastUsed = Date.now();
+    const turnId = random();
+    record.calls.push(Date.now()); record.activeId = turnId; record.activeUntil = Date.now() + TURN_MS; record.lastUsed = Date.now();
     await this.save(record);
     const controller = new AbortController(); this.active = controller;
     const timeout = setTimeout(() => controller.abort(), TURN_MS);
@@ -117,6 +118,7 @@ export class PlanSession {
     const task = (async () => {
       try {
         await emit('status', { message: 'Using your ChatGPT plan.' });
+        if (controller.signal.aborted) throw failure('cancelled', 'Request stopped.', 409);
         const response = await provider.respond(record.tokens, input, controller.signal);
         const result = await consumeResponse(response, input.model, delta => emit('delta', { text: delta }), controller.signal);
         if (controller.signal.aborted) throw failure('cancelled', 'Request stopped.', 409);
@@ -132,8 +134,8 @@ export class PlanSession {
           const saved = await this.ctx.storage.get('record');
           if (!saved) return;
           const latest = await unseal(saved, this.env.TOKEN_ENCRYPTION_KEY, this.ctx.id.toString());
-          if (latest.publicId !== record.publicId) return;
-          delete latest.activeUntil; await this.save(latest);
+          if (latest.publicId !== record.publicId || latest.activeId !== turnId) return;
+          delete latest.activeId; delete latest.activeUntil; await this.save(latest);
         });
         await writer.close().catch(() => {});
       }

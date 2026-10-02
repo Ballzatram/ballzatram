@@ -117,3 +117,20 @@ test('idle and absolute expiry erase credentials and reject further requests', a
     assert.equal(h.calls.revoke, 1); assert.equal(h.calls.responses.length, 0);
   }
 });
+test('a slow cancelled stream cannot clear the active replacement turn', async () => {
+  const h = harness(), a = await h.login();
+  const first = await a.call('/v1/assist', input);
+  await a.call('/v1/cancel', {}, 'POST');
+  // The client has not read the status event. Simulate the persisted turn deadline
+  // passing while its cancelled response is still blocked on downstream reads.
+  const id = a.sessionCookie.split('=')[1], object = h.objects.get(id);
+  const record = await unseal(object.data.get('record'), h.env.TOKEN_ENCRYPTION_KEY, id);
+  record.activeUntil = Date.now() - 1;
+  object.data.set('record', await seal(record, h.env.TOKEN_ENCRYPTION_KEY, id));
+  const second = await a.call('/v1/assist', input);
+  assert.match(await first.text(), /event: error/); await h.tasks[0];
+  const third = await a.call('/v1/assist', input);
+  assert.equal(third.status, 409);
+  assert.match(await second.text(), /event: done/); await Promise.all(h.tasks);
+  assert.equal(h.calls.responses.length, 1);
+});
