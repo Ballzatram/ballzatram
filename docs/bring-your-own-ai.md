@@ -4,8 +4,11 @@ The website defaults to **Osiris in the current page**, using the visitor's Chat
 
 ## Choose the delivery channel deliberately
 
+The new [ChatGPT plan integration](../osiris-plan/README.md) is the preferred development path for Beckets Labyrinth. It uses registered hosted OAuth and a Cloudflare Worker, so it does not need a DigitalOcean/Codex process host. It is gated pending hosted OpenAI approval and live acceptance. `chatgptPlanUrl` remains empty; when deliberately activated, it takes priority over `subscriptionUrl`. The earlier private runtime and its operating instructions below remain separate.
+
 | Route | Interface and answer | Model usage | Status |
 | --- | --- | --- | --- |
+| Hosted ChatGPT plan | Beckets Labyrinth in the website, through a Cloudflare Worker and direct API | Visitor's approved ChatGPT plan usage | Implemented and gated; hosted client approval, configuration and live acceptance required |
 | Native private runtime | Osiris panel in the current website project, through hosted Codex | Visitor's eligible ChatGPT/Codex allowance | UI and runtime implemented; separate running HTTPS service and user-completed live acceptance required |
 | Interactive MCP App | Family Business companion and Supply & Demand Lab inside a compatible AI host; answer in its conversation | Visitor's AI account | Existing Cloudflare Worker; host installation or connector refresh required |
 | Explicit context handoff | Prepare in the project, copy to the chosen chat app | Visitor's chat account | No backend required; no automatic return/sync |

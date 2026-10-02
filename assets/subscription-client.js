@@ -6,6 +6,18 @@
 })(typeof window === 'undefined' ? globalThis : window, function (root) {
   'use strict';
   const PREFS = 'ballzatram:subscription-settings:v1', SESSION = 'ballzatram:subscription-session:v1';
+  const HOSTED_PREFS = 'ballzatram:chatgpt-plan-settings:v1';
+  const isHosted = () => !!root.BallzatramAIConfig?.chatgptPlanUrl;
+  const supportsFeature = tool => !isHosted() || tool === 'beckets-labyrinth';
+  const prefsKey = () => isHosted() ? HOSTED_PREFS : PREFS;
+  let returnStatus = '';
+  if (isHosted() && root.location?.href) {
+    const url = new URL(root.location.href);
+    if (['connected', 'not-connected'].includes(url.searchParams.get('osiris'))) {
+      returnStatus = url.searchParams.get('osiris'); url.searchParams.delete('osiris');
+      root.history?.replaceState(null, '', url.pathname + url.search + url.hash);
+    }
+  }
   const TTL = 4 * 60 * 60 * 1000, MODEL = /^[a-zA-Z0-9][a-zA-Z0-9._:/+~-]{0,199}$/;
   let memorySettings, memorySession, connectionEpoch = 0, connecting = null, activeTurn = null;
   function read(storage, key) { try { return JSON.parse(root[storage].getItem(key) || 'null'); } catch { return null; } }
@@ -18,9 +30,9 @@
     return url.origin;
   }
   function settings() {
-    const value = memorySettings || read('localStorage', PREFS) || {};
-    const configured = root.BallzatramAIConfig?.subscriptionUrl;
-    const savedEndpoint = typeof value.endpoint === 'string' ? value.endpoint.trim() : '';
+    const value = memorySettings || read('localStorage', prefsKey()) || {};
+    const configured = isHosted() ? root.BallzatramAIConfig.chatgptPlanUrl : root.BallzatramAIConfig?.subscriptionUrl;
+    const savedEndpoint = !isHosted() && typeof value.endpoint === 'string' ? value.endpoint.trim() : '';
     let origin = '';
     // An old blank/invalid saved endpoint must never mask a newly activated public runtime.
     // Prefer a valid explicit endpoint, otherwise fall back to the site's public runtime.
@@ -37,11 +49,11 @@
   }
   function invalidate() { connectionEpoch++; connecting = null; activeTurn?.abort(); }
   function configure(value) {
-    const next = { endpoint: endpoint(value.endpoint), model: typeof value.model === 'string' && MODEL.test(value.model) ? value.model : '' };
+    const next = { endpoint: endpoint(isHosted() ? root.BallzatramAIConfig.chatgptPlanUrl : value.endpoint), model: typeof value.model === 'string' && MODEL.test(value.model) ? value.model : '' };
     const previous = settings(), oldSession = connection();
     if (previous.endpoint !== next.endpoint) { invalidate(); clear(false); }
     else if (previous.model !== next.model) activeTurn?.abort();
-    memorySettings = next; write('localStorage', PREFS, next); announce();
+    memorySettings = next; write('localStorage', prefsKey(), next); announce();
     // Best-effort cleanup is bound to the old origin, never the replacement service.
     if (oldSession && previous.endpoint !== next.endpoint) void removeRemoteSession(oldSession);
     return { ...next };
@@ -52,6 +64,10 @@
     return { type: 'chatgpt', email: typeof value.email === 'string' ? value.email.slice(0, 250) : null, planType: typeof value.planType === 'string' ? value.planType.slice(0, 60) : 'unknown' };
   }
   function connection() {
+    if (isHosted()) {
+      if (!memorySession || memorySession.expiresAt <= Date.now() || memorySession.endpoint !== settings().endpoint) return null;
+      return { ...memorySession, account: memorySession.account ? { ...memorySession.account } : null };
+    }
     const value = memorySession || read('sessionStorage', SESSION);
     if (!value) return null;
     if (typeof value !== 'object' || !/^[A-Za-z0-9_-]{43}$/.test(value.token || '') || !Number.isFinite(value.expiresAt) || value.expiresAt <= Date.now() || value.expiresAt > Date.now() + TTL + 60000 || !value.endpoint || value.endpoint !== settings().endpoint) { clear(false); activeTurn?.abort(); return null; }
@@ -59,6 +75,7 @@
     catch { clear(false); activeTurn?.abort(); return null; }
   }
   function saveSession(value) {
+    if (isHosted()) { memorySession = value; announce(); return; }
     memorySession = { token: value.token, expiresAt: value.expiresAt, endpoint: value.endpoint, account: account(value.account) };
     write('sessionStorage', SESSION, memorySession); announce();
   }
@@ -75,7 +92,7 @@
     503: 'The subscription service is not available. It may need to be started by its operator.'
   };
   async function fetchSafe(url, options) {
-    try { return await root.fetch(url, { ...options, cache: 'no-store', credentials: 'omit', redirect: 'error', referrerPolicy: 'no-referrer' }); }
+    try { return await root.fetch(url, { ...options, cache: 'no-store', credentials: isHosted() ? 'include' : 'omit', redirect: 'error', referrerPolicy: 'no-referrer' }); }
     catch (e) { if (e.name === 'AbortError' || options.signal?.aborted) throw new Error('Request stopped. Work already started may count against your plan.'); throw new Error('Could not reach the subscription service. No automatic retry was made.'); }
   }
   async function readBoundedJSON(response) {
@@ -99,7 +116,7 @@
   async function json(path, { method = 'GET', body, authenticated = true, signal, session: c = connection(), serviceEndpoint = authenticated ? c?.endpoint : settings().endpoint } = {}) {
     if (authenticated && !c) throw new Error('Connect your ChatGPT account first.');
     const epoch = connectionEpoch;
-    const headers = { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...(authenticated ? { Authorization: `Bearer ${c.token}` } : {}) };
+    const headers = { ...(body !== undefined ? { 'Content-Type': 'application/json' } : {}), ...(authenticated ? isHosted() ? { 'X-Osiris-CSRF': c.csrf } : { Authorization: `Bearer ${c.token}` } : {}) };
     const response = await fetchSafe(endpoint(serviceEndpoint) + path, { method, headers, body: body === undefined ? undefined : JSON.stringify(body), signal: signal || AbortSignal.timeout(30000) });
     if (authenticated && !sameSession(c, epoch)) throw changed();
     if (!response.ok) {
@@ -125,6 +142,12 @@
     return [502, 503, 504].includes(error?.status) || /Could not reach the subscription service/.test(error?.message || '');
   }
   async function checkService(value = settings().endpoint, { signal, onStatus } = {}) {
+    if (isHosted()) {
+      const result = await json('/health', { authenticated: false, signal, serviceEndpoint: settings().endpoint });
+      if (result.service !== 'osiris-chatgpt-plan' || result.protocol !== 4 || result.billing !== 'user-chatgpt-only') throw new Error('This is not the configured ChatGPT plan connection.');
+      if (!result.ready) throw new Error('ChatGPT plan access is awaiting activation for this site. Your topic is saved; no question was sent.');
+      return { endpoint: settings().endpoint, runtimeReady: true, capabilities: [], features: result.features || [], inferenceVerified: false };
+    }
     const serviceEndpoint = endpoint(value);
     let health, lastError;
     const wakeDelays = [0, 1500, 2500, 4000, 5000, 5000];
@@ -159,6 +182,18 @@
     return { endpoint: serviceEndpoint, runtimeReady, capabilities, inferenceVerified: false };
   }
   async function connect(accessCode) {
+    if (isHosted()) {
+      if (connecting) throw new Error('A connection is already starting. Wait for it to finish before trying again.');
+      const current = connectionEpoch, attempt = {}; connecting = attempt;
+      try {
+        await checkService();
+        if (current !== connectionEpoch) throw changed();
+        const url = new URL(settings().endpoint + '/auth/start');
+        url.searchParams.set('returnTo', root.location.origin + root.location.pathname);
+        root.location.assign(url.href);
+        return { redirecting: true };
+      } finally { if (connecting === attempt) connecting = null; }
+    }
     if (!/^[A-Za-z0-9_-]{32,128}$/.test(accessCode || '')) throw new Error('Enter the pilot access code supplied by the service operator. This is not your ChatGPT password.');
     if (connecting) throw new Error('A connection is already starting. Wait for it to finish before trying again.');
     if (connection()) throw new Error('Disconnect the current session before connecting another account.');
@@ -182,11 +217,23 @@
     } finally { if (connecting === attempt) connecting = null; }
   }
   async function startLogin(session = connection()) {
+    if (isHosted()) return connect();
     const result = await json('/v1/login', { method: 'POST', body: {}, session });
     if (!['https://auth.openai.com/codex/device', 'https://chatgpt.com/codex/device'].includes(result.verificationUrl) || !/^[A-Za-z0-9-]{4,32}$/.test(result.userCode || '') || !Number.isFinite(result.expiresAt) || result.expiresAt <= Date.now() || result.expiresAt > Date.now() + 11 * 60 * 1000) throw new Error('The service returned an unexpected sign-in address or expired code.');
     return { verificationUrl: result.verificationUrl, userCode: result.userCode, expiresAt: result.expiresAt };
   }
   async function status() {
+    if (isHosted()) {
+      const epoch = connectionEpoch, serviceEndpoint = settings().endpoint;
+      let result;
+      try { result = await json('/v1/account', { authenticated: false, serviceEndpoint }); }
+      catch (error) { if (epoch === connectionEpoch && error.status === 401 && memorySession) { invalidate(); clear(); } throw error; }
+      if (epoch !== connectionEpoch || serviceEndpoint !== settings().endpoint) throw changed();
+      const identity = account(result.account);
+      if (!identity || !/^[A-Za-z0-9_-]{43}$/.test(result.sessionId || '') || !/^[A-Za-z0-9_-]{43}$/.test(result.csrf || '') || !Number.isFinite(result.expiresAt) || result.expiresAt <= Date.now() || result.expiresAt > Date.now() + TTL + 60000) throw new Error('The account connection could not be verified.');
+      saveSession({ endpoint: serviceEndpoint, token: result.sessionId, csrf: result.csrf, expiresAt: result.expiresAt, account: { ...identity, planEnabled: result.account.planEnabled === true } });
+      return { account: connection().account, loginStatus: 'completed', expiresAt: result.expiresAt };
+    }
     const c = connection(), epoch = connectionEpoch, result = await json('/v1/account', { session: c });
     const sanitized = account(result.account);
     if (!sameSession(c, epoch)) throw changed();
@@ -212,18 +259,23 @@
   async function removeRemoteSession(c) {
     if (!c) return true;
     try {
-      const result = await fetchSafe(c.endpoint + '/v1/session', { method: 'DELETE', headers: { Authorization: `Bearer ${c.token}` }, signal: AbortSignal.timeout(5000) });
+      const result = await fetchSafe(c.endpoint + '/v1/session', { method: 'DELETE', headers: isHosted() ? { 'X-Osiris-CSRF': c.csrf } : { Authorization: `Bearer ${c.token}` }, signal: AbortSignal.timeout(20000) });
+      if (isHosted() && result.ok) return (await readBoundedJSON(result)).revoked === true;
       return result.ok || result.status === 401;
     } catch { return false; }
   }
   async function ask(request, { signal, onDelta, onStatus, consent = false, responseLength = 'standard' } = {}) {
     const c = connection(), s = settings(), epoch = connectionEpoch;
     if (!c?.account) throw new Error('Connect and sign in to your ChatGPT account first.');
+    if (isHosted() && c.account.planEnabled !== true) throw new Error('Allow ChatGPT plan usage before generating. Sign-in alone does not enable AI.');
+    if (!supportsFeature(request.tool)) throw new Error('ChatGPT plan access is currently enabled for Beckets Labyrinth. This project is awaiting activation.');
     if (!consent) throw new Error('Review the selected context and confirm before sending.');
     if (!s.model) throw new Error('Choose a model from your connected account.');
     if (!['short', 'standard'].includes(responseLength)) throw new Error('Choose a short or standard response.');
     if (activeTurn) throw new Error('A question is already running. Stop it before sending another.');
     const controller = new AbortController(), cancel = () => controller.abort(); activeTurn = controller;
+    const cancelRemote = () => { if (isHosted()) void fetchSafe(c.endpoint + '/v1/cancel', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Osiris-CSRF': c.csrf }, body: '{}', signal: AbortSignal.timeout(5000) }).catch(() => {}); };
+    controller.signal.addEventListener('abort', cancelRemote, { once: true });
     signal?.addEventListener('abort', cancel, { once: true });
     if (signal?.aborted) controller.abort();
     const ensureCurrent = () => {
@@ -234,7 +286,7 @@
     let reader;
     try {
       ensureCurrent();
-      const res = await fetchSafe(c.endpoint + '/v1/assist', { method: 'POST', headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${c.token}` }, body: JSON.stringify({ ...request, model: s.model, consent, responseLength }), signal: controller.signal });
+      const res = await fetchSafe(c.endpoint + '/v1/assist', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(isHosted() ? { 'X-Osiris-CSRF': c.csrf } : { Authorization: `Bearer ${c.token}` }) }, body: JSON.stringify({ ...request, model: s.model, consent, responseLength }), signal: controller.signal });
       ensureCurrent();
       if (!res.ok) { if (res.status === 401 && sameSession(c, epoch)) { invalidate(); clear(); } throw new Error(messages[res.status] || 'The subscription request failed.'); }
       if (!res.headers.get('content-type')?.toLowerCase().includes('text/event-stream') || !res.body) throw new Error('The service did not return an assistant stream.');
@@ -279,7 +331,7 @@
             onDelta?.(data.text);
           }
           if (type === 'status' && typeof data.message === 'string') onStatus?.(data.message.slice(0, 300));
-          if (type === 'error') throw new Error(data.code === 'sign_in' ? 'Sign in to ChatGPT again.' : data.code === 'model_unavailable' ? 'Reload the model list and choose an available model.' : data.code === 'cancelled' ? 'Request stopped. Work already started may count against your plan.' : 'The assistant did not finish. Check your connection and ChatGPT limits; no automatic retry was made.');
+          if (type === 'error') throw new Error(data.code === 'sign_in' ? 'Sign in to ChatGPT again.' : data.code === 'usage_limit' ? 'Your ChatGPT plan or this app’s limit was reached. Open Manage usage.' : data.code === 'not_eligible' ? 'ChatGPT plan usage is unavailable for this account or workspace.' : data.code === 'model_unavailable' ? 'Reload the model list and choose an available model.' : data.code === 'cancelled' ? 'Request stopped. Work already started may count against your plan.' : 'The assistant did not finish. Check your connection and ChatGPT limits; no automatic retry was made.');
           if (type === 'done') {
             if (typeof data.answer !== 'string' || !data.answer.trim() || data.answer.length > 50000 || data.billing !== 'chatgpt-subscription' || data.model !== s.model) throw new Error('The assistant returned an invalid response.');
             return { ...data, kind: 'answer' };
@@ -288,10 +340,12 @@
         if (done) throw new Error('The connection ended before the answer finished. No automatic retry was made.');
       }
     } finally {
-      clearTimeout(timer); signal?.removeEventListener('abort', cancel); controller.abort();
+      clearTimeout(timer); signal?.removeEventListener('abort', cancel); controller.signal.removeEventListener('abort', cancelRemote); controller.abort();
       if (reader) await reader.cancel().catch(() => {});
       if (activeTurn === controller) activeTurn = null;
     }
   }
-  return Object.freeze({ settings, configure, connection, endpoint, connect, startLogin, status, models, disconnect, ask, researchReady, checkService, limits: () => json('/v1/limits') });
+  // Restore only account metadata through the HttpOnly cookie; never generate on page load.
+  if (isHosted()) Promise.resolve().then(status).catch(() => {});
+  return Object.freeze({ isHosted, supportsFeature, takeReturnStatus: () => { const value = returnStatus; returnStatus = ''; return value; }, settings, configure, connection, endpoint, connect, startLogin, status, models, disconnect, ask, researchReady, checkService, limits: () => json('/v1/limits') });
 });

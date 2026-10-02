@@ -23,7 +23,7 @@ The public site is a **static-first portfolio and working lab**, not a claim tha
 
 | Project | What it does | Where to start |
 | --- | --- | --- |
-| **Osiris** | Connects selected project context to AI workflows. Shared deterministic tools run inside compatible AI hosts; a separate runtime explores in-page, user-authorized conversation. | [Tools service](osiris-tools/README.md) · [Runtime pilot](osiris-runtime/README.md) |
+| **Osiris** | Connects selected project context to AI workflows. Shared deterministic tools run inside compatible AI hosts; a gated ChatGPT plan adapter brings answers into the website. | [Tools service](osiris-tools/README.md) · [ChatGPT plan integration](osiris-plan/README.md) · [Earlier runtime pilot](osiris-runtime/README.md) |
 | **The Family Business / Econ Arcade** | Teaches economics through decisions, controlled experiments, and a persistent campaign. Shared engines keep simulation outcomes separate from AI explanations. | [Play the campaign](https://dgallemore.com/econ-arcade/play/) · [Design and mechanics](docs/family-business.md) |
 | **Congressional Accountability** | A bill-research workbench with source snapshots, version comparisons, local watchlists, and explicit evidence gaps. | [Open the workbench](https://dgallemore.com/tools/observatory/) · [Sources and limitations](docs/observatory/WORKBENCH.md) |
 | **Parcel** | Organizes land-search briefs, sourced candidates, comparisons, and diligence exports. Model-assisted research is an optional runtime-dependent path. | [Open Parcel](https://dgallemore.com/tools/parcel/) · [Project guide](tools/parcel/README.md) |
@@ -88,6 +88,8 @@ Badges link to actual workflow runs. Passing automated checks is not proof of li
 **Runnable browser experiences:** the campaign, simulations, and research workspaces. Some use retained public data or browser-local saves; availability and freshness are shown by each project.
 
 **Optional services:** Next.js / FastAPI require their own runtime. Osiris MCP requires deployment and host installation. The in-page subscription runtime is an invitation-only pilot; a running host and user-completed acceptance are required. The runtime guide records that development did not complete a live subscription sign-in or model answer. No universal subscription API or cross-provider compatibility is implied.
+
+**New ChatGPT plan path:** the gated [Cloudflare Worker implementation](osiris-plan/README.md) replaces the Codex process with registered hosted OAuth, encrypted Durable Object sessions, and direct Responses API calls. It starts with Beckets Labyrinth and requires no DigitalOcean VM. Hosted OpenAI approval, configuration, deployment and real account acceptance remain outstanding; the public URL stays unset.
 
 **Not a production claim:** quantitative examples are research/demo workflows; teaching indicators are not calibrated policy estimates; source-backed candidates are not verified acquisitions. Public billing, durable multi-user workspaces, and broader AI activation remain separate work. Older monetization and scaling documents are proposals, not shipped capabilities.
 

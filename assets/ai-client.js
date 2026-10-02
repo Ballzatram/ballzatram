@@ -102,7 +102,7 @@
     return stored;
   }
   function isConnected(settings = getSettings()) {
-    if (settings.mode === 'subscription') return !!subscription?.connection()?.account;
+    if (settings.mode === 'subscription') { const account = subscription?.connection()?.account; return !!account && account.planEnabled !== false; }
     const c = connection();
     if (!c) return false;
     if (settings.mode === 'openrouter') return c.kind === 'openrouter' && c.endpoint === API;

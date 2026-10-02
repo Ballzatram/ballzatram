@@ -1,0 +1,73 @@
+name: Osiris ChatGPT plan
+
+on:
+  pull_request:
+    paths:
+      - 'osiris-plan/**'
+      - 'assets/ai-*.js'
+      - 'assets/subscription-client.js'
+      - 'tools/beckets-labyrinth/**'
+      - '.github/workflows/osiris-plan.yml'
+  push:
+    branches: [master]
+    paths:
+      - 'osiris-plan/**'
+      - 'assets/ai-*.js'
+      - 'assets/subscription-client.js'
+      - 'tools/beckets-labyrinth/**'
+      - '.github/workflows/osiris-plan.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: osiris-plan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      WRANGLER_SEND_METRICS: 'false'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: osiris-plan/package-lock.json
+      - run: npm ci --prefix osiris-plan
+      - run: npm ci --prefix frontend --ignore-scripts
+      - name: Verify auth, isolation, consent, streams and disconnect
+        run: npm test --prefix osiris-plan
+      - name: Exercise real workerd and SQLite with synthetic OpenAI
+        run: npm run test:edge --prefix osiris-plan
+      - name: Check Worker bundle without deployment
+        run: npm run check:worker --prefix osiris-plan
+      - name: Check shared transport and Beckets regressions
+        run: node --test scripts/ai.test.cjs scripts/subscription-transport.test.cjs tools/beckets-labyrinth/core.test.cjs
+      - name: Verify generated browser assets
+        run: |
+          node scripts/sync-osiris-assets.cjs
+          git diff --exit-code -- frontend/public
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned browser test tooling
+        run: |
+          python -m pip install playwright==1.57.0
+          python -m playwright install --with-deps chromium webkit
+      - name: Check mobile OAuth return and in-page generation with fixtures
+        run: python osiris-plan/test/browser.py
+      - name: Preserve mobile screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: osiris-plan-mobile
+          path: test-results/osiris-plan
+          if-no-files-found: ignore
+          retention-days: 7
+
+# This workflow cannot deploy or access production credentials.
