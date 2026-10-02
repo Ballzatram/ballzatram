@@ -191,12 +191,12 @@
     const configured = !!window.BallzatramSubscription?.settings?.().endpoint;
     $('connection-label').textContent = connected ? `Your AI is connected · ${subscription ? 'ChatGPT subscription' : s.mode === 'openrouter' ? 'OpenRouter' : 'API account'}` : 'Connect your AI to generate here';
     $('connection-detail').textContent = connected
-      ? subscription ? 'Your selected model uses your ChatGPT plan’s Codex allowance. The countdown returns directly to this feed.' : 'Your explicitly selected API account runs this countdown here. Separate API charges apply.'
+      ? subscription ? 'Your selected model uses your ChatGPT plan allowance. The countdown returns directly to this feed.' : 'Your explicitly selected API account runs this countdown here. Separate API charges apply.'
       : subscription && !configured ? 'Subscription generation is awaiting the site’s runtime activation. Your topic stays here; the separate MCP connector does not run this page.'
       : paid ? 'Your selected API connection is not ready. Reconnect it in AI settings, or explicitly connect ChatGPT below.'
       : 'Connect ChatGPT below. After the initial provider sign-in, generate without leaving this page. Manual export and local preview are not AI connections.';
     $('generate').textContent = connected ? 'Generate with my AI →' : 'Connect AI to generate →';
-    $('consent-copy').textContent = paid ? 'Use my selected API account for this one countdown. Separate API charges apply.' : 'Use my connected ChatGPT subscription for this one countdown. My plan’s Codex usage limits apply.';
+    $('consent-copy').textContent = paid ? 'Use my selected API account for this one countdown. Separate API charges apply.' : 'Use my connected ChatGPT subscription for this one countdown. My ChatGPT plan usage limits apply.';
     const stamp = connectionStamp();
     if (lastConnectionStamp !== undefined && lastConnectionStamp !== stamp) $('consent').checked = false;
     lastConnectionStamp = stamp;
@@ -348,5 +348,11 @@
   const params = new URLSearchParams(location.search), selected = params.get('list');
   renderFeed(selected); refreshConnection();
   const sharedTopic = params.get('topic');
+  const returned = window.BallzatramSubscription?.takeReturnStatus?.();
+  if (returned) {
+    openComposer();
+    status(returned === 'connected' ? 'Back from OpenAI. Review your account and choose a model before generating.' : 'Sign-in did not complete. Your topic is still here; no question was sent.');
+    if (returned === 'connected') connectSubscription();
+  }
   if (sharedTopic && sharedTopic.length <= 240) openComposer(sharedTopic);
 })();

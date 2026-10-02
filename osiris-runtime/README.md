@@ -1,5 +1,7 @@
 # Osiris subscription connection — private pilot
 
+For new Beckets Labyrinth work, see the [gated ChatGPT plan integration](../osiris-plan/README.md). That path uses a Cloudflare Worker and direct API calls, eliminating the dedicated Codex-process host and DigitalOcean dependency. Hosted OpenAI approval and live acceptance are still pending. This guide describes the earlier pilot, which remains available for inspection and has not been automatically activated or removed.
+
 This service embeds the pinned official Codex App Server and accepts **ChatGPT device-code sign-in**. Ballzatram supplies the interface and selected project context. Each visitor supplies their own ChatGPT account; responses stream back into the project. There is no operator API key, shared provider account, or automatic API fallback.
 
 The static interface is implemented. **A separate running service and user-completed sign-in are required to activate it.** GitHub Pages cannot run this process. The repository does not provision a server, configure DNS, or activate an account when published. Hosting still has infrastructure costs even when inference uses a visitor's subscription.

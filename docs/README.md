@@ -17,7 +17,7 @@ Start with the implementation guides below. This repository also keeps product p
 
 [Bring your own AI](bring-your-own-ai.md) explains the different integration paths. [Project configuration](ai-project-configuration.md) records which projects have context adapters and what remains to be decided.
 
-The component guides are the operational references: [Osiris MCP tools](../osiris-tools/README.md) for deterministic tools inside compatible AI hosts, and [Osiris runtime](../osiris-runtime/README.md) for the separate in-page subscription pilot. Deployment, model access, host support, and live account acceptance are distinct checks.
+The component guides are the operational references: [Osiris MCP tools](../osiris-tools/README.md) for deterministic tools inside compatible AI hosts, [ChatGPT plan integration](../osiris-plan/README.md) for the gated Cloudflare/direct-API implementation starting with Beckets Labyrinth, and [Osiris runtime](../osiris-runtime/README.md) for the earlier Codex process pilot. The new path does not require DigitalOcean; hosted OpenAI approval, domain setup, and live account acceptance are still required. Deployment, model access, host support, and live account acceptance are distinct checks.
 
 ## Product and domain guides
 

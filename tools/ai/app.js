@@ -30,9 +30,9 @@
     else if (settings.mode === 'native' && !AI.isConnected()) status('Enter a matching API key for this relay and provider.');
     else if (settings.mode === 'subscription') {
       const c = Subscription.connection();
-      $('subscriptionStatus').textContent = c?.account ? `Connected: ${c.account.email || 'your ChatGPT account'} · ${c.account.planType}. Model: ${Subscription.settings().model || 'choose in connection settings'}.` : 'Private pilot: start your connection service, then connect your ChatGPT account. This website alone cannot run Codex.';
+      $('subscriptionStatus').textContent = c?.account ? `Connected: ${c.account.email || 'your ChatGPT account'} · ${c.account.planType}. Model: ${Subscription.settings().model || 'choose in connection settings'}.` : Subscription.isHosted?.() ? 'Connect ChatGPT to use your plan. The first enabled workflow is Beckets Labyrinth.' : 'Private pilot: start your connection service, then connect your ChatGPT account. This website alone cannot run Codex.';
       $('connectSubscription').textContent = c?.account ? 'Account & model settings' : 'Connect ChatGPT';
-      status(c?.account ? 'Connected. Review this question and context before sending.' : 'ChatGPT is not connected yet. Open Connect ChatGPT to set up this pilot.');
+      status(c?.account?.planEnabled === false ? 'Signed in, but ChatGPT plan usage was not allowed. Open account settings to reconnect.' : Subscription.isHosted?.() ? 'ChatGPT plan generation starts in Beckets Labyrinth. This general workspace is awaiting activation.' : c?.account ? 'Connected. Review this question and context before sending.' : 'ChatGPT is not connected yet. Open Connect ChatGPT to set up this pilot.');
     } else status(paid ? 'Connected for this tab. Each request uses your own account.' : settings.mode === 'demo' ? 'Local preview selected. No external requests.' : `Ready to prepare a question for ${name}.`);
   }
   function selectedRequest() {

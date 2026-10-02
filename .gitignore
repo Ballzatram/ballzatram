@@ -28,3 +28,9 @@ htmlcov/
 Thumbs.db
 *.swp
 *.swo
+
+# Local Worker state, credentials and browser-test screenshots.
+.wrangler/
+.dev.vars
+.dev.vars.*
+test-results/

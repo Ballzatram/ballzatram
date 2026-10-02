@@ -1,0 +1,22 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ballzatram-osiris-plan",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-09-18",
+  "workers_dev": false,
+  "preview_urls": false,
+  "observability": { "enabled": false },
+  "durable_objects": {
+    "bindings": [{ "name": "SESSIONS", "class_name": "PlanSession" }]
+  },
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["PlanSession"] }],
+  "vars": {
+    "HOSTED_PLAN_ACCESS": "disabled",
+    "PUBLIC_ORIGIN": "",
+    "SITE_ORIGIN": "https://dgallemore.com",
+    "OPENAI_CLIENT_ID": "",
+    "OPENAI_TOKEN_AUTH_METHOD": "",
+    "OPENAI_PLAN_SCOPES": "",
+    "HOSTED_APPROVAL_REFERENCE": ""
+  }
+}
