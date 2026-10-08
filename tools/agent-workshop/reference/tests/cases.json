@@ -1,0 +1,9 @@
+[
+  {"name":"happy","config":{"fault":"none"},"status":"approved","path":["intake","retrieve","draft","check","review","finish"]},
+  {"name":"repair","config":{"fault":"once"},"status":"approved","path":["intake","retrieve","draft","check","revise","check","review","finish"]},
+  {"name":"budget","config":{"fault":"always"},"status":"blocked","path":["intake","retrieve","draft","check","revise","check","revise","check","blocked"]},
+  {"name":"empty","config":{"query":"Unicorn banana weather"},"status":"blocked","path":["intake","retrieve","blocked"]},
+  {"name":"insufficient","config":{"top_k":1,"min_sources":4,"fault":"none"},"status":"blocked","path":["intake","retrieve","draft","check","revise","check","revise","check","blocked"]},
+  {"name":"reject","config":{"fault":"none"},"decision":"reject","status":"rejected","path":["intake","retrieve","draft","check","review","finish"]},
+  {"name":"zero-budget","config":{"max_revisions":0},"status":"blocked","path":["intake","retrieve","draft","check","blocked"]}
+]

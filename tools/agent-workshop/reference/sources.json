@@ -1,0 +1,30 @@
+[
+  {
+    "id": "graph",
+    "title": "When a graph earns its keep",
+    "keywords": "agent agents orchestration workflow workflows graph langgraph branching loop",
+    "text": "Use explicit nodes and conditional edges when a workflow needs branching, bounded repair loops, or a human decision. A short, fixed sequence can remain ordinary functions.",
+    "url": "https://docs.langchain.com/oss/python/langgraph/workflows-agents"
+  },
+  {
+    "id": "state",
+    "title": "Shared state is a data contract",
+    "keywords": "agent agents orchestration workflow state schema context memory data",
+    "text": "State carries the goal, selected evidence, draft, and validation results between nodes. Nodes return updates; reducers determine how multiple updates combine.",
+    "url": "https://docs.langchain.com/oss/python/langgraph/graph-api"
+  },
+  {
+    "id": "checkpoint",
+    "title": "A checkpoint preserves progress",
+    "keywords": "agent agents orchestration workflow state memory persistence checkpoint resume storage",
+    "text": "A checkpointer stores execution progress under a thread ID. In-memory checkpoints disappear with the process; durable storage is needed to resume after a restart.",
+    "url": "https://docs.langchain.com/oss/python/langgraph/persistence"
+  },
+  {
+    "id": "review",
+    "title": "Pause for a person",
+    "keywords": "agent agents orchestration workflow human review approval interrupt resume",
+    "text": "An interrupt pauses for human input. Resume with the same thread ID. Code before the interrupt may execute again, so keep side effects after approval or make them idempotent.",
+    "url": "https://docs.langchain.com/oss/python/langgraph/interrupts"
+  }
+]

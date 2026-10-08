@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#111925">
+  <meta name="description" content="Learn agent orchestration by running a real LangGraph workflow. Inspect state, break citations, repair drafts, and build the matching Python implementation.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Agent Workshop · Osiris</title>
+  <link rel="canonical" href="https://dgallemore.com/tools/agent-workshop/">
+  <link rel="stylesheet" href="styles.css">
+  <script type="module" src="workshop.js"></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to workshop</a>
+<header class="topbar"><a class="brand" href="../../">DG<span>/</span>OSIRIS</a><nav aria-label="Workshop navigation"><a href="../ai/">AI outpost</a><a href="https://github.com/Ballzatram/ballzatram/tree/master/tools/agent-workshop">Source code</a></nav></header>
+<main id="main">
+  <div class="intro"><div><p class="eyebrow">THE OPEN WORKBENCH / 01</p><h1>Agent Workshop<span class="cursor" aria-hidden="true">_</span></h1><p>Run it. Break it. Understand what happened.</p></div><div class="mode"><strong>Real graph · practice writer</strong><span>LangGraph runs here. No LLM calls or account needed.</span></div></div>
+  <div class="view-tabs" role="tablist" aria-label="Workshop views">
+    <button role="tab" id="tab-experiment" aria-controls="experiment" aria-selected="true" data-view="experiment">01 <span>Experiment</span></button>
+    <button role="tab" id="tab-build" aria-controls="build" aria-selected="false" tabindex="-1" data-view="build">02 <span>Build in Python</span></button>
+    <button role="tab" id="tab-blueprint" aria-controls="blueprint" aria-selected="false" tabindex="-1" data-view="blueprint">03 <span>The blueprint</span></button>
+  </div>
+
+  <section id="experiment" role="tabpanel" aria-labelledby="tab-experiment">
+    <div class="runbar"><div class="run-actions"><button id="run" class="primary" disabled>Run workflow</button><button id="step" disabled>Step once</button><button id="pause" hidden>Pause</button><button id="reset" disabled>Reset</button><a id="review-jump" class="button" href="#decision-panel" hidden>Review draft</a></div><p id="run-status" role="status" aria-live="polite">Loading the workflow engine…</p></div>
+    <noscript><p class="notice">The experiment needs JavaScript. The <a href="reference/README.md">Python setup guide</a> and <a href="reference/workflow.py">source code</a> are available without it.</p></noscript>
+    <div class="workbench">
+      <aside class="config-panel panel">
+        <div class="panel-heading"><h2>Set the experiment</h2><span>INPUT</span></div>
+        <p class="small">A tiny research assistant searches four bundled notes, drafts cited claims, then asks you to review.</p>
+        <form id="settings">
+          <label for="query">Research question</label><textarea id="query" maxlength="500" rows="3">Explain agent orchestration</textarea>
+          <label for="scenario">Try a scenario</label><select id="scenario"><option value="repair">Catch a broken citation</option><option value="happy">Clean run</option><option value="empty">Missing evidence</option><option value="budget">Exhaust the repair budget</option><option value="custom">Custom experiment</option></select>
+          <details class="knobs" open><summary>Change the rules</summary>
+            <label for="top-k">Notes to retrieve <span>1–4</span></label><input type="number" id="top-k" min="1" max="4" value="3">
+            <label for="min-sources">Minimum distinct citations <span>1–4</span></label><input type="number" id="min-sources" min="1" max="4" value="2">
+            <label for="max-revisions">Maximum repairs <span>0–3</span></label><input type="number" id="max-revisions" min="0" max="3" value="2">
+            <label for="fault">Break a citation</label><select id="fault"><option value="none">Never</option><option value="once" selected>First draft only</option><option value="always">Every draft</option></select>
+          </details>
+        </form>
+        <p class="small">Settings lock when a run starts. Reset to try another configuration.</p>
+        <details><summary>What data can it see?</summary><p class="small">Only your question and these four learning notes. This is keyword search, not web browsing or a vector database. Drafting copies note text; it does not interpret arbitrary questions.</p><ul id="source-list" class="source-list"></ul></details>
+        <button id="export-config" class="quiet">Download my config</button>
+      </aside>
+
+      <section class="graph-panel panel" aria-labelledby="graph-title">
+        <div class="panel-heading"><h2 id="graph-title">Follow the work</h2><span>SELECT A NODE</span></div>
+        <div class="legend"><span class="legend-done">Executed</span><span class="legend-next">Next</span><span>Dashed = conditional</span></div>
+        <div class="graph" aria-label="Workflow graph: intake, retrieve, draft, check; repair loops to check; pass requires human review; failures stop.">
+          <svg class="wires" viewBox="0 0 480 570" preserveAspectRatio="none" aria-hidden="true">
+            <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0L7 3.5L0 7"/></marker></defs>
+            <path d="M108 75V105 M108 165V195 M108 255V285 M108 345V385 M108 445V480"/>
+            <path class="conditional" d="M216 315H255V225H264 M372 255V315H220 M216 135H460V370H372V385 M216 330H242V415H264"/>
+            <text x="121" y="371">pass</text><text x="266" y="293">repair</text><text x="265" y="373">stop</text>
+          </svg>
+          <button class="node node-intake" data-node="intake" aria-pressed="true"><small>01 / CONTRACT</small><strong>Read the goal</strong><span class="node-status">Selected</span></button>
+          <button class="node node-retrieve" data-node="retrieve" aria-pressed="false"><small>02 / TOOL</small><strong>Find evidence</strong><span class="node-status"></span></button>
+          <button class="node node-draft" data-node="draft" aria-pressed="false"><small>03 / WRITER</small><strong>Draft claims</strong><span class="node-status"></span></button>
+          <button class="node node-check" data-node="check" aria-pressed="false"><small>04 / VALIDATOR + ROUTER</small><strong>Check the draft</strong><span class="node-status"></span></button>
+          <button class="node node-revise" data-node="revise" aria-pressed="false"><small>REPAIR LOOP</small><strong>Revise</strong><span class="node-status"></span></button>
+          <button class="node node-review" data-node="review" aria-pressed="false"><small>05 / HUMAN</small><strong>Your decision</strong><span class="node-status"></span></button>
+          <button class="node node-blocked" data-node="blocked" aria-pressed="false"><small>STOP CONDITION</small><strong>Blocked</strong><span class="node-status"></span></button>
+          <button class="node node-finish" data-node="finish" aria-pressed="false"><small>06 / RESULT</small><strong>Finish</strong><span class="node-status"></span></button>
+        </div>
+        <p class="graph-note">Every box is a function. A box becomes an agent only when it can make model-driven decisions or use tools autonomously.</p>
+      </section>
+
+      <section class="inspector panel" aria-labelledby="inspector-title">
+        <div class="panel-heading"><h2 id="inspector-title">Inside the node</h2><span id="node-label">INTAKE</span></div>
+        <h3 id="lesson-title"></h3><p id="lesson-description"></p>
+        <div class="inspector-tabs" role="tablist" aria-label="Node detail"><button role="tab" id="tab-explain" data-detail="explain" aria-controls="detail-explain" aria-selected="true">Explain</button><button role="tab" id="tab-state" data-detail="state" aria-controls="detail-state" aria-selected="false" tabindex="-1">State</button><button role="tab" id="tab-code" data-detail="code" aria-controls="detail-code" aria-selected="false" tabindex="-1">Python</button></div>
+        <div id="detail-explain" role="tabpanel" aria-labelledby="tab-explain"><p class="eyebrow">WHY IT EXISTS</p><p id="lesson-why"></p><div class="try-this"><strong>Try this</strong><p id="lesson-try"></p></div><p class="eyebrow">THE HANDOFF</p><p id="lesson-contract"></p></div>
+        <div id="detail-state" role="tabpanel" aria-labelledby="tab-state" hidden><p id="state-hint" class="small">Run this node to inspect its actual state.</p><label for="snapshot">Show</label><select id="snapshot"><option value="patch">Fields changed</option><option value="before">Input state</option><option value="after">Output state</option></select><pre id="state-json" tabindex="0"></pre></div>
+        <div id="detail-code" role="tabpanel" aria-labelledby="tab-code" hidden><p class="small">Excerpt from the runnable Python implementation.</p><pre id="python-code" tabindex="0"></pre><a href="reference/workflow.py" download>Download full workflow.py</a></div>
+      </section>
+    </div>
+
+    <section id="decision-panel" class="decision panel" hidden aria-labelledby="decision-title"><div><p class="eyebrow">CHECKPOINT / WAITING FOR YOU</p><h2 id="decision-title">Would you approve this draft?</h2><p>Its structure and citation IDs passed. You still need to judge whether the claims are useful and supported.</p></div><div id="review-draft"></div><div class="run-actions"><button id="approve" class="primary">Approve draft</button><button id="reject">Reject draft</button></div><p class="small">This completes a practice run. Nothing is sent or published.</p></section>
+    <section class="trace-panel panel" aria-labelledby="trace-title"><div class="panel-heading"><h2 id="trace-title">Execution trail</h2><button id="export-run" class="quiet" disabled>Download trace</button></div><div class="metrics"><span><strong id="step-count">0</strong> steps</span><span><strong id="repair-count">0</strong> repairs</span><span><strong>0</strong> model calls</span><span id="result-status">Ready</span></div><div id="trace"><p class="empty">Your first run starts here. Try <strong>Step once</strong> and watch the shared state change.</p></div><div id="result" hidden><h3 id="result-title"></h3><p id="result-text"></p></div></section>
+  </section>
+
+  <section id="build" role="tabpanel" aria-labelledby="tab-build" hidden class="reading-panel">
+    <div class="section-intro"><p class="eyebrow">FROM DIAGRAM TO YOUR OWN CODE</p><h2>Build the same workflow in Python.</h2><p>A small program you can read end to end. It uses actual LangGraph, a replaceable writer function, and a SQLite checkpointer. The default writer is deterministic; no API key is needed.</p><a class="button primary" href="reference/agent-workshop-starter.zip" download>Download Python starter</a></div>
+    <div class="build-grid"><article class="panel prose"><span class="lesson-number">01</span><h3>Start a reproducible run</h3><p>Unzip the starter. Open a terminal in that folder. Use Python 3.12, the version used for verification.</p><pre tabindex="0">python -m venv .venv
+# macOS / Linux
+source .venv/bin/activate
+# Windows PowerShell instead:
+# .\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python workflow.py --config config.json --thread first-run</pre><p>The program prints the actual input, patch, and output for each completed node, then pauses for review.</p></article>
+    <article class="panel prose"><span class="lesson-number">02</span><h3>Resume after restarting</h3><p>Close the Python process. From the same directory, use the same database and thread ID:</p><pre tabindex="0">python workflow.py --thread first-run --decision approve
+# Or use --decision reject</pre><p>SQLite preserves the checkpoint in <code>workshop.sqlite</code>. Browser checkpoints last only until this page reloads; the Python version demonstrates durable resume.</p><p>Use a new thread ID for each new experiment. A thread ID is a lookup key, not authentication.</p></article>
+    <article class="panel prose"><span class="lesson-number">03</span><h3>Change one part at a time</h3><ol><li>Download your configuration from Experiment and replace <code>config.json</code>.</li><li>Add a note to <code>sources.json</code>. Keep IDs unique.</li><li>Change <code>retrieve()</code> to search your own small dataset.</li><li>Keep <code>validate_draft()</code> independent of the writer.</li><li>Run the included evaluations before changing the model adapter.</li></ol><pre tabindex="0">python -m unittest discover -s tests -v</pre><p>Try a retrieval limit of 1 with a minimum of 4 citations. A writer cannot repair evidence it never received. The next improvement is a route back to retrieval.</p></article>
+    <article class="panel prose"><span class="lesson-number">04</span><h3>Add intelligence at one boundary</h3><p><code>build_graph(..., writer=your_writer)</code> is the model boundary. Your function receives the selected evidence and validation feedback, then returns a list of <code>{text, source_id}</code> objects.</p><p>Assemble instructions separately from untrusted source text. Require structured output, validate it, cap input and output, add a timeout, and count every attempted model call. The model does not get to approve itself.</p><p class="notice">Live Osiris subscription inference is not enabled in this lab. It needs the approved hosted connection, this feature’s own server-side contract, consent and usage controls. Signing in alone is not permission to generate.</p></article></div>
+    <details class="panel prose"><summary>Read the full implementation</summary><pre id="full-python" tabindex="0">Open to load workflow.py.</pre></details>
+  </section>
+
+  <section id="blueprint" role="tabpanel" aria-labelledby="tab-blueprint" hidden class="reading-panel">
+    <div class="section-intro"><p class="eyebrow">THE PARTS, AND WHY THEY MATTER</p><h2>A workflow is more than a prompt.</h2><p>The graph decides what runs next. The model supplies judgment where you deliberately allow it. Your application owns state, permissions, evidence, and stopping.</p></div>
+    <div class="blueprint-grid">
+      <article class="panel prose"><h3>01 / Contracts and context</h3><p>Define the input, shared state, and expected output before writing prompts. A Python <code>TypedDict</code> documents shape; it does not validate model output at runtime. Validators do that work.</p><p>Store evidence and decisions as structured fields. Pass each node only what it needs. A checkpoint is execution memory, not a user profile or a vector database.</p></article>
+      <article class="panel prose"><h3>02 / Nodes, tools, and agents</h3><p>A node is a function. A tool does a bounded job such as retrieval or a calculation. An agent uses a model to decide actions in a loop. Giving five functions job titles does not create five intelligent coworkers.</p><p>This lab is a controlled workflow with a practice writer. Start here; add autonomous tool selection only where it earns its complexity.</p></article>
+      <article class="panel prose"><h3>03 / Routing and recovery</h3><p>Conditional edges turn evidence into control flow. No evidence stops the run. Invalid output gets a limited repair attempt. Valid output reaches a person.</p><p>A repair changes the content using feedback. A transport retry repeats a failed request, usually with backoff. This lab teaches repair; it makes no network requests to a provider.</p></article>
+      <article class="panel prose"><h3>04 / Checkpoints and review</h3><p>The browser pauses at LangGraph node boundaries and resumes with <code>updateState()</code>. The Python version uses <code>interrupt()</code> and <code>Command(resume=...)</code> with durable SQLite storage.</p><p>An interrupted Python node restarts on resume. Keep external effects after approval and use an idempotency key so a retry cannot publish or charge twice.</p></article>
+      <article class="panel prose"><h3>05 / Traces and evaluations</h3><p>Observe inputs, outputs, tool results, routing, errors, latency, and usage. Those are execution records, not a model’s hidden reasoning.</p><p>Keep test cases for good evidence, unknown citations, empty retrieval, failed repair, approval, rejection, and recovery after a restart. A second model’s opinion is another signal, not ground truth.</p></article>
+      <article class="panel prose"><h3>06 / From lesson to service</h3><p>Keep the interface on the site. Run live graphs behind an authenticated service with per-user checkpoint ownership, bounded concurrency, timeouts, cancellation, and usage limits. Never execute a visitor’s arbitrary Python on the public server.</p><p>Start with this fixed graph and editable configuration. Python needs a Python-capable host; a JavaScript graph needs a compatible runtime. LangGraph does not require DigitalOcean or its own managed hosting.</p></article>
+    </div>
+    <article class="panel prose"><h3>Where this fits in Osiris</h3><div class="table-wrap"><table><thead><tr><th>Layer</th><th>This release</th><th>Live service needs</th></tr></thead><tbody><tr><td>Interface</td><td>Graph, inspector, experiments, trace export</td><td>Authenticated run controls and streamed events</td></tr><tr><td>Orchestration</td><td>Browser LangGraph + matching Python starter</td><td>Server-enforced rules and per-user isolation</td></tr><tr><td>Intelligence</td><td>Deterministic practice writer</td><td>Approved visitor-funded Osiris connection</td></tr><tr><td>Persistence</td><td>Page memory; SQLite in Python</td><td>Durable database with ownership checks</td></tr><tr><td>Actions</td><td>Draft approval/rejection only</td><td>Allowlisted tools and effect-specific approval</td></tr></tbody></table></div><p>As checked October 8, 2026, Osiris’s hosted ChatGPT plan adapter remains in <a href="https://github.com/Ballzatram/ballzatram/pull/191">draft PR #191</a>. This workshop neither activates it nor routes usage to an operator-funded API.</p></article>
+    <article class="panel prose"><h3>Choose the tool for the job</h3><p><strong>Plain Python first</strong> for a short linear sequence. <strong>LangGraph here</strong> because branching, shared state, repair, and pause/resume are the lesson. A drag-and-drop editor can come later; understanding the runtime comes first.</p><p>Next build challenge: add a retrieval-repair branch when the draft needs more evidence, with a separate retrieval budget. After that, try two specialists in parallel and define how their state updates merge.</p></article>
+    <footer class="sources"><h3>Read the primary documentation</h3><a href="https://docs.langchain.com/oss/python/langgraph/overview">LangGraph overview</a><a href="https://docs.langchain.com/oss/python/langgraph/workflows-agents">Workflows and agents</a><a href="https://docs.langchain.com/oss/python/langgraph/persistence">Persistence</a><a href="https://docs.langchain.com/oss/python/langgraph/interrupts">Interrupts</a><a href="https://developers.openai.com/siwc/request-client-id">Hosted ChatGPT access</a></footer>
+  </section>
+  <footer class="bottom"><span>OSIRIS / AGENT WORKSHOP</span><span>Learn the machinery. Then give it the keys.</span><a href="../../">Back to the frontier</a></footer>
+</main>
+</body></html>
