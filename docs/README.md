@@ -23,6 +23,7 @@ The component guides are the operational references: [Osiris MCP tools](../osiri
 
 | Area | Reading path |
 | --- | --- |
+| Agent orchestration | [Interactive workshop implementation](../tools/agent-workshop/README.md) and [runnable Python guide](../tools/agent-workshop/reference/README.md) |
 | Econ Arcade | [The Family Business](family-business.md), then the broader [game-theory platform blueprint](game-theory-platform.md) |
 | Congressional Accountability | [Citizen workbench](observatory/WORKBENCH.md), [launch review](observatory/LAUNCH_REVIEW.md), [methodology](observatory/METHODOLOGY.md), and [editorial policy](observatory/EDITORIAL_POLICY.md) |
 | Parcel | [Current workspace guide](../tools/parcel/README.md), [product brief](parcel/PRODUCT_BRIEF.md), and the proposed [backend production plan](parcel/BACKEND_PRODUCTION_PLAN.md) |

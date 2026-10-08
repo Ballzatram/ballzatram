@@ -1,0 +1,48 @@
+name: Agent Workshop
+on:
+  pull_request:
+    paths:
+      - 'tools/agent-workshop/**'
+      - '.github/workflows/agent-workshop.yml'
+  push:
+    branches: [master, main]
+    paths:
+      - 'tools/agent-workshop/**'
+      - '.github/workflows/agent-workshop.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  workshop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify graph and committed artifacts
+        run: |
+          npm ci --prefix tools/agent-workshop --ignore-scripts
+          npm run build --prefix tools/agent-workshop
+          npm test --prefix tools/agent-workshop
+          python -m pip install -r tools/agent-workshop/reference/requirements.txt
+          python -m unittest discover -s tools/agent-workshop/reference/tests -v
+          python tools/agent-workshop/package_starter.py
+          git diff --exit-code -- tools/agent-workshop/workshop.js tools/agent-workshop/workshop.js.LEGAL.txt tools/agent-workshop/THIRD_PARTY_NOTICES.txt tools/agent-workshop/reference/agent-workshop-starter.zip
+      - name: Exercise the built site in Chromium and WebKit
+        run: |
+          python scripts/validate_public.py
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium webkit
+          python tools/agent-workshop/browser_test.py
+          WORKSHOP_BROWSER=webkit python tools/agent-workshop/browser_test.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agent-workshop-layouts
+          path: /tmp/agent-workshop-tests
+          retention-days: 7

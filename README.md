@@ -23,6 +23,7 @@ The public site is a **static-first portfolio and working lab**, not a claim tha
 
 | Project | What it does | Where to start |
 | --- | --- | --- |
+| **Agent Workshop** | Teaches orchestration through an executable LangGraph workflow, editable experiments, state inspection, and a matching Python starter with durable checkpoints. The writer is deterministic; live model access is separate. | [Open the workshop](https://dgallemore.com/tools/agent-workshop/) · [Implementation guide](tools/agent-workshop/README.md) |
 | **Osiris** | Connects selected project context to AI workflows. Shared deterministic tools run inside compatible AI hosts; a separate runtime explores in-page, user-authorized conversation. | [Tools service](osiris-tools/README.md) · [Runtime pilot](osiris-runtime/README.md) |
 | **The Family Business / Econ Arcade** | Teaches economics through decisions, controlled experiments, and a persistent campaign. Shared engines keep simulation outcomes separate from AI explanations. | [Play the campaign](https://dgallemore.com/econ-arcade/play/) · [Design and mechanics](docs/family-business.md) |
 | **Congressional Accountability** | A bill-research workbench with source snapshots, version comparisons, local watchlists, and explicit evidence gaps. | [Open the workbench](https://dgallemore.com/tools/observatory/) · [Sources and limitations](docs/observatory/WORKBENCH.md) |

@@ -1,5 +1,13 @@
 [
   {
+    "title": "Agent Workshop",
+    "href": "tools/agent-workshop/",
+    "category": "Experiments",
+    "icon": "bulb",
+    "status": "Interactive guide · runnable code",
+    "description": "Learn agent orchestration by running a real workflow. Inspect state, break it, repair it, and build it in Python."
+  },
+  {
     "title": "Beckets Labyrinth",
     "href": "tools/beckets-labyrinth/",
     "category": "Experiments",

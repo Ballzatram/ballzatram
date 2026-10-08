@@ -1,0 +1,7 @@
+{
+  "query": "Explain agent orchestration",
+  "top_k": 3,
+  "min_sources": 2,
+  "max_revisions": 2,
+  "fault": "once"
+}
