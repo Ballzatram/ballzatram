@@ -120,6 +120,10 @@ try:
                 mobile.screenshot(path=str(ARTIFACTS / "mobile.png"), full_page=True)
             mobile.locator("#tab-blueprint").click()
             assert mobile.evaluate("document.documentElement.scrollWidth <= innerWidth")
+            mobile.locator("#tab-experiment").click()
+            mobile.evaluate("document.documentElement.style.fontSize='200%'")
+            assert mobile.evaluate("document.documentElement.scrollWidth <= innerWidth"), f"large text overflow at {width}"
+            assert mobile.locator('.node').evaluate_all('(nodes) => nodes.every(n => n.scrollHeight <= n.clientHeight + 1)'), f"clipped node text at {width}"
             mobile.close()
         page.evaluate("document.documentElement.style.fontSize='200%'")
         assert page.evaluate("document.documentElement.scrollWidth <= innerWidth")
