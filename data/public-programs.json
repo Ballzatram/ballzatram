@@ -1,5 +1,13 @@
 [
   {
+    "title": "Parcel Fit",
+    "href": "tools/parcel-fit/",
+    "category": "Research",
+    "icon": "folder",
+    "status": "Paid pilot · inquiries open",
+    "description": "Purpose-specific desktop screening for equestrian, event, and special-use land. View a sample report and request a scoped review."
+  },
+  {
     "title": "Agent Workshop",
     "href": "tools/agent-workshop/",
     "category": "Experiments",
