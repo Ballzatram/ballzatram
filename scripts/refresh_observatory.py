@@ -166,6 +166,17 @@ def build_record(candidate, output, fetch=official_fetch):
         try:
             content = fetch(item['url'])
             parsed = parse_bill(content, item['code'], item['code'])
+            # The public dossier validator requires every section's citation,
+            # number, locator and text to be nonblank. Official XML sometimes
+            # contains punctuation-only enum tags or empty referenced nodes.
+            # Keep the official text URL but do not publish invalid parsed data.
+            required = ('id', 'number', 'title', 'locator', 'text', 'sourceId')
+            for section in parsed['sections']:
+                if any(not isinstance(section.get(field), str) or not section[field].strip() for field in required):
+                    raise ValueError('Unsupported empty section field in official bill text; original XML remains linked')
+                references = section.get('references')
+                if not isinstance(references, list) or any(not isinstance(ref, str) or not ref.strip() for ref in references):
+                    raise ValueError('Unsupported empty section reference in official bill text; original XML remains linked')
             if len(json.dumps(parsed)) > 1_500_000 or any(len(s['text']) > 100000 for s in parsed['sections']):
                 raise ValueError('Section exceeds interactive reading limit; original text remains linked')
             parsed['date'] = item['date']
