@@ -59,7 +59,7 @@ def build():
       <p class="frontier-kicker">An independent outpost on the internet</p>
       <h1 id="welcome-title">HOWDY,<span>I’M DEVIN.</span></h1>
       <p class="hero-description">I build tools, games, and the occasional rabbit hole. A little finance. A little AI. A whole lot of curiosity.</p>
-      <div class="hero-actions"><a class="pixel-button" href="#programs">Explore the projects {icon('arrow')}</a><a class="text-link" href="devin/">Meet the cowboy ↗</a></div>
+      <div class="hero-actions"><a class="pixel-button" href="#programs">Explore the projects {icon('arrow')}</a><a class="text-link" href="tools/parcel-fit/">See the Parcel Fit pilot ↗</a></div>
     </div>
     <div class="hero-stamp" aria-hidden="true">OPEN RANGE.<br>OPEN MIND.</div>
     <div class="pixel-dust" aria-hidden="true"></div>
