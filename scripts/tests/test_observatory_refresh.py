@@ -102,6 +102,23 @@ class RefreshTests(unittest.TestCase):
             self.assertEqual(len(detail['tracker']['textFailures']),1)
             self.assertEqual(len(detail['actions']),1)
 
+    def test_malformed_official_section_remains_linked_but_not_published(self):
+        with tempfile.TemporaryDirectory() as temp:
+            def invalid_text(url):
+                # A punctuation-only enum becomes blank after normalization.
+                if url == TEXT_URL:
+                    return BILL.replace(b'<enum>1.</enum>', b'<enum>...</enum>')
+                return fake_fetch(url)
+            path = Path(temp)
+            row = build_record({'id':'119-hr-7','url':XML_URL,'modified':MODIFIED}, path, invalid_text)
+            detail = json.loads((path/row['detailPath']).read_text())
+            self.assertEqual(row['parsedVersionCount'], 0)
+            self.assertEqual(detail['versions'], [])
+            self.assertEqual(len(detail['tracker']['textFailures']), 1)
+            self.assertIn('empty section field', detail['tracker']['textFailures'][0]['error'])
+            self.assertEqual(detail['tracker']['textVersions'][0]['url'], TEXT_URL)
+            self.assertEqual(row['health'], 'ok')
+
     def test_mismatched_bill_identity_is_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             with self.assertRaisesRegex(ValueError,'identity'):
