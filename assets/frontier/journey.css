@@ -18,7 +18,7 @@ html{background:#282839;overflow-x:clip}
 .frontier-home .town-horse img{width:100%;height:100%;image-rendering:pixelated;animation:frontier-horse-bob 2s steps(2,end) infinite}
 .frontier-home .town-cloud--one{animation:frontier-cloud-drift 38s linear infinite alternate}
 .frontier-home .town-cloud--two{animation:frontier-cloud-drift 52s linear infinite alternate-reverse}
-.frontier-home .frontier-ride.has-ride-motion{height:320svh;min-height:1600px}
+.frontier-home .frontier-ride.has-ride-motion{height:560svh;min-height:2400px}
 .frontier-home .frontier-ride .ride-sticky{top:0;height:100svh;min-height:560px}
 .frontier-home .ride-heading{top:clamp(25px,5vh,55px);left:clamp(19px,5vw,70px)}
 .frontier-home .ride-heading h2{font-size:clamp(20px,2.7vw,34px)}
@@ -82,7 +82,7 @@ html{background:#282839;overflow-x:clip}
 .frontier-home .town-mobile-hint{display:inline}.frontier-home .town-desktop-hint{display:none}
 .frontier-home .town-wayfinding a{font-size:9px;padding:7px}
 .frontier-home .town-horse{bottom:51px;right:7%;width:65px;height:65px}
-.frontier-home .frontier-ride.has-ride-motion{height:300svh;min-height:1450px}
+.frontier-home .frontier-ride.has-ride-motion{height:520svh;min-height:2200px}
 .frontier-home .has-ride-motion .ride-sticky{height:100svh;min-height:530px}
 .frontier-home .ride-markers{top:36%;right:4%;width:63%}
 .frontier-home .frontier-camp{padding:55px 17px 30px}
@@ -108,3 +108,40 @@ html{background:#282839;overflow-x:clip}
 .frontier-home .camp-records summary:focus-visible{outline:3px solid #ffdb9b;outline-offset:4px}
 .frontier-home .camp-records[open] summary span{display:inline-block;transform:rotate(45deg)}
 .frontier-home .camp-records nav{display:flex;flex-wrap:wrap;gap:12px 20px;padding:12px 0}
+
+/* The open range needs room to breathe. Signs approach, are readable for a short
+   stretch, and move behind the rider. No stationary billboards or overlapping stops. */
+.frontier-home .has-ride-motion .ride-sign{
+  transform:translate3d(var(--sign-shift,76vw),0,0);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:none;
+  will-change:transform,opacity;
+}
+.frontier-home .has-ride-motion .ride-sign.is-current{
+  transform:translate3d(var(--sign-shift,0vw),0,0);
+  opacity:var(--sign-opacity,1);
+  visibility:visible;
+  pointer-events:auto;
+}
+/* The old focus-visible fallback must not resurrect a passed waypoint. */
+.frontier-home .has-ride-motion .ride-sign:focus-within:not(.is-current){
+  transform:translate3d(var(--sign-shift,-115vw),0,0);
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+/* The sky turns a little darker as town falls behind. Text and links stay above it. */
+.frontier-home .has-ride-motion .ride-sticky::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:5;
+  background:linear-gradient(180deg,#151a31,#292940 56%,#422d3d);
+  opacity:calc(var(--ride-progress) * .26);
+  pointer-events:none;
+}
+@media(prefers-reduced-motion:reduce){
+  .frontier-home .has-ride-motion .ride-sign{transition:none!important}
+}
