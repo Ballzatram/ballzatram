@@ -213,7 +213,7 @@ function analyze(parsed) {
     endDate: rows[rows.length - 1].date,
     benchmarkAvailable: validated.benchmarkAvailable,
     warnings: [
-      sourceMode === "demo" ? "Demo price history is synthetic and only illustrates the analytics workflow." : "Price history was supplied locally by the user and is not independently verified by Ballzatram.",
+      sourceMode === "demo" ? "Demo price history is synthetic and only illustrates the analytics workflow." : "Price history was supplied locally by the user and is not independently verified here.",
       "All risk and return statistics are historical/descriptive and are not forecasts or investment advice.",
       validated.benchmarkAvailable ? `Benchmark statistics use the ${benchmark} CSV column.` : (benchmark ? `Benchmark ${benchmark} was not available as a complete CSV price column, so beta/correlation were omitted.` : "No benchmark was requested."),
       "Annualization infers " + frequency.periods.toFixed(1) + " return intervals per calendar year from the supplied dates, rather than assuming daily prices.",
@@ -228,6 +228,8 @@ function analyze(parsed) {
 }
 
 function renderResult(result, saved) {
+  const ask = document.querySelector('[data-osiris-feature="portfolio"]');
+  if (ask) ask.disabled = false;
   $("emptyState").hidden = true; $("resultsContent").hidden = false;
   $("sourceBadge").textContent = result.sourceMode === "demo" ? "Synthetic demo data" : "Local CSV";
   $("windowBadge").textContent = `${result.startDate} → ${result.endDate}`;
@@ -251,6 +253,8 @@ function renderResult(result, saved) {
 }
 
 function invalidateResult() {
+  const ask = document.querySelector('[data-osiris-feature="portfolio"]');
+  if (ask) ask.disabled = true;
   if (!$("resultsContent").hidden) {
     $("resultsContent").hidden = true;
     $("emptyState").hidden = false;
