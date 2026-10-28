@@ -38,6 +38,7 @@ const num = (value, digits = 1) => value == null || !Number.isFinite(Number(valu
       assumptions: [
         "Portfolio weights are normalized across the supplied holdings.",
         "Volatility, covariance, beta, correlation, drawdown, and risk contribution are estimated from the supplied historical price series.",
+        ...(Number.isFinite(run.annualizationPeriods) ? ["Annualization was inferred from the supplied observation dates (" + run.annualizationPeriods.toFixed(1) + " return intervals/year)."] : []),
         "Historical relationships are descriptive and are not forecasts."
       ],
       provenance: [
@@ -71,13 +72,14 @@ function scenarioToSection(run) {
     createdAt: run.savedAt || new Date().toISOString(),
     findings: [
       `Incremental stressed portfolio return: ${pct(run.portfolio_return_shock)}.`,
-      Array.isArray(run.confidence_band) ? `Illustrative confidence band: ${pct(run.confidence_band[0])} to ${pct(run.confidence_band[1])}.` : null,
+      Array.isArray(run.confidence_band) ? `Illustrative display range (not a confidence interval): ${pct(run.confidence_band[0])} to ${pct(run.confidence_band[1])}.` : null,
       ...drivers.map((item) => `${item.factor}: shock ${num(item.shock, 2)}, modeled impact ${pct(item.impact)}.`)
     ].filter(Boolean),
     assumptions: [
       "Fixed portfolio-level factor sensitivities are used for rates, CPI, growth, oil, and credit.",
-      "The confidence band is illustrative and fixed at +/-3 percentage points around the modeled shock.",
-      "The model does not estimate security-specific exposures, forecast prices, or calculate VaR."
+      "The display range is a fixed +/-3 percentage-point illustration, not a statistical confidence interval.",
+      "The model does not estimate security-specific exposures, forecast prices, or calculate VaR.",
+      ...(run.model_method ? [run.model_method] : [])
     ],
     provenance: [
       `Saved browser run: ${run.savedAt || "unknown time"}.`,
@@ -203,7 +205,7 @@ function moveSection(index, direction) {
 }
 
 function buildMarkdown() {
-  const title = $("reportTitle").value.trim() || "Ballzatram Research Report";
+  const title = $("reportTitle").value.trim() || "A Digital Frontier Research Report";
   const opening = $("openingNote").value.trim();
   const lines = [`# ${title}`, "", `Generated locally: ${new Date().toISOString()}`, ""];
   if (opening) lines.push("## Purpose", "", opening, "");
