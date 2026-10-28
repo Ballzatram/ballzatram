@@ -52,7 +52,7 @@ def build():
   <link rel="stylesheet" href="assets/frontier/home.css">
   <link rel="stylesheet" href="assets/frontier/town.css">
   <link rel="stylesheet" href="assets/frontier/journey.css">
-    <script defer src="assets/frontier/ride.js"></script>
+  <script defer src="assets/frontier/ride.js"></script>
 </head>
 <body class="frontier-home" data-motion="off">
 <a class="frontier-skip" href="#main">Skip to content</a>
