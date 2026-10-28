@@ -10,26 +10,26 @@
   let queued = false;
 
   const clamp = value => Math.max(0, Math.min(1, value));
-  const ease = value => {
-    const t = clamp(value);
-    return t * t * (3 - 2 * t);
-  };
 
   function moveSign(sign, progress) {
     const start = Number(sign.dataset.start);
     const end = Number(sign.dataset.end);
     const visible = progress >= start && progress < end;
-    // Each sign gets a short entrance, a reading moment and a clear departure.
-    // The long stretches between windows are intentionally empty.
+    // Linear scroll-mapped motion: only 18vw on approach and 22vw on exit.
+    // A long, almost-still middle interval gives visitors time to read and tap.
+    // No smoothstep/ease acceleration, and no 115vw rush across the screen.
     const phase = clamp((progress - start) / (end - start));
-    const enter = ease(phase / .23);
-    const leave = ease((1 - phase) / .23);
-    const opacity = Math.min(enter, leave);
-    const offset = phase < .23 ? 76 * (1 - enter) :
-      phase > .77 ? -115 * (1 - leave) : 0;
+    const enterFraction = .30;
+    const exitFraction = .70;
+    const offset = phase < enterFraction
+      ? 18 * (1 - phase / enterFraction)
+      : phase > exitFraction
+        ? -22 * ((phase - exitFraction) / (1 - exitFraction))
+        : 0;
+    const opacity = Math.min(1, phase / .24, (1 - phase) / .24);
 
     sign.style.setProperty('--sign-shift', `${offset.toFixed(2)}vw`);
-    sign.style.setProperty('--sign-opacity', opacity.toFixed(3));
+    sign.style.setProperty('--sign-opacity', clamp(opacity).toFixed(3));
     sign.classList.toggle('is-current', visible);
     sign.inert = !visible;
   }
