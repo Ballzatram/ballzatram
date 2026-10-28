@@ -27,7 +27,7 @@ def build():
     items = json.loads((ROOT / 'data/public-programs.json').read_text())
     categories = sorted({item['category'] for item in items})
     filters = ''.join(f'<button type="button" data-filter="{escape(category, quote=True)}" aria-pressed="false">{escape(category)}</button>' for category in categories)
-    town_markup = (ROOT / 'assets/frontier/town.html').read_text(encoding='utf-8')
+    town_markup = (ROOT / 'assets/frontier/town.partial').read_text(encoding='utf-8')
     html = f'''<!doctype html>
 <html lang="en">
 <head>
