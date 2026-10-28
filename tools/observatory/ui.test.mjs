@@ -38,6 +38,32 @@ const nav=tab=>{if(tab==='coverage'&&!document.querySelector('[data-tab="coverag
 const text=()=>document.body.textContent;
 async function importCase(content){const el=document.querySelector('#import-file');Object.defineProperty(el,'files',{value:[{size:content.length,text:async()=>content}],configurable:true});el.dispatchEvent(new dom.window.Event('change',{bubbles:true}));await flush();}
 
+test('Bill X-Ray preserves section search, offers a source reference and mobile reading tabs',async()=>{
+  await mount();nav('guide');click('#load-example');await flush();nav('bill');
+  assert.equal(document.querySelector('.case-quicknav').hidden,false);
+  assert.equal(document.querySelector('.case-quicknav [data-tab="bill"]').getAttribute('aria-current'),'page');
+  const total=document.querySelectorAll('[data-section]').length;
+  assert.equal(document.querySelector('#section-count').textContent,total+' of '+total+' sections');
+  input('#section-search','before the dispute arises');
+  assert.ok([...document.querySelectorAll('[data-section]')].some(b=>b.hidden));
+  click('[data-section="section-4"]');
+  assert.equal(document.querySelector('#section-search').value,'before the dispute arises');
+  assert.match(document.querySelector('#section-count').textContent,/of 5 sections/);
+
+  let copied='';
+  Object.defineProperty(globalThis,'navigator',{value:dom.window.navigator,configurable:true});
+  Object.defineProperty(dom.window.navigator,'clipboard',{value:{writeText:async value=>{copied=value;}},configurable:true});
+  click('#copy-section-citation');await flush();
+  assert.match(copied,/Section 4/);
+  assert.match(copied,/Source: https:\/\/www\./);
+  assert.match(document.querySelector('#notice').textContent,/Section reference copied/);
+
+  click('#clear-section-search');
+  assert.equal(document.querySelector('#section-search').value,'');
+  assert.equal([...document.querySelectorAll('[data-section]')].filter(b=>!b.hidden).length,total);
+  assert.deepEqual(errors,[]);
+});
+
 test('workbench interactions, drafts, import/export and reload',async()=>{
   await mount();nav('guide');click('#load-example');await flush();nav('bill');assert.match(text(),/Speak Out Act/);assert.equal(document.querySelectorAll('[data-section]').length,5);
   click('[data-section="section-4"]');assert.match(document.querySelector('.original').textContent,/before the dispute arises/);

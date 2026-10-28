@@ -43,3 +43,36 @@ dialog{width:740px;max-width:calc(100vw - 28px);max-height:85vh;overflow:auto;bo
 @media(max-width:420px){main{padding:0 15px}.sidebar{padding:16px}.sidebar-title{font-size:22px}.sidebar-title em{font-size:22px;margin-left:4px}.tracker-hero h1{font-size:39px}.beta-label{margin:8px 0 0;display:table}.tracker-toolbar{flex-wrap:wrap}.start-strip{gap:8px}.start-strip strong{font-size:11px}.card{padding:18px}.card h3{font-size:25px}.topbar>span{max-width:135px}.topbar-divider{margin:0 4px}.form-details form{padding:15px}}
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
 @media print{.sidebar,.topbar,.card-actions,button,.osiris,.form-details,.page-foot{display:none!important}main{margin:0;padding:0}.original{max-height:none;overflow:visible}.card{break-inside:avoid}body{background:white;color:black}.case-bar{border-top:0}.case-bar:after{content:'Independent citizen research. Personal notes and comparisons are unreviewed drafts.';display:block;font-size:12px;margin-top:15px}}
+
+
+/* Reading room refinements: the evidence stays the star, even on a phone. */
+@media(min-width:801px){
+  .work-grid>.section-list{position:sticky;top:20px}
+}
+.section-search-label{display:block;font-size:12px;font-weight:700;margin:2px 0 6px;color:var(--muted)}
+.section-search-feedback{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:6px 0 12px;font-size:12px;color:var(--muted)}
+.section-search-feedback button{min-height:32px;font-size:12px;padding:4px 9px}
+#bill-section-title:focus{outline:none}
+#bill-section-title:focus-visible{outline:3px solid var(--green);outline-offset:4px}
+.case-quicknav{display:none}
+@media(max-width:800px){
+  main .case-quicknav:not([hidden]){
+    position:sticky;top:0;z-index:5;display:flex;gap:7px;
+    margin:0 -20px 18px;padding:9px 18px;
+    overflow-x:auto;overscroll-behavior-x:contain;
+    scrollbar-width:thin;background:#f5f2eb;
+    border-block:1px solid var(--line);
+    box-shadow:0 5px 12px #1d1c1a17;
+    -webkit-overflow-scrolling:touch
+  }
+  .case-quicknav button{flex:0 0 auto;padding:9px 12px;min-height:42px;font-size:13px;white-space:nowrap}
+  .case-quicknav button[aria-current=page]{background:var(--green);border-color:var(--green);color:white}
+  .work-grid>.section-list{position:relative;top:auto;max-height:270px}
+  .original{max-height:none;overflow:visible}
+  #bill-section-title{scroll-margin-top:85px}
+  #bill-query,#section-search,.tracker-filters input{font-size:16px}
+}
+@media(max-width:420px){
+  main .case-quicknav:not([hidden]){margin-inline:-15px;padding-inline:13px}
+}
+@media print{.case-quicknav{display:none!important}.work-grid>.section-list{position:static}}

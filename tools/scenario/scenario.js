@@ -19,6 +19,7 @@ const stressReturn = document.querySelector("#stressReturn");
 const bandLow = document.querySelector("#bandLow");
 const bandHigh = document.querySelector("#bandHigh");
 const drivers = document.querySelector("#drivers");
+const askOsiris = document.querySelector('[data-osiris-feature="scenario"]');
 
 function pct(value) {
   return `${(value * 100).toFixed(1)}%`;
@@ -51,6 +52,7 @@ function setPreset(name) {
 }
 
 function clearResults() {
+  if (askOsiris) askOsiris.disabled = true;
   stressReturn.textContent = "—";
   bandLow.textContent = "—";
   bandHigh.textContent = "—";
@@ -74,12 +76,13 @@ function runScenario() {
   const total = contributions.reduce((sum, item) => sum + item.impact, 0);
 
   stressReturn.textContent = pct(total);
+  if (askOsiris) askOsiris.disabled = false;
   bandLow.textContent = pct(total - 0.03);
   bandHigh.textContent = pct(total + 0.03);
 
   const maxImpact = Math.max(0.001, ...contributions.map((item) => Math.abs(item.impact)));
   drivers.innerHTML = contributions.map((item) => {
-    const width = Math.max(4, Math.round(Math.abs(item.impact) / maxImpact * 100));
+    const width = Math.round(Math.abs(item.impact) / maxImpact * 100);
     return `<div class="driver"><span>${item.label}</span><span class="driver-bar"><i style="width:${width}%"></i></span><span>${pct(item.impact)}</span></div>`;
   }).join("");
 
@@ -89,6 +92,8 @@ function runScenario() {
       shocks,
       portfolio_return_shock: total,
       confidence_band: [total - 0.03, total + 0.03],
+      band_method: "Illustrative +/-3 percentage points. Not a probabilistic confidence interval.",
+      model_method: "Fixed portfolio-level sensitivities, not calibrated security exposures.",
       factor_contributions: contributions.map(({ id, shock, impact }) => ({ factor: id, shock, impact })),
     }));
   } catch {
@@ -97,5 +102,6 @@ function runScenario() {
 }
 
 renderInputs();
+factorInputs.querySelectorAll("[data-factor]").forEach(input => input.addEventListener("input", clearResults));
 document.querySelectorAll("[data-preset]").forEach((button) => button.addEventListener("click", () => setPreset(button.dataset.preset)));
 document.querySelector("#runScenario").addEventListener("click", runScenario);

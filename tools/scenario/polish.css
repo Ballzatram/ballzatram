@@ -1,0 +1,37 @@
+/* Scenario Stress Lab — a focused, readable research workbench.
+   Only this page adopts the refinement; the rest of the Econ Arcade keeps its look. */
+body.scenario-workbench{background:linear-gradient(160deg,#131827 0%,#202b3b 52%,#304244 100%);color:#e8e6db;font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.scenario-workbench .lab-shell{width:min(1160px,100%);padding:clamp(15px,3vw,36px)}
+.scenario-workbench .lab-top{margin-bottom:22px}
+.scenario-workbench .lab-top a{border:1px solid #cbb487;box-shadow:none;border-radius:3px;background:#efe5d1;color:#2e2b31;text-transform:none;font:600 13px/1.3 system-ui,sans-serif;letter-spacing:.015em}
+.scenario-workbench .lab-top .scenario-brand{background:transparent;color:#e6c99f;border-color:transparent;padding-left:0;letter-spacing:.13em;font-weight:800;font-size:15px}
+.scenario-workbench .scenario-brand span{font-weight:500;font-size:11px;color:#d3bbb1}
+.scenario-workbench :is(.lab-hero,.lab-panel){background:#f5f0e4;border:1px solid #cbbda6;color:#332e2c;border-radius:5px;box-shadow:0 10px 25px #090e1c2b}
+.scenario-workbench .lab-hero{padding:clamp(22px,4vw,44px);margin-bottom:18px;background:linear-gradient(118deg,#f8f4e9,#e8e2d4)}
+.scenario-workbench .lab-hero h1,.scenario-workbench .scenario-title{font:400 clamp(35px,5.5vw,63px)/1.03 Georgia,"Times New Roman",serif;letter-spacing:-.055em;text-transform:none;max-width:850px}
+.scenario-workbench .lab-hero p{font-weight:400;line-height:1.68;max-width:72ch}
+.scenario-workbench .lab-kicker{font:700 11px/1.5 system-ui,sans-serif;letter-spacing:.17em;color:#825334}
+.scenario-workbench .scenario-grid{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:18px}
+.scenario-workbench .lab-panel{padding:clamp(17px,2vw,26px)}
+.scenario-workbench .lab-panel h2{font:400 24px/1.3 Georgia,serif}
+.scenario-workbench .preset-row button{font:600 12px/1.3 system-ui,sans-serif;border:1px solid #b4a48a;background:#e9e2d6;border-radius:4px;padding:10px 12px;min-height:43px}
+.scenario-workbench .preset-row button:hover{background:#d8ccb8}
+.scenario-workbench .factor-row{grid-template-columns:minmax(0,1fr) 104px;border-bottom:1px solid #dfd7c7;padding:11px 0;margin:0}
+.scenario-workbench .factor-row label{font-weight:650;font-size:14px}
+.scenario-workbench .factor-row input{border:1px solid #a6a4a0;border-radius:3px;background:#fffdfa;font:600 16px system-ui,sans-serif;text-align:right}
+.scenario-workbench .scenario-button{border:1px solid #493634;border-radius:4px;background:#453a3a;color:#fff6e8;box-shadow:none;font:700 13px system-ui,sans-serif;margin-top:18px;min-height:48px;width:100%}
+.scenario-workbench .scenario-button:hover{background:#70534a}
+.scenario-workbench :is(button,input,a):focus-visible{outline:3px solid #bb6e38;outline-offset:3px}
+.scenario-workbench .metric-grid{gap:11px}
+.scenario-workbench .metric{background:#fffdf9;border:1px solid #d2c5b3;border-radius:4px}
+.scenario-workbench .metric span{font:700 11px/1.4 system-ui,sans-serif;letter-spacing:.07em;color:#6d5b50}
+.scenario-workbench .metric strong{font:400 31px/1.4 Georgia,serif;color:#332d2b}
+.scenario-workbench .driver-list{margin-top:16px}
+.scenario-workbench .driver{font:600 13px/1.4 system-ui,sans-serif;grid-template-columns:100px minmax(0,1fr) 64px}
+.scenario-workbench .driver-bar{background:#e9e0d3}
+.scenario-workbench .driver-bar i{background:#9d6250}
+.scenario-workbench .scenario-caveat{margin-top:20px;border:1px solid #d2c19f;background:#ede5d7;border-radius:3px;font-size:12px;font-weight:450;line-height:1.6}
+.scenario-workbench .model-note{font-size:12px;line-height:1.6;color:#675b52;margin:15px 0}
+@media(max-width:850px){.scenario-workbench .scenario-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){.scenario-workbench .lab-top{flex-direction:row;align-items:center;flex-wrap:wrap}.scenario-workbench .lab-top a{width:auto}.scenario-workbench .lab-top .scenario-brand{font-size:12px}.scenario-workbench .scenario-brand span{font-size:9px}.scenario-workbench .metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.scenario-workbench .driver{grid-template-columns:70px 1fr 65px}}
+@media(prefers-reduced-motion:reduce){.scenario-workbench *{scroll-behavior:auto!important}}

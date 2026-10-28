@@ -19,9 +19,9 @@ function renderHoldings() {
     </div>`).join("");
   $("holdingsList").querySelectorAll(".holding-row").forEach((row) => {
     const index = Number(row.dataset.index);
-    row.querySelector("[data-field='symbol']").addEventListener("input", (event) => { holdings[index].symbol = event.target.value.trim().toUpperCase(); });
-    row.querySelector("[data-field='weight']").addEventListener("input", (event) => { holdings[index].weight = Number(event.target.value); });
-    row.querySelector("[data-remove]").addEventListener("click", () => { if (holdings.length > 1) { holdings.splice(index, 1); renderHoldings(); } });
+    row.querySelector("[data-field='symbol']").addEventListener("input", (event) => { holdings[index].symbol = event.target.value.trim().toUpperCase(); invalidateResult(); });
+    row.querySelector("[data-field='weight']").addEventListener("input", (event) => { holdings[index].weight = Number(event.target.value); invalidateResult(); });
+    row.querySelector("[data-remove]").addEventListener("click", () => { if (holdings.length > 1) { holdings.splice(index, 1); renderHoldings(); invalidateResult(); } });
   });
 }
 
@@ -39,29 +39,76 @@ function normalizeHoldings() {
 }
 
 function parseCsv(text) {
-  const lines = text.trim().split(/\r?\n/).filter((line) => line.trim());
+  // Never silently bridge malformed observations: that creates fictional returns.
+  if (typeof text !== "string" || text.length > 2_000_000) {
+    throw new Error("Please use a price CSV smaller than 2 MB.");
+  }
+  const lines = text.replace(/^\uFEFF/, "").trim().split(/\r?\n/).filter((line) => line.trim());
   if (lines.length < 3) throw new Error("CSV needs a header and at least two price rows.");
+  if (lines.length > 5001) throw new Error("Please use at most 5,000 price observations.");
   const parseLine = (line) => line.split(",").map((value) => value.trim().replace(/^"|"$/g, ""));
   const headers = parseLine(lines[0]).map((header) => header.trim());
-  if (new Set(headers.map(header => header.toUpperCase())).size !== headers.length) throw new Error("CSV column names must be unique.");
-  if (headers.length < 2) throw new Error("CSV needs date plus at least one price column.");
-  const rows = lines.slice(1).map((line) => {
+  if (headers.length < 2 || headers.length > 50 || headers[0].toLowerCase() !== "date") {
+    throw new Error("The first CSV column must be date, followed by up to 49 price columns.");
+  }
+  if (headers.some((header) => !header)) throw new Error("Every CSV column needs a name.");
+  if (new Set(headers.map((header) => header.toUpperCase())).size !== headers.length) {
+    throw new Error("CSV column names must be unique.");
+  }
+  let previousTime = -Infinity;
+  const rows = lines.slice(1).map((line, index) => {
     const values = parseLine(line);
-    const row = Object.assign(Object.create(null), { date: values[0] });
-    headers.slice(1).forEach((header, index) => { row[header.toUpperCase()] = Number(values[index + 1]); });
+    const rowNumber = index + 2;
+    if (values.length !== headers.length) {
+      throw new Error("CSV row " + rowNumber + " has " + values.length + " columns; expected " + headers.length + ".");
+    }
+    const date = values[0];
+    const timestamp = Date.parse(date + "T00:00:00Z");
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(timestamp) ||
+        new Date(timestamp).toISOString().slice(0, 10) !== date) {
+      throw new Error("CSV row " + rowNumber + " needs a real date in YYYY-MM-DD format.");
+    }
+    if (timestamp <= previousTime) {
+      throw new Error("Price dates must be strictly increasing without duplicates (row " + rowNumber + ").");
+    }
+    previousTime = timestamp;
+    const row = Object.assign(Object.create(null), { date });
+    headers.slice(1).forEach((header, column) => {
+      const price = values[column + 1];
+      row[header.toUpperCase()] = price === "" ? NaN : Number(price);
+    });
     return row;
-  }).filter((row) => row.date);
+  });
   return { headers: headers.map((header) => header.toUpperCase()), rows };
 }
 
 function validateSeries(parsed, normalizedHoldings, benchmark) {
   const needed = normalizedHoldings.map((holding) => holding.symbol);
   const missing = needed.filter((symbol) => !parsed.headers.includes(symbol));
-  if (missing.length) throw new Error(`CSV is missing price columns: ${missing.join(", ")}.`);
-  const validRows = parsed.rows.filter((row) => needed.every((symbol) => Number.isFinite(row[symbol]) && row[symbol] > 0));
-  if (validRows.length < 3) throw new Error("Need at least three rows with valid positive prices for every holding.");
-  const benchmarkAvailable = benchmark && parsed.headers.includes(benchmark) && validRows.every((row) => Number.isFinite(row[benchmark]) && row[benchmark] > 0);
-  return { rows: validRows, benchmarkAvailable };
+  if (missing.length) throw new Error("CSV is missing price columns: " + missing.join(", ") + ".");
+  if (parsed.rows.length < 3) throw new Error("Need at least three valid price observations.");
+  const bad = parsed.rows.find((row) => needed.some((symbol) => !Number.isFinite(row[symbol]) || row[symbol] <= 0));
+  if (bad) {
+    const symbols = needed.filter((symbol) => !Number.isFinite(bad[symbol]) || bad[symbol] <= 0);
+    throw new Error("Missing or nonpositive price on " + bad.date + " for " + symbols.join(", ") + ". Correct the CSV; rows are never silently dropped.");
+  }
+  const benchmarkAvailable = Boolean(benchmark && parsed.headers.includes(benchmark) &&
+    parsed.rows.every((row) => Number.isFinite(row[benchmark]) && row[benchmark] > 0));
+  return { rows: parsed.rows, benchmarkAvailable };
+}
+
+function annualizationInfo(rows) {
+  const days = (Date.parse(rows[rows.length - 1].date + "T00:00:00Z") -
+    Date.parse(rows[0].date + "T00:00:00Z")) / 86_400_000;
+  const intervals = rows.length - 1;
+  const periods = intervals * 365.2425 / days;
+  let largestGap = 0;
+  for (let i = 1; i < rows.length; i += 1) {
+    const current = Date.parse(rows[i].date + "T00:00:00Z");
+    const prior = Date.parse(rows[i - 1].date + "T00:00:00Z");
+    largestGap = Math.max(largestGap, (current - prior) / 86_400_000);
+  }
+  return { periods, largestGap, intervals, calendarDays: days };
 }
 
 function priceReturns(rows, symbol) {
@@ -85,9 +132,9 @@ function covariance(a, b) {
 }
 function stddev(values) { return Math.sqrt(Math.max(0, variance(values))); }
 function cumulativeReturn(returns) { return returns.reduce((wealth, value) => wealth * (1 + value), 1) - 1; }
-function annualizedGeometric(cumulative, periods) {
+function annualizedGeometric(cumulative, periods, periodsPerYear) {
   if (!periods || 1 + cumulative <= 0) return null;
-  return (1 + cumulative) ** (252 / periods) - 1;
+  return (1 + cumulative) ** (periodsPerYear / periods) - 1;
 }
 function maxDrawdown(returns) {
   let wealth = 1; let peak = 1; let worst = 0;
@@ -108,20 +155,21 @@ function analyze(parsed) {
   const benchmark = $("benchmarkInput").value.trim().toUpperCase();
   const validated = validateSeries(parsed, normalizedHoldings, benchmark);
   const rows = validated.rows;
+  const frequency = annualizationInfo(rows);
   const series = normalizedHoldings.map((holding) => priceReturns(rows, holding.symbol));
   const n = series[0].length;
   const weights = normalizedHoldings.map((holding) => holding.normalizedWeight);
   const portfolioReturns = Array.from({ length: n }, (_, day) => series.reduce((sum, returns, index) => sum + returns[day] * weights[index], 0));
 
-  const covarianceMatrix = series.map((left) => series.map((right) => covariance(left, right) * 252));
+  const covarianceMatrix = series.map((left) => series.map((right) => covariance(left, right) * frequency.periods));
   const marginal = multiplyMatrixVector(covarianceMatrix, weights);
   const rawRisk = weights.map((weight, index) => weight * marginal[index]);
   const totalRisk = rawRisk.reduce((sum, value) => sum + value, 0);
   const riskContributions = rawRisk.map((value) => totalRisk ? value / totalRisk : 0);
 
-  const correlations = series.map((left) => series.map((right) => correlation(left, right) ?? 0));
+  const correlations = series.map((left) => series.map((right) => correlation(left, right)));
   const cumulative = cumulativeReturn(portfolioReturns);
-  const annualizedReturn = annualizedGeometric(cumulative, n);
+  const annualizedReturn = annualizedGeometric(cumulative, n, frequency.periods);
   const annualizedVolatility = Math.sqrt(Math.max(0, weights.reduce((sum, weight, i) => sum + weight * marginal[i], 0)));
 
   let benchmarkReturns = null; let benchmarkCumulative = null; let beta = null; let benchmarkCorrelation = null;
@@ -138,7 +186,7 @@ function analyze(parsed) {
     requestedWeight: holding.weight,
     normalizedWeight: holding.normalizedWeight,
     cumulativeReturn: cumulativeReturn(series[index]),
-    annualizedVolatility: stddev(series[index]) * Math.sqrt(252),
+    annualizedVolatility: stddev(series[index]) * Math.sqrt(frequency.periods),
     riskContribution: riskContributions[index]
   }));
 
@@ -160,13 +208,18 @@ function analyze(parsed) {
     holdings: holdingStats,
     correlationMatrix: { columns: normalizedHoldings.map((holding) => holding.symbol), matrix: correlations },
     observations: n,
+    annualizationPeriods: frequency.periods,
     startDate: rows[0].date,
     endDate: rows[rows.length - 1].date,
     benchmarkAvailable: validated.benchmarkAvailable,
     warnings: [
-      sourceMode === "demo" ? "Demo price history is synthetic and only illustrates the analytics workflow." : "Price history was supplied locally by the user and is not independently verified by Ballzatram.",
+      sourceMode === "demo" ? "Demo price history is synthetic and only illustrates the analytics workflow." : "Price history was supplied locally by the user and is not independently verified here.",
       "All risk and return statistics are historical/descriptive and are not forecasts or investment advice.",
-      validated.benchmarkAvailable ? `Benchmark statistics use the ${benchmark} CSV column.` : (benchmark ? `Benchmark ${benchmark} was not available as a complete CSV price column, so beta/correlation were omitted.` : "No benchmark was requested.")
+      validated.benchmarkAvailable ? `Benchmark statistics use the ${benchmark} CSV column.` : (benchmark ? `Benchmark ${benchmark} was not available as a complete CSV price column, so beta/correlation were omitted.` : "No benchmark was requested."),
+      "Annualization infers " + frequency.periods.toFixed(1) + " return intervals per calendar year from the supplied dates, rather than assuming daily prices.",
+      "Portfolio returns assume constant weights reset at each observation and exclude transaction costs, taxes and dividends not reflected in prices.",
+      ...(n < 30 ? ["Only " + n + " returns are available; annualized estimates are particularly unstable."] : []),
+      ...(frequency.largestGap > 7 ? ["Largest observed gap is " + frequency.largestGap + " days. Check the input cadence before interpreting annualized risk."] : [])
     ]
   };
 
@@ -175,6 +228,8 @@ function analyze(parsed) {
 }
 
 function renderResult(result, saved) {
+  const ask = document.querySelector('[data-osiris-feature="portfolio"]');
+  if (ask) ask.disabled = false;
   $("emptyState").hidden = true; $("resultsContent").hidden = false;
   $("sourceBadge").textContent = result.sourceMode === "demo" ? "Synthetic demo data" : "Local CSV";
   $("windowBadge").textContent = `${result.startDate} → ${result.endDate}`;
@@ -194,7 +249,17 @@ function renderResult(result, saved) {
   const cols = result.correlationMatrix.columns;
   $("correlationTable").innerHTML = `<thead><tr><th></th>${cols.map((col) => `<th>${escapeAttr(col)}</th>`).join("")}</tr></thead><tbody>${cols.map((rowName, i) => `<tr><th>${escapeAttr(rowName)}</th>${result.correlationMatrix.matrix[i].map((value) => `<td>${num(value, 2)}</td>`).join("")}</tr>`).join("")}</tbody>`;
   $("warnings").innerHTML = result.warnings.map((warning) => `• ${escapeAttr(warning)}`).join("<br>");
-  $("inputStatus").textContent = `Analyzed ${result.observations} daily return observations. ${saved ? "Saved locally for Reports." : "Storage is unavailable; this run is not saved."}`;
+  $("inputStatus").textContent = `Analyzed ${result.observations} return intervals. ${saved ? "Saved locally for Reports." : "Storage is unavailable; this run is not saved."}`;
+}
+
+function invalidateResult() {
+  const ask = document.querySelector('[data-osiris-feature="portfolio"]');
+  if (ask) ask.disabled = true;
+  if (!$("resultsContent").hidden) {
+    $("resultsContent").hidden = true;
+    $("emptyState").hidden = false;
+    $("emptyState").textContent = "Inputs changed. Run Analyze again before using these results. A previous completed run may still be saved in Reports.";
+  }
 }
 
 function makeDemoCsv(days = 260) {
@@ -215,16 +280,18 @@ function makeDemoCsv(days = 260) {
   return rows.join("\n");
 }
 
-$("addHolding").addEventListener("click", () => { holdings.push({ symbol: "", weight: 10 }); renderHoldings(); });
+$("addHolding").addEventListener("click", () => { holdings.push({ symbol: "", weight: 10 }); renderHoldings(); invalidateResult(); });
 $("fileInput").addEventListener("change", async (event) => {
   const file = event.target.files?.[0]; if (!file) return;
-  $("csvInput").value = await file.text(); sourceMode = "csv"; $("inputStatus").textContent = `Loaded ${file.name} locally.`;
+  if (file.size > 2_000_000) { $("inputStatus").textContent = "File exceeds the 2 MB limit."; invalidateResult(); return; }
+  $("csvInput").value = await file.text(); sourceMode = "csv"; invalidateResult(); $("inputStatus").textContent = `Loaded ${file.name} locally.`;
 });
-$("csvInput").addEventListener("input", () => { sourceMode = "csv"; });
-$("demoButton").addEventListener("click", () => { $("csvInput").value = makeDemoCsv(); sourceMode = "demo"; $("inputStatus").textContent = "Loaded deterministic synthetic demo price history."; });
+$("csvInput").addEventListener("input", () => { sourceMode = "csv"; invalidateResult(); });
+$("benchmarkInput").addEventListener("input", invalidateResult);
+$("demoButton").addEventListener("click", () => { $("csvInput").value = makeDemoCsv(); sourceMode = "demo"; invalidateResult(); $("inputStatus").textContent = "Loaded deterministic synthetic demo price history."; });
 $("analyzeButton").addEventListener("click", () => {
   try { analyze(parseCsv($("csvInput").value)); }
-  catch (error) { $("inputStatus").textContent = error instanceof Error ? error.message : "Portfolio analysis failed."; }
+  catch (error) { invalidateResult(); $("inputStatus").textContent = error instanceof Error ? error.message : "Portfolio analysis failed."; }
 });
 
 renderHoldings();

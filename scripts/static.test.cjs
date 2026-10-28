@@ -21,6 +21,33 @@ function page(file, prepare = () => {}) {
   }
   return dom;
 }
+test('Frontier loads only its lean CSS, and Main Street can be navigated on a phone', () => {
+  const dom = page('index.html', win => {
+    win.matchMedia = () => ({ matches: true, addEventListener() {} });
+    const frame = win.document.querySelector('.town-frame');
+    Object.defineProperty(frame, 'scrollWidth', { get: () => 1000 });
+    Object.defineProperty(frame, 'clientWidth', { get: () => 390 });
+    frame.getBoundingClientRect = () => ({ left: 0, width: 390 });
+    frame.scrollTo = options => { frame.scrollLeft = options.left; frame.dispatchEvent(new win.Event('scroll')); };
+    [...frame.querySelectorAll('.town-building')].forEach((building, i) => {
+      building.getBoundingClientRect = () => ({ left: i * 160 - frame.scrollLeft, width: 160 });
+    });
+  });
+  const { document } = dom.window;
+  const styles = [...document.querySelectorAll('link[rel=stylesheet]')].map(x => x.getAttribute('href'));
+  assert.ok(styles.includes('assets/frontier/base.css'));
+  assert.ok(!styles.includes('assets/frontier/home.css'));
+  const town = document.querySelector('.town-frame');
+  assert.equal(town.getAttribute('role'), 'region');
+  const rail = document.querySelector('.town-rail');
+  assert.equal(rail.hidden, false);
+  document.getElementById('town-pan-right').click();
+  assert.ok(town.scrollLeft > 0);
+  assert.match(document.getElementById('town-position').textContent, /\/ 6/);
+  assert.ok(document.querySelectorAll('a.town-building').length === 6);
+  dom.window.close();
+});
+
 test('The homepage is an uninterrupted Western journey', () => {
   const dom = new JSDOM(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
   const { document } = dom.window;
@@ -143,6 +170,59 @@ test('Roadside signs appear briefly, pass the rider, and leave long quiet stretc
   assert.ok(arrivingOpacity < 1 && departingOpacity < 1, 'Signs fade in and out');
 
   for (let i = 0; i <= 100; i++) step(i / 100);
+  dom.window.close();
+});
+
+test('Portfolio rejects broken rows and stale output, then infers observation frequency', () => {
+  const dom = page('tools/portfolio/index.html');
+  const { document, Event } = dom.window;
+  const status = document.getElementById('inputStatus');
+  const csv = document.getElementById('csvInput');
+  const ask = document.querySelector('[data-osiris-feature=portfolio]');
+  document.getElementById('demoButton').click();
+  document.getElementById('analyzeButton').click();
+  assert.equal(document.getElementById('resultsContent').hidden, false);
+  assert.equal(ask.disabled, false);
+
+  csv.value = 'date,QQQ,TLT,GLD,SPY\n2025-01-01,100,90,200,500\n2025-02-01,0,91,205,510\n2025-03-01,110,92,206,520';
+  csv.dispatchEvent(new Event('input'));
+  assert.equal(document.getElementById('resultsContent').hidden, true);
+  assert.equal(ask.disabled, true);
+  document.getElementById('analyzeButton').click();
+  assert.match(status.textContent, /Missing or nonpositive price on 2025-02-01/);
+
+  csv.value = 'date,QQQ,TLT,GLD,SPY\n2025-01-01,100,90,200,500\n2025-01-01,101,91,201,501\n2025-03-01,110,92,206,520';
+  document.getElementById('analyzeButton').click();
+  assert.match(status.textContent, /strictly increasing without duplicates/);
+
+  csv.value = 'date,QQQ,TLT,GLD,SPY\n2025-01-01,100,90,200,500\n2025-02-01,101,91,201,505\n2025-03-01,105,92,204,510\n2025-04-01,110,93,206,520';
+  document.getElementById('analyzeButton').click();
+  assert.equal(document.getElementById('resultsContent').hidden, false);
+  assert.equal(ask.disabled, false);
+  const saved = JSON.parse(dom.window.localStorage.getItem('ballzatram:portfolio-pages-last-run:v1'));
+  assert.ok(saved.annualizationPeriods > 10 && saved.annualizationPeriods < 15);
+  assert.match(saved.warnings.join(' '), /Annualization infers/);
+  assert.match(status.textContent, /return intervals/);
+  dom.window.close();
+});
+
+test('Scenario results are invalidated on edits and do not misrepresent zero drivers', () => {
+  const dom = page('tools/scenario/index.html');
+  const { document, Event } = dom.window;
+  const ask = document.querySelector('[data-osiris-feature=scenario]');
+  assert.equal(ask.disabled, true);
+  document.querySelector('[data-preset=rates]').click();
+  assert.notEqual(document.getElementById('stressReturn').textContent, '—');
+  assert.equal(ask.disabled, false);
+  assert.ok([...document.querySelectorAll('.driver-bar i')].some(el => el.getAttribute('style').includes('width:0%')));
+  const rate = document.getElementById('factor-rates');
+  rate.value = '0.25';rate.dispatchEvent(new Event('input'));
+  assert.equal(document.getElementById('stressReturn').textContent, '—');
+  assert.equal(ask.disabled, true);
+  document.getElementById('runScenario').click();
+  assert.equal(ask.disabled, false);
+  const run = JSON.parse(dom.window.localStorage.getItem('ballzatram:scenario-pages-last-run:v1'));
+  assert.match(run.band_method, /Not a probabilistic confidence interval/);
   dom.window.close();
 });
 

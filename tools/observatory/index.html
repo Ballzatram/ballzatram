@@ -2,13 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#1d1c1a"><meta name="description" content="Follow bills. Check the record. Compare promises with actions. Congressional Accountability is an independent citizen project from Ballzatram.">
-  <title>Congressional Accountability · Ballzatram</title><link rel="stylesheet" href="styles.css">
+  <meta name="theme-color" content="#1d1c1a"><meta name="description" content="Follow bills. Check the record. Compare promises with actions. Congressional Accountability is an independent citizen research project by Devin Gallemore.">
+  <title>Congressional Accountability · A Digital Frontier</title><link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
 <aside class="sidebar">
-  <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true">CA</span><span>A BALLZATRAM PROJECT</span></a>
+  <a class="brand" href="../../index.html"><span class="brand-icon" aria-hidden="true">CA</span><span>DEVIN GALLEMORE / A DIGITAL FRONTIER</span></a>
   <div class="sidebar-title">Congressional<br><em>Accountability.</em></div>
   <p class="sidebar-sub">THE RECORD. IN FULL.</p>
   <nav aria-label="Main navigation">
@@ -25,14 +25,22 @@
     <button data-tab="promises">My comparisons</button>
     <button data-tab="dossier">My notebook</button>
   </nav>
-  <div class="sidebar-foot"><p>Independent citizen project.<br>Not a government service.</p><a href="../index.html">← All Ballzatram tools</a></div>
+  <div class="sidebar-foot"><p>Independent citizen project.<br>Not a government service.</p><a href="../index.html">← Back to the frontier</a></div>
 </aside>
 <main id="main" class="tracking">
   <header class="topbar"><span>PUBLIC RECORDS <span class="topbar-divider">/</span> PUBLIC INTEREST</span><button class="quiet" data-tab="guide">How this works ↗</button></header>
   <div id="notice" role="status" aria-live="polite"></div>
   <section class="case-bar" aria-label="Selected bill" hidden><div><span class="badge" id="mode-label"></span><h1 id="case-title"></h1><p id="case-meta"></p></div><div class="case-badges"><button id="follow-current" class="primary" hidden>Follow bill</button><button id="share-bill" class="quiet" hidden>Copy bill link</button><button id="save-case" class="quiet">Save to notebook</button></div></section>
+  <nav class="case-quicknav" aria-label="Bill reading views" hidden>
+    <button type="button" data-tab="overview">Overview</button>
+    <button type="button" data-tab="bill">Bill X-Ray</button>
+    <button type="button" data-tab="versions">Changes</button>
+    <button type="button" data-tab="congress">Actions</button>
+    <button type="button" data-tab="promises">Comparisons</button>
+    <button type="button" data-tab="dossier">Notebook</button>
+  </nav>
   <section id="panel" tabindex="-1" aria-label="Selected workbench view"><p>Loading the official bill catalogue…</p></section>
-  <footer class="page-foot"><strong>Congressional Accountability</strong><span>Independent research tools by Ballzatram.</span><button class="quiet" data-tab="guide">Sources, coverage & corrections</button></footer>
+  <footer class="page-foot"><strong>Congressional Accountability</strong><span>An independent project by Devin Gallemore.</span><button class="quiet" data-tab="guide">Sources, coverage & corrections</button></footer>
 </main>
 <input id="import-file" type="file" accept=".json,application/json" hidden>
 <dialog id="evidence-dialog" aria-labelledby="evidence-title"><form method="dialog"><button class="close" aria-label="Close evidence">×</button></form><div id="evidence-body"></div></dialog>
