@@ -21,74 +21,74 @@ function page(file, prepare = () => {}) {
   }
   return dom;
 }
-const visiblePrograms = document => [...document.querySelectorAll('.frontier-program')].filter(card => !card.hidden);
-
-for (const file of ['index.html']) {
-  test(`${file}: search, category, and empty states preserve real links`, () => {
-    const dom = page(file); const { document, Event } = dom.window;
-    const search = document.getElementById('program-search');
-    const count = document.querySelectorAll('.frontier-program').length;
-    assert.ok(count >= 7);
-    assert.equal(document.querySelector('[data-enhanced]').hidden, false);
-    search.value = 'central banker'; search.dispatchEvent(new Event('input'));
-    assert.equal(visiblePrograms(document).length, 1);
-    assert.match(visiblePrograms(document)[0].querySelector('a').href, /games\/central-bank.html$/);
-    search.value = '<not a program>'; search.dispatchEvent(new Event('input'));
-    assert.equal(document.getElementById('no-programs').hidden, false);
-    search.value = ''; search.dispatchEvent(new Event('input'));
-    document.querySelector('[data-filter="Games"]').click();
-    assert.ok(visiblePrograms(document).every(card => card.dataset.category === 'Games'));
-    document.querySelector('[data-filter="all"]').click();
-    assert.equal(visiblePrograms(document).length, count);
-    dom.window.close();
-  });
-}
-
-test('Homepage is fully navigable before JavaScript runs', () => {
+test('The homepage is an uninterrupted Western journey', () => {
   const dom = new JSDOM(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
   const { document } = dom.window;
-  const cards = visiblePrograms(document);
-  assert.equal(cards.length, publicPrograms.length);
-  assert.equal(document.querySelector('[data-enhanced]').hidden, true);
-  // Check the actual destinations, labels and categories, not just a stale count.
-  assert.deepEqual(cards.map(card => ({
-    title: card.querySelector('h3 a').textContent,
-    href: card.querySelector('h3 a').getAttribute('href'),
-    category: card.dataset.category
-  })), publicPrograms.map(({ title, href, category }) => ({ title, href, category })));
-  assert.equal(document.getElementById('program-count').textContent, `${publicPrograms.length} projects`);
+  assert.match(document.title, /Devin Gallemore/);
+  assert.match(document.getElementById('welcome-title').textContent, /HOWDY/);
+  assert.doesNotMatch(document.body.textContent, /Gallemore Gulch/i);
+  assert.equal(document.querySelector('.frontier-header'), null);
+  assert.equal(document.querySelector('.frontier-directory'), null);
+  assert.equal(document.querySelector('.frontier-trails'), null);
+  assert.equal(document.querySelector('.program-grid'), null);
+  assert.equal(document.querySelector('#program-search'), null);
+  assert.ok(document.querySelector('.frontier-town'));
+  assert.ok(document.querySelector('#ride-out'));
+  assert.ok(document.querySelector('#camp'));
+  assert.equal(document.querySelectorAll('.ride-sign').length, 3);
   dom.window.close();
 });
 
-test('Homepage filters reset together and restore keyboard focus', () => {
-  const dom = page('index.html'); const { document, Event, KeyboardEvent } = dom.window;
-  const search = document.getElementById('program-search');
-  document.querySelector('[data-filter="Games"]').click();
-  search.value = 'portfolio'; search.dispatchEvent(new Event('input'));
-  assert.equal(visiblePrograms(document).length, 0);
-  document.getElementById('clear-filters').click();
-  assert.equal(visiblePrograms(document).length, publicPrograms.length);
-  assert.equal(document.querySelector('[data-filter="all"]').getAttribute('aria-pressed'), 'true');
-  assert.equal(document.getElementById('no-programs').hidden, true);
-  assert.equal(document.activeElement, search);
-  search.value = 'central banker'; search.dispatchEvent(new Event('input'));
-  assert.equal(document.getElementById('program-count').textContent, `1 project of ${publicPrograms.length}`);
-  search.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape' }));
-  assert.equal(visiblePrograms(document).length, publicPrograms.length);
+test('Every published project is inside the initially collapsed trail noticeboard', () => {
+  const dom = new JSDOM(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
+  const { document } = dom.window;
+  const map = document.getElementById('trail-map');
+  assert.equal(map.tagName, 'DETAILS');
+  assert.equal(map.open, false);
+  assert.equal(document.querySelector('.camp-records').open, false);
+  assert.equal(document.getElementById('programs').contains(map), true);
+  const links = [...map.querySelectorAll('.trail-route-group a')];
+  assert.equal(links.length, publicPrograms.length);
+  assert.deepEqual(
+    links.map(a => a.getAttribute('href')).sort(),
+    publicPrograms.map(item => item.href).sort()
+  );
+  assert.equal(document.querySelectorAll('.trail-route-group').length, 4);
   dom.window.close();
 });
 
-test('Desert motion is opt-in and respects reduced-motion preferences', () => {
+test('The whole town and each trail sign are navigable before JavaScript runs', () => {
+  const dom = new JSDOM(fs.readFileSync(path.join(root, 'index.html'), 'utf8'));
+  const { document } = dom.window;
+  const buildings = [...document.querySelectorAll('a.town-building')];
+  assert.equal(buildings.length, 6);
+  assert.equal(new Set(buildings.map(a => a.getAttribute('href'))).size, 6);
+  for (const a of buildings) {
+    assert.ok(a.getAttribute('aria-label'));
+    assert.ok(a.getAttribute('href'));
+  }
+  for (const sign of document.querySelectorAll('.ride-sign')) {
+    assert.ok(sign.querySelector('a[href]'));
+  }
+  assert.equal(document.querySelector('.frontier-skip').getAttribute('href'), '#main');
+  assert.equal(document.querySelector('.ride-footer a').getAttribute('href'), '#programs');
+  dom.window.close();
+});
+
+test('Horseback travel respects reduced-motion preferences without hiding links', () => {
   for (const reduced of [false, true]) {
-    const dom = page('index.html', win => { win.matchMedia = () => ({ matches: reduced, addEventListener() {} }); });
+    const dom = page('index.html', win => {
+      win.matchMedia = () => ({ matches: reduced, addEventListener() {} });
+    });
     const { document } = dom.window;
-    const button = document.getElementById('frontier-motion');
-    assert.equal(document.body.dataset.motion, 'off');
-    button.click();
-    assert.equal(document.body.dataset.motion, reduced ? 'off' : 'on');
-    assert.equal(button.getAttribute('aria-pressed'), String(!reduced));
-    button.click();
-    assert.equal(document.body.dataset.motion, 'off');
+    const ride = document.querySelector('.frontier-ride');
+    assert.equal(ride.classList.contains('has-ride-motion'), !reduced);
+    if (reduced) {
+      for (const sign of ride.querySelectorAll('.ride-sign')) {
+        assert.equal(sign.inert, false);
+      }
+    }
+    assert.equal(document.querySelectorAll('.town-building[href]').length, 6);
     dom.window.close();
   }
 });
