@@ -32,7 +32,9 @@
     <a href="#main">↑ BACK TO TOWN</a>
     <span>BUILT BY DEVIN GALLEMORE · HAPPY TRAILS.</span>
   </div>
-  <nav class="camp-records" aria-label="Site details">
+  <details class="camp-records">
+    <summary>THE TOWN RECORDS <span aria-hidden="true">+</span></summary>
+    <nav aria-label="Site details">
     <a href="devin/resume.html">Resume</a>
     <a href="https://github.com/Ballzatram/ballzatram">GitHub</a>
     <a href="tools/ai/connect.html">AI guide</a>
@@ -40,5 +42,6 @@
     <a href="lab-pass.html">Lab Pass</a>
     <a href="privacy.html">Privacy</a>
     <a href="terms.html">Terms</a>
-  </nav>
+    </nav>
+  </details>
 </section>
