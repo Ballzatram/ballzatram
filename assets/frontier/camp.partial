@@ -1,0 +1,47 @@
+<!-- Beyond the town, the entire site continues as a Western journey. -->
+<section class="frontier-camp" id="camp" aria-labelledby="camp-title">
+  <div class="camp-night-sky" aria-hidden="true">
+    <span class="camp-moon"></span><span class="camp-star camp-star--one"></span>
+    <span class="camp-star camp-star--two"></span><span class="camp-star camp-star--three"></span>
+    <span class="camp-star camp-star--four"></span><span class="camp-star camp-star--five"></span>
+    <span class="camp-ridge camp-ridge--far"></span><span class="camp-ridge camp-ridge--near"></span>
+  </div>
+  <div class="camp-story">
+    <p class="town-eyebrow">THE LAST STOP / FOR NOW</p>
+    <h2 id="camp-title">THE ROAD<br><span>GOES ON.</span></h2>
+    <p>Every project is another little frontier. Some are ready to explore. Others are still taking shape.</p>
+  </div>
+  <div class="campfire" aria-hidden="true">
+    <span class="campfire-glow"></span><span class="campfire-flame campfire-flame--back"></span>
+    <span class="campfire-flame campfire-flame--front"></span><span class="campfire-log campfire-log--one"></span>
+    <span class="campfire-log campfire-log--two"></span>
+  </div>
+  <div class="camp-map-anchor" id="programs">
+    <details class="trail-ledger" id="trail-map">
+      <summary><span class="trail-ledger__eyebrow">THE TOWN NOTICEBOARD</span>
+        <strong>ALL THE TRAILS <span aria-hidden="true">+</span></strong>
+        <small>Unfold the map to find every project and experiment.</small>
+      </summary>
+      <div class="trail-ledger__inside">
+        <p>Choose a trail, stranger. The entire collection is here, tucked into the journey.</p>
+        <!-- JOURNEY_ROUTES -->
+      </div>
+    </details>
+  </div>
+  <div class="camp-trail-end">
+    <a href="#main">↑ BACK TO TOWN</a>
+    <span>BUILT BY DEVIN GALLEMORE · HAPPY TRAILS.</span>
+  </div>
+  <details class="camp-records">
+    <summary>THE TOWN RECORDS <span aria-hidden="true">+</span></summary>
+    <nav aria-label="Site details">
+    <a href="devin/resume.html">Resume</a>
+    <a href="https://github.com/Ballzatram/ballzatram">GitHub</a>
+    <a href="tools/ai/connect.html">AI guide</a>
+    <a href="community.html">Community</a>
+    <a href="lab-pass.html">Lab Pass</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    </nav>
+  </details>
+</section>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#f3e9d2">
+  <meta name="theme-color" content="#282839">
   <title>Devin Gallemore | A digital frontier</title>
   <meta name="description" content="An independent outpost for curious minds. Explore tools, economics games, AI experiments, and projects by Devin Gallemore.">
   <link rel="canonical" href="https://dgallemore.com/">
@@ -14,30 +14,25 @@
   <link rel="preload" href="assets/frontier/press-start-2p.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="assets/frontier/home.css">
   <link rel="stylesheet" href="assets/frontier/town.css">
-  <script defer src="assets/frontier/explorer.js"></script>
+  <link rel="stylesheet" href="assets/frontier/journey.css">
   <script defer src="assets/frontier/ride.js"></script>
 </head>
 <body class="frontier-home" data-motion="off">
 <a class="frontier-skip" href="#main">Skip to content</a>
-<header class="frontier-header frontier-width">
-  <a class="frontier-brand" href="index.html" aria-label="Devin Gallemore home"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#hat"></use></svg><span>DEVIN GALLEMORE<small>ARIZONA ROOTS. DIGITAL FRONTIERS.</small></span></a>
-  <nav class="frontier-nav" aria-label="Main navigation">
-    <a href="#programs">The projects</a><a href="devin/">About Devin</a><a href="https://github.com/Ballzatram/ballzatram">GitHub ↗</a><a class="nav-resume" href="devin/resume.html">Resume ↗</a>
-  </nav>
-</header>
 <main id="main" class="frontier-width">
 <!-- The town is navigation, not a game: every building is a real, keyboard-accessible link. -->
 <section class="frontier-town" aria-labelledby="welcome-title">
   <div class="town-heading">
-    <p class="town-eyebrow">DEEP IN THE DIGITAL WEST · EST. 2026</p>
-    <h1 id="welcome-title">WELCOME TO<br><span>GALLEMORE GULCH</span></h1>
-    <p>One man's collection of tools, games, and rabbit holes.<br>Pick a building. See where the trail goes.</p>
+    <p class="town-eyebrow">DEVIN GALLEMORE / A DIGITAL FRONTIER</p>
+    <h1 id="welcome-title">HOWDY,<br><span>I'M DEVIN.</span></h1>
+    <p>I build tools, games, and the occasional rabbit hole.<br>Pick a building, or follow the trail into the unknown.</p>
   </div>
   <div class="town-frame" aria-label="An interactive eight-bit Western town. Scroll sideways on small screens to explore its buildings.">
     <div class="town-world">
       <div class="town-sun" aria-hidden="true"></div>
       <div class="town-cloud town-cloud--one" aria-hidden="true"></div>
       <div class="town-cloud town-cloud--two" aria-hidden="true"></div>
+      <span class="town-tumbleweed" aria-hidden="true"></span>
       <svg class="town-mesas" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges">
         <path fill="#ae675e" d="M0 220h75v-18h35v-55h25v-35h65v35h15v59h30v29h70v-19h35v-40h45v-55h85v55h25v54h72v-22h53v-42h35v-23h88v23h31v43h62v-15h28v-53h46v-45h81v45h40v43h64v-16h45v-40h70v40h30v55h40v140H0z"/>
         <path fill="#de926b" d="M130 114h70v13h-70zm264 9h88v10h-88zm320 24h88v10h-88zm254-29h82v11h-82z"/>
@@ -82,20 +77,14 @@
         </a>
       </nav>
       <span class="town-barn-star" aria-hidden="true">✦</span>
+      <span class="town-horse" aria-hidden="true"><img src="assets/frontier/rider.svg" width="80" height="80" alt=""></span>
     </div>
   </div>
-  <div class="town-underbar">
-    <span class="town-desktop-hint"><strong>WELCOME, STRANGER.</strong> Hover a building to discover what's inside.</span><span class="town-mobile-hint"><strong>SWIPE THROUGH TOWN</strong> or tap a destination below.</span>
-    <a href="#ride-out">OR SADDLE UP &amp; RIDE OUT <span aria-hidden="true">↓</span></a>
+  <div class="town-wayfinding">
+    <span class="town-desktop-hint">HOVER A BUILDING TO EXPLORE</span>
+    <span class="town-mobile-hint">SWIPE THE TOWN · TAP A BUILDING</span>
+    <a href="#ride-out">SADDLE UP &amp; RIDE OUT <span aria-hidden="true">↓</span></a>
   </div>
-  <nav class="town-mobile-nav" aria-label="Town destinations on mobile">
-    <a href="tools/observatory/index.html">Sheriff · Bills</a>
-    <a href="econ-arcade/index.html">Saloon · Games</a>
-    <a href="tools/portfolio/index.html">Bank · Finance</a>
-    <a href="tools/ai/index.html">Telegraph · AI</a>
-    <a href="tools/parcel-fit/">Livery · Land</a>
-    <a href="devin/">Homestead · About</a>
-  </nav>
 </section>
 <section class="frontier-ride" id="ride-out" aria-labelledby="ride-heading">
   <div class="ride-sticky">
@@ -111,152 +100,59 @@
         <div class="ride-sign__wood"><span>MILE 02 / OFF THE MAP</span><strong>LAND &amp;<br>RESEARCH</strong><p>Maps, markets, and evidence.</p><a href="tools/parcel-fit/">Explore the tools ↗</a></div>
       </div>
       <div class="ride-sign ride-sign--three" data-start="0.79" data-end="1.01">
-        <div class="ride-sign__wood"><span>MILE 03 / UNCHARTED COUNTRY</span><strong>NEW FRONTIERS<br>AHEAD</strong><p>More games and experiments are in the works.</p><a href="#programs">See what's here now ↓</a></div>
+        <div class="ride-sign__wood"><span>MILE 03 / UNCHARTED COUNTRY</span><strong>WHAT'S OVER<br>THE HORIZON?</strong><p>New tools, games, and experiments are always taking shape.</p><a href="#programs">Find the trail map ↓</a></div>
       </div>
     </div>
-    <div class="ride-footer"><span>SCROLL TO RIDE <span aria-hidden="true">↓</span></span><a href="#programs">SKIP THE RIDE · ALL PROJECTS ↗</a></div>
+    <div class="ride-footer"><span>SCROLL TO RIDE <span aria-hidden="true">↓</span></span><a href="#programs">JUMP TO THE TRAIL MAP ↗</a></div>
   </div>
 </section>
-  <div class="frontier-intro"><div><strong>Welcome to my little corner of the frontier.</strong><p>Part workshop. Part arcade. Always something worth poking around in.</p></div><span class="intro-mark"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#cactus"></use></svg> Built with a wandering mind.</span></div>
-  <section class="frontier-trails" aria-labelledby="trails-title">
-    <div class="section-heading"><div><p class="frontier-kicker">03 / Choose your adventure</p><h2 id="trails-title">Pick your trail.</h2></div><p>Three good places to start.</p></div>
-    <div class="trail-grid">
-      <a class="trail-card" href="econ-arcade/index.html"><div class="trail-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#game"></use></svg><span>TRAIL 01</span></div><h3>The Arcade</h3><p>Run an economy. Test a strategy. Learn a thing or two.</p><span class="trail-arrow" aria-hidden="true">↗</span></a>
-      <a class="trail-card" href="tools/observatory/index.html"><div class="trail-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#book"></use></svg><span>TRAIL 02</span></div><h3>The Paper Trail</h3><p>Follow the bills. Inspect the records. Ask better questions.</p><span class="trail-arrow" aria-hidden="true">↗</span></a>
-      <a class="trail-card" href="tools/ai/index.html"><div class="trail-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#bulb"></use></svg><span>TRAIL 03</span></div><h3>The AI Outpost</h3><p>Meet Osiris. Explore the experiments. Bring your own AI.</p><span class="trail-arrow" aria-hidden="true">↗</span></a>
-    </div>
-  </section>
-  <section class="frontier-directory" id="programs" aria-labelledby="projects-title">
-    <div class="section-heading"><div><p class="frontier-kicker">04 / The whole collection</p><h2 id="projects-title">The project board.</h2></div><p>A few finished things. A few wild ideas.</p></div>
-    <div class="directory-toolbar" data-enhanced hidden>
-      <div class="frontier-filters" role="group" aria-label="Filter projects"><button type="button" data-filter="all" aria-pressed="true">All projects</button><button type="button" data-filter="About" aria-pressed="false">About</button><button type="button" data-filter="Experiments" aria-pressed="false">Experiments</button><button type="button" data-filter="Games" aria-pressed="false">Games</button><button type="button" data-filter="Research" aria-pressed="false">Research</button></div>
-      <div class="frontier-search"><label for="program-search">Find a project</label><input id="program-search" type="search" placeholder="Try “economics”…" autocomplete="off"></div>
-    </div>
-    <div class="program-grid"><article class="frontier-program" data-category="Research" data-search="Parcel Fit Purpose-specific desktop screening for equestrian, event, and special-use land. View a sample report and request a scoped review. Research">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#folder"></use></svg><span class="program-status">Paid pilot · inquiries open</span></div>
-  <h3><a href="tools/parcel-fit/">Parcel Fit</a></h3>
-  <p>Purpose-specific desktop screening for equestrian, event, and special-use land. View a sample report and request a scoped review.</p>
-  <div class="program-bottom"><span>Research</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Experiments" data-search="Agent Workshop Learn agent orchestration by running a real workflow. Inspect state, break it, repair it, and build it in Python. Experiments">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#bulb"></use></svg><span class="program-status">Interactive guide · runnable code</span></div>
-  <h3><a href="tools/agent-workshop/">Agent Workshop</a></h3>
-  <p>Learn agent orchestration by running a real workflow. Inspect state, break it, repair it, and build it in Python.</p>
-  <div class="program-bottom"><span>Experiments</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Experiments" data-search="Beckets Labyrinth Get lost in swipeable top tens. Reveal the countdown, call your #1, or create a rabbit hole with your own AI. Experiments">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#bulb"></use></svg><span class="program-status">Explore · bring your AI</span></div>
-  <h3><a href="tools/beckets-labyrinth/">Beckets Labyrinth</a></h3>
-  <p>Get lost in swipeable top tens. Reveal the countdown, call your #1, or create a rabbit hole with your own AI.</p>
-  <div class="program-bottom"><span>Experiments</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="Econ Arcade The Family Business and the full economics library: experience markets, incentives, finance, and policy. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#game"></use></svg><span class="program-status">Playable</span></div>
-  <h3><a href="econ-arcade/index.html">Econ Arcade</a></h3>
-  <p>The Family Business and the full economics library: experience markets, incentives, finance, and policy.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="Central Banker Take the chair. Balance inflation, jobs, and the unexpected. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#chart"></use></svg><span class="program-status">Playable</span></div>
-  <h3><a href="games/central-bank.html">Central Banker</a></h3>
-  <p>Take the chair. Balance inflation, jobs, and the unexpected.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="Prisoner’s Dilemma Cooperate or defect? Discover what it takes to build trust. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#game"></use></svg><span class="program-status">Playable</span></div>
-  <h3><a href="econ-arcade/prisoners-dilemma.html">Prisoner’s Dilemma</a></h3>
-  <p>Cooperate or defect? Discover what it takes to build trust.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Research" data-search="Congressional Accountability Follow bills, inspect official records, and compare promises with actions. Research">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#book"></use></svg><span class="program-status">Public beta</span></div>
-  <h3><a href="tools/observatory/index.html">Congressional Accountability</a></h3>
-  <p>Follow bills, inspect official records, and compare promises with actions.</p>
-  <div class="program-bottom"><span>Research</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Research" data-search="Portfolio Lab Bring your price history. Explore returns, risk, and correlations. Research">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#chart"></use></svg><span class="program-status">Local data</span></div>
-  <h3><a href="tools/portfolio/index.html">Portfolio Lab</a></h3>
-  <p>Bring your price history. Explore returns, risk, and correlations.</p>
-  <div class="program-bottom"><span>Research</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Research" data-search="Scenario Stress Lab Turn the macro dials and see how a portfolio might respond. Research">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#chart"></use></svg><span class="program-status">Browser tool</span></div>
-  <h3><a href="tools/scenario/index.html">Scenario Stress Lab</a></h3>
-  <p>Turn the macro dials and see how a portfolio might respond.</p>
-  <div class="program-bottom"><span>Research</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="Supply &amp; Demand Move a market. Test price controls, taxes, and economic shocks. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#chart"></use></svg><span class="program-status">Playable</span></div>
-  <h3><a href="tools/supply-demand/index.html">Supply &amp; Demand</a></h3>
-  <p>Move a market. Test price controls, taxes, and economic shocks.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="Strategy Studio Explore bargaining, auctions, incentives, and game theory. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#game"></use></svg><span class="program-status">Playable</span></div>
-  <h3><a href="econ-arcade/platform.html">Strategy Studio</a></h3>
-  <p>Explore bargaining, auctions, incentives, and game theory.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="Invisible Hands Find equilibrium in a market of changing supply and demand. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#game"></use></svg><span class="program-status">Playable</span></div>
-  <h3><a href="econ-arcade/invisible-hands.html">Invisible Hands</a></h3>
-  <p>Find equilibrium in a market of changing supply and demand.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="The Family Business Join the family. Run the deli, earn responsibility, and carry economics through one persistent 8-bit world. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#bulb"></use></svg><span class="program-status">Playable campaign</span></div>
-  <h3><a href="econ-arcade/play/">The Family Business</a></h3>
-  <p>Join the family. Run the deli, earn responsibility, and carry economics through one persistent 8-bit world.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Research" data-search="Reports Turn saved lab runs into a report you can edit and download. Research">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#book"></use></svg><span class="program-status">Browser tool</span></div>
-  <h3><a href="tools/reports/index.html">Reports</a></h3>
-  <p>Turn saved lab runs into a report you can edit and download.</p>
-  <div class="program-bottom"><span>Research</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Research" data-search="Parcel Intelligence Find land for a real brief. Check terrain, commute, sources, and room to grow. Research">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#folder"></use></svg><span class="program-status">Research workspace</span></div>
-  <h3><a href="tools/parcel/index.html">Parcel Intelligence</a></h3>
-  <p>Find land for a real brief. Check terrain, commute, sources, and room to grow.</p>
-  <div class="program-bottom"><span>Research</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Research" data-search="Weather Desk A weather-market worksheet for research and paper scenarios. Research">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#chart"></use></svg><span class="program-status">Paper mode</span></div>
-  <h3><a href="weather-bot.html">Weather Desk</a></h3>
-  <p>A weather-market worksheet for research and paper scenarios.</p>
-  <div class="program-bottom"><span>Research</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Experiments" data-search="Osiris · Your AI Use your chat app, connect your own models, or explore with a free local preview. Experiments">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#bulb"></use></svg><span class="program-status">Bring your AI</span></div>
-  <h3><a href="tools/ai/index.html">Osiris · Your AI</a></h3>
-  <p>Use your chat app, connect your own models, or explore with a free local preview.</p>
-  <div class="program-bottom"><span>Experiments</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Games" data-search="Stoney Bologna A very unqualified police chief. A very questionable adventure. Games">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#game"></use></svg><span class="program-status">Playable</span></div>
-  <h3><a href="games/stoney-bologna/index.html">Stoney Bologna</a></h3>
-  <p>A very unqualified police chief. A very questionable adventure.</p>
-  <div class="program-bottom"><span>Games</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="Experiments" data-search="AI Edit Factory Explore the video-editing workspace. Rendering requires the local setup. Experiments">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#folder"></use></svg><span class="program-status">Backend needed</span></div>
-  <h3><a href="ai-edit-factory/index.html">AI Edit Factory</a></h3>
-  <p>Explore the video-editing workspace. Rendering requires the local setup.</p>
-  <div class="program-bottom"><span>Experiments</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article>
-<article class="frontier-program" data-category="About" data-search="Devin’s Portfolio The person behind the programs: experience, projects, and what’s next. About">
-  <div class="program-top"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#person"></use></svg><span class="program-status">Portfolio</span></div>
-  <h3><a href="devin/">Devin’s Portfolio</a></h3>
-  <p>The person behind the programs: experience, projects, and what’s next.</p>
-  <div class="program-bottom"><span>About</span><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></div>
-</article></div>
-    <div class="frontier-empty" id="no-programs" hidden><p>No projects down this trail. Try another search or reset the filters.</p><button class="pixel-button" id="clear-filters" type="button">Show all projects <svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></button></div>
-    <div class="directory-status"><span id="program-count" role="status" aria-live="polite">20 projects</span><span>Each project wears its status on its sleeve.</span></div>
-  </section>
-  <section class="campfire-note" aria-labelledby="ai-title"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#bulb"></use></svg><div><h2 id="ai-title">Your AI. Your trusty sidekick.</h2><p>Use supported projects with the AI app you already have. Choose the context to share, then continue in your app. The connection guide explains interactive tools and their availability.</p></div><a class="pixel-button" href="tools/ai/connect.html">Read the AI guide <svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#arrow"></use></svg></a></section>
-  <footer class="frontier-footer"><span class="footer-credit"><svg class="pixel-icon" aria-hidden="true"><use href="assets/frontier/icons.svg#hat"></use></svg> Built by Devin Gallemore. Happy trails.</span><nav aria-label="Footer"><a href="lab-pass.html">Lab Pass</a><a href="community.html">Community</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a></nav></footer>
+<!-- Beyond the town, the entire site continues as a Western journey. -->
+<section class="frontier-camp" id="camp" aria-labelledby="camp-title">
+  <div class="camp-night-sky" aria-hidden="true">
+    <span class="camp-moon"></span><span class="camp-star camp-star--one"></span>
+    <span class="camp-star camp-star--two"></span><span class="camp-star camp-star--three"></span>
+    <span class="camp-star camp-star--four"></span><span class="camp-star camp-star--five"></span>
+    <span class="camp-ridge camp-ridge--far"></span><span class="camp-ridge camp-ridge--near"></span>
+  </div>
+  <div class="camp-story">
+    <p class="town-eyebrow">THE LAST STOP / FOR NOW</p>
+    <h2 id="camp-title">THE ROAD<br><span>GOES ON.</span></h2>
+    <p>Every project is another little frontier. Some are ready to explore. Others are still taking shape.</p>
+  </div>
+  <div class="campfire" aria-hidden="true">
+    <span class="campfire-glow"></span><span class="campfire-flame campfire-flame--back"></span>
+    <span class="campfire-flame campfire-flame--front"></span><span class="campfire-log campfire-log--one"></span>
+    <span class="campfire-log campfire-log--two"></span>
+  </div>
+  <div class="camp-map-anchor" id="programs">
+    <details class="trail-ledger" id="trail-map">
+      <summary><span class="trail-ledger__eyebrow">THE TOWN NOTICEBOARD</span>
+        <strong>ALL THE TRAILS <span aria-hidden="true">+</span></strong>
+        <small>Unfold the map to find every project and experiment.</small>
+      </summary>
+      <div class="trail-ledger__inside">
+        <p>Choose a trail, stranger. The entire collection is here, tucked into the journey.</p>
+        <div class="trail-route-groups"><section class="trail-route-group" aria-label="About"><h3>About</h3><ul><li><a href="devin/"><strong>Devin’s Portfolio</strong><small>Portfolio</small></a></li></ul></section><section class="trail-route-group" aria-label="Experiments"><h3>Experiments</h3><ul><li><a href="tools/agent-workshop/"><strong>Agent Workshop</strong><small>Interactive guide · runnable code</small></a></li><li><a href="tools/beckets-labyrinth/"><strong>Beckets Labyrinth</strong><small>Explore · bring your AI</small></a></li><li><a href="tools/ai/index.html"><strong>Osiris · Your AI</strong><small>Bring your AI</small></a></li><li><a href="ai-edit-factory/index.html"><strong>AI Edit Factory</strong><small>Backend needed</small></a></li></ul></section><section class="trail-route-group" aria-label="Games"><h3>Games</h3><ul><li><a href="econ-arcade/index.html"><strong>Econ Arcade</strong><small>Playable</small></a></li><li><a href="games/central-bank.html"><strong>Central Banker</strong><small>Playable</small></a></li><li><a href="econ-arcade/prisoners-dilemma.html"><strong>Prisoner’s Dilemma</strong><small>Playable</small></a></li><li><a href="tools/supply-demand/index.html"><strong>Supply &amp; Demand</strong><small>Playable</small></a></li><li><a href="econ-arcade/platform.html"><strong>Strategy Studio</strong><small>Playable</small></a></li><li><a href="econ-arcade/invisible-hands.html"><strong>Invisible Hands</strong><small>Playable</small></a></li><li><a href="econ-arcade/play/"><strong>The Family Business</strong><small>Playable campaign</small></a></li><li><a href="games/stoney-bologna/index.html"><strong>Stoney Bologna</strong><small>Playable</small></a></li></ul></section><section class="trail-route-group" aria-label="Research"><h3>Research</h3><ul><li><a href="tools/parcel-fit/"><strong>Parcel Fit</strong><small>Paid pilot · inquiries open</small></a></li><li><a href="tools/observatory/index.html"><strong>Congressional Accountability</strong><small>Public beta</small></a></li><li><a href="tools/portfolio/index.html"><strong>Portfolio Lab</strong><small>Local data</small></a></li><li><a href="tools/scenario/index.html"><strong>Scenario Stress Lab</strong><small>Browser tool</small></a></li><li><a href="tools/reports/index.html"><strong>Reports</strong><small>Browser tool</small></a></li><li><a href="tools/parcel/index.html"><strong>Parcel Intelligence</strong><small>Research workspace</small></a></li><li><a href="weather-bot.html"><strong>Weather Desk</strong><small>Paper mode</small></a></li></ul></section></div>
+      </div>
+    </details>
+  </div>
+  <div class="camp-trail-end">
+    <a href="#main">↑ BACK TO TOWN</a>
+    <span>BUILT BY DEVIN GALLEMORE · HAPPY TRAILS.</span>
+  </div>
+  <details class="camp-records">
+    <summary>THE TOWN RECORDS <span aria-hidden="true">+</span></summary>
+    <nav aria-label="Site details">
+    <a href="devin/resume.html">Resume</a>
+    <a href="https://github.com/Ballzatram/ballzatram">GitHub</a>
+    <a href="tools/ai/connect.html">AI guide</a>
+    <a href="community.html">Community</a>
+    <a href="lab-pass.html">Lab Pass</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+    </nav>
+  </details>
+</section>
 </main>
 </body>
 </html>

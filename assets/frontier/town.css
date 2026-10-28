@@ -1,4 +1,4 @@
-/* Gallemore Gulch: an accessible, static-first pixel town and scroll-driven trail. */
+/* A Digital Frontier: accessible pixel-art town and scroll-driven trail. */
 .frontier-home .frontier-town{position:relative;isolation:isolate;margin-bottom:0;background:#292a3b;color:#fff0d3;border:4px solid #352e35;box-shadow:7px 7px 0 #c9ae86}
 .frontier-home .town-heading{position:absolute;z-index:12;top:38px;left:44px;pointer-events:none;text-shadow:3px 4px 0 #332c3c}
 .frontier-home .town-eyebrow{font:700 10px/1.6 'Courier New',monospace;letter-spacing:.22em;color:#f5bd7f}
