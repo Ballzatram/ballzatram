@@ -7,9 +7,9 @@
     <span class="camp-ridge camp-ridge--far"></span><span class="camp-ridge camp-ridge--near"></span>
   </div>
   <div class="camp-story">
-    <p class="town-eyebrow">THE LAST STOP / FOR NOW</p>
-    <h2 id="camp-title">THE ROAD<br><span>GOES ON.</span></h2>
-    <p>Every project is another little frontier. Some are ready to explore. Others are still taking shape.</p>
+    <p class="town-eyebrow">SUNDOWN / FOR NOW</p>
+    <h2 id="camp-title">PULL UP<br><span>A LOG.</span></h2>
+    <p>A few trails led somewhere useful. Others took the scenic route. I've kept a map of the lot, if you're still curious.</p>
   </div>
   <div class="campfire" aria-hidden="true">
     <span class="campfire-glow"></span><span class="campfire-flame campfire-flame--back"></span>
@@ -20,17 +20,17 @@
     <details class="trail-ledger" id="trail-map">
       <summary><span class="trail-ledger__eyebrow">THE TOWN NOTICEBOARD</span>
         <strong>ALL THE TRAILS <span aria-hidden="true">+</span></strong>
-        <small>Unfold the map to find every project and experiment.</small>
+        <small>Every trail I've cut so far. Some even go where I planned.</small>
       </summary>
       <div class="trail-ledger__inside">
-        <p>Choose a trail, stranger. The entire collection is here, tucked into the journey.</p>
+        <p>Take your pick. No one ever got far without wandering a little.</p>
         <!-- JOURNEY_ROUTES -->
       </div>
     </details>
   </div>
   <div class="camp-trail-end">
     <a href="#main">↑ BACK TO TOWN</a>
-    <span>BUILT BY DEVIN GALLEMORE · HAPPY TRAILS.</span>
+    <span>BUILT BY DEVIN GALLEMORE · STILL WANDERING.</span>
   </div>
   <details class="camp-records">
     <summary>THE TOWN RECORDS <span aria-hidden="true">+</span></summary>
