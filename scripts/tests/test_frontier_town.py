@@ -90,8 +90,8 @@ class FrontierTownTests(unittest.TestCase):
         # the entrance, not anchored to the Homestead at the right edge.
         self.assertIn('town-building--homestead', town)
         self.assertIn('.town-horse{bottom:51px;left:4%;right:auto;', journey_css)
-        self.assertRegex(journey_css, r'\\.town-horse\\{position:absolute;z-index:5;[^}]+left:4%;right:auto;')
-        self.assertRegex(town_css, r'\\.town-buildings\\{[^}]*z-index:6;')
+        self.assertRegex(journey_css, r'\.town-horse\{position:absolute;z-index:5;[^}]+left:4%;right:auto;')
+        self.assertRegex(town_css, r'\.town-buildings\{[^}]*z-index:6;')
         self.assertIn('pointer-events:none', journey_css)
         self.assertNotIn('.town-horse{bottom:51px;right:7%;', journey_css)
 
