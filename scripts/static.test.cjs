@@ -25,7 +25,7 @@ test('Frontier loads only its lean CSS, and Main Street can be navigated on a ph
   const dom = page('index.html', win => {
     win.matchMedia = () => ({ matches: true, addEventListener() {} });
     const frame = win.document.querySelector('.town-frame');
-    Object.defineProperty(frame, 'scrollWidth', { get: () => 1000 });
+    Object.defineProperty(frame, 'scrollWidth', { get: () => 940 });
     Object.defineProperty(frame, 'clientWidth', { get: () => 390 });
     frame.getBoundingClientRect = () => ({ left: 0, width: 390 });
     frame.scrollTo = options => { frame.scrollLeft = options.left; frame.dispatchEvent(new win.Event('scroll')); };
@@ -44,6 +44,10 @@ test('Frontier loads only its lean CSS, and Main Street can be navigated on a ph
   document.getElementById('town-pan-right').click();
   assert.ok(town.scrollLeft > 0);
   assert.match(document.getElementById('town-position').textContent, /\/ 6/);
+  town.scrollLeft = town.scrollWidth - town.clientWidth;
+  town.dispatchEvent(new dom.window.Event('scroll'));
+  assert.equal(document.getElementById('town-position').textContent, '6 / 6 · HOMESTEAD');
+  assert.equal(document.getElementById('town-pan-right').disabled, true);
   assert.ok(document.querySelectorAll('a.town-building').length === 6);
   dom.window.close();
 });
