@@ -9,6 +9,7 @@ const badge = (label,kind='') => `<span class="badge ${kind}">${esc(label)}</spa
 const panelHead = (title,description,extra='') => `<div class="view-head"><div><h2>${esc(title)}</h2><p>${esc(description)}</p></div>${extra}</div>`;
 const evidenceButton = (sourceId,locator,text,label='View evidence') => `<button data-evidence="${esc(sourceId)}" data-locator="${esc(locator)}" data-excerpt="${esc(text)}">${esc(label)} ↗</button>`;
 let dossier, reference, research, tab='tracker', versionId, sectionId, beforeId, afterId;
+let sectionQuery='';
 let workspace={cases:{},activeId:null};
 let imported=false, origin='saved', currentBill=null, routeRequest=0;
 const partialForms=new Map();
@@ -24,7 +25,7 @@ function section() { return version()?.sections.find(s=>s.id===sectionId) || ver
 function activate(d,r,kind='imported',bill=null) {
   dossier=validateDossier(d); research=validateResearch(r,d); origin=kind;
   imported=!['live','historical'].includes(kind);currentBill=bill;
-  versionId=d.versions.at(-1)?.id;sectionId=version()?.sections[0]?.id;
+  versionId=d.versions.at(-1)?.id;sectionId=version()?.sections[0]?.id;sectionQuery='';
   beforeId=d.versions[0]?.id;afterId=d.versions.at(-1)?.id;
   voteFilters={query:'',party:'All parties',state:'All states',vote:'All votes'};
   renderShell();
@@ -34,6 +35,7 @@ function renderShell() {
   document.querySelector('main').classList.toggle('tracking',globalView);
   $('case-nav').hidden=!dossier;
   document.querySelector('.case-bar').hidden=!dossier||globalView;
+  const quickNav=document.querySelector('.case-quicknav');if(quickNav)quickNav.hidden=!dossier||globalView;
   if(!dossier)return;
   $('case-title').textContent=dossier.title;
   $('case-meta').textContent=`${dossier.billLabel} · ${dossier.publicLaws.length?'Public Law '+dossier.publicLaws.join(', '):'Public-law number not recorded'} · Retrieved ${dateLabel(dossier.sources[0].retrievedAt)}`;
@@ -78,16 +80,48 @@ function renderBill() {
   }
   const v=version(),s=section();
   $('panel').innerHTML=panelHead('Bill X-Ray','Start with the words. Inspect every section, its boundaries, and the record behind it.',`<label class="controls">Bill version <select id="bill-version">${versionOptions(versionId)}</select></label>`)+`
-  <div class="work-grid"><aside class="section-list" aria-label="Bill sections"><input class="section-search" id="section-search" placeholder="Find a section…" aria-label="Search sections">${v.sections.map(x=>`<button data-section="${esc(x.id)}" class="${s.id===x.id?'selected':''}" aria-pressed="${s.id===x.id}"><small>Section ${esc(x.number)}</small><strong>${esc(x.title)}</strong></button>`).join('')}</aside>
-  <article class="card"><div class="card-top"><span class="eyebrow">SECTION ${esc(s.number)} · ${esc(v.id.toUpperCase())}</span>${badge('Original text')}</div><h3>${esc(s.title)}</h3>
+  <div class="work-grid"><aside class="section-list" aria-label="Bill sections"><label class="section-search-label" for="section-search">Find a section or phrase</label><input class="section-search" id="section-search" type="search" placeholder="Search bill text…" aria-describedby="section-count"><div class="section-search-feedback"><span id="section-count" role="status" aria-live="polite"></span><button type="button" id="clear-section-search" class="inline-link" hidden>Clear</button></div>${v.sections.map(x=>`<button data-section="${esc(x.id)}" class="${s.id===x.id?'selected':''}" aria-pressed="${s.id===x.id}"><small>Section ${esc(x.number)}</small><strong>${esc(x.title)}</strong></button>`).join('')}</aside>
+  <article class="card"><div class="card-top"><span class="eyebrow">SECTION ${esc(s.number)} · ${esc(v.id.toUpperCase())}</span>${badge('Original text')}</div><h3 id="bill-section-title" tabindex="-1">${esc(s.title)}</h3>
   <div class="tags">${s.tags.map(x=>badge(x)).join('')}</div>
   ${s.analysis?`<h4>Example reading note ${badge('Draft interpretation · not reviewed','amber')}</h4><p>${esc(s.analysis)}</p>`:'<p class="muted">No interpretation supplied for this version. Read the original wording below.</p>'}
-  <h4>What the text says</h4><div class="original">${esc(s.text)}</div><div class="card-actions">${evidenceButton(s.sourceId,s.locator,s.text)}<button id="compare-section">Compare versions →</button></div>
+  <h4>What the text says</h4><div class="original">${esc(s.text)}</div><div class="card-actions">${evidenceButton(s.sourceId,s.locator,s.text)}<button id="copy-section-citation">Copy section reference</button><button id="compare-section">Compare versions →</button></div>
   <details class="osiris"><summary>Read this section with your AI</summary><p class="muted">Which words define the scope? What exception changes the reading? Which missing record would change your conclusion?</p><label for="osiris-question">Ask about this section</label><textarea id="osiris-question" maxlength="2500" rows="3">Explain this section in plain English. Cite its exact wording and identify what it does not establish.</textarea><p class="muted">Review this section and your question in Osiris, then share them with your own AI app. Responses stay in that app and remain draft notes.</p><button id="ask-osiris">Ask Osiris here</button> <a href="../ai/index.html">AI settings</a><p id="osiris-answer" class="answer" aria-live="polite"></p><a id="osiris-continue" href="../ai/index.html?context=prepared" hidden>Choose AI &amp; review question →</a></details>
   <details class="osiris"><summary>Parsing & missing context</summary><p>${v.manifest.sectionCount} section nodes accounted for. ${v.manifest.unaccountedBlocks.length} additional body blocks flagged.</p><p>${esc(v.manifest.scope)}</p>${v.manifest.unaccountedBlocks.map(x=>`<div class="original">${esc(x)}</div>`).join('')}<p>Text completeness is not legal completeness. Incorporated law, regulations, judicial decisions, actual authorship and effects require additional records.</p>${s.references.length?`<h4>Structured cross-references (unresolved)</h4>${s.references.map(x=>`<p>${esc(x)}</p>`).join('')}`:'<p>No structured cross-reference elements were extracted. Plain-text references may still exist.</p>'}</details>
   </article></div>`;
-  $('bill-version').onchange=e=>{versionId=e.target.value;sectionId=version().sections[0].id;renderShell();renderBill();};
-  $('section-search').oninput=e=>{let shown=0;document.querySelectorAll('[data-section]').forEach(b=>{const found=v.sections.find(x=>x.id===b.dataset.section);b.hidden=!`${found.title} ${found.text}`.toLowerCase().includes(e.target.value.toLowerCase());b.style.display=b.hidden?'none':'';if(!b.hidden)shown++;});e.target.setAttribute('aria-description',`${shown} matching sections`);};
+  $('bill-version').onchange=e=>{versionId=e.target.value;sectionId=version().sections[0].id;sectionQuery='';renderShell();renderBill();};
+  const sectionSearch=$('section-search');
+  const sectionButtons=[...$('panel').querySelectorAll('[data-section]')];
+  const sectionText=new Map(v.sections.map(item=>[item.id,
+    [item.number,item.title,item.text].join(' ').toLocaleLowerCase()]));
+  function applySectionFilter(){
+    const query=sectionQuery.trim().toLocaleLowerCase();
+    let count=0;
+    sectionButtons.forEach(button=>{
+      button.hidden=Boolean(query)&&!sectionText.get(button.dataset.section).includes(query);
+      if(!button.hidden)count++;
+    });
+    $('section-count').textContent=count+' of '+v.sections.length+' sections';
+    $('clear-section-search').hidden=!query;
+  }
+  sectionSearch.value=sectionQuery;
+  sectionSearch.oninput=e=>{sectionQuery=e.target.value;applySectionFilter();};
+  $('clear-section-search').onclick=()=>{
+    sectionQuery='';sectionSearch.value='';applySectionFilter();sectionSearch.focus();
+  };
+  applySectionFilter();
+  $('copy-section-citation').onclick=async()=>{
+    const source=dossier.sources.find(item=>item.id===s.sourceId);
+    const uri=source?.url&&safeUrl(source.url)?source.url:'Source link unavailable';
+    const citation=[dossier.billLabel,'Section '+s.number+': '+s.title,
+      'Version: '+v.label,'Source: '+uri].join('\n');
+    try{
+      if(!navigator.clipboard?.writeText)throw Error('Clipboard unavailable');
+      await navigator.clipboard.writeText(citation);
+      notice('Section reference copied. Check the original source before citing it.');
+    }catch{
+      notice('Clipboard access is unavailable. Use View evidence to open the original source.');
+    }
+  };
   $('compare-section').onclick=()=>setTab('versions',true);
   $('ask-osiris').onclick=askOsiris;
 }
@@ -212,7 +246,10 @@ document.addEventListener('click',e=>{
   const button=e.target.closest('button');if(!button)return;
   if(button.dataset.openBill)routeRequest++;
   if(button.dataset.tab){routeRequest++;exampleRequest++;tracker.cancelOpen();setTab(button.dataset.tab,true);}
-  if(button.dataset.section){sectionId=button.dataset.section;renderBill();}
+  if(button.dataset.section){sectionId=button.dataset.section;renderBill();
+    const heading=$('bill-section-title');heading?.focus({preventScroll:true});
+    if(window.matchMedia?.('(max-width: 800px)').matches)heading?.scrollIntoView?.({block:'start'});
+  }
   if(button.dataset.evidence)showEvidence(button);
   for(const kind of ['promise','coverage']){
     const cap=kind[0].toUpperCase()+kind.slice(1),collection=kind==='promise'?'promises':'coverage';
