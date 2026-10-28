@@ -54,12 +54,26 @@ export function freshness(bill,time=Date.now()) {
   if(time-Date.parse(bill.activityCheckedAt||bill.checkedAt)>12*3600000)return 'Check overdue';
   return 'Checked recently';
 }
-export function filterBills(bills,{query='',chamber='All chambers',status='All stages',followedOnly=false}={},watch={bills:[]}) {
-  const ids=new Set(watch.bills.map(x=>x.id));
-  const normalize=s=>s.toLowerCase().replace(/[.]/g,'').replace(/\b(hr|s)[ -]*(\d+)\b/g,'$1 $2').replace(/\s+/g,' ').trim();
-  const terms=normalize(query).split(' ').filter(Boolean);
-  return bills.filter(b=>{
-    const search=normalize(`${b.title} ${b.billLabel} ${b.topic} ${b.sponsor} ${b.id}`);
-    return terms.every(t=>search.includes(t))&&(chamber==='All chambers'||chamber===b.chamber)&&(status==='All stages'||status===b.status)&&(!followedOnly||ids.has(b.id));
-  });
+// Current-congress catalogues can contain thousands of bills. Normalize each
+// source record once, rather than rebuilding text on every keystroke.
+// WeakMap does not keep superseded catalogue snapshots alive.
+const searchCache = new WeakMap();
+const normalizeSearch = value => String(value ?? '').toLowerCase()
+  .replace(/[.]/g, '').replace(/\b(hr|s)[ -]*(\d+)\b/g, '$1 $2')
+  .replace(/\s+/g, ' ').trim();
+function searchText(bill) {
+  if (searchCache.has(bill)) return searchCache.get(bill);
+  const text = normalizeSearch([bill.title, bill.billLabel, bill.topic, bill.sponsor, bill.id].join(' '));
+  searchCache.set(bill, text);
+  return text;
+}
+export function filterBills(bills, {query='', chamber='All chambers', status='All stages', followedOnly=false}={}, watch={bills:[]}) {
+  const ids = followedOnly ? new Set(watch.bills.map(x => x.id)) : null;
+  const terms = normalizeSearch(query).split(' ').filter(Boolean);
+  return bills.filter(b =>
+    (!ids || ids.has(b.id)) &&
+    (chamber === 'All chambers' || chamber === b.chamber) &&
+    (status === 'All stages' || status === b.status) &&
+    (!terms.length || terms.every(term => searchText(b).includes(term)))
+  );
 }
