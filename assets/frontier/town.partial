@@ -63,6 +63,11 @@
     <span class="town-mobile-hint">SWIPE THROUGH TOWN · PICK A DOOR</span>
     <a href="#ride-out">OR TAKE THE LONG WAY OUT <span aria-hidden="true">↓</span></a>
   </div>
+  <nav class="town-rail" aria-label="Explore Main Street" data-enhanced hidden>
+    <button type="button" id="town-pan-left" aria-label="Show previous building">←</button>
+    <span id="town-position" role="status" aria-live="polite">Explore Main Street</span>
+    <button type="button" id="town-pan-right" aria-label="Show next building">→</button>
+  </nav>
 </section>
 <section class="frontier-ride" id="ride-out" aria-labelledby="ride-heading">
   <div class="ride-sticky">
