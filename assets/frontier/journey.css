@@ -99,3 +99,12 @@ html{background:#282839;overflow-x:clip}
 }
 @media(hover:none){.frontier-home .town-building__destination{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.frontier-home .town-tumbleweed,.frontier-home .town-horse img,.frontier-home .town-cloud,.frontier-home .campfire-flame{animation:none!important}}
+
+/* Low-priority site details stay in a fold-out camp ledger, never a page footer. */
+.frontier-home .camp-records{display:block;border-top:3px solid #d99a7659;padding-top:14px}
+.frontier-home .camp-records summary{display:inline-block;cursor:pointer;list-style:none;color:#f0d8bd;font:700 10px/1.6 'Courier New',monospace;letter-spacing:.12em;padding:8px 2px}
+.frontier-home .camp-records summary::-webkit-details-marker{display:none}
+.frontier-home .camp-records summary:hover{text-decoration:underline;text-underline-offset:5px}
+.frontier-home .camp-records summary:focus-visible{outline:3px solid #ffdb9b;outline-offset:4px}
+.frontier-home .camp-records[open] summary span{display:inline-block;transform:rotate(45deg)}
+.frontier-home .camp-records nav{display:flex;flex-wrap:wrap;gap:12px 20px;padding:12px 0}
