@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="theme-color" content="#0f172a" />
   <meta name="description" content="Analyze a portfolio locally from price-history CSV data: return, volatility, drawdown, beta, concentration, correlations, and risk contribution." />
-  <title>Portfolio Lab | Ballzatram</title>
+  <title>Portfolio Lab | A Digital Frontier</title>
   <link rel="stylesheet" href="styles.css" />
 <link rel="stylesheet" href="../../assets/ai-panel.css?v=ai-runtime-3"><link rel="stylesheet" href="../../assets/family-business/lab-bridge.css">
 <script defer src="../../assets/family-business/lab-bridge.js"></script>
@@ -13,16 +13,16 @@
 <body>
   <main class="shell">
     <nav class="top-nav" aria-label="Portfolio navigation">
-      <a href="../index.html">← Lab Directory</a>
+      <a href="../../index.html">← The frontier</a>
       <a href="../scenario/index.html">Scenario Lab</a>
       <a href="../reports/index.html">Reports</a>
-      <a href="../../index.html">Ballzatram</a>
+      <a href="../index.html">All labs</a>
     </nav>
 
     <header class="hero">
       <p class="kicker">Pages-native · local portfolio analytics</p>
       <h1>Portfolio Lab</h1>
-      <p>Bring your own historical prices and run the portfolio math locally: returns, volatility, drawdown, beta, concentration, correlations, and risk contribution. Nothing is uploaded anywhere.</p>
+      <p>Bring your own historical prices and run the portfolio math locally: returns, volatility, drawdown, beta, concentration, correlations, and risk contribution. Everything runs in this browser. No prices are uploaded.</p>
       <div class="badges"><span>CSV / paste</span><span>Runs in browser</span><span>No market-data key</span></div>
     </header>
 
@@ -40,17 +40,18 @@
         <section class="panel">
           <p class="label">Price history</p>
           <label class="file-button">Choose CSV<input id="fileInput" type="file" accept=".csv,text/csv" /></label>
+          <label class="field" for="csvInput">Paste price history (date, then symbols)</label>
           <textarea id="csvInput" rows="10" spellcheck="false" placeholder="date,QQQ,TLT,GLD,SPY&#10;2026-01-02,500.12,86.11,185.20,590.45&#10;..."></textarea>
           <div class="button-grid">
             <button id="demoButton" class="secondary-button">Load demo data</button>
             <button id="analyzeButton" class="primary-button">Analyze portfolio</button>
           </div>
-          <p id="inputStatus" class="helper">Expected format: first column date, remaining columns are price series.</p>
+          <p id="inputStatus" class="helper" role="status" aria-live="polite">Use ISO dates (YYYY-MM-DD) in chronological order. Missing or invalid prices will be flagged, not dropped.</p>
         </section>
       </aside>
 
       <section class="results">
-        <section id="emptyState" class="empty-state">Add/paste price history or load the demo dataset, then analyze.</section>
+        <section id="emptyState" class="empty-state">Add price history or load the synthetic demo. Annualization follows your date spacing rather than assuming every observation is daily.</section>
         <div id="resultsContent" hidden>
           <div class="status-row"><span id="sourceBadge" class="source-badge">Local CSV</span><span id="windowBadge" class="source-badge">—</span></div>
           <div class="metric-grid">
@@ -82,7 +83,7 @@
         </div>
       </section>
     </div>
-  <section class="osiris-launch" aria-label="Ask Osiris about this result"><button type="button" data-osiris-feature="portfolio" data-osiris-context-key="ballzatram:portfolio-pages-last-run:v1">Ask Osiris about this result</button><p>Review this result and choose your AI app. Your account handles the response.</p><p data-osiris-launch-status role="status"></p></section></main>
+  <section class="osiris-launch" aria-label="Ask Osiris about this result"><button type="button" disabled data-osiris-feature="portfolio" data-osiris-context-key="ballzatram:portfolio-pages-last-run:v1">Ask Osiris about this result</button><p>Review this result and choose your AI app. Your account handles the response.</p><p data-osiris-launch-status role="status"></p></section></main>
   <script src="../../assets/storage.js"></script><script src="app.js"></script>
 <script src="../../assets/ai-config.js?v=ai-runtime-3"></script><script src="../../assets/ai-features.js?v=ai-runtime-3"></script><script src="../../assets/subscription-client.js?v=ai-runtime-3"></script><script src="../../assets/ai-client.js?v=ai-runtime-3"></script><script src="../../assets/ai-panel.js?v=ai-runtime-3"></script></body>
 </html>
