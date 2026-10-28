@@ -249,3 +249,15 @@ html{background:#282839;overflow-x:clip}
 .frontier-home .has-ride-motion .ride-sign.is-current{
   transition:transform .16s linear,opacity .16s linear,visibility 0s;
 }
+
+/* At the narrowest phone widths, keep the sun fully outside the reading area. */
+@media(max-width:360px){
+  .frontier-home .ride-sun{width:78px;height:78px;right:1%}
+}
+/* The camp carries the same jagged Yuma-range silhouettes into dusk. */
+.frontier-home .camp-ridge--far{
+  clip-path:polygon(0 82%,7% 78%,13% 62%,16% 65%,20% 42%,22% 53%,26% 67%,35% 74%,42% 50%,45% 60%,48% 35%,51% 48%,54% 71%,63% 70%,68% 55%,72% 66%,77% 43%,81% 59%,86% 72%,92% 55%,95% 67%,100% 75%,100% 100%,0 100%);
+}
+.frontier-home .camp-ridge--near{
+  clip-path:polygon(0 72%,8% 77%,13% 57%,18% 72%,24% 63%,29% 36%,33% 48%,38% 69%,43% 75%,51% 48%,55% 58%,59% 40%,63% 57%,70% 74%,76% 56%,79% 44%,84% 65%,91% 78%,95% 64%,100% 70%,100% 100%,0 100%);
+}
