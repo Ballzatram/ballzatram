@@ -71,19 +71,46 @@
 </section>
 <section class="frontier-ride" id="ride-out" aria-labelledby="ride-heading">
   <div class="ride-sticky">
-    <div class="ride-sky" aria-hidden="true"><span class="ride-sun"></span><span class="ride-mesa ride-mesa--far"></span><span class="ride-mesa ride-mesa--near"></span><span class="ride-town-silhouette"></span></div>
+    <div class="ride-sky" aria-hidden="true">
+      <span class="ride-sun"></span>
+      <!-- Gila / Castle Dome-inspired stepped mountains in the low Sonoran desert. -->
+      <svg class="ride-yuma-ranges" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" shape-rendering="crispEdges" focusable="false">
+        <path fill="#9a6670" d="M0 360V298h46v-16h35v-20h22v-24h18v-28h17v13h13v18h24v22h42v-21h29v-24h18v-25h22v-20h17v26h18v22h26v35h45v-16h30v-25h18v-18h19v-23h18v22h20v20h28v26h42v-20h28v-30h20v-25h18v-28h20v19h20v29h23v19h32v30h50v-19h33v-25h20v-18h18v-22h17v20h20v20h25v27h34v-16h30v-14h20v-19h25v21h30v24h44v-11h38v-15h26v14h38v28h56V360Z"/>
+        <path fill="#b87766" d="M0 360v-47h60v-16h38v-20h20v-24h20v-16h14v14h18v17h28v29h36v-14h42v-26h20v-29h17v-14h16v15h20v30h30v16h44v-12h38v-20h20v-27h14v-32h14v-22h13v18h14v18h16v30h27v17h39v12h45v-19h35v-19h15v-27h17v-18h17v16h19v27h31v13h40v-13h30v-19h19v-24h19v-12h17v18h16v18h27v22h40v-11h29v-18h19v13h25v18h31v14h30V360Z"/>
+        <path fill="#6c4852" d="M0 360v-42h56v-13h28v-22h16v-21h19v-17h16v20h16v20h25v23h47v-12h37v-25h24v-24h20v-30h16v22h22v30h27v20h45v-16h31v-20h19v-32h22v-24h18v24h18v31h30v26h43v-16h27v-18h19v-25h16v-24h18v24h20v24h27v22h43v-15h30v-23h20v-28h18v17h21v28h29v20h41v-16h29v-20h21v-16h18v20h26v27h46v-11h33v-15h28v13h25v16h40V360Z"/>
+        <path fill="#d1926d" opacity=".74" d="M119 245h16v20h16v20h25v7h-35v-22h-22zm397-28h18v24h18v31h-20v-34h-16zm255 0h18v24h19v24h20v11h-30v-29h-27zm-509 30h20v24h21v16h-26v-24h-15z"/>
+        <path fill="#493c4b" opacity=".55" d="M0 360v-30h110v-8h70v-15h80v15h96v-17h65v-10h69v16h75v-13h95v19h86v-15h70v9h82v-16h64v17h98v-12h80v11h60v49Z"/>
+      </svg>
+      <span class="ride-town-silhouette"></span>
+    </div>
     <div class="ride-heading"><p class="town-eyebrow">OUT PAST THE LAST PORCH LIGHT</p><h2 id="ride-heading">The road gets quieter.</h2><p>There's a fair stretch of nothing between one good idea and the next. I don't mind it.</p></div>
-    <div class="ride-land" aria-hidden="true"><span class="ride-cactus ride-cactus--one"></span><span class="ride-cactus ride-cactus--two"></span><span class="ride-rock"></span><span class="ride-dust"></span></div>
+    <div class="ride-land" aria-hidden="true">
+      <svg class="ride-yuma-wash" viewBox="0 0 1200 240" preserveAspectRatio="none" shape-rendering="crispEdges" focusable="false">
+        <path fill="#dcb082" d="M0 162h78v-9h35v-11h54v10h34v12h94v-9h60v-16h52v-11h61v12h42v12h108v-9h64v-15h61v-9h43v11h37v13h90v-8h54v-13h52v-11h49v13h38v15h77v-12h50v-9h48v11h20v120H0Z"/>
+        <path fill="#ab785e" d="M0 217h98v-7h65v-5h45v8h145v-6h62v-7h59v11h151v-7h79v-9h62v7h114v-6h87v-5h69v6h164v49H0Z"/>
+        <path fill="#eed09d" opacity=".65" d="M76 189h54v5H76zm291-18h76v5h-76zm485 26h63v5h-63zm167-18h42v4h-42z"/>
+      </svg>
+      <svg class="ride-ocotillo ride-ocotillo--one" viewBox="0 0 70 120" shape-rendering="crispEdges" focusable="false">
+        <g fill="none" stroke="#455949" stroke-width="4" stroke-linecap="square">
+          <path d="M34 120L32 14M34 119L15 25M34 117L54 10M33 112L8 48M36 112L64 45M32 112L24 7M35 112L48 28"/>
+        </g>
+        <g fill="#b96951"><path d="M27 4h9v7h-9zm-12 12h8v8h-8zm37-15h9v8h-9zM5 39h7v8H5zm56-2h7v7h-7z"/></g>
+      </svg>
+      <svg class="ride-ocotillo ride-ocotillo--two" viewBox="0 0 70 120" shape-rendering="crispEdges" focusable="false">
+        <g fill="none" stroke="#455949" stroke-width="4" stroke-linecap="square"><path d="M34 120L32 14M34 119L15 25M34 117L54 10M33 112L8 48M36 112L64 45M32 112L24 7M35 112L48 28"/></g>
+      </svg>
+      <span class="ride-cactus ride-cactus--one"></span><span class="ride-cactus ride-cactus--two"></span><span class="ride-rock"></span><span class="ride-dust"></span>
+    </div>
     <div class="ride-rider" role="img" aria-label="An eight-bit cowboy on horseback rides into the desert"><img src="assets/frontier/rider.svg" width="80" height="80" alt=""></div>
     <!-- Three brief roadside encounters, with wide, sign-free miles in between. -->
     <div class="ride-markers" aria-live="off">
-      <div class="ride-sign ride-sign--one" data-start="0.18" data-end="0.30">
+      <div class="ride-sign ride-sign--one" data-start="0.11" data-end="0.29">
         <div class="ride-sign__wood"><span>MILE 01 / A SHED IN THE DUST</span><strong>THE AI<br>WORKSHOP</strong><p>I spend a fair bit of time keeping agents on the trail. They're poor listeners.</p><a href="tools/agent-workshop/">Take a look inside ↗</a></div>
       </div>
-      <div class="ride-sign ride-sign--two" data-start="0.51" data-end="0.63">
+      <div class="ride-sign ride-sign--two" data-start="0.47" data-end="0.65">
         <div class="ride-sign__wood"><span>MILE 02 / BEYOND THE FENCE</span><strong>LAND &amp;<br>RESEARCH</strong><p>Fine-looking ground can hide a world of trouble. Best to look close.</p><a href="tools/parcel-fit/">Survey the ground ↗</a></div>
       </div>
-      <div class="ride-sign ride-sign--three" data-start="0.82" data-end="0.94">
+      <div class="ride-sign ride-sign--three" data-start="0.83" data-end="0.97">
         <div class="ride-sign__wood"><span>MILE 03 / PAST THE NEXT RIDGE</span><strong>MORE TO<br>COME</strong><p>I've got more notions than daylight. A few are nearly ready to ride.</p><a href="#programs">See what's here so far ↓</a></div>
       </div>
     </div>
