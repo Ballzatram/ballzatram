@@ -24,7 +24,7 @@ class Links(HTMLParser):
 class FrontierTownTests(unittest.TestCase):
     def test_generated_front_page_contains_source_town(self):
         html = (ROOT / 'index.html').read_text(encoding='utf-8')
-        town = (ROOT / 'assets/frontier/town.html').read_text(encoding='utf-8')
+        town = (ROOT / 'assets/frontier/town.partial').read_text(encoding='utf-8')
         self.assertIn(town, html, 'Run python scripts/build_frontier.py after editing town.html')
         self.assertIn('assets/frontier/town.css', html)
         self.assertIn('assets/frontier/ride.js', html)
@@ -32,7 +32,7 @@ class FrontierTownTests(unittest.TestCase):
 
     def test_buildings_and_signs_point_to_real_destinations(self):
         parser = Links()
-        parser.feed((ROOT / 'assets/frontier/town.html').read_text(encoding='utf-8'))
+        parser.feed((ROOT / 'assets/frontier/town.partial').read_text(encoding='utf-8'))
         self.assertEqual(6, len(parser.buildings))
         self.assertEqual(3, parser.signs)
         self.assertEqual(6, len({a['href'] for a in parser.buildings}))
