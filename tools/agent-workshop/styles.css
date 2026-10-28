@@ -12,3 +12,11 @@ main{container-name:workshop;container-type:inline-size}.topbar{flex-wrap:wrap}.
 @container workshop (max-width:16rem){.runbar{position:static}}
 .panel-heading{flex-wrap:wrap}.inspector-tabs button{min-width:0;overflow-wrap:anywhere}
 h1{overflow-wrap:anywhere}.panel-heading>*{max-width:100%;overflow-wrap:anywhere}
+
+/* Keep all three workshop wayfinding links accessible even at 200% text
+   enlargement on a 320px viewport; wrapping, not clipping, is intentional. */
+@media(max-width:720px){
+  .topbar{min-width:0;align-items:flex-start}
+  .topbar nav{display:flex;flex-wrap:wrap;flex:1 1 100%;min-width:0;max-width:100%;gap:.45rem .8rem}
+  .topbar nav a{min-width:0;max-width:100%;overflow-wrap:anywhere;white-space:normal}
+}
