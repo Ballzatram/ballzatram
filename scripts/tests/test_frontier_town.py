@@ -2,6 +2,7 @@
 from html.parser import HTMLParser
 from pathlib import Path
 import json
+import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -62,6 +63,23 @@ class FrontierTownTests(unittest.TestCase):
             if target.is_dir():
                 target /= 'index.html'
             self.assertTrue(target.is_file(), f"Broken building destination: {building['href']}")
+
+    def test_roadside_encounters_leave_long_empty_miles(self):
+        town = (ROOT / 'assets/frontier/town.partial').read_text(encoding='utf-8')
+        journey = (ROOT / 'assets/frontier/journey.css').read_text(encoding='utf-8')
+        windows = [(float(a), float(b)) for a, b in re.findall(
+            r'data-start="([0-9.]+)" data-end="([0-9.]+)"', town
+        )]
+        self.assertEqual(len(windows), 3)
+        for start, end in windows:
+            self.assertGreater(end, start)
+            self.assertLessEqual(end - start, .13, 'Signs should be brief')
+        for (_, prior_end), (next_start, _) in zip(windows, windows[1:]):
+            self.assertGreaterEqual(round(next_start - prior_end, 2), .18)
+        self.assertIn('height:560svh', journey)
+        self.assertIn('height:520svh', journey)
+        self.assertIn('--sign-shift', journey)
+        self.assertIn('--sign-opacity', journey)
 
     def test_progressive_enhancement_and_input_remain_accessible(self):
         script = (ROOT / 'assets/frontier/ride.js').read_text(encoding='utf-8')
