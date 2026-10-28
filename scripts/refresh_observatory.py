@@ -191,7 +191,7 @@ def build_record(candidate, output, fetch=official_fetch):
     # The public catalogue requires an ISO action date; retaining the prior
     # verified record is safer than publishing a new record that breaks Pages.
     if (not isinstance(latest_action['date'], str)
-            or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}', latest_action['date'])
+            or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', latest_action['date'])
             or not isinstance(latest_action['text'], str)
             or len(latest_action['text']) > 20000):
         raise ValueError('Official bill has no valid latest action; retain previous record')
