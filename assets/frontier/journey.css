@@ -145,3 +145,25 @@ html{background:#282839;overflow-x:clip}
 @media(prefers-reduced-motion:reduce){
   .frontier-home .has-ride-motion .ride-sign{transition:none!important}
 }
+
+/* Mobile Main Street controls complement swiping rather than replacing it. */
+.frontier-home .town-rail{display:none}
+.frontier-home .town-frame:focus-visible{outline:3px solid #ffdc9d;outline-offset:-4px}
+@media(max-width:1100px){
+  .frontier-home .town-rail:not([hidden]){
+    display:flex;align-items:center;justify-content:center;gap:15px;
+    min-height:54px;padding:7px 12px;
+    color:#ffe1aa;background:#332b3d;border-top:2px solid #61454b
+  }
+  .frontier-home .town-rail button{
+    flex:0 0 47px;min-height:38px;
+    border:2px solid #d5ac78;color:#ffe1aa;background:#493644;
+    font-size:20px;line-height:1.1
+  }
+  .frontier-home .town-rail button:disabled{opacity:.32;cursor:default}
+  .frontier-home .town-rail span{font:700 11px/1.5 "Courier New",monospace;text-transform:uppercase;letter-spacing:.1em;text-align:center;min-width:140px}
+}
+@media(max-width:390px){
+  .frontier-home .town-rail:not([hidden]){gap:8px}
+  .frontier-home .town-rail span{font-size:10px;min-width:130px}
+}
