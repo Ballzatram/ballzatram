@@ -87,6 +87,12 @@
       return townFrame.scrollLeft+bounds.left-townFrame.getBoundingClientRect().left+bounds.width/2;
     };
     const indexAtCenter=()=>{
+      const maximum=Math.max(0,townFrame.scrollWidth-townFrame.clientWidth);
+      // At the edges, show the actual first/last stop even when the viewport
+      // cannot center the building. Otherwise the final arrow can be disabled
+      // while the counter still says 5 / 6.
+      if(townFrame.scrollLeft<=3)return 0;
+      if(townFrame.scrollLeft>=maximum-3)return buildings.length-1;
       const center=townFrame.scrollLeft+townFrame.clientWidth/2;
       let index=0,delta=Infinity;
       buildings.forEach((building,i)=>{
