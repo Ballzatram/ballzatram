@@ -102,6 +102,6 @@ function runScenario() {
 }
 
 renderInputs();
-factorInputs.addEventListener("input", () => { clearResults(); });
+factorInputs.querySelectorAll("[data-factor]").forEach(input => input.addEventListener("input", clearResults));
 document.querySelectorAll("[data-preset]").forEach((button) => button.addEventListener("click", () => setPreset(button.dataset.preset)));
 document.querySelector("#runScenario").addEventListener("click", runScenario);
