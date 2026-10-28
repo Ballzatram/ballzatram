@@ -163,15 +163,26 @@ test('Roadside signs appear briefly, pass the rider, and leave long quiet stretc
   assert.deepEqual(step(0.88), [2], 'Final sign announces future projects');
   assert.deepEqual(step(0.98), [], 'The final sign is gone before the campfire');
 
-  step(0.185);
+  step(0.121);
   const approaching = parseFloat(signs[0].style.getPropertyValue('--sign-shift'));
   const arrivingOpacity = parseFloat(signs[0].style.getPropertyValue('--sign-opacity'));
-  step(0.295);
+  step(0.281);
   const departing = parseFloat(signs[0].style.getPropertyValue('--sign-shift'));
   const departingOpacity = parseFloat(signs[0].style.getPropertyValue('--sign-opacity'));
   assert.ok(approaching > 0, 'A sign enters from the right');
   assert.ok(departing < 0, 'A sign exits left, behind the rider');
   assert.ok(arrivingOpacity < 1 && departingOpacity < 1, 'Signs fade in and out');
+  // At a fixed scroll delta the approach moves at a constant rate: no
+  // smoothstep spike, no 115vw launch, and no instant billboard teleport.
+  const samples = [0.123, 0.133, 0.143, 0.153].map(value => {
+    step(value);
+    return parseFloat(signs[0].style.getPropertyValue('--sign-shift'));
+  });
+  const movements = samples.slice(1).map((value, i) => value - samples[i]);
+  assert.ok(movements.every(value => Math.abs(value) < 4), 'Small scroll steps must move signs slowly');
+  assert.ok(Math.max(...movements) - Math.min(...movements) < 0.03, 'Sign speed must be linear');
+  assert.ok(approaching <= 18 && departing >= -22, 'Movement stays within a small readable range');
+
 
   for (let i = 0; i <= 100; i++) step(i / 100);
   dom.window.close();
