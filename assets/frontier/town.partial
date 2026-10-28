@@ -1,15 +1,16 @@
 <!-- The town is navigation, not a game: every building is a real, keyboard-accessible link. -->
 <section class="frontier-town" aria-labelledby="welcome-title">
   <div class="town-heading">
-    <p class="town-eyebrow">DEEP IN THE DIGITAL WEST · EST. 2026</p>
-    <h1 id="welcome-title">WELCOME TO<br><span>GALLEMORE GULCH</span></h1>
-    <p>One man's collection of tools, games, and rabbit holes.<br>Pick a building. See where the trail goes.</p>
+    <p class="town-eyebrow">DEVIN GALLEMORE / A DIGITAL FRONTIER</p>
+    <h1 id="welcome-title">HOWDY,<br><span>I'M DEVIN.</span></h1>
+    <p>I build tools, games, and the occasional rabbit hole.<br>Pick a building, or follow the trail into the unknown.</p>
   </div>
   <div class="town-frame" aria-label="An interactive eight-bit Western town. Scroll sideways on small screens to explore its buildings.">
     <div class="town-world">
       <div class="town-sun" aria-hidden="true"></div>
       <div class="town-cloud town-cloud--one" aria-hidden="true"></div>
       <div class="town-cloud town-cloud--two" aria-hidden="true"></div>
+      <span class="town-tumbleweed" aria-hidden="true"></span>
       <svg class="town-mesas" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges">
         <path fill="#ae675e" d="M0 220h75v-18h35v-55h25v-35h65v35h15v59h30v29h70v-19h35v-40h45v-55h85v55h25v54h72v-22h53v-42h35v-23h88v23h31v43h62v-15h28v-53h46v-45h81v45h40v43h64v-16h45v-40h70v40h30v55h40v140H0z"/>
         <path fill="#de926b" d="M130 114h70v13h-70zm264 9h88v10h-88zm320 24h88v10h-88zm254-29h82v11h-82z"/>
@@ -54,20 +55,14 @@
         </a>
       </nav>
       <span class="town-barn-star" aria-hidden="true">✦</span>
+      <span class="town-horse" aria-hidden="true"><img src="assets/frontier/rider.svg" width="80" height="80" alt=""></span>
     </div>
   </div>
-  <div class="town-underbar">
-    <span class="town-desktop-hint"><strong>WELCOME, STRANGER.</strong> Hover a building to discover what's inside.</span><span class="town-mobile-hint"><strong>SWIPE THROUGH TOWN</strong> or tap a destination below.</span>
-    <a href="#ride-out">OR SADDLE UP &amp; RIDE OUT <span aria-hidden="true">↓</span></a>
+  <div class="town-wayfinding">
+    <span class="town-desktop-hint">HOVER A BUILDING TO EXPLORE</span>
+    <span class="town-mobile-hint">SWIPE THE TOWN · TAP A BUILDING</span>
+    <a href="#ride-out">SADDLE UP &amp; RIDE OUT <span aria-hidden="true">↓</span></a>
   </div>
-  <nav class="town-mobile-nav" aria-label="Town destinations on mobile">
-    <a href="tools/observatory/index.html">Sheriff · Bills</a>
-    <a href="econ-arcade/index.html">Saloon · Games</a>
-    <a href="tools/portfolio/index.html">Bank · Finance</a>
-    <a href="tools/ai/index.html">Telegraph · AI</a>
-    <a href="tools/parcel-fit/">Livery · Land</a>
-    <a href="devin/">Homestead · About</a>
-  </nav>
 </section>
 <section class="frontier-ride" id="ride-out" aria-labelledby="ride-heading">
   <div class="ride-sticky">
@@ -83,9 +78,9 @@
         <div class="ride-sign__wood"><span>MILE 02 / OFF THE MAP</span><strong>LAND &amp;<br>RESEARCH</strong><p>Maps, markets, and evidence.</p><a href="tools/parcel-fit/">Explore the tools ↗</a></div>
       </div>
       <div class="ride-sign ride-sign--three" data-start="0.79" data-end="1.01">
-        <div class="ride-sign__wood"><span>MILE 03 / UNCHARTED COUNTRY</span><strong>NEW FRONTIERS<br>AHEAD</strong><p>More games and experiments are in the works.</p><a href="#programs">See what's here now ↓</a></div>
+        <div class="ride-sign__wood"><span>MILE 03 / UNCHARTED COUNTRY</span><strong>WHAT'S OVER<br>THE HORIZON?</strong><p>New tools, games, and experiments are always taking shape.</p><a href="#programs">Find the trail map ↓</a></div>
       </div>
     </div>
-    <div class="ride-footer"><span>SCROLL TO RIDE <span aria-hidden="true">↓</span></span><a href="#programs">SKIP THE RIDE · ALL PROJECTS ↗</a></div>
+    <div class="ride-footer"><span>SCROLL TO RIDE <span aria-hidden="true">↓</span></span><a href="#programs">JUMP TO THE TRAIL MAP ↗</a></div>
   </div>
 </section>
