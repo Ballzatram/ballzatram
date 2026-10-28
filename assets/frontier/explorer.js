@@ -40,12 +40,13 @@
   const motion = document.getElementById('frontier-motion');
   const reducedMotion = typeof matchMedia === 'function' ? matchMedia('(prefers-reduced-motion: reduce)') : null;
   function setMotion(enabled) {
+    if (!motion) return;
     const active = enabled && !reducedMotion?.matches;
     root.dataset.motion = active ? 'on' : 'off';
     motion.setAttribute('aria-pressed', String(active));
     motion.textContent = `Desert breeze: ${active ? 'on' : 'off'}`;
   }
-  motion.addEventListener('click', () => setMotion(root.dataset.motion !== 'on'));
+  motion?.addEventListener('click', () => setMotion(root.dataset.motion !== 'on'));
   reducedMotion?.addEventListener('change', () => setMotion(false));
   root.querySelectorAll('[data-enhanced]').forEach(element => { element.hidden = false; });
 })();

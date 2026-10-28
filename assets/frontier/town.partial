@@ -1,0 +1,91 @@
+<!-- The town is navigation, not a game: every building is a real, keyboard-accessible link. -->
+<section class="frontier-town" aria-labelledby="welcome-title">
+  <div class="town-heading">
+    <p class="town-eyebrow">DEEP IN THE DIGITAL WEST · EST. 2026</p>
+    <h1 id="welcome-title">WELCOME TO<br><span>GALLEMORE GULCH</span></h1>
+    <p>One man's collection of tools, games, and rabbit holes.<br>Pick a building. See where the trail goes.</p>
+  </div>
+  <div class="town-frame" aria-label="An interactive eight-bit Western town. Scroll sideways on small screens to explore its buildings.">
+    <div class="town-world">
+      <div class="town-sun" aria-hidden="true"></div>
+      <div class="town-cloud town-cloud--one" aria-hidden="true"></div>
+      <div class="town-cloud town-cloud--two" aria-hidden="true"></div>
+      <svg class="town-mesas" viewBox="0 0 1200 360" preserveAspectRatio="xMidYMax slice" aria-hidden="true" shape-rendering="crispEdges">
+        <path fill="#ae675e" d="M0 220h75v-18h35v-55h25v-35h65v35h15v59h30v29h70v-19h35v-40h45v-55h85v55h25v54h72v-22h53v-42h35v-23h88v23h31v43h62v-15h28v-53h46v-45h81v45h40v43h64v-16h45v-40h70v40h30v55h40v140H0z"/>
+        <path fill="#de926b" d="M130 114h70v13h-70zm264 9h88v10h-88zm320 24h88v10h-88zm254-29h82v11h-82z"/>
+        <path fill="#825257" d="M0 270h102v-22h75v-22h50v22h70v30h85v-26h56v-21h85v35h70v-32h63v-16h84v31h99v-18h65v-30h51v30h42v38h60v-32h68v-20h69v48h40v109H0z"/>
+        <path fill="#553e4c" d="M0 302h125v-12h80v-29h74v31h110v-16h107v21h115v-24h80v-21h63v30h106v-25h86v38h110v-17h77v-18h67v38h50v62H0z"/>
+      </svg>
+      <div class="town-horizon" aria-hidden="true"></div>
+      <div class="town-street" aria-hidden="true"><span></span><span></span><span></span></div>
+      <div class="town-cactus town-cactus--left" aria-hidden="true"></div>
+      <div class="town-cactus town-cactus--right" aria-hidden="true"></div>
+      <div class="town-water-tower" aria-hidden="true"><span></span></div>
+      <nav class="town-buildings" aria-label="Explore the town by building">
+        <a class="town-building town-building--sheriff" href="tools/observatory/index.html" aria-label="Sheriff's office: Congressional Accountability" style="--wall:#b88a68;--front:#cfaa7b;--roof:#6a393b;--trim:#5c353c">
+          <span class="town-building__roof"></span><span class="town-building__sign">SHERIFF</span>
+          <span class="town-building__face"><span class="town-building__windows"></span><span class="town-building__door"></span></span>
+          <span class="town-building__destination">BILL X-RAY <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="town-building town-building--saloon" href="econ-arcade/index.html" aria-label="Saloon: Econ Arcade and games" style="--wall:#965c4e;--front:#bd775d;--roof:#573844;--trim:#f4c376">
+          <span class="town-building__roof"></span><span class="town-building__sign">SALOON</span>
+          <span class="town-building__face"><span class="town-building__windows"></span><span class="town-building__door"></span></span>
+          <span class="town-building__destination">ECON ARCADE <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="town-building town-building--bank" href="tools/portfolio/index.html" aria-label="Bank: Portfolio Lab and financial tools" style="--wall:#829393;--front:#a7b7ad;--roof:#3a535d;--trim:#f0d09c">
+          <span class="town-building__roof"></span><span class="town-building__sign">THE BANK</span>
+          <span class="town-building__face"><span class="town-building__windows"></span><span class="town-building__door"></span></span>
+          <span class="town-building__destination">PORTFOLIO LAB <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="town-building town-building--telegraph" href="tools/ai/index.html" aria-label="Telegraph: Osiris and AI tools" style="--wall:#8e6e7a;--front:#b38b8c;--roof:#443746;--trim:#edba79">
+          <span class="town-building__roof"></span><span class="town-building__sign">TELEGRAPH</span>
+          <span class="town-building__face"><span class="town-building__windows"></span><span class="town-building__door"></span></span>
+          <span class="town-building__destination">AI OUTPOST <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="town-building town-building--livery" href="tools/parcel-fit/" aria-label="Livery: Parcel Fit and land research" style="--wall:#937048;--front:#bd915d;--roof:#57443a;--trim:#e6c38a">
+          <span class="town-building__roof"></span><span class="town-building__sign">LIVERY</span>
+          <span class="town-building__face"><span class="town-building__windows"></span><span class="town-building__door"></span></span>
+          <span class="town-building__destination">PARCEL FIT <span aria-hidden="true">↗</span></span>
+        </a>
+        <a class="town-building town-building--homestead" href="devin/" aria-label="Homestead: Meet Devin and view his portfolio" style="--wall:#a97762;--front:#dbad88;--roof:#6d4244;--trim:#eec789">
+          <span class="town-building__roof"></span><span class="town-building__sign">HOMESTEAD</span>
+          <span class="town-building__face"><span class="town-building__windows"></span><span class="town-building__door"></span></span>
+          <span class="town-building__destination">ABOUT DEVIN <span aria-hidden="true">↗</span></span>
+        </a>
+      </nav>
+      <span class="town-barn-star" aria-hidden="true">✦</span>
+    </div>
+  </div>
+  <div class="town-underbar">
+    <span class="town-desktop-hint"><strong>WELCOME, STRANGER.</strong> Hover a building to discover what's inside.</span><span class="town-mobile-hint"><strong>SWIPE THROUGH TOWN</strong> or tap a destination below.</span>
+    <a href="#ride-out">OR SADDLE UP &amp; RIDE OUT <span aria-hidden="true">↓</span></a>
+  </div>
+  <nav class="town-mobile-nav" aria-label="Town destinations on mobile">
+    <a href="tools/observatory/index.html">Sheriff · Bills</a>
+    <a href="econ-arcade/index.html">Saloon · Games</a>
+    <a href="tools/portfolio/index.html">Bank · Finance</a>
+    <a href="tools/ai/index.html">Telegraph · AI</a>
+    <a href="tools/parcel-fit/">Livery · Land</a>
+    <a href="devin/">Homestead · About</a>
+  </nav>
+</section>
+<section class="frontier-ride" id="ride-out" aria-labelledby="ride-heading">
+  <div class="ride-sticky">
+    <div class="ride-sky" aria-hidden="true"><span class="ride-sun"></span><span class="ride-mesa ride-mesa--far"></span><span class="ride-mesa ride-mesa--near"></span><span class="ride-town-silhouette"></span></div>
+    <div class="ride-heading"><p class="town-eyebrow">CHAPTER 02 / THE OPEN RANGE</p><h2 id="ride-heading">There's more out yonder.</h2><p>Keep scrolling. The trail doesn't end at the town limits.</p></div>
+    <div class="ride-land" aria-hidden="true"><span class="ride-cactus ride-cactus--one"></span><span class="ride-cactus ride-cactus--two"></span><span class="ride-rock"></span><span class="ride-dust"></span></div>
+    <div class="ride-rider" role="img" aria-label="An eight-bit cowboy on horseback rides into the desert"><img src="assets/frontier/rider.svg" width="80" height="80" alt=""></div>
+    <div class="ride-markers" aria-live="off">
+      <div class="ride-sign ride-sign--one" data-start="0.16" data-end="0.47">
+        <div class="ride-sign__wood"><span>MILE 01 / TINKER TERRITORY</span><strong>THE AI<br>WORKSHOP</strong><p>Agents, experiments, and big ideas.</p><a href="tools/agent-workshop/">Enter the workshop ↗</a></div>
+      </div>
+      <div class="ride-sign ride-sign--two" data-start="0.47" data-end="0.79">
+        <div class="ride-sign__wood"><span>MILE 02 / OFF THE MAP</span><strong>LAND &amp;<br>RESEARCH</strong><p>Maps, markets, and evidence.</p><a href="tools/parcel-fit/">Explore the tools ↗</a></div>
+      </div>
+      <div class="ride-sign ride-sign--three" data-start="0.79" data-end="1.01">
+        <div class="ride-sign__wood"><span>MILE 03 / UNCHARTED COUNTRY</span><strong>NEW FRONTIERS<br>AHEAD</strong><p>More games and experiments are in the works.</p><a href="#programs">See what's here now ↓</a></div>
+      </div>
+    </div>
+    <div class="ride-footer"><span>SCROLL TO RIDE <span aria-hidden="true">↓</span></span><a href="#programs">SKIP THE RIDE · ALL PROJECTS ↗</a></div>
+  </div>
+</section>

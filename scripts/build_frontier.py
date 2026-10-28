@@ -27,6 +27,7 @@ def build():
     items = json.loads((ROOT / 'data/public-programs.json').read_text())
     categories = sorted({item['category'] for item in items})
     filters = ''.join(f'<button type="button" data-filter="{escape(category, quote=True)}" aria-pressed="false">{escape(category)}</button>' for category in categories)
+    town_markup = (ROOT / 'assets/frontier/town.partial').read_text(encoding='utf-8')
     html = f'''<!doctype html>
 <html lang="en">
 <head>
@@ -42,7 +43,9 @@ def build():
   <meta property="og:type" content="website">
   <link rel="preload" href="assets/frontier/press-start-2p.woff" as="font" type="font/woff" crossorigin>
   <link rel="stylesheet" href="assets/frontier/home.css">
+  <link rel="stylesheet" href="assets/frontier/town.css">
   <script defer src="assets/frontier/explorer.js"></script>
+  <script defer src="assets/frontier/ride.js"></script>
 </head>
 <body class="frontier-home" data-motion="off">
 <a class="frontier-skip" href="#main">Skip to content</a>
@@ -53,21 +56,10 @@ def build():
   </nav>
 </header>
 <main id="main" class="frontier-width">
-  <section class="frontier-hero" aria-labelledby="welcome-title">
-    <img class="frontier-scene" src="assets/frontier/sunset.svg" alt="" width="480" height="232" fetchpriority="high">
-    <div class="hero-copy">
-      <p class="frontier-kicker">An independent outpost on the internet</p>
-      <h1 id="welcome-title">HOWDY,<span>I’M DEVIN.</span></h1>
-      <p class="hero-description">I build tools, games, and the occasional rabbit hole. A little finance. A little AI. A whole lot of curiosity.</p>
-      <div class="hero-actions"><a class="pixel-button" href="#programs">Explore the projects {icon('arrow')}</a><a class="text-link" href="tools/parcel-fit/">See the Parcel Fit pilot ↗</a></div>
-    </div>
-    <div class="hero-stamp" aria-hidden="true">OPEN RANGE.<br>OPEN MIND.</div>
-    <div class="pixel-dust" aria-hidden="true"></div>
-    <div class="hero-footer"><span>{icon('star')} Side quests encouraged.</span><span class="hero-coordinates">Est. with curiosity / 8-bit edition</span><button class="motion-toggle" id="frontier-motion" type="button" aria-pressed="false" data-enhanced hidden>Desert breeze: off</button></div>
-  </section>
+{town_markup}
   <div class="frontier-intro"><div><strong>Welcome to my little corner of the frontier.</strong><p>Part workshop. Part arcade. Always something worth poking around in.</p></div><span class="intro-mark">{icon('cactus')} Built with a wandering mind.</span></div>
   <section class="frontier-trails" aria-labelledby="trails-title">
-    <div class="section-heading"><div><p class="frontier-kicker">01 / Choose your adventure</p><h2 id="trails-title">Pick your trail.</h2></div><p>Three good places to start.</p></div>
+    <div class="section-heading"><div><p class="frontier-kicker">03 / Choose your adventure</p><h2 id="trails-title">Pick your trail.</h2></div><p>Three good places to start.</p></div>
     <div class="trail-grid">
       <a class="trail-card" href="econ-arcade/index.html"><div class="trail-top">{icon('game')}<span>TRAIL 01</span></div><h3>The Arcade</h3><p>Run an economy. Test a strategy. Learn a thing or two.</p><span class="trail-arrow" aria-hidden="true">↗</span></a>
       <a class="trail-card" href="tools/observatory/index.html"><div class="trail-top">{icon('book')}<span>TRAIL 02</span></div><h3>The Paper Trail</h3><p>Follow the bills. Inspect the records. Ask better questions.</p><span class="trail-arrow" aria-hidden="true">↗</span></a>
@@ -75,7 +67,7 @@ def build():
     </div>
   </section>
   <section class="frontier-directory" id="programs" aria-labelledby="projects-title">
-    <div class="section-heading"><div><p class="frontier-kicker">02 / The whole collection</p><h2 id="projects-title">The project board.</h2></div><p>A few finished things. A few wild ideas.</p></div>
+    <div class="section-heading"><div><p class="frontier-kicker">04 / The whole collection</p><h2 id="projects-title">The project board.</h2></div><p>A few finished things. A few wild ideas.</p></div>
     <div class="directory-toolbar" data-enhanced hidden>
       <div class="frontier-filters" role="group" aria-label="Filter projects"><button type="button" data-filter="all" aria-pressed="true">All projects</button>{filters}</div>
       <div class="frontier-search"><label for="program-search">Find a project</label><input id="program-search" type="search" placeholder="Try “economics”…" autocomplete="off"></div>
