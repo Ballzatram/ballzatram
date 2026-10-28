@@ -5,7 +5,7 @@
     <h1 id="welcome-title">HOWDY,<br><span>I'M DEVIN.</span></h1>
     <p>Curiosity's carried me farther than good sense ever would. I built a few things along the way.<br>Come on in. The doors are open.</p>
   </div>
-  <div class="town-frame" aria-label="An interactive eight-bit Western town. Scroll sideways on small screens to explore its buildings.">
+  <div class="town-frame" role="region" tabindex="0" aria-label="An interactive eight-bit Western town. Scroll sideways on small screens to explore its buildings.">
     <div class="town-world">
       <div class="town-sun" aria-hidden="true"></div>
       <div class="town-cloud town-cloud--one" aria-hidden="true"></div>
