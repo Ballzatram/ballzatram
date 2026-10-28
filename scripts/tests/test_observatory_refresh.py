@@ -119,6 +119,37 @@ class RefreshTests(unittest.TestCase):
             self.assertEqual(detail['tracker']['textVersions'][0]['url'], TEXT_URL)
             self.assertEqual(row['health'], 'ok')
 
+    def test_missing_latest_action_does_not_poison_the_catalogue(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp)
+            candidate = {'id': '119-hr-7', 'url': XML_URL, 'modified': MODIFIED}
+
+            def malformed(url):
+                if url == XML_URL:
+                    return STATUS.replace(
+                        b'<latestAction><actionDate>2026-09-10</actionDate>',
+                        b'<latestAction><actionDate></actionDate>',
+                    )
+                return fake_fetch(url)
+
+            with self.assertRaisesRegex(ValueError, 'valid latest action'):
+                build_record(candidate, path, malformed)
+
+            previous = refresh(path, 119, 3, 1, fake_fetch)
+            original = previous['bills'][0]
+
+            def changed(url):
+                if url.endswith('119hr/sitemap.xml'):
+                    return sitemap(XML_URL, '2026-09-13T10:00:00Z')
+                return malformed(url)
+
+            updated = refresh(path, 119, 3, 1, changed)
+            retained = updated['bills'][0]
+            self.assertEqual(retained['health'], 'refresh_failed')
+            self.assertEqual(retained['detailSha256'], original['detailSha256'])
+            self.assertEqual(retained['checkedAt'], original['checkedAt'])
+            self.assertEqual(len(updated['failures']), 1)
+
     def test_mismatched_bill_identity_is_rejected(self):
         with tempfile.TemporaryDirectory() as temp:
             with self.assertRaisesRegex(ValueError,'identity'):
