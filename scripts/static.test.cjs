@@ -93,6 +93,59 @@ test('Horseback travel respects reduced-motion preferences without hiding links'
   }
 });
 
+test('Roadside signs appear briefly, pass the rider, and leave long quiet stretches', () => {
+  let progress = 0;
+  const viewportHeight = 800;
+  const rideHeight = 4400;
+  const dom = page('index.html', win => {
+    win.matchMedia = () => ({ matches: false, addEventListener() {} });
+    Object.defineProperty(win, 'innerHeight', { value: viewportHeight, configurable: true });
+    // Control scroll progress deterministically; don't depend on wall-clock animation.
+    win.requestAnimationFrame = callback => { callback(); return 1; };
+    const defaultRect = win.HTMLElement.prototype.getBoundingClientRect;
+    win.HTMLElement.prototype.getBoundingClientRect = function () {
+      if (this.classList?.contains('frontier-ride')) {
+        const top = -progress * (rideHeight - viewportHeight);
+        return { top, bottom: top + rideHeight, height: rideHeight };
+      }
+      return defaultRect.call(this);
+    };
+  });
+  const { document, Event } = dom.window;
+  const signs = [...document.querySelectorAll('.ride-sign')];
+
+  function step(value) {
+    progress = value;
+    dom.window.dispatchEvent(new Event('scroll'));
+    const visible = signs.filter(sign => sign.classList.contains('is-current'));
+    assert.ok(visible.length <= 1, `Overlapping waypoints at ${value}`);
+    for (const sign of signs) assert.equal(sign.inert, !visible.includes(sign));
+    return visible.map(sign => signs.indexOf(sign));
+  }
+
+  assert.deepEqual(step(0.08), [], 'The rider leaves town before seeing a sign');
+  assert.deepEqual(step(0.24), [0], 'First sign is readable');
+  assert.equal(Number(signs[0].style.getPropertyValue('--sign-opacity')), 1);
+  assert.deepEqual(step(0.40), [], 'Long empty stretch after the first sign');
+  assert.deepEqual(step(0.57), [1], 'Second sign is readable');
+  assert.deepEqual(step(0.71), [], 'A second quiet stretch before the final reveal');
+  assert.deepEqual(step(0.88), [2], 'Final sign announces future projects');
+  assert.deepEqual(step(0.98), [], 'The final sign is gone before the campfire');
+
+  step(0.185);
+  const approaching = parseFloat(signs[0].style.getPropertyValue('--sign-shift'));
+  const arrivingOpacity = parseFloat(signs[0].style.getPropertyValue('--sign-opacity'));
+  step(0.295);
+  const departing = parseFloat(signs[0].style.getPropertyValue('--sign-shift'));
+  const departingOpacity = parseFloat(signs[0].style.getPropertyValue('--sign-opacity'));
+  assert.ok(approaching > 0, 'A sign enters from the right');
+  assert.ok(departing < 0, 'A sign exits left, behind the rider');
+  assert.ok(arrivingOpacity < 1 && departingOpacity < 1, 'Signs fade in and out');
+
+  for (let i = 0; i <= 100; i++) step(i / 100);
+  dom.window.close();
+});
+
 test('Portfolio demo computes and escapes user-controlled symbols and benchmark warnings', () => {
   const dom = page('tools/portfolio/index.html'); const { document, Event } = dom.window;
   document.getElementById('demoButton').click(); document.getElementById('analyzeButton').click();
