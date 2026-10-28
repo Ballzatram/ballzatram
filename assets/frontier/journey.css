@@ -14,7 +14,8 @@ html{background:#282839;overflow-x:clip}
 .frontier-home .town-mobile-hint{display:none}
 .frontier-home .town-building{scroll-margin:30px}
 .frontier-home .town-tumbleweed{position:absolute;z-index:9;bottom:59px;left:-28px;width:26px;height:26px;border:5px dotted #88583f;border-radius:45%;opacity:.55;pointer-events:none;animation:frontier-tumbleweed 22s linear infinite}
-.frontier-home .town-horse{position:absolute;z-index:10;bottom:55px;right:8%;width:78px;height:78px;pointer-events:none;filter:drop-shadow(4px 5px #57424b)}
+/* Stage the cowboy near the entrance, not the Homestead. Buildings and their labels must paint above the decorative rider. */
+.frontier-home .town-horse{position:absolute;z-index:5;bottom:55px;left:4%;right:auto;width:78px;height:78px;pointer-events:none;filter:drop-shadow(4px 5px #57424b)}
 .frontier-home .town-horse img{width:100%;height:100%;image-rendering:pixelated;animation:frontier-horse-bob 2s steps(2,end) infinite}
 .frontier-home .town-cloud--one{animation:frontier-cloud-drift 38s linear infinite alternate}
 .frontier-home .town-cloud--two{animation:frontier-cloud-drift 52s linear infinite alternate-reverse}
@@ -81,7 +82,7 @@ html{background:#282839;overflow-x:clip}
 .frontier-home .town-wayfinding{position:relative;padding:12px 15px;gap:7px;flex-wrap:wrap;font-size:9px;background:#493341;min-height:60px}
 .frontier-home .town-mobile-hint{display:inline}.frontier-home .town-desktop-hint{display:none}
 .frontier-home .town-wayfinding a{font-size:9px;padding:7px}
-.frontier-home .town-horse{bottom:51px;right:7%;width:65px;height:65px}
+.frontier-home .town-horse{bottom:51px;left:4%;right:auto;width:65px;height:65px}
 .frontier-home .frontier-ride.has-ride-motion{height:520svh;min-height:2200px}
 .frontier-home .has-ride-motion .ride-sticky{height:100svh;min-height:530px}
 .frontier-home .ride-markers{top:36%;right:4%;width:63%}
