@@ -74,26 +74,42 @@ class FrontierTownTests(unittest.TestCase):
         self.assertEqual(len(windows), 3)
         for start, end in windows:
             self.assertGreater(end, start)
-            self.assertLessEqual(end - start, .13, 'Signs should be brief')
+            self.assertLessEqual(end - start, .19, 'Signs should last less than one fifth of the ride')
         for (_, prior_end), (next_start, _) in zip(windows, windows[1:]):
-            self.assertGreaterEqual(round(next_start - prior_end, 2), .18)
-        self.assertIn('height:560svh', journey)
-        self.assertIn('height:520svh', journey)
+            self.assertGreaterEqual(round(next_start - prior_end, 2), .17)
+        self.assertIn('height:680svh', journey)
+        self.assertIn('height:640svh', journey)
         self.assertIn('--sign-shift', journey)
         self.assertIn('--sign-opacity', journey)
 
-    def test_town_cowboy_does_not_cover_homestead_link(self):
+    def test_cowboy_has_separate_street_below_all_building_labels(self):
         town_css = (ROOT / 'assets/frontier/town.css').read_text(encoding='utf-8')
-        journey_css = (ROOT / 'assets/frontier/journey.css').read_text(encoding='utf-8')
+        journey = (ROOT / 'assets/frontier/journey.css').read_text(encoding='utf-8')
         town = (ROOT / 'assets/frontier/town.partial').read_text(encoding='utf-8')
-        # On mobile the scene is horizontally panned: the rider belongs by
-        # the entrance, not anchored to the Homestead at the right edge.
         self.assertIn('town-building--homestead', town)
-        self.assertIn('.town-horse{bottom:51px;left:4%;right:auto;', journey_css)
-        self.assertRegex(journey_css, r'\.town-horse\{position:absolute;z-index:5;[^}]+left:4%;right:auto;')
-        self.assertRegex(town_css, r'\.town-buildings\{[^}]*z-index:6;')
-        self.assertIn('pointer-events:none', journey_css)
-        self.assertNotIn('.town-horse{bottom:51px;right:7%;', journey_css)
+        # Mobile world grows by exactly the amount used to extend the street.
+        # This keeps the interactive storefronts at their original positions.
+        self.assertIn('.town-world{height:510px;min-width:940px}', journey)
+        self.assertIn('.town-street{height:174px}', journey)
+        self.assertIn('.town-buildings{bottom:174px}', journey)
+        self.assertIn('z-index:11;bottom:12px;left:11%;right:auto;', journey)
+        self.assertIn('.town-horse{bottom:12px;left:11%;right:auto;width:82px;height:82px}', journey)
+        self.assertRegex(town_css, r'\\.town-building__destination\\{[^}]*bottom:-37px;')
+        self.assertIn('pointer-events:none', journey)
+        # The last two quick-fix layouts were wrong: no right edge rider or
+        # hidden rider behind the Sheriff.
+        self.assertNotIn('z-index:5;bottom:55px;left:4%', journey)
+        self.assertNotIn('.town-horse{bottom:51px;left:4%', journey)
+
+    def test_yuma_landscape_and_legible_ride_heading(self):
+        town = (ROOT / 'assets/frontier/town.partial').read_text(encoding='utf-8')
+        journey = (ROOT / 'assets/frontier/journey.css').read_text(encoding='utf-8')
+        for token in ('YUMA, ARIZONA', 'ride-yuma-ranges', 'ride-yuma-wash',
+                      'ride-ocotillo', 'ride-sun'):
+            self.assertIn(token, town)
+        self.assertIn('background:linear-gradient(90deg,#252439e6,#30273dca)', journey)
+        self.assertIn('@media(max-width:360px)', journey)
+        self.assertIn('ride-sun{width:78px;height:78px;right:1%}', journey)
 
     def test_progressive_enhancement_and_input_remain_accessible(self):
         script = (ROOT / 'assets/frontier/ride.js').read_text(encoding='utf-8')
