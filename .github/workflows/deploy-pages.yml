@@ -131,12 +131,31 @@ jobs:
           restore-keys: observatory-v2-
 
       - name: Refresh official bill activity
+        shell: bash
         run: |
-          mkdir -p .cache/observatory
-          if [ ! -f .cache/observatory/index.json ]; then
+          set -euo pipefail
+          # A bad cached catalogue must never prevent the rest of the site deploying.
+          # The checked-in snapshot has passed the same validator in PR checks.
+          node tools/observatory/validate-live.mjs tools/observatory/live
+          if [ ! -f .cache/observatory/index.json ] || ! node tools/observatory/validate-live.mjs .cache/observatory; then
+            echo "::warning::No valid Observatory cache; starting from the checked-in snapshot."
+            rm -rf .cache/observatory
+            mkdir -p .cache/observatory
             cp -R tools/observatory/live/. .cache/observatory/
           fi
-          python scripts/refresh_observatory.py --output .cache/observatory --budget 120
+
+          # The bill data store is append-only. Preserve the last verified
+          # catalogue index before refreshing; new unreferenced source files
+          # cannot change old verified evidence hashes or dossier paths.
+          cp .cache/observatory/index.json "$RUNNER_TEMP/observatory-good-index.json"
+          if python scripts/refresh_observatory.py --output .cache/observatory --budget 120 &&
+             node tools/observatory/validate-live.mjs .cache/observatory; then
+            echo "Validated freshly refreshed Observatory data."
+          else
+            echo "::warning::Official bill refresh failed publication validation; retaining the last validated catalogue."
+            cp "$RUNNER_TEMP/observatory-good-index.json" .cache/observatory/index.json
+          fi
+          rm -f "$RUNNER_TEMP/observatory-good-index.json"
           node tools/observatory/validate-live.mjs .cache/observatory
           rm -rf _site/tools/observatory/live
           cp -R .cache/observatory _site/tools/observatory/live
