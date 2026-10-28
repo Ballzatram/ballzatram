@@ -44,7 +44,7 @@ function parseCsv(text) {
     throw new Error("Please use a price CSV smaller than 2 MB.");
   }
   const lines = text.replace(/^\uFEFF/, "").trim().split(/\r?\n/).filter((line) => line.trim());
-  if (lines.length < 4) throw new Error("CSV needs a header and at least three price rows.");
+  if (lines.length < 3) throw new Error("CSV needs a header and at least two price rows.");
   if (lines.length > 5001) throw new Error("Please use at most 5,000 price observations.");
   const parseLine = (line) => line.split(",").map((value) => value.trim().replace(/^"|"$/g, ""));
   const headers = parseLine(lines[0]).map((header) => header.trim());
