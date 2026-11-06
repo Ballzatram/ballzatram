@@ -2,20 +2,34 @@
   "name": "Devin Gallemore",
   "email": "devin.gallemore@gmail.com",
   "location": "Charlotte, NC",
-  "positioning": "Quantitative AI · Agentic systems · Applied machine learning · Financial systems",
-  "summary": "Quantitative technology professional building AI-enabled financial systems at the intersection of agentic orchestration, applied machine learning, model validation, and enterprise risk. Experience spans fraud investigation workflows, anomaly detection, interest-rate research, and balance-sheet forecasting.",
-  "resumeSource": "Devin_Gallemore_Resume_DevinOS_v1.pdf, August 7, 2026. Public web adaptation; work descriptions are generalized and personal phone number is omitted.",
+  "positioning": "Applied AI engineering · Agent orchestration · Evaluation · Quantitative systems",
+  "summary": "Python developer and quantitative systems professional building agentic workflows, evaluation tooling, and stakeholder reporting for financial services. Partners with domain experts and product and technology leaders to translate operational requirements into testable solutions. Combines hands-on AI development with experience supporting production financial forecasting and risk analytics.",
+  "resumeSource": "Gallemore_Resume.pdf and approved public copy, November 5, 2026. Public web adaptation; employer descriptions are generalized, existing published titles and employment dates are preserved, and personal phone number and internal scale figures are omitted.",
   "experience": [
     {
       "company": "Wells Fargo",
       "title": "Sr AVP — Quantitative Model Solutions Specialist",
       "dates": "Jul 2024 – Present",
-      "summary": "Building agentic investigation workflows and applied machine-learning systems, with experience in anomaly detection, rates research, and model reliability.",
-      "bullets": [
-        "Develop Python-based orchestration for agentic fraud investigation workflows, including structured context, persistent state, conditional routing, specialized analysis, output aggregation, and human review.",
-        "Build anomaly-detection frameworks for high-dimensional commercial lending data using feature engineering, clustering, dimensionality reduction, and unsupervised learning.",
-        "Automate interest-rate analytics and prototype regime-aware anomaly research using economic data and statistical methods.",
-        "Design regression testing and monitoring for enterprise liquidity forecasting, cash-flow variances, and upstream data quality."
+      "summary": "Own Python orchestration for agentic investigation workflows and build evaluation and reporting capabilities for baseline comparisons, evidence inspection, and defect diagnosis. Work with investigators and product and technology leaders to translate requirements into prototypes and validate workflow behavior during platform migration. Earlier work includes anomaly detection and production liquidity-forecast monitoring.",
+      "bulletGroups": [
+        {
+          "title": "Agentic AI engineering, evaluation, and integration",
+          "bullets": [
+            "Own Python orchestration for investigation workflows, implementing persistent state, conditional routing, specialized agents, and schema-validated outputs that support human review.",
+            "Built batch regression and reporting capabilities to compare baseline and candidate agent workflows, exposing differences alongside case evidence, generated explanations, execution logs, and output artifacts for defect investigation.",
+            "Added LLM-assisted summaries at run and case levels to highlight divergent outputs and suggest workflow refinements for human assessment.",
+            "Partner with investigators and product and technology leaders to translate changing requirements into working prototypes and testable workflow changes.",
+            "Validate workflow-state and output-artifact parity during migration to a web-based platform, supporting integration testing ahead of production rollout.",
+            "Refactored orchestration into reusable Python modules and helped establish shared GitHub branching, pull-request, and code-review practices; resolved unit-test and static-analysis findings."
+          ]
+        },
+        {
+          "title": "Quantitative systems experience",
+          "bullets": [
+            "Built anomaly-detection tooling for commercial lending data, evaluating HBOS and Isolation Forest on high-dimensional, sparse features.",
+            "Owned SQL/Dremio monitoring and regression testing for production liquidity forecasts, investigating cash-flow discrepancies and upstream data defects."
+          ]
+        }
       ]
     },
     {
@@ -43,16 +57,18 @@
     "Python",
     "SQL",
     "Agentic orchestration",
-    "Applied ML",
+    "Evaluation and reporting",
+    "Batch regression testing",
+    "Structured outputs",
+    "Workflow-state validation",
+    "Git / GitHub",
+    "Unix / Linux",
     "Time series",
     "FastAPI",
     "TypeScript",
     "Next.js",
-    "Git / GitHub",
-    "Unix / Linux",
     "AWS S3",
-    "Dremio",
-    "Power BI"
+    "Dremio"
   ],
   "education": [
     {
@@ -266,5 +282,58 @@
       "url": null,
       "link": null
     }
-  ]
+  ],
+  "portfolio": {
+    "title": "Devin Gallemore | Applied AI Engineering",
+    "description": "Devin Gallemore builds agentic workflows, evaluation tools, and stakeholder reporting, drawing on quantitative finance and production systems experience.",
+    "eyebrow": "Applied AI. Quantitative foundations.",
+    "intro": "I’m Devin. I build Python-based AI workflows and the evaluation and reporting tools that help teams inspect their behavior. My work connects business requirements, agent orchestration, and practical testing, drawing on a background in quantitative finance and production forecasting.",
+    "collaboration": "I work with domain experts and technology teams to turn complex operational problems into working, testable solutions.",
+    "locationDetail": "Applied AI and independent engineering",
+    "focus": [
+      {
+        "title": "Applied AI engineering",
+        "description": "Orchestration, state and structured outputs"
+      },
+      {
+        "title": "Evaluation and reporting",
+        "description": "Baseline comparisons, evidence and diagnostics"
+      },
+      {
+        "title": "Quantitative systems",
+        "description": "Forecasting, risk and production monitoring"
+      }
+    ],
+    "contact": "Let’s talk about applied AI, evaluation, or a complex business workflow that needs a practical engineering solution."
+  },
+  "resumeSkills": [
+    {
+      "title": "AI engineering",
+      "description": "LLM orchestration, context design, persistent workflow state, conditional routing, structured outputs, agent configuration."
+    },
+    {
+      "title": "Evaluation and reliability",
+      "description": "Batch regression testing, baseline/candidate comparisons, evidence and artifact inspection, execution logging, workflow-state validation, unit testing, SonarQube."
+    },
+    {
+      "title": "Engineering and data",
+      "description": "Python, SQL, Git/GitHub, Unix/Linux, AWS S3, Dremio."
+    },
+    {
+      "title": "Independent project stack",
+      "description": "FastAPI, Next.js, TypeScript, MCP, Cloudflare Workers."
+    },
+    {
+      "title": "Quantitative methods",
+      "description": "Anomaly detection, HBOS, Isolation Forest, time series, econometrics, liquidity forecasting, stress testing, scenario analysis."
+    }
+  ],
+  "independentEngineering": {
+    "title": "Ballzatram Laboratory · Independent engineering",
+    "bullets": [
+      "Developed and published MCP tools on Cloudflare Workers, sharing deterministic simulation logic with browser applications and validating inputs and explicit context-sharing boundaries.",
+      "Built a Docker-packaged runtime pilot with streaming, cancellation, session controls, and automated browser tests; live-provider acceptance testing remains pending."
+    ],
+    "summary": "Projects use AI-assisted development, with responsibility for requirements, architecture, testing, and iteration."
+  }
 }
