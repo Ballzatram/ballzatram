@@ -7,7 +7,7 @@
     "test": "node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "@langchain/langgraph": "1.4.21"
+    "@langchain/langgraph": "1.7.2"
   },
   "devDependencies": {
     "esbuild": "0.28.2"
