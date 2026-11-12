@@ -24,6 +24,9 @@ jobs:
         version: 0.13.7
     - name: Test the complete pinned policy implementation
       run: uv run --directory .engineering --locked --python 3.12 python tools/check.py
+    - name: Check tracked documentation is UTF-8
+      run: python -c "import subprocess; from pathlib import Path; names=subprocess.check_output(['git','ls-files','-z','--','*.md']).decode('utf-8').split(chr(0));
+        [Path(name).read_text(encoding='utf-8') for name in names if name]"
     - name: Validate fresh isolated starters
       run: uv run --directory .engineering --locked --python 3.12 python tools/validate_starters.py
     - name: Validate pinned policy prerequisites
@@ -40,7 +43,8 @@ jobs:
 
         '
     - name: Scan history using trusted base rules and fingerprints
-      run: python .engineering/tools/secret_scan.py --scanner "$RUNNER_TEMP/engineering-tools/gitleaks" --trusted-revision "$TRUSTED_REVISION" --candidate-revision "${{ github.sha }}" --bootstrap-config-sha256 77bfe370640fbd1f461a373532fcdd383b8b13fdc2ee0178dd58ee1f21d4d24d --bootstrap-ignore-sha256 f60a0834f2730023e644b6ef109826f7e2d6cdc12c71458a70c99a1e70ac4d83
+      run: python .engineering/tools/secret_scan.py --scanner "$RUNNER_TEMP/engineering-tools/gitleaks" --trusted-revision "$TRUSTED_REVISION" --candidate-revision
+        "${{ github.sha }}" --bootstrap-config-sha256 77bfe370640fbd1f461a373532fcdd383b8b13fdc2ee0178dd58ee1f21d4d24d --bootstrap-ignore-sha256 f60a0834f2730023e644b6ef109826f7e2d6cdc12c71458a70c99a1e70ac4d83
       env:
         TRUSTED_REVISION: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
   backend:

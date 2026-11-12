@@ -1,4 +1,4 @@
-# Merge verification — 2026-11-12
+# Merge verification â€” 2026-11-12
 
 Candidate: https://github.com/Ballzatram/ballzatram/pull/204. Base revision: `4467bf434f47920d9d8927a7b74ee0b22e894f53`.
 Machine-readable evidence: [standards evidence](evidence/standards-2026-11-12.json).
@@ -9,7 +9,7 @@ All merges require a successful Engineering Standards workflow on the final PR h
 
 The initial inventory compared 757 existing application/code/asset files using Git objects. Changes after that inventory are recorded below. This is file-preservation evidence, not a claim that all paths have been exercised.
 
-Five alternating base/candidate rounds used synthetic offline inputs on Windows with Python 3.12.16. The fixed gate is base × 1.20 plus a 2ms noise allowance, separately applied to median and p95. Contract hashes match. Times below are milliseconds; values are medians across the five rounds.
+Five alternating base/candidate rounds used synthetic offline inputs on Windows with Python 3.12.16. The fixed gate is base Ã— 1.20 plus a 2ms noise allowance, separately applied to median and p95. Contract hashes match. Times below are milliseconds; values are medians across the five rounds.
 
 | Workload | Base median | Candidate median | Base p95 | Candidate p95 | Result |
 | --- | ---: | ---: | ---: | ---: | --- |
