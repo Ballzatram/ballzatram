@@ -23,7 +23,7 @@ jobs:
           openssl req -x509 -newkey rsa:3072 -nodes             -keyout /tmp/wrap.key -out /tmp/wrap.crt             -subj '/CN=ephemeral-osiris-ssh' -days 1 >/dev/null 2>&1
           chmod 600 /tmp/wrap.key
       - name: Publish encryption certificate only
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: osiris-wrap-cert-${{ github.run_id }}
           path: /tmp/wrap.crt

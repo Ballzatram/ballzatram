@@ -1,0 +1,38 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /ai-edit-factory/frontend
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /osiris-runtime
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /osiris-tools
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /weather-trader
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /tools/agent-workshop
+    schedule:
+      interval: weekly
+  - package-ecosystem: npm
+    directory: /tools/observatory
+    schedule:
+      interval: weekly
+  - package-ecosystem: pip
+    directory: /backend
+    schedule:
+      interval: weekly

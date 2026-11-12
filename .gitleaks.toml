@@ -1,0 +1,37 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Exact reviewed public storage identifier or deterministic idempotency UUID; not an authentication credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^games/central\-bank\-v3\.js$''']
+regexes = ['''^centralBankRecentRunsV3$''']
+
+[[allowlists]]
+description = "Exact reviewed public storage identifier or deterministic idempotency UUID; not an authentication credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^games/central\-bank\-v3\.js$''']
+regexes = ['''^centralBankCampaignV3$''']
+
+[[allowlists]]
+description = "Exact reviewed public storage identifier or deterministic idempotency UUID; not an authentication credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^lab\.js$''']
+regexes = ['''^ballzatram\.labFavorites\.v1$''']
+
+[[allowlists]]
+description = "Exact reviewed public storage identifier or deterministic idempotency UUID; not an authentication credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^lab\.js$''']
+regexes = ['''^ballzatram\.labSuggestions\.v1$''']
+
+[[allowlists]]
+description = "Exact reviewed public storage identifier or deterministic idempotency UUID; not an authentication credential"
+targetRules = ["generic-api-key"]
+condition = "AND"
+paths = ['''^lab\.js$''']
+regexes = ['''^ballzatram\.labVotes\.v1$''']
