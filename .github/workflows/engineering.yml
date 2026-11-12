@@ -38,8 +38,7 @@ jobs:
 
         '
     - name: Scan history using trusted base rules and fingerprints
-      run: python .engineering/tools/secret_scan.py --scanner "$RUNNER_TEMP/engineering-tools/gitleaks" --trusted-revision "$TRUSTED_REVISION" --bootstrap-config-sha256
-        f99dc084c763372a7d550c44d18f794c58975db188e94579208fa9268ffb62d6 --bootstrap-ignore-sha256 f60a0834f2730023e644b6ef109826f7e2d6cdc12c71458a70c99a1e70ac4d83
+      run: python .engineering/tools/secret_scan.py --scanner "$RUNNER_TEMP/engineering-tools/gitleaks" --trusted-revision "$TRUSTED_REVISION" --bootstrap-config-sha256 77bfe370640fbd1f461a373532fcdd383b8b13fdc2ee0178dd58ee1f21d4d24d --bootstrap-ignore-sha256 f60a0834f2730023e644b6ef109826f7e2d6cdc12c71458a70c99a1e70ac4d83
       env:
         TRUSTED_REVISION: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.sha }}
   backend:
