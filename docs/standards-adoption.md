@@ -19,3 +19,7 @@ Default branches and deployed services are not changed by preparing this branch.
 70 backend tests, 122 frontend static tests, 36 isolated-runtime tests, 21 Osiris tool tests, 35 Observatory tests, 9 workshop tests and paper-trading tests passed. Frontend, media frontend and workshop builds passed. Scoped npm and analytics dependency audits report zero known vulnerabilities after security updates. OpenAPI route and schema-name inventories are preserved. Native Windows path assertions were corrected without changing runtime isolation behavior. AI/media backend rendering and production-container tests remain environment-specific follow-up checks.
 
 See docs/audit.md for unresolved controls. A structural pass is not full conformance.
+
+## Final candidate checks
+
+See [merge verification](merge-verification.md) for current gates, commands and actual performance/coverage measurements. This supersedes the initial local-only/native-pending notes above. See .standards.json for the executable command register. Hosted feature restrictions and remaining conformance work remain explicit.

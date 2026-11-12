@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
+  actions: write
 
 jobs:
   update:
@@ -28,9 +30,13 @@ jobs:
         run: python tools/parcel/pipeline/update_properties.py
 
       - name: Commit updated outputs
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BASE_BRANCH: master
+          UPDATE_KIND: parcel
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add tools/parcel/data/properties.csv tools/parcel/output/*.csv tools/parcel/output/*.json
-          git diff --cached --quiet || git commit -m "chore(parcel): update shortlist outputs"
-          git push
+          bash .github/scripts/publish-generated.sh
