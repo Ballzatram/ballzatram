@@ -1,0 +1,120 @@
+{
+  "date": "2026-11-12",
+  "base_revision": "4467bf434f47920d9d8927a7b74ee0b22e894f53",
+  "candidate_parent": "fcf3d2fdab13850448d8b826321b6dc9b772ab40",
+  "pull_request": "https://github.com/Ballzatram/ballzatram/pull/204",
+  "runtime_contract": "Existing application behavior is preserved; no live external writes are used as verification.",
+  "hosted_protection": "Required PR and strict GitHub Actions standards-gate, including administrators; no force push/deletion.",
+  "conformance": "Not full conformance; unresolved controls remain in docs/audit.md.",
+  "base_application_inventory": {
+    "application_files_compared": 757,
+    "identical_application_files": 756,
+    "changed": [
+      {
+        "path": "tools/agent-workshop/workshop.js",
+        "base_bytes": 1350491,
+        "candidate_bytes": 1351369,
+        "base_gzip": 343072,
+        "candidate_gzip": 343418,
+        "budget_passed": true
+      }
+    ]
+  },
+  "performance": {
+    "environment": "Windows; CPython 3.12.16; synthetic offline data; same machine; five alternating base/candidate rounds.",
+    "gate": "Median across five rounds of both median and p95 latency must be <= base * 1.20 + 2 milliseconds. Response-contract hashes must match.",
+    "metrics": {
+      "health_http": {
+        "median_ms": {
+          "base": 1.1254499999999998,
+          "candidate": 1.27965,
+          "limit": 3.3505399999999996,
+          "passed": true
+        },
+        "p95_ms": {
+          "base": 1.5142,
+          "candidate": 1.6869,
+          "limit": 3.81704,
+          "passed": true
+        },
+        "contract_matches": true,
+        "passed": true
+      },
+      "demo_http": {
+        "median_ms": {
+          "base": 1.2195,
+          "candidate": 1.4969000000000001,
+          "limit": 3.4634,
+          "passed": true
+        },
+        "p95_ms": {
+          "base": 1.645,
+          "candidate": 2.2299,
+          "limit": 3.974,
+          "passed": true
+        },
+        "contract_matches": true,
+        "passed": true
+      },
+      "stock_analysis_http": {
+        "median_ms": {
+          "base": 9.46685,
+          "candidate": 8.91165,
+          "limit": 13.36022,
+          "passed": true
+        },
+        "p95_ms": {
+          "base": 11.9578,
+          "candidate": 11.735,
+          "limit": 16.34936,
+          "passed": true
+        },
+        "contract_matches": true,
+        "passed": true
+      },
+      "ols_kernel": {
+        "median_ms": {
+          "base": 0.5418000000000001,
+          "candidate": 0.54955,
+          "limit": 2.65016,
+          "passed": true
+        },
+        "p95_ms": {
+          "base": 0.7294,
+          "candidate": 0.8916,
+          "limit": 2.87528,
+          "passed": true
+        },
+        "contract_matches": true,
+        "passed": true
+      },
+      "stress_kernel": {
+        "median_ms": {
+          "base": 0.0029,
+          "candidate": 0.003,
+          "limit": 2.00348,
+          "passed": true
+        },
+        "p95_ms": {
+          "base": 0.0031,
+          "candidate": 0.0031,
+          "limit": 2.00372,
+          "passed": true
+        },
+        "contract_matches": true,
+        "passed": true
+      }
+    },
+    "passed": true
+  },
+  "payload_budget": {
+    "routes": 42,
+    "max_route_gzip_growth_bytes": 241,
+    "gate": "No route exceeds 5% plus 1KiB gzip growth.",
+    "passed": true,
+    "workshop_gzip_growth_bytes": 346
+  },
+  "diagnostic_limit": "An initial concurrent in-process TestClient run exceeded health/demo p95 limits. Separate local Uvicorn/HTTPX runs passed the same timing gate. This is representative local serving evidence, not a production load or reliability certification.",
+  "generated_updates": "Existing generators retain their inputs, selected outputs and validation. Generated output uses unique automation branches, an explicitly dispatched engineering workflow and checked squash auto-merge. Both repositories default workflow tokens to read; only update workflows request contents/pull-requests/actions write. GitHub workflow PR creation and repository auto-merge are enabled; no workflow approves reviews.",
+  "automation_tests": "Four offline Bash control-flow regressions: unchanged output, unique branch + gate + auto-merge, diff failure and commit failure. No GitHub writes are performed by those tests."
+}

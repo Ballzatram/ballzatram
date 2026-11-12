@@ -12,7 +12,7 @@
     "test:static": "node --test ../scripts/subscription-transport.test.cjs ../scripts/static.test.cjs ../scripts/ai.test.cjs ../scripts/ai-bridge.test.mjs ../scripts/family-business.test.cjs ../scripts/parcel.test.cjs ../scripts/parcel-fit.test.cjs"
   },
   "dependencies": {
-    "next": "15.5.24",
+    "next": "15.5.29",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "recharts": "2.12.7"

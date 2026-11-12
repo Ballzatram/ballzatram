@@ -28,3 +28,24 @@ htmlcov/
 Thumbs.db
 *.swp
 *.swo
+
+# Engineering checks and local-only configuration
+.engineering/.tools/
+**/.venv/
+*.py[cod]
+coverage.xml
+test-results/
+playwright-report/
+!.env.production.example
+!**/.env.production.example
+*.log
+
+# Generated packaging, previews and local worker secrets
+*.egg-info/
+dist/
+build/
+.dev.vars
+.dev.vars.*
+!.dev.vars.example
+
+artifacts/

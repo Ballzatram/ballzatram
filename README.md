@@ -97,3 +97,7 @@ Badges link to actual workflow runs. Passing automated checks is not proof of li
 [Documentation index](docs/README.md) · [Engineering tour](docs/ENGINEERING_TOUR.md) · [Development](docs/DEVELOPMENT.md) · [Contributing](CONTRIBUTING.md) · [Security](SECURITY.md)
 
 This is independent, AI-assisted portfolio work. The [contribution guide](CONTRIBUTING.md) describes review expectations, evidence standards, and licensing status. Existing project identities, experiments, and third-party notices are retained.
+
+## Engineering standards
+
+This project references Engineering Standards 1.0.1 through `.standards.json` and the pinned `.engineering/` snapshot. See [adoption and verification](docs/standards-adoption.md) and [control assessment](docs/audit.md). Structural checks are not a full conformance claim.

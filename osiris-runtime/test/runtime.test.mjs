@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { PassThrough } from 'node:stream';
 import { EventEmitter } from 'node:events';
+import path from 'node:path';
 import { createRuntimeServer, validateRequest } from '../server.mjs';
 import { CodexSession, childEnvironment } from '../codex.mjs';
 
@@ -116,7 +117,7 @@ test('provider errors are sanitized and unexpected approval requests are denied'
 test('Codex rejects API-authenticated sessions and never passes through ambient provider keys', async () => {
   const env = childEnvironment('/isolated-session');
   assert.deepEqual(Object.keys(env).sort(), ['CODEX_HOME', 'HOME', 'LANG', 'PATH', 'TMPDIR']);
-  assert.equal(env.CODEX_HOME, '/isolated-session/codex'); assert.equal(env.OPENAI_API_KEY, undefined);
+  assert.equal(env.CODEX_HOME, path.join('/isolated-session', 'codex')); assert.equal(env.OPENAI_API_KEY, undefined);
   const { runtime } = protocol(); runtime.rpc = async () => ({ account: { type: 'apiKey' } });
   await assert.rejects(runtime.account(), /subscription sign-in only/); runtime.fail();
 });

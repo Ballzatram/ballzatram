@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "framework_version": "1.0.1",
+  "framework_source": ".engineering",
+  "owner": "Ballzatram",
+  "repository": "Ballzatram/ballzatram",
+  "risk_tier": "standard",
+  "lifecycle": "active",
+  "profiles": [
+    "python",
+    "typescript",
+    "web",
+    "services",
+    "data-ml",
+    "infrastructure"
+  ],
+  "commands": {
+    "format": "uvx --from ruff==0.17.4 ruff format --check .",
+    "lint": "uv run --project .engineering --locked python .engineering/tools/audit.py .",
+    "types": "npm run lint --prefix frontend",
+    "test": "npm run test:static --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "security": "python .engineering/tools/secret_scan.py"
+  },
+  "components": [
+    {
+      "path": "backend",
+      "profile": "python",
+      "dependency_manifest": "requirements.txt",
+      "lockfile": "requirements.lock"
+    },
+    {
+      "path": "frontend",
+      "profile": "typescript",
+      "dependency_manifest": "package.json",
+      "lockfile": "package-lock.json"
+    }
+  ],
+  "test_directories": [
+    "backend/tests",
+    "scripts/tests"
+  ]
+}
