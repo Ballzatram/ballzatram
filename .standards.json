@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "framework_version": "1.0.0",
+  "framework_version": "1.0.1",
   "framework_source": ".engineering",
   "owner": "Ballzatram",
   "repository": "Ballzatram/ballzatram",
@@ -16,11 +16,11 @@
   ],
   "commands": {
     "format": "uvx --from ruff==0.17.4 ruff format --check .",
-    "lint": "python .engineering/tools/audit.py .",
+    "lint": "uv run --project .engineering --locked python .engineering/tools/audit.py .",
     "types": "npm run lint --prefix frontend",
     "test": "npm run test:static --prefix frontend",
     "build": "npm run build --prefix frontend",
-    "security": "gitleaks git --redact --no-banner"
+    "security": "python .engineering/tools/secret_scan.py"
   },
   "components": [
     {
