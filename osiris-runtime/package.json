@@ -15,6 +15,6 @@
     "check:device-login": "node scripts/check-device-login.mjs"
   },
   "dependencies": {
-    "@openai/codex": "0.154.0"
+    "@openai/codex": "0.167.0"
   }
 }
