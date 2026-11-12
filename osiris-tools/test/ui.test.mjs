@@ -7,7 +7,7 @@ import engine from '../../tools/supply-demand/engine.js';
 import familyEngine from '../../econ-arcade/play/campaign-engine.js';
 import { familyBriefing } from '../src/family-business.mjs';
 
-const { JSDOM, VirtualConsole } = createRequire(new URL('../../frontend/package.json', import.meta.url))('jsdom');
+const { JSDOM, VirtualConsole } = createRequire(import.meta.url)('jsdom');
 const read = file => readFile(new URL('../../' + file, import.meta.url), 'utf8');
 const flush = () => new Promise(resolve => setImmediate(resolve));
 function mount(t, { html = widgetHtml, capabilities = { message: { text: {} } }, reject = false, defer = false } = {}) {
