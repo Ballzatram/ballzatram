@@ -23,7 +23,6 @@ The public site is a **static-first portfolio and working lab**, not a claim tha
 
 | Project | What it does | Where to start |
 | --- | --- | --- |
-| **Math Fieldbook** | Fourteen interactive experiments in model fitting, geometry, inference, evaluation, and attention, each with a worked example in Python. | [Open the fieldbook](https://dgallemore.com/tools/math-lab/) · [Implementation guide](tools/math-lab/README.md) |
 | **Agent Workshop** | Teaches orchestration through an executable LangGraph workflow, editable experiments, state inspection, and a matching Python starter with durable checkpoints. The writer is deterministic; live model access is separate. | [Open the workshop](https://dgallemore.com/tools/agent-workshop/) · [Implementation guide](tools/agent-workshop/README.md) |
 | **Osiris** | Connects selected project context to AI workflows. Shared deterministic tools run inside compatible AI hosts; a separate runtime explores in-page, user-authorized conversation. | [Tools service](osiris-tools/README.md) · [Runtime pilot](osiris-runtime/README.md) |
 | **The Family Business / Econ Arcade** | Teaches economics through decisions, controlled experiments, and a persistent campaign. Shared engines keep simulation outcomes separate from AI explanations. | [Play the campaign](https://dgallemore.com/econ-arcade/play/) · [Design and mechanics](docs/family-business.md) |
