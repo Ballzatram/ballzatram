@@ -578,6 +578,10 @@ footer {
   }
 }
 @media (max-width: 369px) {
+  .brand, .folio, .mast nav a { white-space: nowrap; }
+  .mast nav a span { display: none; }
+  .eyeline { align-items: flex-start; gap: 10px; }
+  .actions button { font-size: 12px; }
   .mast nav {
     gap: 8px;
   }

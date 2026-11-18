@@ -404,8 +404,8 @@ export const experiments = {
       ['line', 'Cutoff'],
     ],
     plotTitle: 'Who gets flagged?',
-    play: 'Raise cutoff',
-    step: 'Raise cutoff',
+    play: 'Sweep cutoff',
+    step: 'Raise by 0.05',
     sweep: ['cut', 1, 0.05],
     render(svg, s) {
       const c = M.confusion(s.cut),
